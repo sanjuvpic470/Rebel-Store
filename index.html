@@ -107,7 +107,7 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .form-control:focus{border-color:var(--spray-yellow);outline:none}
 .file-hint{font-size:.7rem;color:var(--grey);font-family:'Space Mono',monospace;margin-top:.3rem}
 #product-page{display:none;max-width:1100px;margin:0 auto;padding:2rem var(--gap) 4rem}
-.back-btn{display:inline-flex;align-items:center;gap:.5rem;font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;color:var(--spray-yellow);cursor:margin-bottom:1.5rem;background:none;border:none;text-transform:uppercase;padding:.5rem 0}
+.back-btn{display:inline-flex;align-items:center;gap:.5rem;font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;color:var(--spray-yellow);cursor:pointer;margin-bottom:1.5rem;background:none;border:none;text-transform:uppercase;padding:.5rem 0}
 .pdp-grid{display:grid;grid-template-columns:1fr;gap:2.5rem}
 @media(min-width:850px){.pdp-grid{grid-template-columns:460px 1fr;align-items:start;gap:3rem}}
 .gallery-container{display:flex;flex-direction:column;gap:.8rem;width:100%;max-width:460px;margin:0 auto}
@@ -115,7 +115,7 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .slider-track{display:flex;width:100%;height:100%;transition:transform .3s ease-out}
 .slide-item{min-width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:1.5rem;background-size:cover;background-position:center}
 .slide-item .big-preview-text{font-family:'Anton',sans-serif;font-size:clamp(3.2rem,10vw,4.8rem);text-transform:uppercase;color:var(--spray-yellow);line-height:1}
-.slide-nav-btn{position:absolute;top:50%;transform:translateY-50%);background:var(--ink);color:var(--paper);border:1px solid var(--paper);width:36px;height:36px;font-size:1.1rem;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center}
+.slide-nav-btn{position:absolute;top:50%;transform:translateY(-50%);background:var(--ink);color:var(--paper);border:1px solid var(--paper);width:36px;height:36px;font-size:1.1rem;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center}
 .slide-prev{left:8px}
 .slide-next{right:8px}
 .angle-badge{position:absolute;bottom:12px;left:12px;background:var(--ink);border:1px solid var(--paper);font-family:'Space Mono',monospace;font-size:.65rem;padding:4px 8px;text-transform:uppercase;z-index:5}
@@ -167,7 +167,12 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .admin-auth-box{max-width:420px}
 .auth-box h3,.admin-auth-box h3{font-family:'Anton',sans-serif;font-size:1.8rem;text-transform:uppercase;margin-bottom:.3rem}
 .auth-box p,.admin-auth-box p{font-family:'Space Mono',monospace;font-size:.78rem;color:var(--grey);margin-bottom:1.5rem}
-.social-btn{width:100%;padding:.8rem 1rem;font-family:'Space Mono',monospace;font-size:.82rem;font-weight:700;margin-bottom:.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.8rem;border:1px solid rgba(242,240,234,.2);background:#1a1a1d;color:var(--paper)}
+
+/* Styled Social / Google Login Button with Visual Interaction */
+.social-btn{width:100%;padding:.85rem 1rem;font-family:'Space Mono',monospace;font-size:.82rem;font-weight:700;margin-bottom:.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.8rem;border:1.5px solid var(--paper);background:#1a1a1d;color:var(--paper);border-radius:2px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease,background .15s ease;box-shadow:4px 4px 0 var(--spray-yellow);user-select:none}
+.social-btn:hover{transform:translate(-2px,-2px);border-color:var(--spray-yellow);box-shadow:6px 6px 0 var(--paper);background:#232328}
+.social-btn:active{transform:translate(0,0);box-shadow:2px 2px 0 var(--spray-yellow)}
+
 .auth-divider{text-align:center;font-family:'Space Mono',monospace;font-size:.7rem;color:var(--grey);margin:1rem 0;border-top:1px dashed rgba(242,240,234,0.2);padding-top:0.5rem}
 .admin-field-label{font-family:'Space Mono',monospace;font-size:.75rem;text-transform:uppercase;color:var(--spray-yellow);margin-bottom:.3rem;display:block;font-weight:700}
 .admin-input-full{width:100%;background:#1a1a1d;border:1.5px solid rgba(242,240,234,.2);color:var(--paper);font-family:'Space Mono',monospace;font-size:.85rem;padding:.7rem;margin-bottom:1rem}
@@ -2447,7 +2452,7 @@ async function loginWithGoogleSocial() {
         redirectTo: returnUrl,
         queryParams: {
           access_type: 'offline',
-          prompt: 'consent',
+          prompt: 'select_account',
         }
       }
     });
