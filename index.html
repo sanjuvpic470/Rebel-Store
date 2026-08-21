@@ -944,7 +944,7 @@ const SUPABASE_ANON_KEY = 'sb_publishable_3DE6FO6lDP6esci9vw-RgQ_DTWhe1xR';
 const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
 // --- RAZORPAY CONFIGURATION ---
-const RAZORPAY_KEY_ID = 'rzp_test_YOUR_KEY_HERE'; // Replace with your actual Razorpay Key ID
+const RAZORPAY_KEY_ID = 'rzp_test_TRdVlLkcaHAajf';
 
 let DEFAULT_CATEGORIES = [
   {
@@ -1537,7 +1537,7 @@ function validateBillingForm() {
   };
 }
 
-// --- UPDATED: SAVE TO SUPABASE & REDIRECT TO RAZORPAY PAYMENT GATEWAY ---
+// --- UPDATED & BUG-PROOFED PAYMENT GATEWAY FUNCTION ---
 async function proceedToPayment() {
   const billingData = validateBillingForm();
   if (!billingData) return;
@@ -1571,45 +1571,39 @@ async function proceedToPayment() {
     total_qty: cart.reduce((s, i) => s + i.qty, 0),
     total_amount: subtotal,
     status: 'pending',
-    payment_status: 'initiated',
-    created_at: new Date().toISOString()
+    payment_status: 'initiated'
   };
 
-  // 1. Supabase Database-ல் Order விவரங்களை சேமித்தல்
+  // 1. Supabase Database-ல் Order விவரங்களை Background-ல் சேமித்தல் (Do not block popup)
   if (supabaseClient) {
-    try {
-      const { error: dbError } = await supabaseClient
-        .from('orders')
-        .insert([orderPayload]);
+    supabaseClient
+      .from('orders')
+      .insert([orderPayload])
+      .then(({ error }) => {
+        if (error) console.warn('Orders Supabase Note:', error.message);
+      })
+      .catch(e => console.warn('Supabase Insert Error:', e));
 
-      if (dbError) {
-        console.warn('Orders table save error:', dbError);
+    cart.forEach(it => {
+      if (it.isCustom) {
+        supabaseClient.from('custom_orders').insert([{
+          order_id: orderId,
+          customer_name: billingData.name,
+          customer_phone: billingData.phone,
+          customer_address: billingData.address,
+          title: it.title,
+          size: it.size,
+          qty: it.qty,
+          prints: it.prints
+        }]).catch(e => console.warn(e));
       }
-
-      // Custom Order விவரங்களை தனி டேபிளிலும் சேமிக்கலாம்
-      for (const it of cart) {
-        if (it.isCustom) {
-          await supabaseClient.from('custom_orders').insert([{
-            order_id: orderId,
-            customer_name: billingData.name,
-            customer_phone: billingData.phone,
-            customer_address: billingData.address,
-            title: it.title,
-            size: it.size,
-            qty: it.qty,
-            prints: it.prints
-          }]).catch(e => console.warn(e));
-        }
-      }
-    } catch (err) {
-      console.warn('Supabase DB Insert Error:', err);
-    }
+    });
   }
 
-  // 2. Razorpay Gateway தொடங்குதல்
+  // 2. Razorpay Options
   const options = {
     key: RAZORPAY_KEY_ID,
-    amount: subtotal * 100, // Amount in paise
+    amount: Math.round(subtotal * 100), // In Paise
     currency: 'INR',
     name: 'REBEL STORE',
     description: `Order #${orderId}`,
@@ -1627,7 +1621,7 @@ async function proceedToPayment() {
       color: '#ffd500'
     },
     handler: async function (response) {
-      // 3. Payment வெற்றி பெற்றதும் Supabase-ல் நிலையை அப்டேட் செய்தல்
+      // 3. Payment வெற்றி பெற்றதும் Supabase-ல் நிலையை Update செய்தல்
       if (supabaseClient) {
         try {
           await supabaseClient
@@ -1688,6 +1682,9 @@ async function proceedToPayment() {
   };
 
   try {
+    if (typeof window.Razorpay === 'undefined') {
+      throw new Error('Razorpay SDK load failed. Please check internet connection.');
+    }
     const rzp = new window.Razorpay(options);
     rzp.on('payment.failed', function (response) {
       alert("Payment Failed: " + response.error.description);
@@ -1697,7 +1694,7 @@ async function proceedToPayment() {
     rzp.open();
   } catch (error) {
     console.error('Razorpay Error:', error);
-    alert('Unable to load payment gateway. Check your Razorpay Key.');
+    alert('Unable to load payment gateway: ' + error.message);
     payBtn.disabled = false;
     payBtn.innerText = 'Proceed to Payment →';
   }
