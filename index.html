@@ -8,6 +8,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Noto+Sans+Tamil:wght@600;700;900&family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 <!-- Supabase JS Library -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Razorpay Checkout SDK -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <style>
 :root{--ink:#0b0b0c;--paper:#f2f0ea;--rebel-red:#e52521;--spray-yellow:#ffd500;--grey:#8a8a86;--card-bg:#141416;--gap:clamp(1rem,4vw,2.5rem)}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -168,7 +170,6 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .auth-box h3,.admin-auth-box h3{font-family:'Anton',sans-serif;font-size:1.8rem;text-transform:uppercase;margin-bottom:.3rem}
 .auth-box p,.admin-auth-box p{font-family:'Space Mono',monospace;font-size:.78rem;color:var(--grey);margin-bottom:1.5rem}
 
-/* Interactive Styled Google & Social Login Button */
 .social-btn{width:100%;padding:.85rem 1.2rem;font-family:'Space Mono',monospace;font-size:.82rem;font-weight:700;margin-bottom:.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.8rem;border:1.5px solid var(--paper);background:#1a1a1d;color:var(--paper);border-radius:2px;transition:all .18s ease-in-out;box-shadow:4px 4px 0 var(--spray-yellow);user-select:none}
 .social-btn:hover{transform:translate(-3px,-3px);border-color:var(--spray-yellow);box-shadow:6px 6px 0 var(--paper);background:#232328;color:var(--spray-yellow)}
 .social-btn:active{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--spray-yellow)}
@@ -230,14 +231,6 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .admin-category-card h3:hover{text-decoration:underline}
 .drag-handle{background:var(--ink);color:var(--spray-yellow);padding:6px 12px;font-family:'Space Mono',monospace;font-size:0.75rem;font-weight:bold;border-radius:2px;cursor:grab;letter-spacing:0.05em;text-transform:uppercase}
 .drag-handle:active{cursor:grabbing}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem}
-.modal-box{width:100%;max-width:440px;background:#141416;border:2px solid var(--spray-yellow);box-shadow:8px 8px 0 var(--paper);padding:1.5rem;position:relative}
-.modal-box h3{font-family:'Anton',sans-serif;font-size:1.8rem;text-transform:uppercase;margin-bottom:.3rem}
-.modal-box p.sub{font-family:'Space Mono',monospace;font-size:.78rem;color:var(--grey);margin-bottom:1.2rem}
-.payment-options{display:flex;flex-direction:column;gap:.6rem;margin-bottom:1.5rem}
-.pay-option{padding:.9rem;border:1px solid rgba(242,240,234,.2);background:#1a1a1d;cursor:pointer;font-family:'Space Mono',monospace;font-weight:700;font-size:.8rem;display:flex;align-items:center;justify-content:space-between;transition:all .15s;min-height:48px}
-.pay-option:hover,.pay-option.active{border-color:var(--spray-yellow);background:#232328;color:var(--spray-yellow)}
-.pay-now-btn{width:100%;justify-content:center;padding:1rem}
 .toast{position:fixed;bottom:20px;right:20px;background:var(--spray-yellow);color:var(--ink);padding:.8rem 1.2rem;border:2px solid var(--ink);box-shadow:4px 4px 0 var(--paper);font-family:'Space Mono',monospace;font-weight:700;font-size:.8rem;z-index:250;transform:translateY(150px);transition:transform .3s cubic-bezier(0.175,0.885,0.32,1.275)}
 .toast.show{transform:translateY(0)}
 footer{padding:2.5rem 0 1.5rem}
@@ -513,7 +506,7 @@ footer a:hover{color:var(--paper)}
           <input type="text" id="b-pincode" placeholder="600017" required>
         </div>
       </div>
-      <button class="btn btn--solid" style="width:100%; justify-content:center; margin-top:1.5rem;" onclick="proceedToPayment()">Proceed to Payment →</button>
+      <button class="btn btn--solid" id="pay-submit-btn" style="width:100%; justify-content:center; margin-top:1.5rem;" onclick="proceedToPayment()">Proceed to Payment →</button>
     </div>
   </section>
   <div class="auth-modal" id="auth-modal">
@@ -866,19 +859,6 @@ footer a:hover{color:var(--paper)}
       </div>
     </div>
   </section>
-  <div class="modal-overlay" id="payment-modal">
-    <div class="modal-box">
-      <h3>Payment Gateway</h3>
-      <p class="sub">Select payment method to complete order</p>
-      <div class="payment-options">
-        <div class="pay-option active" onclick="selectPayment(this)"><span>UPI / QR (GPay, PhonePe, Paytm)</span><span>⚡ Instant</span></div>
-        <div class="pay-option" onclick="selectPayment(this)"><span>Credit / Debit Card</span><span>Visa/Mastercard</span></div>
-        <div class="pay-option" onclick="selectPayment(this)"><span>Cash on Delivery (COD)</span><span>ரூ 0 Extra</span></div>
-      </div>
-      <button class="btn btn--solid pay-now-btn" onclick="processPayment()">Complete Payment (<span id="pay-modal-total">ரூ 0</span>)</button>
-      <button class="back-btn" style="margin-top:1rem; width:100%; justify-content:center;" onclick="closeCheckoutModal()">Cancel</button>
-    </div>
-  </div>
   <div class="toast" id="toast">✓ Success!</div>
   <footer style="background:#111113; border-top:1px solid rgba(242,240,234,0.1); margin-top: 3rem;">
     <div class="wrap" style="padding-top: 2rem;">
@@ -962,6 +942,9 @@ footer a:hover{color:var(--paper)}
 const SUPABASE_URL = 'https://rdqzslvgqtajhiwxwauo.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_3DE6FO6lDP6esci9vw-RgQ_DTWhe1xR';
 const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+// --- RAZORPAY CONFIGURATION ---
+const RAZORPAY_KEY_ID = 'rzp_test_YOUR_KEY_HERE'; // Replace with your actual Razorpay Key ID
 
 let DEFAULT_CATEGORIES = [
   {
@@ -1084,7 +1067,6 @@ function applySiteContentToDOM() {
   if (document.getElementById('feat-2-desc')) document.getElementById('feat-2-desc').innerText = SITE_CONTENT.feat2Desc;
   if (document.getElementById('footer-tagline-text')) document.getElementById('footer-tagline-text').innerText = SITE_CONTENT.footerTagline;
 
-  // Populate Admin Inputs
   if (document.getElementById('cms-ticker-msg')) document.getElementById('cms-ticker-msg').value = SITE_CONTENT.tickerMsg;
   if (document.getElementById('cms-hero-eyebrow')) document.getElementById('cms-hero-eyebrow').value = SITE_CONTENT.heroEyebrow;
   if (document.getElementById('cms-hero-t1')) document.getElementById('cms-hero-t1').value = SITE_CONTENT.heroT1;
@@ -1555,67 +1537,170 @@ function validateBillingForm() {
   };
 }
 
-function proceedToPayment() {
+// --- UPDATED: SAVE TO SUPABASE & REDIRECT TO RAZORPAY PAYMENT GATEWAY ---
+async function proceedToPayment() {
   const billingData = validateBillingForm();
   if (!billingData) return;
-  window.pendingBilling = billingData;
-  document.getElementById('shipping-billing-page').style.display = 'none';
-  document.getElementById('payment-modal').style.display = 'flex';
+
+  if (cart.length === 0) {
+    showToast('Your cart is empty!');
+    return;
+  }
+
   let subtotal = 0;
   cart.forEach(item => {
     let itot = item.price * item.qty;
     if (isCouponApplied && !item.isCustom) itot = Math.round(itot * (1 - activeDiscountPercent / 100));
     subtotal += itot;
   });
-  document.getElementById('pay-modal-total').innerText = 'ரூ ' + subtotal;
-  document.body.style.overflow = 'hidden';
-}
 
-function closeCheckoutModal() { document.getElementById('payment-modal').style.display = 'none'; document.body.style.overflow = ''; }
+  const payBtn = document.getElementById('pay-submit-btn');
+  payBtn.disabled = true;
+  payBtn.innerText = 'Connecting to Payment Gateway...';
 
-function selectPayment(el) {
-  document.querySelectorAll('.pay-option').forEach(opt => opt.classList.remove('active'));
-  el.classList.add('active');
-}
-
-function processPayment() {
-  let subtotal = 0;
-  cart.forEach(item => {
-    let itot = item.price * item.qty;
-    if (isCouponApplied && !item.isCustom) itot = Math.round(itot * (1 - activeDiscountPercent / 100));
-    subtotal += itot;
-  });
   const todayStr = new Date().toISOString().split('T')[0];
   const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
-  const newOrder = {
-    id: orderId,
-    date: todayStr,
-    userEmail: loggedInUser ? loggedInUser.email : 'guest',
-    billing: window.pendingBilling,
-    totalQty: cart.reduce((s, i) => s + i.qty, 0),
-    totalAmount: subtotal,
-    items: [...cart]
-  };
-  ordersHistory.push(newOrder);
 
-  cart.forEach(it => {
-    if (it.isCustom) {
-      customOrdersHistory.push({
-        orderId: orderId,
-        date: todayStr,
-        customer: window.pendingBilling,
-        title: it.title,
-        size: it.size,
-        qty: it.qty,
-        prints: it.prints
-      });
+  const orderPayload = {
+    order_id: orderId,
+    user_email: loggedInUser ? loggedInUser.email : billingData.email,
+    customer_name: billingData.name,
+    customer_phone: billingData.phone,
+    customer_address: billingData.address,
+    items: cart,
+    total_qty: cart.reduce((s, i) => s + i.qty, 0),
+    total_amount: subtotal,
+    status: 'pending',
+    payment_status: 'initiated',
+    created_at: new Date().toISOString()
+  };
+
+  // 1. Supabase Database-ல் Order விவரங்களை சேமித்தல்
+  if (supabaseClient) {
+    try {
+      const { error: dbError } = await supabaseClient
+        .from('orders')
+        .insert([orderPayload]);
+
+      if (dbError) {
+        console.warn('Orders table save error:', dbError);
+      }
+
+      // Custom Order விவரங்களை தனி டேபிளிலும் சேமிக்கலாம்
+      for (const it of cart) {
+        if (it.isCustom) {
+          await supabaseClient.from('custom_orders').insert([{
+            order_id: orderId,
+            customer_name: billingData.name,
+            customer_phone: billingData.phone,
+            customer_address: billingData.address,
+            title: it.title,
+            size: it.size,
+            qty: it.qty,
+            prints: it.prints
+          }]).catch(e => console.warn(e));
+        }
+      }
+    } catch (err) {
+      console.warn('Supabase DB Insert Error:', err);
     }
-  });
-  renderAdminPanels();
-  closeCheckoutModal();
-  showToast("Order placed successfully!");
-  cart = []; isCouponApplied = false;
-  updateCartBadge(); showHomeView();
+  }
+
+  // 2. Razorpay Gateway தொடங்குதல்
+  const options = {
+    key: RAZORPAY_KEY_ID,
+    amount: subtotal * 100, // Amount in paise
+    currency: 'INR',
+    name: 'REBEL STORE',
+    description: `Order #${orderId}`,
+    image: 'https://i.postimg.cc/your-logo-url-here.png',
+    prefill: {
+      name: billingData.name,
+      email: billingData.email,
+      contact: billingData.phone
+    },
+    notes: {
+      address: billingData.address,
+      order_id: orderId
+    },
+    theme: {
+      color: '#ffd500'
+    },
+    handler: async function (response) {
+      // 3. Payment வெற்றி பெற்றதும் Supabase-ல் நிலையை அப்டேட் செய்தல்
+      if (supabaseClient) {
+        try {
+          await supabaseClient
+            .from('orders')
+            .update({
+              status: 'paid',
+              payment_status: 'success',
+              razorpay_payment_id: response.razorpay_payment_id
+            })
+            .eq('order_id', orderId);
+        } catch (e) {
+          console.warn('Order status update error:', e);
+        }
+      }
+
+      const completedOrder = {
+        id: orderId,
+        date: todayStr,
+        userEmail: loggedInUser ? loggedInUser.email : billingData.email,
+        billing: billingData,
+        totalQty: cart.reduce((s, i) => s + i.qty, 0),
+        totalAmount: subtotal,
+        items: [...cart],
+        paymentId: response.razorpay_payment_id
+      };
+
+      ordersHistory.push(completedOrder);
+      cart.forEach(it => {
+        if (it.isCustom) {
+          customOrdersHistory.push({
+            orderId: orderId,
+            date: todayStr,
+            customer: billingData,
+            title: it.title,
+            size: it.size,
+            qty: it.qty,
+            prints: it.prints
+          });
+        }
+      });
+
+      renderAdminPanels();
+      cart = [];
+      isCouponApplied = false;
+      updateCartBadge();
+      payBtn.disabled = false;
+      payBtn.innerText = 'Proceed to Payment →';
+      showToast("Payment Successful! Order Placed.");
+      showHomeView();
+    },
+    modal: {
+      ondismiss: function() {
+        payBtn.disabled = false;
+        payBtn.innerText = 'Proceed to Payment →';
+        showToast("Payment cancelled. You can retry anytime.");
+      }
+    }
+  };
+
+  try {
+    const rzp = new window.Razorpay(options);
+    rzp.on('payment.failed', function (response) {
+      alert("Payment Failed: " + response.error.description);
+      payBtn.disabled = false;
+      payBtn.innerText = 'Proceed to Payment →';
+    });
+    rzp.open();
+  } catch (error) {
+    console.error('Razorpay Error:', error);
+    alert('Unable to load payment gateway. Check your Razorpay Key.');
+    payBtn.disabled = false;
+    payBtn.innerText = 'Proceed to Payment →';
+  }
 }
 
 function openAdminSubPage(subPageId) {
@@ -2038,7 +2123,7 @@ document.addEventListener('DOMContentLoaded', () => {
     userInput.addEventListener('keydown', handleEnter);
   }
 
-  // --- SUPABASE AUTH SESSION LISTENER (Google Login & Normal Login Sync) ---
+  // --- SUPABASE AUTH SESSION LISTENER ---
   if (supabaseClient) {
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
       if (session && session.user) {
@@ -2435,7 +2520,7 @@ async function processUserLogin() {
   }
 }
 
-// --- UPDATED: GOOGLE OAUTH SIGN-IN LOGIC (ALWAYS PROMPT ACCOUNT SELECTION) ---
+// --- GOOGLE OAUTH SIGN-IN LOGIC ---
 async function loginWithGoogleSocial() {
   if (!supabaseClient) {
     alert('Supabase client is not initialized!');
@@ -2464,7 +2549,7 @@ async function loginWithGoogleSocial() {
   }
 }
 
-// --- LOGOUT LOGIC (FULLY CLEARS ALL SESSIONS & TOKENS) ---
+// --- LOGOUT LOGIC ---
 async function logoutUser() {
   if (supabaseClient) {
     try {
@@ -2477,7 +2562,6 @@ async function logoutUser() {
   sessionStorage.removeItem('rebel_user_session');
   sessionStorage.clear();
   
-  // Clear any Supabase persistent auth storage keys
   for (let key in localStorage) {
     if (key.startsWith('sb-') && key.endsWith('-auth-token')) {
       localStorage.removeItem(key);
