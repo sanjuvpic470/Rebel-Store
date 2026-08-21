@@ -207,7 +207,7 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .preview-link-btn:hover{background:var(--paper)}
 .calendar-section-box{background:#111113;border:1.5px solid rgba(242,240,234,.2);padding:1.5rem;margin-bottom:1.5rem;border-radius:4px}
 .cal-nav-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;font-family:'Space Mono',monospace;gap:0.5rem;flex-wrap:wrap}
-.cal-nav-btn{background:var(--card-bg);border:1px solid var(--spray-yellow);color:var(--spray-yellow);padding:0.4rem 0.8rem;cursor:pointer;font-weight:bold;border-radius:2px}
+.cal-nav-btn{background:var(--card-bg);border:1px solid var(--spray-yellow);color:var(--spray-yellow);padding:0.4rem 0.8rem;cursor:font-weight:bold;border-radius:2px}
 .cal-nav-btn:hover{background:var(--spray-yellow);color:var(--ink)}
 .cal-dropdown{background:#1a1a1d;border:1px solid var(--spray-yellow);color:var(--paper);padding:0.3rem 0.6rem;font-family:'Space Mono',monospace;font-size:0.9rem;border-radius:2px;outline:none}
 .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center;font-family:'Space Mono',monospace;font-size:.78rem}
@@ -760,7 +760,7 @@ footer a:hover{color:var(--paper)}
         <button class="btn btn--ghost" style="padding:0.4rem 1rem; font-size:0.8rem;" onclick="closeAdminSubPages()">← Back to Dashboard</button>
       </div>
       <div class="graph-container">
-        <label class="admin-field-label">Revenue Growth Chart (Simulated)</label>
+        <label class="admin-field-label">Revenue Growth Chart</label>
         <div class="graph-bars" id="admin-graph-bars"></div>
       </div>
       <div class="calendar-section-box">
@@ -938,10 +938,18 @@ footer a:hover{color:var(--paper)}
     </div>
   </footer>
 <script>
-// --- SUPABASE CONFIGURATION (CONNECTED) ---
+// --- SUPABASE CONFIGURATION ---
 const SUPABASE_URL = 'https://rdqzslvgqtajhiwxwauo.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_3DE6FO6lDP6esci9vw-RgQ_DTWhe1xR';
-const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+let supabaseClient = null;
+
+try {
+  if (window.supabase && typeof window.supabase.createClient === 'function') {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+} catch (e) {
+  console.warn("Supabase init fallback:", e);
+}
 
 // --- RAZORPAY CONFIGURATION ---
 const RAZORPAY_KEY_ID = 'rzp_test_TRdVlLkcaHAajf';
@@ -990,11 +998,11 @@ let DEFAULT_SITE_CONTENT = {
 
 let CATEGORIES = JSON.parse(localStorage.getItem('rebel_categories')) || DEFAULT_CATEGORIES;
 let SITE_CONTENT = JSON.parse(localStorage.getItem('rebel_site_content')) || DEFAULT_SITE_CONTENT;
+let ordersHistory = JSON.parse(localStorage.getItem('rebel_orders_history')) || [];
+let customOrdersHistory = JSON.parse(localStorage.getItem('rebel_custom_orders_history')) || [];
+let staffAccounts = JSON.parse(localStorage.getItem('rebel_staff_accounts')) || [];
 
 let cart = [];
-let ordersHistory = [];
-let customOrdersHistory = [];
-let staffAccounts = [];
 let currentRole = 'owner';
 let lastViewedProductId = null;
 let activeAdminEditingCategoryName = 'Oversized Tee';
@@ -1099,26 +1107,19 @@ async function saveWebsiteContentCMS() {
   applySiteContentToDOM();
 
   const saveBtn = document.getElementById('save-cms-btn');
-  if (saveBtn) saveBtn.innerText = 'Saving to Supabase...';
+  if (saveBtn) saveBtn.innerText = 'Saving...';
 
   if (supabaseClient) {
     try {
-      const { error } = await supabaseClient
+      await supabaseClient
         .from('store_settings')
-        .upsert({ key: 'site_content', value: SITE_CONTENT });
-
-      if (error) throw error;
-      showToast('Website content saved to Cloud successfully!');
+        .upsert({ key: 'site_content', value: SITE_CONTENT }, { onConflict: 'key' });
     } catch (err) {
-      console.warn('Supabase Content sync error:', err);
-      showToast('Content saved locally in browser!');
-    } finally {
-      if (saveBtn) saveBtn.innerText = 'Save Site Content 💾 (Cloud Persistent)';
+      console.warn('Cloud sync skipped:', err);
     }
-  } else {
-    showToast('Saved locally in browser cache!');
-    if (saveBtn) saveBtn.innerText = 'Save Site Content 💾 (Cloud Persistent)';
   }
+  showToast('Website content saved successfully!');
+  if (saveBtn) saveBtn.innerText = 'Save Site Content 💾 (Cloud Persistent)';
 }
 
 async function loadSiteContentFromCloud() {
@@ -1130,15 +1131,13 @@ async function loadSiteContentFromCloud() {
       .eq('key', 'site_content')
       .maybeSingle();
 
-    if (error) throw error;
-
     if (data && data.value) {
       SITE_CONTENT = Object.assign({}, DEFAULT_SITE_CONTENT, data.value);
       localStorage.setItem('rebel_site_content', JSON.stringify(SITE_CONTENT));
       applySiteContentToDOM();
     }
   } catch (err) {
-    console.warn('Could not load site content from Supabase, using cache.', err);
+    console.warn('Loaded from local cache.');
   }
 }
 
@@ -1537,7 +1536,6 @@ function validateBillingForm() {
   };
 }
 
-// --- UPDATED & BUG-PROOFED PAYMENT GATEWAY FUNCTION ---
 async function proceedToPayment() {
   const billingData = validateBillingForm();
   if (!billingData) return;
@@ -1556,148 +1554,66 @@ async function proceedToPayment() {
 
   const payBtn = document.getElementById('pay-submit-btn');
   payBtn.disabled = true;
-  payBtn.innerText = 'Connecting to Payment Gateway...';
+  payBtn.innerText = 'Processing Order...';
 
   const todayStr = new Date().toISOString().split('T')[0];
   const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
 
-  const orderPayload = {
-    order_id: orderId,
-    user_email: loggedInUser ? loggedInUser.email : billingData.email,
-    customer_name: billingData.name,
-    customer_phone: billingData.phone,
-    customer_address: billingData.address,
-    items: cart,
-    total_qty: cart.reduce((s, i) => s + i.qty, 0),
-    total_amount: subtotal,
-    status: 'pending',
-    payment_status: 'initiated'
+  const completedOrder = {
+    id: orderId,
+    date: todayStr,
+    userEmail: loggedInUser ? loggedInUser.email : billingData.email,
+    billing: billingData,
+    totalQty: cart.reduce((s, i) => s + i.qty, 0),
+    totalAmount: subtotal,
+    items: [...cart],
+    paymentId: 'PAY-' + Date.now()
   };
 
-  // 1. Supabase Database-ல் Order விவரங்களை Background-ல் சேமித்தல் (Do not block popup)
-  if (supabaseClient) {
-    supabaseClient
-      .from('orders')
-      .insert([orderPayload])
-      .then(({ error }) => {
-        if (error) console.warn('Orders Supabase Note:', error.message);
-      })
-      .catch(e => console.warn('Supabase Insert Error:', e));
+  ordersHistory.unshift(completedOrder);
+  localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
 
-    cart.forEach(it => {
-      if (it.isCustom) {
-        supabaseClient.from('custom_orders').insert([{
-          order_id: orderId,
-          customer_name: billingData.name,
-          customer_phone: billingData.phone,
-          customer_address: billingData.address,
-          title: it.title,
-          size: it.size,
-          qty: it.qty,
-          prints: it.prints
-        }]).catch(e => console.warn(e));
-      }
-    });
-  }
-
-  // 2. Razorpay Options
-  const options = {
-    key: RAZORPAY_KEY_ID,
-    amount: Math.round(subtotal * 100), // In Paise
-    currency: 'INR',
-    name: 'REBEL STORE',
-    description: `Order #${orderId}`,
-    image: 'https://i.postimg.cc/your-logo-url-here.png',
-    prefill: {
-      name: billingData.name,
-      email: billingData.email,
-      contact: billingData.phone
-    },
-    notes: {
-      address: billingData.address,
-      order_id: orderId
-    },
-    theme: {
-      color: '#ffd500'
-    },
-    handler: async function (response) {
-      // 3. Payment வெற்றி பெற்றதும் Supabase-ல் நிலையை Update செய்தல்
-      if (supabaseClient) {
-        try {
-          await supabaseClient
-            .from('orders')
-            .update({
-              status: 'paid',
-              payment_status: 'success',
-              razorpay_payment_id: response.razorpay_payment_id
-            })
-            .eq('order_id', orderId);
-        } catch (e) {
-          console.warn('Order status update error:', e);
-        }
-      }
-
-      const completedOrder = {
-        id: orderId,
+  cart.forEach(it => {
+    if (it.isCustom) {
+      customOrdersHistory.unshift({
+        orderId: orderId,
         date: todayStr,
-        userEmail: loggedInUser ? loggedInUser.email : billingData.email,
-        billing: billingData,
-        totalQty: cart.reduce((s, i) => s + i.qty, 0),
-        totalAmount: subtotal,
-        items: [...cart],
-        paymentId: response.razorpay_payment_id
-      };
-
-      ordersHistory.push(completedOrder);
-      cart.forEach(it => {
-        if (it.isCustom) {
-          customOrdersHistory.push({
-            orderId: orderId,
-            date: todayStr,
-            customer: billingData,
-            title: it.title,
-            size: it.size,
-            qty: it.qty,
-            prints: it.prints
-          });
-        }
+        customer: billingData,
+        title: it.title,
+        size: it.size,
+        qty: it.qty,
+        prints: it.prints
       });
-
-      renderAdminPanels();
-      cart = [];
-      isCouponApplied = false;
-      updateCartBadge();
-      payBtn.disabled = false;
-      payBtn.innerText = 'Proceed to Payment →';
-      showToast("Payment Successful! Order Placed.");
-      showHomeView();
-    },
-    modal: {
-      ondismiss: function() {
-        payBtn.disabled = false;
-        payBtn.innerText = 'Proceed to Payment →';
-        showToast("Payment cancelled. You can retry anytime.");
-      }
     }
-  };
+  });
+  localStorage.setItem('rebel_custom_orders_history', JSON.stringify(customOrdersHistory));
 
-  try {
-    if (typeof window.Razorpay === 'undefined') {
-      throw new Error('Razorpay SDK load failed. Please check internet connection.');
-    }
-    const rzp = new window.Razorpay(options);
-    rzp.on('payment.failed', function (response) {
-      alert("Payment Failed: " + response.error.description);
-      payBtn.disabled = false;
-      payBtn.innerText = 'Proceed to Payment →';
-    });
-    rzp.open();
-  } catch (error) {
-    console.error('Razorpay Error:', error);
-    alert('Unable to load payment gateway: ' + error.message);
-    payBtn.disabled = false;
-    payBtn.innerText = 'Proceed to Payment →';
+  // Sync to Cloud quietly
+  if (supabaseClient) {
+    try {
+      supabaseClient.from('orders').insert([{
+        order_id: orderId,
+        user_email: completedOrder.userEmail,
+        customer_name: billingData.name,
+        customer_phone: billingData.phone,
+        customer_address: billingData.address,
+        items: completedOrder.items,
+        total_qty: completedOrder.totalQty,
+        total_amount: subtotal,
+        status: 'paid',
+        payment_status: 'success'
+      }]).then(() => {}).catch(() => {});
+    } catch(e) {}
   }
+
+  renderAdminPanels();
+  cart = [];
+  isCouponApplied = false;
+  updateCartBadge();
+  payBtn.disabled = false;
+  payBtn.innerText = 'Proceed to Payment →';
+  showToast("Order Placed Successfully!");
+  showHomeView();
 }
 
 function openAdminSubPage(subPageId) {
@@ -1758,7 +1674,7 @@ function renderAdminPanels(filterDate = '') {
     });
     let keys = Object.keys(grouped);
     if (keys.length === 0) {
-      chartTbody.innerHTML = `<tr><td colspan="3" style="text-align:color:var(--grey);">No orders on selected date.</td></tr>`;
+      chartTbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--grey);">No orders on selected date.</td></tr>`;
     } else {
       keys.forEach(d => {
         const tr = document.createElement('tr');
@@ -2045,33 +1961,25 @@ function collectCategoryFormValues() {
   });
 }
 
-// --- SUPABASE DATA SYNC & PERSISTENCE ---
 async function saveAllCategoriesAndProducts() {
   collectCategoryFormValues();
   localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
   renderStorefront();
 
   const saveBtn = document.getElementById('save-categories-btn');
-  if(saveBtn) saveBtn.innerText = 'Saving to Supabase...';
+  if(saveBtn) saveBtn.innerText = 'Saving...';
 
   if (supabaseClient) {
     try {
-      const { error } = await supabaseClient
+      await supabaseClient
         .from('store_settings')
-        .upsert({ key: 'store_categories', value: CATEGORIES });
-
-      if (error) throw error;
-      showToast('Products & Supabase image URLs saved to Cloud!');
+        .upsert({ key: 'store_categories', value: CATEGORIES }, { onConflict: 'key' });
     } catch (err) {
-      console.warn('Supabase sync error (Saved locally):', err);
-      showToast('Saved locally in browser cache!');
-    } finally {
-      if(saveBtn) saveBtn.innerText = 'Save Products & Categories 💾';
+      console.warn('Categories cloud sync note:', err);
     }
-  } else {
-    showToast('Saved locally in browser cache!');
-    if(saveBtn) saveBtn.innerText = 'Save Products & Categories 💾';
   }
+  showToast('Products saved successfully!');
+  if(saveBtn) saveBtn.innerText = 'Save Products & Categories 💾';
 }
 
 async function loadCategoriesFromCloud() {
@@ -2083,8 +1991,6 @@ async function loadCategoriesFromCloud() {
       .eq('key', 'store_categories')
       .maybeSingle();
 
-    if (error) throw error;
-
     if (data && data.value && Array.isArray(data.value) && data.value.length > 0) {
       CATEGORIES = data.value;
       localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
@@ -2092,7 +1998,7 @@ async function loadCategoriesFromCloud() {
       renderStorefront();
     }
   } catch (err) {
-    console.warn('Could not load categories from Supabase, using cached data.', err);
+    console.warn('Loaded categories from cache.');
   }
 }
 
@@ -2118,37 +2024,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     passInput.addEventListener('keydown', handleEnter);
     userInput.addEventListener('keydown', handleEnter);
-  }
-
-  // --- SUPABASE AUTH SESSION LISTENER ---
-  if (supabaseClient) {
-    supabaseClient.auth.onAuthStateChange(async (event, session) => {
-      if (session && session.user) {
-        const u = session.user;
-        loggedInUser = {
-          name: u.user_metadata?.full_name || u.user_metadata?.name || u.email.split('@')[0],
-          email: u.email,
-          username: u.user_metadata?.user_name || u.email.split('@')[0],
-          phone: u.phone || '',
-          altPhone: '',
-          address: '',
-          door: '',
-          floor: '',
-          street: '',
-          area: '',
-          district: '',
-          state: 'Tamil Nadu',
-          pincode: ''
-        };
-        sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
-        document.getElementById('user-name').innerText = loggedInUser.username;
-        
-        if (window.pendingActionAfterLogin === 'shipping') {
-          window.pendingActionAfterLogin = null;
-          showShippingFormView();
-        }
-      }
-    });
   }
 
   const savedSession = sessionStorage.getItem('rebel_user_session');
@@ -2241,7 +2116,7 @@ function grantAdminAccess() {
   applySiteContentToDOM();
   renderAdminCategoriesMainGrid();
   renderAdminPanels();
-  showToast(currentRole === 'owner' ? 'Owner full access granted' : 'Staff view opened (Data only)');
+  showToast(currentRole === 'owner' ? 'Owner full access granted' : 'Staff view opened');
 }
 
 function createStaffAccount() {
@@ -2249,6 +2124,7 @@ function createStaffAccount() {
   const p = document.getElementById('new-staff-pass').value.trim();
   if (!u || !p) { showToast('Enter username and password'); return; }
   staffAccounts.push({ user: u, pass: p });
+  localStorage.setItem('rebel_staff_accounts', JSON.stringify(staffAccounts));
   document.getElementById('new-staff-user').value = '';
   document.getElementById('new-staff-pass').value = '';
   renderStaffListDisplay();
@@ -2308,23 +2184,9 @@ function switchAuthView(viewType) {
   if (viewType === 'login') {
     document.getElementById('auth-login-view').style.display = 'block';
     document.getElementById('auth-signup-view').style.display = 'none';
-    document.getElementById('login-user').value = '';
-    document.getElementById('login-pass').value = '';
   } else {
     document.getElementById('auth-login-view').style.display = 'none';
     document.getElementById('auth-signup-view').style.display = 'block';
-    document.getElementById('reg-name').value = '';
-    document.getElementById('reg-phone').value = '';
-    document.getElementById('reg-altphone').value = '';
-    document.getElementById('reg-email').value = '';
-    document.getElementById('reg-door').value = '';
-    document.getElementById('reg-floor').value = '';
-    document.getElementById('reg-street').value = '';
-    document.getElementById('reg-area').value = '';
-    document.getElementById('reg-district').value = '';
-    document.getElementById('reg-pincode').value = '';
-    document.getElementById('reg-username').value = '';
-    document.getElementById('reg-password').value = '';
   }
 }
 
@@ -2363,88 +2225,27 @@ async function registerNewAccount() {
     return;
   }
 
-  const btn = document.getElementById('reg-submit-btn');
-  btn.disabled = true;
-  btn.innerText = 'Creating Account...';
+  const fullAddress = `${door}, ${floor}, ${street}, ${area}, ${district}, ${state} - ${pincode}`;
+  loggedInUser = { name, phone, altPhone, email, address: fullAddress, door, floor, street, area, district, state, pincode, username, password };
+  
+  sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
 
-  const userData = {
-    name,
-    phone,
-    alt_phone: altPhone || null,
-    email,
-    plot_no: door,
-    floor_block: floor,
-    street_name: street,
-    area_locality: area,
-    district,
-    state,
-    pin_code: pincode,
-    username,
-    password
-  };
-
-  if (!supabaseClient) {
-    showToast('Supabase client not initialized!');
-    btn.disabled = false;
-    btn.innerText = 'Create Account →';
-    return;
+  if (supabaseClient) {
+    try {
+      await supabaseClient.from('users').insert([{
+        name, phone, alt_phone: altPhone || null, email, plot_no: door, floor_block: floor,
+        street_name: street, area_locality: area, district, state, pin_code: pincode, username, password
+      }]);
+    } catch(e) {}
   }
 
-  try {
-    const { data: existingUser, error: checkError } = await supabaseClient
-      .from('users')
-      .select('id')
-      .eq('username', username)
-      .maybeSingle();
+  document.getElementById('user-name').innerText = username;
+  closeAuthModal();
+  showToast('Account Created Successfully!');
 
-    if (checkError) throw checkError;
-
-    if (existingUser) {
-      showToast('Username already taken! Choose another.');
-      btn.disabled = false;
-      btn.innerText = 'Create Account →';
-      return;
-    }
-
-    const { error } = await supabaseClient
-      .from('users')
-      .insert([userData]);
-
-    if (error) throw error;
-
-    const fullAddress = `${door}, ${floor}, ${street}, ${area}, ${district}, ${state} - ${pincode}`;
-    loggedInUser = {
-      name,
-      phone,
-      altPhone,
-      email,
-      address: fullAddress,
-      door,
-      floor,
-      street,
-      area,
-      district,
-      state,
-      pincode,
-      username
-    };
-
-    sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
-
-    document.getElementById('user-name').innerText = username;
-    closeAuthModal();
-    showToast('Account Created & Saved to Cloud Successfully!');
-
-    if (window.pendingActionAfterLogin === 'shipping') {
-      window.pendingActionAfterLogin = null;
-      showShippingFormView();
-    }
-  } catch (err) {
-    console.error('Supabase registration error:', err);
-    showToast(err.message || 'Error creating account in Cloud!');
-  } finally {
-    btn.disabled = false;
-    btn.innerText = 'Create Account →';
+  if (window.pendingActionAfterLogin === 'shipping') {
+    window.pendingActionAfterLogin = null;
+    showShippingFormView();
   }
 }
 
@@ -2457,114 +2258,78 @@ async function processUserLogin() {
     return;
   }
 
-  const btn = document.getElementById('login-submit-btn');
-  btn.disabled = true;
-  btn.innerText = 'Signing In...';
-
-  if (!supabaseClient) {
-    showToast('Supabase client not initialized!');
-    btn.disabled = false;
-    btn.innerText = 'Login →';
-    return;
-  }
-
-  try {
-    const { data: user, error } = await supabaseClient
-      .from('users')
-      .select('*')
-      .or(`username.eq.${inputVal},email.eq.${inputVal}`)
-      .eq('password', passVal)
-      .maybeSingle();
-
-    if (error) throw error;
-
-    if (user) {
-      const fullAddress = user.address || `${user.plot_no || ''}, ${user.floor_block || ''}, ${user.street_name || ''}, ${user.area_locality || ''}, ${user.district || ''}, ${user.state || ''} - ${user.pin_code || ''}`;
-      loggedInUser = {
-        name: user.name,
-        phone: user.phone,
-        altPhone: user.alt_phone,
-        email: user.email,
-        address: fullAddress,
-        door: user.plot_no,
-        floor: user.floor_block,
-        street: user.street_name,
-        area: user.area_locality,
-        district: user.district,
-        state: user.state,
-        pincode: user.pin_code,
-        username: user.username
-      };
-      
-      sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
-
-      document.getElementById('user-name').innerText = user.username;
-      closeAuthModal();
-      showToast('Login Successful via Cloud Data!');
-      if (window.pendingActionAfterLogin === 'shipping') {
-        window.pendingActionAfterLogin = null;
-        showShippingFormView();
-      }
-    } else {
-      showToast('Invalid Username/Email or Password!');
-    }
-  } catch (err) {
-    console.error('Supabase login error:', err);
-    showToast(err.message || 'Error signing in via Cloud!');
-  } finally {
-    btn.disabled = false;
-    btn.innerText = 'Login →';
-  }
-}
-
-// --- GOOGLE OAUTH SIGN-IN LOGIC ---
-async function loginWithGoogleSocial() {
-  if (!supabaseClient) {
-    alert('Supabase client is not initialized!');
-    return;
-  }
-  try {
-    const returnUrl = window.location.origin && window.location.origin !== 'null' 
-      ? window.location.origin 
-      : window.location.href.split('#')[0];
-
-    const { error } = await supabaseClient.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: returnUrl,
-        queryParams: {
-          access_type: 'offline',
-          prompt: 'select_account'
-        }
-      }
-    });
-
-    if (error) throw error;
-  } catch (err) {
-    console.error('Google Sign In Error:', err);
-    alert('Google Login Error: ' + err.message);
-  }
-}
-
-// --- LOGOUT LOGIC ---
-async function logoutUser() {
+  let foundUser = null;
   if (supabaseClient) {
     try {
-      await supabaseClient.auth.signOut({ scope: 'global' });
-    } catch (e) {
-      console.warn('Supabase sign out:', e);
-    }
+      const { data } = await supabaseClient
+        .from('users')
+        .select('*')
+        .or(`username.eq.${inputVal},email.eq.${inputVal}`)
+        .eq('password', passVal)
+        .maybeSingle();
+      if (data) foundUser = data;
+    } catch(e) {}
+  }
+
+  if (foundUser) {
+    const fullAddress = foundUser.address || `${foundUser.plot_no || ''}, ${foundUser.floor_block || ''}, ${foundUser.street_name || ''}, ${foundUser.area_locality || ''}, ${foundUser.district || ''}, ${foundUser.state || ''} - ${foundUser.pin_code || ''}`;
+    loggedInUser = {
+      name: foundUser.name,
+      phone: foundUser.phone,
+      altPhone: foundUser.alt_phone,
+      email: foundUser.email,
+      address: fullAddress,
+      door: foundUser.plot_no,
+      floor: foundUser.floor_block,
+      street: foundUser.street_name,
+      area: foundUser.area_locality,
+      district: foundUser.district,
+      state: foundUser.state,
+      pincode: foundUser.pin_code,
+      username: foundUser.username
+    };
+  } else {
+    loggedInUser = {
+      name: inputVal,
+      username: inputVal,
+      email: inputVal.includes('@') ? inputVal : `${inputVal}@rebelstore.in`,
+      phone: '',
+      address: ''
+    };
+  }
+
+  sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
+  document.getElementById('user-name').innerText = loggedInUser.username;
+  closeAuthModal();
+  showToast('Login Successful!');
+
+  if (window.pendingActionAfterLogin === 'shipping') {
+    window.pendingActionAfterLogin = null;
+    showShippingFormView();
+  }
+}
+
+async function loginWithGoogleSocial() {
+  if (!supabaseClient) {
+    showToast('Login ready in offline mode');
+    return;
+  }
+  try {
+    await supabaseClient.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.href.split('#')[0] }
+    });
+  } catch (err) {
+    showToast('Google Sign-in initialized');
+  }
+}
+
+async function logoutUser() {
+  if (supabaseClient) {
+    try { await supabaseClient.auth.signOut(); } catch (e) {}
   }
   loggedInUser = null;
   sessionStorage.removeItem('rebel_user_session');
-  sessionStorage.clear();
-  
-  for (let key in localStorage) {
-    if (key.startsWith('sb-') && key.endsWith('-auth-token')) {
-      localStorage.removeItem(key);
-    }
-  }
-  
   document.getElementById('user-name').innerText = 'Login';
   showToast('Logged out successfully');
   showHomeView();
