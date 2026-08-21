@@ -168,10 +168,10 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .auth-box h3,.admin-auth-box h3{font-family:'Anton',sans-serif;font-size:1.8rem;text-transform:uppercase;margin-bottom:.3rem}
 .auth-box p,.admin-auth-box p{font-family:'Space Mono',monospace;font-size:.78rem;color:var(--grey);margin-bottom:1.5rem}
 
-/* Styled Social / Google Login Button with Visual Interaction */
-.social-btn{width:100%;padding:.85rem 1rem;font-family:'Space Mono',monospace;font-size:.82rem;font-weight:700;margin-bottom:.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.8rem;border:1.5px solid var(--paper);background:#1a1a1d;color:var(--paper);border-radius:2px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease,background .15s ease;box-shadow:4px 4px 0 var(--spray-yellow);user-select:none}
-.social-btn:hover{transform:translate(-2px,-2px);border-color:var(--spray-yellow);box-shadow:6px 6px 0 var(--paper);background:#232328}
-.social-btn:active{transform:translate(0,0);box-shadow:2px 2px 0 var(--spray-yellow)}
+/* Interactive Styled Google & Social Login Button */
+.social-btn{width:100%;padding:.85rem 1.2rem;font-family:'Space Mono',monospace;font-size:.82rem;font-weight:700;margin-bottom:.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.8rem;border:1.5px solid var(--paper);background:#1a1a1d;color:var(--paper);border-radius:2px;transition:all .18s ease-in-out;box-shadow:4px 4px 0 var(--spray-yellow);user-select:none}
+.social-btn:hover{transform:translate(-3px,-3px);border-color:var(--spray-yellow);box-shadow:6px 6px 0 var(--paper);background:#232328;color:var(--spray-yellow)}
+.social-btn:active{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--spray-yellow)}
 
 .auth-divider{text-align:center;font-family:'Space Mono',monospace;font-size:.7rem;color:var(--grey);margin:1rem 0;border-top:1px dashed rgba(242,240,234,0.2);padding-top:0.5rem}
 .admin-field-label{font-family:'Space Mono',monospace;font-size:.75rem;text-transform:uppercase;color:var(--spray-yellow);margin-bottom:.3rem;display:block;font-weight:700}
@@ -2435,7 +2435,7 @@ async function processUserLogin() {
   }
 }
 
-// --- UPDATED: GOOGLE OAUTH SIGN-IN LOGIC ---
+// --- UPDATED: GOOGLE OAUTH SIGN-IN LOGIC (ALWAYS PROMPT ACCOUNT SELECTION) ---
 async function loginWithGoogleSocial() {
   if (!supabaseClient) {
     alert('Supabase client is not initialized!');
@@ -2446,13 +2446,13 @@ async function loginWithGoogleSocial() {
       ? window.location.origin 
       : window.location.href.split('#')[0];
 
-    const { data, error } = await supabaseClient.auth.signInWithOAuth({
+    const { error } = await supabaseClient.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: returnUrl,
         queryParams: {
           access_type: 'offline',
-          prompt: 'select_account',
+          prompt: 'select_account'
         }
       }
     });
@@ -2464,12 +2464,26 @@ async function loginWithGoogleSocial() {
   }
 }
 
+// --- LOGOUT LOGIC (FULLY CLEARS ALL SESSIONS & TOKENS) ---
 async function logoutUser() {
   if (supabaseClient) {
-    await supabaseClient.auth.signOut();
+    try {
+      await supabaseClient.auth.signOut({ scope: 'global' });
+    } catch (e) {
+      console.warn('Supabase sign out:', e);
+    }
   }
   loggedInUser = null;
   sessionStorage.removeItem('rebel_user_session');
+  sessionStorage.clear();
+  
+  // Clear any Supabase persistent auth storage keys
+  for (let key in localStorage) {
+    if (key.startsWith('sb-') && key.endsWith('-auth-token')) {
+      localStorage.removeItem(key);
+    }
+  }
+  
   document.getElementById('user-name').innerText = 'Login';
   showToast('Logged out successfully');
   showHomeView();
