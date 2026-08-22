@@ -6,9 +6,9 @@
 <title>REBEL STORE — Wear the Uprising</title>
 
 <!-- Browser Tab Favicon Icon -->
-<link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=7">
-<link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=7">
-<link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=7">
+<link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=8">
+<link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=8">
+<link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=8">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Noto+Sans+Tamil:wght@600;700;900&family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -122,7 +122,7 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .pdp-grid{display:grid;grid-template-columns:1fr;gap:2.5rem}
 @media(min-width:850px){.pdp-grid{grid-template-columns:480px 1fr;align-items:start;gap:3rem}}
 
-/* 1:1 Square Proportion Strict Setup */
+/* 1:1 Square Strict Proportions */
 .gallery-container{display:flex;flex-direction:column;gap:1rem;width:100%;max-width:480px;margin:0 auto}
 .slider-wrapper{position:relative;width:100%;aspect-ratio:1/1;height:auto;overflow:hidden;background:#141416;border:2px solid rgba(242,240,234,.2);box-shadow:6px 6px 0 var(--spray-yellow);border-radius:2px}
 .slider-track{display:flex;width:100%;height:100%;transition:transform .3s ease-out}
@@ -718,10 +718,11 @@ footer a:hover{color:var(--paper)}
               <th>Name</th>
               <th>Email</th>
               <th>Phone</th>
+              <th>Username</th>
             </tr>
           </thead>
           <tbody id="admin-customers-tbody">
-            <tr><td colspan="4" style="text-align:center; color:var(--grey);">Loading customer accounts...</td></tr>
+            <tr><td colspan="5" style="text-align:center; color:var(--grey);">Loading customer accounts...</td></tr>
           </tbody>
         </table>
       </div>
@@ -839,13 +840,15 @@ footer a:hover{color:var(--paper)}
         <table class="date-chart-table">
           <thead>
             <tr>
-              <th>Order Date</th>
-              <th>Total Items</th>
-              <th>Total Revenue</th>
+              <th>Order ID & Date</th>
+              <th>Customer</th>
+              <th>Items Qty</th>
+              <th>Revenue</th>
+              <th>Payment & Ref ID</th>
             </tr>
           </thead>
           <tbody id="date-chart-tbody">
-            <tr><td colspan="3" style="text-align:center; color:var(--grey);">No orders placed yet.</td></tr>
+            <tr><td colspan="5" style="text-align:center; color:var(--grey);">No orders placed yet.</td></tr>
           </tbody>
         </table>
       </div>
@@ -1498,7 +1501,7 @@ function openProductByDetails(catName, productId) {
   validImages.forEach((imgUrl, idx) => {
     const cleanUrl = imgUrl ? imgUrl.trim() : '';
 
-    // 1. Big Slider Slide Item (Exact 1:1 fit without stretching)
+    // 1. Big Slider Slide Item
     const slideDiv = document.createElement('div');
     slideDiv.className = 'slide-item';
     if (cleanUrl) {
@@ -1508,7 +1511,7 @@ function openProductByDetails(catName, productId) {
     }
     sliderTrack.appendChild(slideDiv);
 
-    // 2. Small Thumbnail Preview Card (Exact 1:1 fit)
+    // 2. Small Thumbnail Preview Card
     const thumbDiv = document.createElement('div');
     thumbDiv.className = `thumb-card ${idx === 0 ? 'active' : ''}`;
     thumbDiv.onclick = () => goToSlide(idx);
@@ -1971,18 +1974,18 @@ function closeAdminSubPages() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Live Admin Data Sync
+// Live Admin Data Sync (Fetching Customer, Orders & Payment Details from Supabase)
 async function loadAdminDataFromSupabase() {
   if (!supabaseClient) return;
 
   try {
-    // 1. Fetch Orders
+    // 1. Fetch Orders & Payment Details
     const { data: ordersData, error: ordersError } = await supabaseClient
       .from('orders')
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (!ordersError && ordersData && ordersData.length > 0) {
+    if (!ordersError && ordersData) {
       ordersHistory = ordersData.map(o => ({
         id: o.order_id,
         date: o.created_at ? o.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
@@ -1995,22 +1998,22 @@ async function loadAdminDataFromSupabase() {
         totalQty: o.total_qty,
         totalAmount: Number(o.total_amount),
         items: o.items,
-        paymentId: o.razorpay_payment_id
+        paymentStatus: o.payment_status || 'paid',
+        paymentId: o.razorpay_payment_id || 'N/A'
       }));
-      renderAdminPanels();
     }
 
-    // 2. Fetch Customers
-    const { data: usersData } = await supabaseClient
+    // 2. Fetch Customer Details
+    const { data: usersData, error: usersError } = await supabaseClient
       .from('profiles')
       .select('*')
       .order('created_at', { ascending: false });
 
     const custTbody = document.getElementById('admin-customers-tbody');
-    if (custTbody && usersData) {
+    if (custTbody && !usersError && usersData) {
       custTbody.innerHTML = '';
       if (usersData.length === 0) {
-        custTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--grey);">No customer accounts found.</td></tr>`;
+        custTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--grey);">No customer accounts found.</td></tr>`;
       } else {
         usersData.forEach(u => {
           const tr = document.createElement('tr');
@@ -2018,12 +2021,15 @@ async function loadAdminDataFromSupabase() {
             <td>${u.created_at ? u.created_at.split('T')[0] : 'N/A'}</td>
             <td><strong>${u.name || 'User'}</strong></td>
             <td>${u.email || '-'}</td>
-            <td>${u.phone || '-'}</td>
+            <td>${u.phone || 'Not Provided'}</td>
+            <td style="color:var(--spray-yellow);">@${u.username || 'customer'}</td>
           `;
           custTbody.appendChild(tr);
         });
       }
     }
+
+    renderAdminPanels();
   } catch (err) {
     console.error("Admin data sync error:", err);
   }
@@ -2059,22 +2065,21 @@ function renderAdminPanels(filterDate = '') {
   const chartTbody = document.getElementById('date-chart-tbody');
   chartTbody.innerHTML = '';
   if (ordersHistory.length === 0) {
-    chartTbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--grey);">No orders placed yet.</td></tr>`;
+    chartTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--grey);">No orders placed yet.</td></tr>`;
   } else {
-    let grouped = {};
-    ordersHistory.forEach(ord => {
-      if (filterDate && ord.date !== filterDate) return;
-      if (!grouped[ord.date]) grouped[ord.date] = { count: 0, revenue: 0 };
-      grouped[ord.date].count += ord.totalQty;
-      grouped[ord.date].revenue += ord.totalAmount;
-    });
-    let keys = Object.keys(grouped);
-    if (keys.length === 0) {
-      chartTbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--grey);">No orders on selected date.</td></tr>`;
+    let filteredOrders = ordersHistory.filter(ord => !filterDate || ord.date === filterDate);
+    if (filteredOrders.length === 0) {
+      chartTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--grey);">No orders on selected date.</td></tr>`;
     } else {
-      keys.forEach(d => {
+      filteredOrders.forEach(ord => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td><strong>${d}</strong></td><td>${grouped[d].count} Items</td><td style="color:var(--spray-yellow);">ரூ ${grouped[d].revenue}</td>`;
+        tr.innerHTML = `
+          <td><strong>${ord.id}</strong><br><span style="font-size:0.7rem; color:var(--grey);">${ord.date}</span></td>
+          <td>${ord.billing.name}<br>${ord.billing.phone}</td>
+          <td>${ord.totalQty} Items</td>
+          <td style="color:var(--spray-yellow);">ரூ ${ord.totalAmount}</td>
+          <td><span style="background:rgba(34,197,94,0.2); color:#22c55e; padding:2px 6px; font-size:0.7rem; border-radius:2px;">${ord.paymentStatus}</span><br><span style="font-size:0.65rem; color:var(--grey);">Ref: ${ord.paymentId}</span></td>
+        `;
         chartTbody.appendChild(tr);
       });
     }
