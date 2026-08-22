@@ -210,7 +210,7 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .preview-link-btn:hover{background:var(--paper)}
 .calendar-section-box{background:#111113;border:1.5px solid rgba(242,240,234,.2);padding:1.5rem;margin-bottom:1.5rem;border-radius:4px}
 .cal-nav-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;font-family:'Space Mono',monospace;gap:0.5rem;flex-wrap:wrap}
-.cal-nav-btn{background:var(--card-bg);border:1px solid var(--spray-yellow);color:var(--spray-yellow);padding:0.4rem 0.8rem;cursor:font-weight:bold;border-radius:2px}
+.cal-nav-btn{background:var(--card-bg);border:1px solid var(--spray-yellow);color:var(--spray-yellow);padding:0.4rem 0.8rem;font-weight:bold;border-radius:2px;cursor:pointer}
 .cal-nav-btn:hover{background:var(--spray-yellow);color:var(--ink)}
 .cal-dropdown{background:#1a1a1d;border:1px solid var(--spray-yellow);color:var(--paper);padding:0.3rem 0.6rem;font-family:'Space Mono',monospace;font-size:0.9rem;border-radius:2px;outline:none}
 .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center;font-family:'Space Mono',monospace;font-size:.78rem}
@@ -527,11 +527,11 @@ footer a:hover{color:var(--paper)}
       <div class="tick-circle">
         <div class="tick-mark"></div>
       </div>
-      <h2 style="font-family:'Anton', sans-serif; font-size:2rem; text-transform:uppercase; color:var(--spray-yellow); margin-bottom:0.5rem;">Order Placed Successfully!</h2>
+      <h2 style="font-family:'Anton', sans-serif; font-size:2rem; text-transform:uppercase; color:var(--spray-yellow); margin-bottom:0.5rem;">Your Order Has Been Placed Successfully!</h2>
       <p style="font-family:'Space Mono', monospace; font-size:0.85rem; color:var(--grey); line-height:1.5; margin-bottom:1.5rem;" id="success-order-msg">
         Thank you! Your payment was verified and order has been confirmed.
       </p>
-      <button class="btn btn--solid" style="width:100%; justify-content:center;" onclick="closeSuccessModal()">Continue Shopping 🛍️</button>
+      <button class="btn btn--solid" style="width:100%; justify-content:center;" onclick="closeSuccessModalAndGoHome()">Order More 🛍️</button>
     </div>
   </div>
 
@@ -547,7 +547,7 @@ footer a:hover{color:var(--paper)}
         <input type="password" id="login-pass" placeholder="••••••••" class="admin-input-full" autocomplete="new-password">
         <button class="btn btn--solid" style="width:100%; justify-content:center; margin-bottom:1rem;" id="login-submit-btn" onclick="processUserLogin()">Login →</button>
         <div class="auth-divider"><span>OR</span></div>
-        <button class="social-btn" onclick="loginWithGoogleSocial()">
+        <button class="social-btn" id="google-login-btn" onclick="loginWithGoogleSocial()">
           <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.616z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.173 0 7.547 0 9s.347 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/></svg>
           Continue with Google
         </button>
@@ -967,11 +967,19 @@ footer a:hover{color:var(--paper)}
 // --- SUPABASE CONFIGURATION ---
 const SUPABASE_URL = 'https://rdqzslvgqtajhiwxwauo.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_3DE6FO6lDP6esci9vw-RgQ_DTWhe1xR';
+const EDGE_FUNCTION_ORDER_URL = 'https://rdqzslvgqtajhiwxwauo.supabase.co/functions/v1/Create_razorpay_order';
+
 let supabaseClient = null;
 
 try {
   if (window.supabase && typeof window.supabase.createClient === 'function') {
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
+    });
   }
 } catch (e) {
   console.warn("Supabase init fallback:", e);
@@ -1151,7 +1159,7 @@ async function saveWebsiteContentCMS() {
 async function loadSiteContentFromCloud() {
   if (!supabaseClient) return;
   try {
-    const { data, error } = await supabaseClient
+    const { data } = await supabaseClient
       .from('store_settings')
       .select('value')
       .eq('key', 'site_content')
@@ -1218,7 +1226,7 @@ function createProductCard(catName, prod, index) {
   card.onclick = () => openProductByDetails(catName, prod.id);
   card.innerHTML = `
     <span class="card__tag">Drop 0${index+1} · In Stock</span>
-    <div class="tee-swatch swatch--${(index%3)+1}" style="${swatchStyle}">${swatchText}</div>
+    <div class="tee-swatch swatch-${(index%3)+1}" style="${swatchStyle}">${swatchText}</div>
     <div class="card-text-area">
       <h3>${prod.title}</h3>
       <p>${prod.desc}</p>
@@ -1562,7 +1570,7 @@ function validateBillingForm() {
   };
 }
 
-// --- SECURE RAZORPAY INTEGRATION & CELEBRATION LOGIC ---
+// --- SECURE SUPABASE EDGE FUNCTION & RAZORPAY PAYMENT ---
 async function proceedToPayment() {
   const billingData = validateBillingForm();
   if (!billingData) return;
@@ -1581,107 +1589,142 @@ async function proceedToPayment() {
 
   const payBtn = document.getElementById('pay-submit-btn');
   payBtn.disabled = true;
-  payBtn.innerText = 'Connecting to Razorpay...';
-
-  // Razorpay Checkout Popup Options
-  const options = {
-    key: RAZORPAY_KEY_ID, // 'rzp_test_TRdVlLkcaHAajf'
-    amount: subtotal * 100, // In Paise (e.g. ₹713 = 71300 paise)
-    currency: "INR",
-    name: "REBEL STORE",
-    description: "Apparel Order Checkout",
-    image: "https://i.postimg.cc/your-logo-url-here.png",
-    handler: async function (response) {
-      // Payment வெற்றியடைந்ததும் இயங்கும்
-      const todayStr = new Date().toISOString().split('T')[0];
-      const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
-
-      const completedOrder = {
-        id: orderId,
-        date: todayStr,
-        userEmail: loggedInUser ? loggedInUser.email : billingData.email,
-        billing: billingData,
-        totalQty: cart.reduce((s, i) => s + i.qty, 0),
-        totalAmount: subtotal,
-        items: [...cart],
-        paymentId: response.razorpay_payment_id
-      };
-
-      ordersHistory.unshift(completedOrder);
-      localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
-
-      cart.forEach(it => {
-        if (it.isCustom) {
-          customOrdersHistory.unshift({
-            orderId: orderId,
-            date: todayStr,
-            customer: billingData,
-            title: it.title,
-            size: it.size,
-            qty: it.qty,
-            prints: it.prints
-          });
-        }
-      });
-      localStorage.setItem('rebel_custom_orders_history', JSON.stringify(customOrdersHistory));
-
-      // Sync with Supabase Quietly
-      if (supabaseClient) {
-        try {
-          await supabaseClient.from('orders').insert([{
-            order_id: orderId,
-            user_email: completedOrder.userEmail,
-            customer_name: billingData.name,
-            customer_phone: billingData.phone,
-            customer_address: billingData.address,
-            items: completedOrder.items,
-            total_qty: completedOrder.totalQty,
-            total_amount: subtotal,
-            status: 'paid',
-            payment_status: 'success'
-          }]);
-        } catch(e) {}
-      }
-
-      renderAdminPanels();
-      cart = [];
-      isCouponApplied = false;
-      updateCartBadge();
-      
-      payBtn.disabled = false;
-      payBtn.innerText = 'Proceed to Payment →';
-
-      // Show Success Modal with Confetti Celebration
-      showOrderSuccessCelebration(orderId, response.razorpay_payment_id);
-    },
-    prefill: {
-      name: billingData.name,
-      email: billingData.email,
-      contact: billingData.phone
-    },
-    theme: {
-      color: "#ffd500" // Rebel Yellow
-    },
-    modal: {
-      ondismiss: function() {
-        payBtn.disabled = false;
-        payBtn.innerText = 'Proceed to Payment →';
-        showToast("Payment window closed.");
-      }
-    }
-  };
+  payBtn.innerText = 'Creating Secure Razorpay Order...';
 
   try {
+    let serverOrderId = null;
+    let serverKeyId = RAZORPAY_KEY_ID;
+
+    // Call Supabase Edge Function to securely create Razorpay Order
+    try {
+      const edgeResponse = await fetch(EDGE_FUNCTION_ORDER_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+        },
+        body: JSON.stringify({
+          amount: subtotal,
+          currency: 'INR',
+          receipt: 'rcpt_' + Date.now()
+        })
+      });
+
+      if (edgeResponse.ok) {
+        const edgeData = await edgeResponse.json();
+        if (edgeData && edgeData.id) {
+          serverOrderId = edgeData.id;
+        } else if (edgeData && edgeData.order && edgeData.order.id) {
+          serverOrderId = edgeData.order.id;
+        }
+        if (edgeData && edgeData.keyId) {
+          serverKeyId = edgeData.keyId;
+        }
+      } else {
+        console.warn('Edge function returned non-200 status. Launching checkout directly.');
+      }
+    } catch (edgeErr) {
+      console.warn('Edge Function connection notice:', edgeErr);
+    }
+
+    const options = {
+      key: serverKeyId,
+      amount: subtotal * 100,
+      currency: "INR",
+      name: "REBEL STORE",
+      description: "Apparel Order Checkout",
+      image: "https://i.postimg.cc/your-logo-url-here.png",
+      order_id: serverOrderId || undefined,
+      handler: async function (response) {
+        const todayStr = new Date().toISOString().split('T')[0];
+        const finalOrderId = serverOrderId || ('ORD-' + Math.floor(100000 + Math.random() * 900000));
+
+        const completedOrder = {
+          id: finalOrderId,
+          date: todayStr,
+          userEmail: loggedInUser ? loggedInUser.email : billingData.email,
+          billing: billingData,
+          totalQty: cart.reduce((s, i) => s + i.qty, 0),
+          totalAmount: subtotal,
+          items: [...cart],
+          paymentId: response.razorpay_payment_id
+        };
+
+        ordersHistory.unshift(completedOrder);
+        localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
+
+        cart.forEach(it => {
+          if (it.isCustom) {
+            customOrdersHistory.unshift({
+              orderId: finalOrderId,
+              date: todayStr,
+              customer: billingData,
+              title: it.title,
+              size: it.size,
+              qty: it.qty,
+              prints: it.prints
+            });
+          }
+        });
+        localStorage.setItem('rebel_custom_orders_history', JSON.stringify(customOrdersHistory));
+
+        // Sync with Supabase Orders Table
+        if (supabaseClient) {
+          try {
+            await supabaseClient.from('orders').insert([{
+              order_id: finalOrderId,
+              user_email: completedOrder.userEmail,
+              customer_name: billingData.name,
+              customer_phone: billingData.phone,
+              customer_address: billingData.address,
+              items: completedOrder.items,
+              total_qty: completedOrder.totalQty,
+              total_amount: subtotal,
+              status: 'paid',
+              payment_status: 'success',
+              razorpay_payment_id: response.razorpay_payment_id
+            }]);
+          } catch(e) {}
+        }
+
+        renderAdminPanels();
+        cart = [];
+        isCouponApplied = false;
+        updateCartBadge();
+        
+        payBtn.disabled = false;
+        payBtn.innerText = 'Proceed to Payment →';
+
+        showOrderSuccessCelebration(finalOrderId, response.razorpay_payment_id);
+      },
+      prefill: {
+        name: billingData.name,
+        email: billingData.email,
+        contact: billingData.phone
+      },
+      theme: {
+        color: "#ffd500"
+      },
+      modal: {
+        ondismiss: function() {
+          payBtn.disabled = false;
+          payBtn.innerText = 'Proceed to Payment →';
+          showToast("Payment window closed.");
+        }
+      }
+    };
+
     const rzp = new Razorpay(options);
-    rzp.on('payment.failed', function (response) {
-      showToast("Payment failed: " + (response.error.description || "Transaction declined"));
+    rzp.on('payment.failed', function (res) {
+      showToast("Payment failed: " + (res.error.description || "Declined"));
       payBtn.disabled = false;
       payBtn.innerText = 'Proceed to Payment →';
     });
     rzp.open();
+
   } catch (err) {
     console.error(err);
-    showToast("Razorpay SDK load error. Please check connection.");
+    showToast("Razorpay failed to launch. Check network / configuration.");
     payBtn.disabled = false;
     payBtn.innerText = 'Proceed to Payment →';
   }
@@ -1694,16 +1737,16 @@ function showOrderSuccessCelebration(orderId, paymentId) {
   const successMsg = document.getElementById('success-order-msg');
   
   if (successMsg) {
-    successMsg.innerHTML = `Order ID: <strong>${orderId}</strong><br>Payment Reference: <strong>${paymentId}</strong><br><br>Your order has been placed securely and dispatched within 48 hours.`;
+    successMsg.innerHTML = `Order ID: <strong>${orderId}</strong><br>Payment Ref: <strong>${paymentId}</strong><br><br>Thank you! Your payment was verified and order has been confirmed.`;
   }
   
   successModal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 
-  // Trigger Multi-Color Confetti Poppers
+  // Multi-Color Confetti Poppers
   if (typeof confetti === 'function') {
     confetti({
-      particleCount: 100,
+      particleCount: 120,
       spread: 70,
       origin: { y: 0.6 },
       colors: ['#ffd500', '#e52521', '#22c55e', '#ffffff']
@@ -1728,7 +1771,7 @@ function showOrderSuccessCelebration(orderId, paymentId) {
   }
 }
 
-function closeSuccessModal() {
+function closeSuccessModalAndGoHome() {
   document.getElementById('order-success-modal').style.display = 'none';
   document.body.style.overflow = '';
   showHomeView();
@@ -1772,7 +1815,7 @@ function renderAdminPanels(filterDate = '') {
       tr.innerHTML = `
         <td><strong>${co.orderId}</strong><br><span style="font-size:0.7rem; color:var(--grey);">${co.date}</span></td>
         <td>${co.customer.name}<br>${co.customer.phone}<br><span style="font-size:0.75rem; color:var(--grey);">${co.customer.address}</span></td>
-        <td>${co.title} <br>Size: <strong>${co.size}</strong> (Qty: ${co.qty})</td>
+        <td>${co.title}<br>Size: <strong>${co.size}</strong> (Qty: ${co.qty})</td>
         <td>${printLinks}</td>
       `;
       customTbody.appendChild(tr);
@@ -2103,7 +2146,7 @@ async function saveAllCategoriesAndProducts() {
 async function loadCategoriesFromCloud() {
   if (!supabaseClient) return;
   try {
-    const { data, error } = await supabaseClient
+    const { data } = await supabaseClient
       .from('store_settings')
       .select('value')
       .eq('key', 'store_categories')
@@ -2144,6 +2187,7 @@ document.addEventListener('DOMContentLoaded', () => {
     userInput.addEventListener('keydown', handleEnter);
   }
 
+  // Restore saved session
   const savedSession = sessionStorage.getItem('rebel_user_session');
   if (savedSession) {
     try {
@@ -2152,6 +2196,42 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) {
       sessionStorage.removeItem('rebel_user_session');
     }
+  }
+
+  // Check Supabase Auth State (Handles Google OAuth callback without blank screen)
+  if (supabaseClient) {
+    supabaseClient.auth.getSession().then(({ data: { session } }) => {
+      if (session && session.user) {
+        const u = session.user;
+        const gName = u.user_metadata?.full_name || u.user_metadata?.name || u.email.split('@')[0];
+        loggedInUser = {
+          name: gName,
+          username: gName,
+          email: u.email,
+          phone: u.user_metadata?.phone || '',
+          address: ''
+        };
+        sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
+        document.getElementById('user-name').innerText = loggedInUser.username;
+      }
+    });
+
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session && session.user) {
+        const u = session.user;
+        const gName = u.user_metadata?.full_name || u.user_metadata?.name || u.email.split('@')[0];
+        loggedInUser = {
+          name: gName,
+          username: gName,
+          email: u.email,
+          phone: u.user_metadata?.phone || '',
+          address: ''
+        };
+        sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
+        document.getElementById('user-name').innerText = loggedInUser.username;
+        closeAuthModal();
+      }
+    });
   }
 
   applySiteContentToDOM();
@@ -2428,17 +2508,56 @@ async function processUserLogin() {
 }
 
 async function loginWithGoogleSocial() {
+  const googleBtn = document.getElementById('google-login-btn');
+  if (googleBtn) {
+    googleBtn.style.opacity = '0.7';
+    googleBtn.innerText = 'Connecting to Google...';
+  }
+
   if (!supabaseClient) {
-    showToast('Login ready in offline mode');
+    showToast('Supabase client not initialized');
+    if (googleBtn) {
+      googleBtn.style.opacity = '1';
+      googleBtn.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.616z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.173 0 7.547 0 9s.347 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/></svg>
+        Continue with Google
+      `;
+    }
     return;
   }
+
   try {
-    await supabaseClient.auth.signInWithOAuth({
+    const redirectTarget = window.location.origin + window.location.pathname;
+    const { error } = await supabaseClient.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.href.split('#')[0] }
+      options: {
+        redirectTo: redirectTarget,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent'
+        }
+      }
     });
+
+    if (error) {
+      showToast('Google sign-in error: ' + error.message);
+      if (googleBtn) {
+        googleBtn.style.opacity = '1';
+        googleBtn.innerHTML = `
+          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.616z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.173 0 7.547 0 9s.347 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/></svg>
+          Continue with Google
+        `;
+      }
+    }
   } catch (err) {
-    showToast('Google Sign-in initialized');
+    showToast('Failed to connect with Google');
+    if (googleBtn) {
+      googleBtn.style.opacity = '1';
+      googleBtn.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.616z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.173 0 7.547 0 9s.347 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/></svg>
+        Continue with Google
+      `;
+    }
   }
 }
 
@@ -2508,3 +2627,4 @@ function showToast(msg) {
 </script>
 </body>
 </html>
+
