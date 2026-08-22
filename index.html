@@ -6,9 +6,9 @@
 <title>REBEL STORE — Wear the Uprising</title>
 
 <!-- Browser Tab Favicon Icon -->
-<link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=5">
-<link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=5">
-<link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=5">
+<link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=6">
+<link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=6">
+<link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=6">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Noto+Sans+Tamil:wght@600;700;900&family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -1344,7 +1344,8 @@ function filterCategoryFromFooter(catName) {
 }
 
 function createProductCard(catName, prod, index) {
-  const firstImg = prod.images && prod.images[0] ? prod.images[0] : '';
+  const rawImages = (prod.images && prod.images.length > 0) ? prod.images.filter(img => img && img.trim() !== '') : [];
+  const firstImg = rawImages[0] || '';
   const swatchStyle = firstImg ? `background-image: url('${firstImg}');` : '';
   const swatchText = firstImg ? '' : prod.code;
   const card = document.createElement('div');
@@ -1492,23 +1493,25 @@ function openProductByDetails(catName, productId) {
   const validImages = rawImages.length > 0 ? rawImages : [''];
 
   validImages.forEach((imgUrl, idx) => {
-    // 1. Main Slider Slide Item
+    const cleanUrl = imgUrl ? imgUrl.trim() : '';
+
+    // 1. Big Slider Slide Item
     const slideDiv = document.createElement('div');
     slideDiv.className = 'slide-item';
-    if (imgUrl) {
-      slideDiv.innerHTML = `<img src="${encodeURI(imgUrl.trim())}" alt="${foundProd.title}" style="width:100%; height:100%; object-fit:contain; display:block;">`;
+    if (cleanUrl) {
+      slideDiv.innerHTML = `<img src="${cleanUrl}" alt="${foundProd.title}" style="width:100%; height:100%; object-fit:contain; display:block;">`;
     } else {
       slideDiv.innerHTML = `<div class="big-preview-text">${foundProd.code} [${idx+1}]</div>`;
     }
     sliderTrack.appendChild(slideDiv);
 
-    // 2. Thumbnail Preview Card
+    // 2. Small Thumbnail Preview Card
     const thumbDiv = document.createElement('div');
     thumbDiv.className = `thumb-card ${idx === 0 ? 'active' : ''}`;
     thumbDiv.onclick = () => goToSlide(idx);
     
-    if (imgUrl) {
-      thumbDiv.innerHTML = `<img src="${encodeURI(imgUrl.trim())}" alt="Thumb ${idx+1}" style="width:100%; height:100%; object-fit:contain; display:block; pointer-events:none;">`;
+    if (cleanUrl) {
+      thumbDiv.innerHTML = `<img src="${cleanUrl}" alt="Thumb ${idx+1}" style="width:100%; height:100%; object-fit:contain; display:block; pointer-events:none;">`;
     } else {
       thumbDiv.innerHTML = `<span class="thumb-title">0${idx+1}</span>`;
     }
@@ -1536,7 +1539,7 @@ function updateSliderPosition() {
   track.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
   document.getElementById('pdp-angle-label').innerText = angleLabels[currentSlideIndex] || 'View';
   
-  // Update active thumbnail border
+  // Highlight active thumbnail
   document.querySelectorAll('#thumb-row-container .thumb-card').forEach((thumb, idx) => {
     if (idx === currentSlideIndex) {
       thumb.classList.add('active');
