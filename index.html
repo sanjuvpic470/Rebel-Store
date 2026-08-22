@@ -963,15 +963,15 @@ footer a:hover{color:var(--paper)}
   </footer>
 <script>
 // --- SUPABASE CONFIGURATION ---
-const SUPABASE_URL = 'https://rdqzslvgqtajhiwxwauo.supabase.co/functions/v1/Create_razorpay_order';
+const SUPABASE_PROJECT_URL = 'https://rdqzslvgqtajhiwxwauo.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_3DE6FO6lDP6esci9vw-RgQ_DTWhe1xR';
-const EDGE_FUNCTION_ORDER_URL = 'https://rdqzslvgqtajhiwxwauo.supabase.co/functions/v1/Create_razorpay_order';
+const EDGE_FUNCTION_ORDER_URL = SUPABASE_PROJECT_URL + '/functions/v1/Create_razorpay_order';
 
 let supabaseClient = null;
 
 try {
   if (window.supabase && typeof window.supabase.createClient === 'function') {
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    supabaseClient = window.supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_ANON_KEY, {
       auth: {
         persistSession: true,
         autoRefreshToken: true,
@@ -1602,7 +1602,8 @@ async function proceedToPayment() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'apikey': SUPABASE_ANON_KEY
       },
       body: JSON.stringify({
         amount: subtotal,
@@ -2602,4 +2603,5 @@ function showToast(msg) {
 </script>
 </body>
 </html>
+
 
