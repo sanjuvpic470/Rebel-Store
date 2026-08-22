@@ -1670,7 +1670,7 @@ function validateBillingForm() {
   };
 }
 
-// --- BULLETPROOF RAZORPAY PAYMENT TRIGGER ---
+// --- PROPER RAZORPAY INITIALIZATION ---
 async function proceedToPayment() {
   const billingData = validateBillingForm();
   if (!billingData) return;
@@ -1711,11 +1711,9 @@ async function proceedToPayment() {
     redirect_url: redirectUrl
   };
 
-  let resData = null;
-
-  // Method 1: Clean Gateway Request without JWT interference
+  // 1. Try Supabase Edge Function First (Payment Link URL Mode)
   try {
-    const rawRes = await fetch(`${SUPABASE_PROJECT_URL}/functions/v1/${EDGE_FUNCTION_NAME}`, {
+    const rawRes = await fetch(`${SUPABASE_PROJECT_URL}/functions/v1/Create_razorpay_order`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -1725,57 +1723,67 @@ async function proceedToPayment() {
     });
 
     if (rawRes.ok) {
-      resData = await rawRes.json();
+      const resData = await rawRes.json();
+      if (resData && resData.short_url) {
+        window.location.href = resData.short_url;
+        return;
+      }
     }
   } catch (e) {
-    console.warn("Backend fetch error, shifting to client gateway:", e);
+    console.warn("Edge function link skipped, opening checkout modal:", e);
   }
 
-  // Handle Response from Edge Function if successful
-  if (resData && (resData.short_url || resData.order_id || resData.id)) {
-    if (resData.short_url) {
-      window.location.href = resData.short_url;
-      return;
-    }
+  // 2. Direct Razorpay Modal Checkout (Put your actual Razorpay Key ID here)
+  const RAZORPAY_KEY_ID = 'rzp_live_TSmy7WSAeEXpQH'; // <-- உங்கள் உண்மையான Razorpay Key ID-ஐ இங்கே போடவும்
+
+  if (RAZORPAY_KEY_ID === 'rzp_test_51HQ70bKqX1234') {
+    showToast("Please replace RAZORPAY_KEY_ID with your actual Razorpay Key ID!");
   }
 
-  // Method 2: Direct Seamless Client-side Razorpay Gateway (Always works seamlessly)
-  try {
-    const options = {
-      key: 'rzp_test_placeholder', // Your Razorpay Key ID
-      amount: subtotal * 100,
-      currency: 'INR',
-      name: 'Rebel Store',
-      description: 'Streetwear Order',
-      prefill: {
-        name: billingData.name,
-        email: billingData.email,
-        contact: billingData.phone
-      },
-      theme: {
-        color: '#ffd500'
-      },
-      handler: function (response) {
-        handleOrderSuccessDirect(response.razorpay_payment_id || ('RZP_' + Date.now()));
-      },
-      modal: {
-        ondismiss: function () {
-          payBtn.disabled = false;
-          payBtn.innerText = 'Proceed to Payment →';
-        }
+  const options = {
+    key: RAZORPAY_KEY_ID,
+    amount: subtotal * 100, // Amount in paise
+    currency: 'INR',
+    name: 'REBEL STORE',
+    description: 'Streetwear Apparel Order',
+    prefill: {
+      name: billingData.name,
+      email: billingData.email,
+      contact: billingData.phone
+    },
+    notes: {
+      address: billingData.address
+    },
+    theme: {
+      color: '#ffd500'
+    },
+    handler: function (response) {
+      handleOrderSuccessDirect(response.razorpay_payment_id || ('RZP_' + Date.now()));
+    },
+    modal: {
+      ondismiss: function () {
+        payBtn.disabled = false;
+        payBtn.innerText = 'Proceed to Payment →';
+        showToast('Payment cancelled.');
       }
-    };
+    }
+  };
 
+  try {
     if (typeof Razorpay !== 'undefined') {
       const rzp = new Razorpay(options);
+      rzp.on('payment.failed', function (response) {
+        showToast('Payment failed: ' + (response.error.description || 'Unknown error'));
+        payBtn.disabled = false;
+        payBtn.innerText = 'Proceed to Payment →';
+      });
       rzp.open();
     } else {
-      // Fallback Direct Success Trigger if scripts blocked
-      handleOrderSuccessDirect('RZP_DIRECT_' + Date.now());
+      throw new Error('Razorpay SDK failed to load.');
     }
   } catch (err) {
-    console.error("Direct payment trigger failed:", err);
-    showToast("Payment window could not be opened. Please check connection.");
+    console.error("Payment error:", err);
+    showToast('Payment initialization failed. Check your Razorpay Key ID.');
     payBtn.disabled = false;
     payBtn.innerText = 'Proceed to Payment →';
   }
