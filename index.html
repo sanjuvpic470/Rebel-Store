@@ -10,8 +10,11 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <!-- Razorpay Checkout SDK -->
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<!-- Confetti Celebration Library -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
 <style>
-:root{--ink:#0b0b0c;--paper:#f2f0ea;--rebel-red:#e52521;--spray-yellow:#ffd500;--grey:#8a8a86;--card-bg:#141416;--gap:clamp(1rem,4vw,2.5rem)}
+:root{--ink:#0b0b0c;--paper:#f2f0ea;--rebel-red:#e52521;--spray-yellow:#ffd500;--grey:#8a8a86;--card-bg:#141416;--gap:clamp(1rem,4vw,2.5rem);--success-green:#22c55e}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{background:var(--ink);color:var(--paper);font-family:'Work Sans',sans-serif;overflow-x:hidden}
@@ -246,6 +249,14 @@ footer a:hover{color:var(--paper)}
 .profile-modal-box h3{font-family:'Anton',sans-serif;font-size:1.8rem;text-transform:uppercase;margin-bottom:1rem;color:var(--spray-yellow)}
 .profile-info-row{font-family:'Space Mono',monospace;font-size:0.85rem;margin-bottom:0.8rem;color:var(--paper)}
 .profile-info-row span{color:var(--grey)}
+
+/* Success Celebration Popup Styles */
+.success-modal{position:fixed;inset:0;background:rgba(0,0,0,0.88);backdrop-filter:blur(8px);z-index:300;display:none;align-items:center;justify-content:center;padding:1.5rem}
+.success-card{background:#141416;border:3px solid var(--spray-yellow);box-shadow:10px 10px 0 var(--paper);padding:2.5rem 2rem;width:100%;max-width:480px;text-align:center;animation:popSuccess 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);position:relative}
+@keyframes popSuccess{0%{transform:scale(0.8);opacity:0}100%{transform:scale(1);opacity:1}}
+.tick-circle{width:80px;height:80px;border-radius:50%;background:rgba(34,197,94,0.15);border:3px solid var(--success-green);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem}
+.tick-mark{width:22px;height:42px;border-right:5px solid var(--success-green);border-bottom:5px solid var(--success-green);transform:rotate(45deg) translate(-4px, -4px);animation:tickAnim 0.5s ease forwards}
+@keyframes tickAnim{0%{opacity:0;transform:scale(0) rotate(45deg)}100%{opacity:1;transform:scale(1) rotate(45deg)}}
 </style>
 </head>
 <body>
@@ -509,6 +520,21 @@ footer a:hover{color:var(--paper)}
       <button class="btn btn--solid" id="pay-submit-btn" style="width:100%; justify-content:center; margin-top:1.5rem;" onclick="proceedToPayment()">Proceed to Payment →</button>
     </div>
   </section>
+
+  <!-- Success Celebration Modal -->
+  <div class="success-modal" id="order-success-modal">
+    <div class="success-card">
+      <div class="tick-circle">
+        <div class="tick-mark"></div>
+      </div>
+      <h2 style="font-family:'Anton', sans-serif; font-size:2rem; text-transform:uppercase; color:var(--spray-yellow); margin-bottom:0.5rem;">Order Placed Successfully!</h2>
+      <p style="font-family:'Space Mono', monospace; font-size:0.85rem; color:var(--grey); line-height:1.5; margin-bottom:1.5rem;" id="success-order-msg">
+        Thank you! Your payment was verified and order has been confirmed.
+      </p>
+      <button class="btn btn--solid" style="width:100%; justify-content:center;" onclick="closeSuccessModal()">Continue Shopping 🛍️</button>
+    </div>
+  </div>
+
   <div class="auth-modal" id="auth-modal">
     <div class="auth-box">
       <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeAuthModal()">×</button>
@@ -1536,6 +1562,7 @@ function validateBillingForm() {
   };
 }
 
+// --- SECURE RAZORPAY INTEGRATION & CELEBRATION LOGIC ---
 async function proceedToPayment() {
   const billingData = validateBillingForm();
   if (!billingData) return;
@@ -1554,18 +1581,18 @@ async function proceedToPayment() {
 
   const payBtn = document.getElementById('pay-submit-btn');
   payBtn.disabled = true;
-  payBtn.innerText = 'Opening Razorpay...';
+  payBtn.innerText = 'Connecting to Razorpay...';
 
-  // Razorpay Checkout Popup Configuration
+  // Razorpay Checkout Popup Options
   const options = {
-    key: RAZORPAY_KEY_ID,
-    amount: subtotal * 100, // paise-ல் கணக்கிடப்படுகிறது (e.g. ₹713 = 71300 paise)
+    key: RAZORPAY_KEY_ID, // 'rzp_test_TRdVlLkcaHAajf'
+    amount: subtotal * 100, // In Paise (e.g. ₹713 = 71300 paise)
     currency: "INR",
     name: "REBEL STORE",
-    description: "T-Shirt & Apparel Order Payment",
+    description: "Apparel Order Checkout",
     image: "https://i.postimg.cc/your-logo-url-here.png",
     handler: async function (response) {
-      // Razorpay Payment வெற்றி பெற்றவுடன் இயங்கும் பகுதி
+      // Payment வெற்றியடைந்ததும் இயங்கும்
       const todayStr = new Date().toISOString().split('T')[0];
       const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
 
@@ -1598,7 +1625,7 @@ async function proceedToPayment() {
       });
       localStorage.setItem('rebel_custom_orders_history', JSON.stringify(customOrdersHistory));
 
-      // Supabase Cloud Sync
+      // Sync with Supabase Quietly
       if (supabaseClient) {
         try {
           await supabaseClient.from('orders').insert([{
@@ -1620,10 +1647,12 @@ async function proceedToPayment() {
       cart = [];
       isCouponApplied = false;
       updateCartBadge();
+      
       payBtn.disabled = false;
       payBtn.innerText = 'Proceed to Payment →';
-      showToast("Payment Successful! Order Placed.");
-      showHomeView();
+
+      // Show Success Modal with Confetti Celebration
+      showOrderSuccessCelebration(orderId, response.razorpay_payment_id);
     },
     prefill: {
       name: billingData.name,
@@ -1631,13 +1660,13 @@ async function proceedToPayment() {
       contact: billingData.phone
     },
     theme: {
-      color: "#ffd500"
+      color: "#ffd500" // Rebel Yellow
     },
     modal: {
       ondismiss: function() {
         payBtn.disabled = false;
         payBtn.innerText = 'Proceed to Payment →';
-        showToast("Payment cancelled.");
+        showToast("Payment window closed.");
       }
     }
   };
@@ -1645,17 +1674,64 @@ async function proceedToPayment() {
   try {
     const rzp = new Razorpay(options);
     rzp.on('payment.failed', function (response) {
-      showToast("Payment failed: " + (response.error.description || "Unknown error"));
+      showToast("Payment failed: " + (response.error.description || "Transaction declined"));
       payBtn.disabled = false;
       payBtn.innerText = 'Proceed to Payment →';
     });
     rzp.open();
   } catch (err) {
     console.error(err);
-    showToast("Razorpay SDK load error. Please try again.");
+    showToast("Razorpay SDK load error. Please check connection.");
     payBtn.disabled = false;
     payBtn.innerText = 'Proceed to Payment →';
   }
+}
+
+// Celebration Popup trigger function
+function showOrderSuccessCelebration(orderId, paymentId) {
+  document.getElementById('shipping-billing-page').style.display = 'none';
+  const successModal = document.getElementById('order-success-modal');
+  const successMsg = document.getElementById('success-order-msg');
+  
+  if (successMsg) {
+    successMsg.innerHTML = `Order ID: <strong>${orderId}</strong><br>Payment Reference: <strong>${paymentId}</strong><br><br>Your order has been placed securely and dispatched within 48 hours.`;
+  }
+  
+  successModal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+
+  // Trigger Multi-Color Confetti Poppers
+  if (typeof confetti === 'function') {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#ffd500', '#e52521', '#22c55e', '#ffffff']
+    });
+
+    setTimeout(() => {
+      confetti({
+        particleCount: 60,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: ['#ffd500', '#22c55e', '#ffffff']
+      });
+      confetti({
+        particleCount: 60,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: ['#e52521', '#ffd500', '#ffffff']
+      });
+    }, 250);
+  }
+}
+
+function closeSuccessModal() {
+  document.getElementById('order-success-modal').style.display = 'none';
+  document.body.style.overflow = '';
+  showHomeView();
 }
 
 function openAdminSubPage(subPageId) {
@@ -2432,4 +2508,3 @@ function showToast(msg) {
 </script>
 </body>
 </html>
-
