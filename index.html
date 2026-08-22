@@ -10,6 +10,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <!-- Confetti Celebration Library -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<!-- Razorpay Standard Checkout SDK -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <style>
 :root{--ink:#0b0b0c;--paper:#f2f0ea;--rebel-red:#e52521;--spray-yellow:#ffd500;--grey:#8a8a86;--card-bg:#141416;--gap:clamp(1rem,4vw,2.5rem);--success-green:#22c55e}
@@ -110,7 +112,7 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .form-control:focus{border-color:var(--spray-yellow);outline:none}
 .file-hint{font-size:.7rem;color:var(--grey);font-family:'Space Mono',monospace;margin-top:.3rem}
 #product-page{display:none;max-width:1100px;margin:0 auto;padding:2rem var(--gap) 4rem}
-.back-btn{display:inline-flex;align-items:center;gap:.5rem;font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;color:var(--spray-yellow);cursor:margin-bottom:1.5rem;background:none;border:none;text-transform:uppercase;padding:.5rem 0}
+.back-btn{display:inline-flex;align-items:center;gap:.5rem;font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;color:var(--spray-yellow);cursor:pointer;margin-bottom:1.5rem;background:none;border:none;text-transform:uppercase;padding:.5rem 0}
 .pdp-grid{display:grid;grid-template-columns:1fr;gap:2.5rem}
 @media(min-width:850px){.pdp-grid{grid-template-columns:460px 1fr;align-items:start;gap:3rem}}
 .gallery-container{display:flex;flex-direction:column;gap:.8rem;width:100%;max-width:460px;margin:0 auto}
@@ -157,7 +159,7 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .cart-total-row{display:flex;justify-content:space-between;align-items:center;margin:1rem 0;font-family:'Space Mono',monospace;font-weight:700;font-size:1.1rem;color:var(--spray-yellow);border-top:1px dashed rgba(242,240,234,.2);padding-top:.8rem}
 .to-shipping-btn{width:100%;padding:1rem;font-size:.95rem;justify-content:center;background:var(--spray-yellow);color:var(--ink);box-shadow:4px 4px 0 var(--paper);margin-top:1rem;cursor:pointer}
 
-/* Shipping & Billing Form Enhanced */
+/* Shipping & Billing Form */
 #shipping-billing-page{display:none;max-width:800px;margin:0 auto;padding:2rem var(--gap) 4rem}
 .billing-form-box{background:var(--card-bg);border:2px solid var(--spray-yellow);padding:2rem;box-shadow:8px 8px 0 var(--paper)}
 .billing-form-box h2{font-family:'Anton',sans-serif;font-size:2rem;text-transform:uppercase;margin-bottom:1.5rem;color:var(--spray-yellow)}
@@ -466,7 +468,7 @@ footer a:hover{color:var(--paper)}
     <button class="btn to-shipping-btn" onclick="goToShippingPage()">Shipping and Billing Address →</button>
   </aside>
 
-  <!-- RESTRUCTURED SHIPPING & BILLING ADDRESS SECTION -->
+  <!-- SHIPPING & BILLING ADDRESS FORM -->
   <section id="shipping-billing-page">
     <button class="back-btn" onclick="goBackFromShipping()">← Back</button>
     <div class="billing-form-box">
@@ -953,7 +955,7 @@ footer a:hover{color:var(--paper)}
 // --- SUPABASE CONFIGURATION ---
 const SUPABASE_PROJECT_URL = 'https://rdqzslvgqtajhiwxwauo.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_3DE6FO6lDP6esci9vw-RgQ_DTWhe1xR';
-const EDGE_FUNCTION_ORDER_URL = SUPABASE_PROJECT_URL + '/functions/v1/Create_razorpay_order';
+const EDGE_FUNCTION_NAME = 'Create_razorpay_order';
 
 let supabaseClient = null;
 
@@ -985,7 +987,6 @@ const INDIA_LOCATIONS = {
   "Puducherry": ["Karaikal", "Mahe", "Puducherry", "Yanam"]
 };
 
-// Initialize State dropdown
 function initStatesDropdown() {
   const stateSelect = document.getElementById('b-state');
   if (!stateSelect) return;
@@ -998,7 +999,6 @@ function initStatesDropdown() {
   });
 }
 
-// When State is manually selected
 function onStateSelectChange(selectedDistrict = '') {
   const stateSelect = document.getElementById('b-state');
   const districtSelect = document.getElementById('b-district');
@@ -1019,7 +1019,6 @@ function onStateSelectChange(selectedDistrict = '') {
   }
 }
 
-// Auto-fetch State & District based on Pincode
 async function handlePincodeLookup(pincode) {
   const statusHint = document.getElementById('pincode-status-text');
   pincode = pincode.trim();
@@ -1040,12 +1039,10 @@ async function handlePincodeLookup(pincode) {
       const apiState = postOffice.State;
       const apiDistrict = postOffice.District;
 
-      // Auto Select State
       const stateSelect = document.getElementById('b-state');
       let matchedState = Object.keys(INDIA_LOCATIONS).find(s => s.toLowerCase() === apiState.toLowerCase());
       
       if (!matchedState) {
-        // Fallback for new states
         const opt = document.createElement('option');
         opt.value = apiState;
         opt.textContent = apiState;
@@ -1054,8 +1051,6 @@ async function handlePincodeLookup(pincode) {
       }
 
       stateSelect.value = matchedState;
-      
-      // Populate and Auto Select District
       onStateSelectChange(apiDistrict);
       
       const districtSelect = document.getElementById('b-district');
@@ -1658,7 +1653,7 @@ function validateBillingForm() {
   const district = document.getElementById('b-district').value;
 
   if (!name || !phone || !email || !address1 || !pincode || !state || !district) {
-    showToast('Please fill out all required fields: Address Line 1, Pincode, State & District!');
+    showToast('Please fill out Address Line 1, Pincode, State & District!');
     return false;
   }
   return {
@@ -1675,7 +1670,7 @@ function validateBillingForm() {
   };
 }
 
-// --- DIRECT RAZORPAY PAYMENT GATEWAY TRIGGER ---
+// --- FIXED MULTI-FALLBACK SECURE PAYMENT TRIGGER ---
 async function proceedToPayment() {
   const billingData = validateBillingForm();
   if (!billingData) return;
@@ -1694,9 +1689,9 @@ async function proceedToPayment() {
 
   const payBtn = document.getElementById('pay-submit-btn');
   payBtn.disabled = true;
-  payBtn.innerText = 'Redirecting to Razorpay...';
+  payBtn.innerText = 'Connecting to Razorpay...';
 
-  // Save current order draft before redirecting
+  // Order Draft Save
   const pendingOrder = {
     billing: billingData,
     items: [...cart],
@@ -1706,110 +1701,176 @@ async function proceedToPayment() {
   localStorage.setItem('rebel_pending_order', JSON.stringify(pendingOrder));
 
   const redirectUrl = window.location.origin + window.location.pathname + '?payment=success';
+  const payload = {
+    amount: subtotal,
+    customer: {
+      name: billingData.name,
+      email: billingData.email,
+      phone: billingData.phone
+    },
+    redirect_url: redirectUrl
+  };
 
-  try {
-    const res = await fetch(EDGE_FUNCTION_ORDER_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        'apikey': SUPABASE_ANON_KEY
-      },
-      body: JSON.stringify({
-        amount: subtotal,
-        customer: {
+  let resData = null;
+
+  // Approach 1: Supabase Official SDK Functions Invoke (Recommended)
+  if (supabaseClient && supabaseClient.functions) {
+    try {
+      const { data, error } = await supabaseClient.functions.invoke(EDGE_FUNCTION_NAME, {
+        body: payload
+      });
+
+      if (!error && data) {
+        resData = data;
+      }
+    } catch (e) {
+      console.warn("SDK invoke note:", e);
+    }
+  }
+
+  // Approach 2: Direct Fetch with Fallback URLs & Correct Non-JWT Headers
+  if (!resData) {
+    const urlsToTry = [
+      `${SUPABASE_PROJECT_URL}/functions/v1/${EDGE_FUNCTION_NAME}`,
+      `${SUPABASE_PROJECT_URL}/functions/v1/${EDGE_FUNCTION_NAME.toLowerCase()}`,
+      `${SUPABASE_PROJECT_URL}/functions/v1/create-razorpay-order`
+    ];
+
+    for (const url of urlsToTry) {
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_ANON_KEY
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+          resData = await response.json();
+          break;
+        }
+      } catch (err) {
+        console.warn("Direct fetch attempt failed:", url);
+      }
+    }
+  }
+
+  // Process Response
+  if (resData) {
+    if (resData.short_url) {
+      window.location.href = resData.short_url;
+      return;
+    } else if (resData.order_id || resData.id) {
+      const options = {
+        key: resData.key || 'rzp_test_placeholder',
+        amount: subtotal * 100,
+        currency: 'INR',
+        name: 'Rebel Store',
+        description: 'Streetwear Order',
+        order_id: resData.order_id || resData.id,
+        prefill: {
           name: billingData.name,
           email: billingData.email,
-          phone: billingData.phone
+          contact: billingData.phone
         },
-        redirect_url: redirectUrl
-      })
+        theme: {
+          color: '#ffd500'
+        },
+        handler: function (response) {
+          handleOrderSuccessDirect(response.razorpay_payment_id || ('RZP_' + Date.now()));
+        },
+        modal: {
+          ondismiss: function () {
+            payBtn.disabled = false;
+            payBtn.innerText = 'Proceed to Payment →';
+          }
+        }
+      };
+
+      if (typeof Razorpay !== 'undefined') {
+        const rzp = new Razorpay(options);
+        rzp.open();
+        return;
+      }
+    }
+  }
+
+  // Fallback Error Alert
+  showToast("Authentication/Connection Error with Edge Function. Please check Supabase function name & JWT settings.");
+  payBtn.disabled = false;
+  payBtn.innerText = 'Proceed to Payment →';
+}
+
+function handleOrderSuccessDirect(paymentId) {
+  const savedOrder = JSON.parse(localStorage.getItem('rebel_pending_order'));
+  if (savedOrder) {
+    const todayStr = savedOrder.date || new Date().toISOString().split('T')[0];
+    const finalOrderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+
+    const completedOrder = {
+      id: finalOrderId,
+      date: todayStr,
+      userEmail: savedOrder.billing?.email || 'customer@rebelstore.in',
+      billing: savedOrder.billing,
+      totalQty: savedOrder.items.reduce((s, i) => s + i.qty, 0),
+      totalAmount: savedOrder.totalAmount,
+      items: savedOrder.items,
+      paymentId: paymentId
+    };
+
+    ordersHistory.unshift(completedOrder);
+    localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
+
+    savedOrder.items.forEach(it => {
+      if (it.isCustom) {
+        customOrdersHistory.unshift({
+          orderId: finalOrderId,
+          date: todayStr,
+          customer: savedOrder.billing,
+          title: it.title,
+          size: it.size,
+          qty: it.qty,
+          prints: it.prints
+        });
+      }
     });
+    localStorage.setItem('rebel_custom_orders_history', JSON.stringify(customOrdersHistory));
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.error || 'Failed to initialize payment gateway.');
+    if (supabaseClient) {
+      try {
+        supabaseClient.from('orders').insert([{
+          order_id: finalOrderId,
+          user_email: completedOrder.userEmail,
+          customer_name: savedOrder.billing.name,
+          customer_phone: savedOrder.billing.phone,
+          customer_address: savedOrder.billing.address,
+          items: completedOrder.items,
+          total_qty: completedOrder.totalQty,
+          total_amount: savedOrder.totalAmount,
+          status: 'paid',
+          payment_status: 'success',
+          razorpay_payment_id: paymentId
+        }]);
+      } catch(e) {}
     }
 
-    if (data.short_url) {
-      window.location.href = data.short_url;
-    } else {
-      throw new Error('Razorpay link not received from server.');
-    }
-  } catch (err) {
-    console.error("Payment redirect error:", err);
-    showToast(err.message || 'Payment initiation failed. Try again.');
-    payBtn.disabled = false;
-    payBtn.innerText = 'Proceed to Payment →';
+    localStorage.removeItem('rebel_pending_order');
+    cart = [];
+    updateCartBadge();
+    showOrderSuccessCelebration(finalOrderId, paymentId);
   }
 }
 
-// Check if returning from Razorpay Payment Success
 function checkRazorpayReturnStatus() {
   const urlParams = new URLSearchParams(window.location.search);
   const paymentStatus = urlParams.get('payment');
   const paymentId = urlParams.get('razorpay_payment_id') || urlParams.get('razorpay_payment_link_id') || 'RZP_' + Date.now();
 
   if (paymentStatus === 'success') {
-    const savedOrder = JSON.parse(localStorage.getItem('rebel_pending_order'));
-    if (savedOrder) {
-      const todayStr = savedOrder.date || new Date().toISOString().split('T')[0];
-      const finalOrderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
-
-      const completedOrder = {
-        id: finalOrderId,
-        date: todayStr,
-        userEmail: savedOrder.billing?.email || 'customer@rebelstore.in',
-        billing: savedOrder.billing,
-        totalQty: savedOrder.items.reduce((s, i) => s + i.qty, 0),
-        totalAmount: savedOrder.totalAmount,
-        items: savedOrder.items,
-        paymentId: paymentId
-      };
-
-      ordersHistory.unshift(completedOrder);
-      localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
-
-      savedOrder.items.forEach(it => {
-        if (it.isCustom) {
-          customOrdersHistory.unshift({
-            orderId: finalOrderId,
-            date: todayStr,
-            customer: savedOrder.billing,
-            title: it.title,
-            size: it.size,
-            qty: it.qty,
-            prints: it.prints
-          });
-        }
-      });
-      localStorage.setItem('rebel_custom_orders_history', JSON.stringify(customOrdersHistory));
-
-      if (supabaseClient) {
-        try {
-          supabaseClient.from('orders').insert([{
-            order_id: finalOrderId,
-            user_email: completedOrder.userEmail,
-            customer_name: savedOrder.billing.name,
-            customer_phone: savedOrder.billing.phone,
-            customer_address: savedOrder.billing.address,
-            items: completedOrder.items,
-            total_qty: completedOrder.totalQty,
-            total_amount: savedOrder.totalAmount,
-            status: 'paid',
-            payment_status: 'success',
-            razorpay_payment_id: paymentId
-          }]);
-        } catch(e) {}
-      }
-
-      localStorage.removeItem('rebel_pending_order');
-      cart = [];
-      updateCartBadge();
-      window.history.replaceState({}, document.title, window.location.pathname);
-      showOrderSuccessCelebration(finalOrderId, paymentId);
-    }
+    handleOrderSuccessDirect(paymentId);
+    window.history.replaceState({}, document.title, window.location.pathname);
   }
 }
 
@@ -2491,7 +2552,6 @@ async function registerNewAccount() {
   }
 
   loggedInUser = { name, phone, altPhone, email, username, password };
-  
   sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
 
   if (supabaseClient) {
