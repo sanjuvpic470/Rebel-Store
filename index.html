@@ -1554,66 +1554,108 @@ async function proceedToPayment() {
 
   const payBtn = document.getElementById('pay-submit-btn');
   payBtn.disabled = true;
-  payBtn.innerText = 'Processing Order...';
+  payBtn.innerText = 'Opening Razorpay...';
 
-  const todayStr = new Date().toISOString().split('T')[0];
-  const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+  // Razorpay Checkout Popup Configuration
+  const options = {
+    key: RAZORPAY_KEY_ID,
+    amount: subtotal * 100, // paise-ல் கணக்கிடப்படுகிறது (e.g. ₹713 = 71300 paise)
+    currency: "INR",
+    name: "REBEL STORE",
+    description: "T-Shirt & Apparel Order Payment",
+    image: "https://i.postimg.cc/your-logo-url-here.png",
+    handler: async function (response) {
+      // Razorpay Payment வெற்றி பெற்றவுடன் இயங்கும் பகுதி
+      const todayStr = new Date().toISOString().split('T')[0];
+      const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
 
-  const completedOrder = {
-    id: orderId,
-    date: todayStr,
-    userEmail: loggedInUser ? loggedInUser.email : billingData.email,
-    billing: billingData,
-    totalQty: cart.reduce((s, i) => s + i.qty, 0),
-    totalAmount: subtotal,
-    items: [...cart],
-    paymentId: 'PAY-' + Date.now()
+      const completedOrder = {
+        id: orderId,
+        date: todayStr,
+        userEmail: loggedInUser ? loggedInUser.email : billingData.email,
+        billing: billingData,
+        totalQty: cart.reduce((s, i) => s + i.qty, 0),
+        totalAmount: subtotal,
+        items: [...cart],
+        paymentId: response.razorpay_payment_id
+      };
+
+      ordersHistory.unshift(completedOrder);
+      localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
+
+      cart.forEach(it => {
+        if (it.isCustom) {
+          customOrdersHistory.unshift({
+            orderId: orderId,
+            date: todayStr,
+            customer: billingData,
+            title: it.title,
+            size: it.size,
+            qty: it.qty,
+            prints: it.prints
+          });
+        }
+      });
+      localStorage.setItem('rebel_custom_orders_history', JSON.stringify(customOrdersHistory));
+
+      // Supabase Cloud Sync
+      if (supabaseClient) {
+        try {
+          await supabaseClient.from('orders').insert([{
+            order_id: orderId,
+            user_email: completedOrder.userEmail,
+            customer_name: billingData.name,
+            customer_phone: billingData.phone,
+            customer_address: billingData.address,
+            items: completedOrder.items,
+            total_qty: completedOrder.totalQty,
+            total_amount: subtotal,
+            status: 'paid',
+            payment_status: 'success'
+          }]);
+        } catch(e) {}
+      }
+
+      renderAdminPanels();
+      cart = [];
+      isCouponApplied = false;
+      updateCartBadge();
+      payBtn.disabled = false;
+      payBtn.innerText = 'Proceed to Payment →';
+      showToast("Payment Successful! Order Placed.");
+      showHomeView();
+    },
+    prefill: {
+      name: billingData.name,
+      email: billingData.email,
+      contact: billingData.phone
+    },
+    theme: {
+      color: "#ffd500"
+    },
+    modal: {
+      ondismiss: function() {
+        payBtn.disabled = false;
+        payBtn.innerText = 'Proceed to Payment →';
+        showToast("Payment cancelled.");
+      }
+    }
   };
 
-  ordersHistory.unshift(completedOrder);
-  localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
-
-  cart.forEach(it => {
-    if (it.isCustom) {
-      customOrdersHistory.unshift({
-        orderId: orderId,
-        date: todayStr,
-        customer: billingData,
-        title: it.title,
-        size: it.size,
-        qty: it.qty,
-        prints: it.prints
-      });
-    }
-  });
-  localStorage.setItem('rebel_custom_orders_history', JSON.stringify(customOrdersHistory));
-
-  // Sync to Cloud quietly
-  if (supabaseClient) {
-    try {
-      supabaseClient.from('orders').insert([{
-        order_id: orderId,
-        user_email: completedOrder.userEmail,
-        customer_name: billingData.name,
-        customer_phone: billingData.phone,
-        customer_address: billingData.address,
-        items: completedOrder.items,
-        total_qty: completedOrder.totalQty,
-        total_amount: subtotal,
-        status: 'paid',
-        payment_status: 'success'
-      }]).then(() => {}).catch(() => {});
-    } catch(e) {}
+  try {
+    const rzp = new Razorpay(options);
+    rzp.on('payment.failed', function (response) {
+      showToast("Payment failed: " + (response.error.description || "Unknown error"));
+      payBtn.disabled = false;
+      payBtn.innerText = 'Proceed to Payment →';
+    });
+    rzp.open();
+  } catch (err) {
+    console.error(err);
+    showToast("Razorpay SDK load error. Please try again.");
+    payBtn.disabled = false;
+    payBtn.innerText = 'Proceed to Payment →';
   }
-
-  renderAdminPanels();
-  cart = [];
-  isCouponApplied = false;
-  updateCartBadge();
-  payBtn.disabled = false;
-  payBtn.innerText = 'Proceed to Payment →';
-  showToast("Order Placed Successfully!");
-  showHomeView();
 }
 
 function openAdminSubPage(subPageId) {
