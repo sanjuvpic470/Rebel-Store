@@ -8,8 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Noto+Sans+Tamil:wght@600;700;900&family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 <!-- Supabase JS Library -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!-- Razorpay Checkout SDK -->
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <!-- Confetti Celebration Library -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
@@ -250,7 +248,7 @@ footer a:hover{color:var(--paper)}
 .profile-info-row{font-family:'Space Mono',monospace;font-size:0.85rem;margin-bottom:0.8rem;color:var(--paper)}
 .profile-info-row span{color:var(--grey)}
 
-/* Success Celebration Popup Styles */
+/* Success Modal */
 .success-modal{position:fixed;inset:0;background:rgba(0,0,0,0.88);backdrop-filter:blur(8px);z-index:300;display:none;align-items:center;justify-content:center;padding:1.5rem}
 .success-card{background:#141416;border:3px solid var(--spray-yellow);box-shadow:10px 10px 0 var(--paper);padding:2.5rem 2rem;width:100%;max-width:480px;text-align:center;animation:popSuccess 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);position:relative}
 @keyframes popSuccess{0%{transform:scale(0.8);opacity:0}100%{transform:scale(1);opacity:1}}
@@ -965,7 +963,7 @@ footer a:hover{color:var(--paper)}
   </footer>
 <script>
 // --- SUPABASE CONFIGURATION ---
-const SUPABASE_URL = 'https://rdqzslvgqtajhiwxwauo.supabase.co';
+const SUPABASE_URL = 'https://rdqzslvgqtajhiwxwauo.supabase.co/functions/v1/Create_razorpay_order';
 const SUPABASE_ANON_KEY = 'sb_publishable_3DE6FO6lDP6esci9vw-RgQ_DTWhe1xR';
 const EDGE_FUNCTION_ORDER_URL = 'https://rdqzslvgqtajhiwxwauo.supabase.co/functions/v1/Create_razorpay_order';
 
@@ -984,9 +982,6 @@ try {
 } catch (e) {
   console.warn("Supabase init fallback:", e);
 }
-
-// --- RAZORPAY CONFIGURATION ---
-const RAZORPAY_KEY_ID = 'rzp_test_TRdVlLkcaHAajf';
 
 let DEFAULT_CATEGORIES = [
   {
@@ -1570,7 +1565,7 @@ function validateBillingForm() {
   };
 }
 
-// --- DIRECT RAZORPAY PAYMENT TRIGGER ---
+// --- DIRECT RAZORPAY HOSTED PAYMENT GATEWAY TRIGGER ---
 async function proceedToPayment() {
   const billingData = validateBillingForm();
   if (!billingData) return;
@@ -1589,13 +1584,21 @@ async function proceedToPayment() {
 
   const payBtn = document.getElementById('pay-submit-btn');
   payBtn.disabled = true;
-  payBtn.innerText = 'Connecting to Razorpay...';
+  payBtn.innerText = 'Redirecting to Razorpay...';
 
-  let razorpayOrderId = null;
+  // Save current order draft before redirecting
+  const pendingOrder = {
+    billing: billingData,
+    items: [...cart],
+    totalAmount: subtotal,
+    date: new Date().toISOString().split('T')[0]
+  };
+  localStorage.setItem('rebel_pending_order', JSON.stringify(pendingOrder));
 
-  // 1. Fetch Order ID from Supabase Edge Function
+  const redirectUrl = window.location.origin + window.location.pathname + '?payment=success';
+
   try {
-    const edgeRes = await fetch(EDGE_FUNCTION_ORDER_URL, {
+    const res = await fetch(EDGE_FUNCTION_ORDER_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -1603,54 +1606,67 @@ async function proceedToPayment() {
       },
       body: JSON.stringify({
         amount: subtotal,
-        currency: 'INR',
-        receipt: 'rcpt_' + Date.now()
+        customer: {
+          name: billingData.name,
+          email: billingData.email,
+          phone: billingData.phone
+        },
+        redirect_url: redirectUrl
       })
     });
 
-    if (edgeRes.ok) {
-      const orderData = await edgeRes.json();
-      if (orderData && orderData.id) {
-        razorpayOrderId = orderData.id;
-      }
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || 'Failed to initialize payment gateway.');
+    }
+
+    if (data.short_url) {
+      // Direct full-page redirect to Razorpay
+      window.location.href = data.short_url;
+    } else {
+      throw new Error('Razorpay link not received from server.');
     }
   } catch (err) {
-    console.warn("Edge function not reached, proceeding in direct key mode:", err);
+    console.error("Payment redirect error:", err);
+    showToast(err.message || 'Payment initiation failed. Try again.');
+    payBtn.disabled = false;
+    payBtn.innerText = 'Proceed to Payment →';
   }
+}
 
-  // 2. Open Official Razorpay Checkout Modal
-  const options = {
-    key: RAZORPAY_KEY_ID,
-    amount: subtotal * 100, // amount in paisa
-    currency: "INR",
-    name: "REBEL STORE",
-    description: "Apparel Order Checkout",
-    image: "https://i.postimg.cc/your-logo-url-here.png",
-    order_id: razorpayOrderId || undefined,
-    handler: async function (response) {
-      const todayStr = new Date().toISOString().split('T')[0];
-      const finalOrderId = razorpayOrderId || ('ORD-' + Math.floor(100000 + Math.random() * 900000));
+// Check if returning from Razorpay Payment Success
+function checkRazorpayReturnStatus() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const paymentStatus = urlParams.get('payment');
+  const paymentId = urlParams.get('razorpay_payment_id') || urlParams.get('razorpay_payment_link_id') || 'RZP_' + Date.now();
+
+  if (paymentStatus === 'success') {
+    const savedOrder = JSON.parse(localStorage.getItem('rebel_pending_order'));
+    if (savedOrder) {
+      const todayStr = savedOrder.date || new Date().toISOString().split('T')[0];
+      const finalOrderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
 
       const completedOrder = {
         id: finalOrderId,
         date: todayStr,
-        userEmail: loggedInUser ? loggedInUser.email : billingData.email,
-        billing: billingData,
-        totalQty: cart.reduce((s, i) => s + i.qty, 0),
-        totalAmount: subtotal,
-        items: [...cart],
-        paymentId: response.razorpay_payment_id
+        userEmail: savedOrder.billing?.email || 'customer@rebelstore.in',
+        billing: savedOrder.billing,
+        totalQty: savedOrder.items.reduce((s, i) => s + i.qty, 0),
+        totalAmount: savedOrder.totalAmount,
+        items: savedOrder.items,
+        paymentId: paymentId
       };
 
       ordersHistory.unshift(completedOrder);
       localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
 
-      cart.forEach(it => {
+      savedOrder.items.forEach(it => {
         if (it.isCustom) {
           customOrdersHistory.unshift({
             orderId: finalOrderId,
             date: todayStr,
-            customer: billingData,
+            customer: savedOrder.billing,
             title: it.title,
             size: it.size,
             qty: it.qty,
@@ -1662,62 +1678,28 @@ async function proceedToPayment() {
 
       if (supabaseClient) {
         try {
-          await supabaseClient.from('orders').insert([{
+          supabaseClient.from('orders').insert([{
             order_id: finalOrderId,
             user_email: completedOrder.userEmail,
-            customer_name: billingData.name,
-            customer_phone: billingData.phone,
-            customer_address: billingData.address,
+            customer_name: savedOrder.billing.name,
+            customer_phone: savedOrder.billing.phone,
+            customer_address: savedOrder.billing.address,
             items: completedOrder.items,
             total_qty: completedOrder.totalQty,
-            total_amount: subtotal,
+            total_amount: savedOrder.totalAmount,
             status: 'paid',
             payment_status: 'success',
-            razorpay_payment_id: response.razorpay_payment_id
+            razorpay_payment_id: paymentId
           }]);
         } catch(e) {}
       }
 
-      renderAdminPanels();
+      localStorage.removeItem('rebel_pending_order');
       cart = [];
-      isCouponApplied = false;
       updateCartBadge();
-      
-      payBtn.disabled = false;
-      payBtn.innerText = 'Proceed to Payment →';
-
-      showOrderSuccessCelebration(finalOrderId, response.razorpay_payment_id);
-    },
-    prefill: {
-      name: billingData.name,
-      email: billingData.email,
-      contact: billingData.phone
-    },
-    theme: {
-      color: "#ffd500"
-    },
-    modal: {
-      ondismiss: function() {
-        payBtn.disabled = false;
-        payBtn.innerText = 'Proceed to Payment →';
-        showToast("Payment canceled by user.");
-      }
+      window.history.replaceState({}, document.title, window.location.pathname);
+      showOrderSuccessCelebration(finalOrderId, paymentId);
     }
-  };
-
-  try {
-    const rzp = new Razorpay(options);
-    rzp.on('payment.failed', function (res) {
-      showToast("Payment Failed: " + (res.error.description || "Declined"));
-      payBtn.disabled = false;
-      payBtn.innerText = 'Proceed to Payment →';
-    });
-    rzp.open();
-  } catch (checkoutErr) {
-    console.error("Razorpay SDK Error:", checkoutErr);
-    showToast("Unable to open Razorpay gateway. Check internet connection.");
-    payBtn.disabled = false;
-    payBtn.innerText = 'Proceed to Payment →';
   }
 }
 
@@ -1734,7 +1716,6 @@ function showOrderSuccessCelebration(orderId, paymentId) {
   successModal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 
-  // Multi-Color Confetti Poppers
   if (typeof confetti === 'function') {
     confetti({
       particleCount: 120,
@@ -2177,6 +2158,9 @@ document.addEventListener('DOMContentLoaded', () => {
     passInput.addEventListener('keydown', handleEnter);
     userInput.addEventListener('keydown', handleEnter);
   }
+
+  // Check if redirect back from Razorpay Payment
+  checkRazorpayReturnStatus();
 
   // Restore saved session
   const savedSession = sessionStorage.getItem('rebel_user_session');
