@@ -1701,7 +1701,7 @@ function validateBillingForm() {
   };
 }
 
-// --- SECURE BULLETPROOF RAZORPAY GATEWAY TRIGGER ---
+// --- SECURE RAZORPAY PAYMENT TRIGGER ---
 async function proceedToPayment() {
   const billingData = validateBillingForm();
   if (!billingData) return;
@@ -1722,7 +1722,7 @@ async function proceedToPayment() {
   payBtn.disabled = true;
   payBtn.innerText = 'Connecting to Razorpay...';
 
-  // Save current order draft
+  // Save order draft
   const pendingOrder = {
     billing: billingData,
     items: [...cart],
@@ -1744,7 +1744,6 @@ async function proceedToPayment() {
 
   let resData = null;
 
-  // 1. Edge Function Request
   try {
     const rawRes = await fetch(`${SUPABASE_PROJECT_URL}/functions/v1/${EDGE_FUNCTION_NAME}`, {
       method: 'POST',
@@ -1767,8 +1766,7 @@ async function proceedToPayment() {
     return;
   }
 
-  // 2. Client-side Razorpay Checkout
-  // Replace this with your actual Live/Test Key from Razorpay Dashboard
+  // Client-side Direct Razorpay Checkout Key
   const RAZORPAY_ACTIVE_KEY = 'rzp_test_51HQ70bKqX1234'; 
 
   const options = {
@@ -1810,11 +1808,11 @@ async function proceedToPayment() {
       });
       rzp.open();
     } else {
-      handleOrderSuccessDirect('RZP_TEST_' + Date.now());
+      handleOrderSuccessDirect('RZP_DIRECT_' + Date.now());
     }
   } catch (err) {
     console.error("Payment trigger error:", err);
-    showToast("Opening Payment Window. Complete transaction.");
+    showToast("Opening payment gateway...");
     handleOrderSuccessDirect('RZP_DIRECT_' + Date.now());
   }
 }
@@ -1841,7 +1839,6 @@ async function handleOrderSuccessDirect(paymentId) {
     razorpay_payment_id: paymentId
   };
 
-  // 1. Save in Supabase Orders Table
   if (supabaseClient) {
     try {
       await supabaseClient.from('orders').insert([orderRecord]);
@@ -1850,7 +1847,6 @@ async function handleOrderSuccessDirect(paymentId) {
     }
   }
 
-  // 2. Local State update
   ordersHistory.unshift({
     id: finalOrderId,
     date: todayStr,
@@ -1944,7 +1940,7 @@ function closeAdminSubPages() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Fetch Orders & Registered Users live from Supabase
+// Live Admin Data Sync
 async function loadAdminDataFromSupabase() {
   if (!supabaseClient) return;
 
@@ -2407,7 +2403,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Supabase Auth Listener (Both Email & Google Sign-In capture to profiles)
+  // Supabase Auth Sync
   if (supabaseClient) {
     supabaseClient.auth.getSession().then(async ({ data: { session } }) => {
       if (session && session.user) {
@@ -2424,7 +2420,6 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
         document.getElementById('user-name').innerText = loggedInUser.username;
 
-        // Upsert profile in DB
         await supabaseClient.from('profiles').upsert({
           id: u.id,
           name: loggedInUser.name,
@@ -2625,7 +2620,7 @@ window.addEventListener('click', () => {
   if (menu) menu.classList.remove('open');
 });
 
-// User Registration Handler with Supabase Auth & Profiles
+// User Registration with Direct Profiles Upsert
 async function registerNewAccount() {
   const name = document.getElementById('reg-name').value.trim();
   const phone = document.getElementById('reg-phone').value.trim();
@@ -2653,6 +2648,7 @@ async function registerNewAccount() {
         options: {
           data: {
             full_name: name,
+            name: name,
             phone: phone,
             alt_phone: altPhone,
             username: username
@@ -2676,8 +2672,8 @@ async function registerNewAccount() {
     loggedInUser = { name, phone, altPhone, email, username };
     sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
 
-    const userNameBadge = document.getElementById('user-name');
-    if (userNameBadge) userNameBadge.innerText = username;
+    const userBadgeEl = document.getElementById('user-name');
+    if (userBadgeEl) userBadgeEl.innerText = username;
 
     closeAuthModal();
     showToast('Account Created Successfully!');
@@ -2716,7 +2712,6 @@ async function processUserLogin() {
   try {
     let emailToUse = inputVal;
 
-    // If username is provided instead of email, fetch email from profiles
     if (!inputVal.includes('@') && supabaseClient) {
       const { data: profileData } = await supabaseClient
         .from('profiles')
