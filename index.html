@@ -110,7 +110,7 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .form-control:focus{border-color:var(--spray-yellow);outline:none}
 .file-hint{font-size:.7rem;color:var(--grey);font-family:'Space Mono',monospace;margin-top:.3rem}
 #product-page{display:none;max-width:1100px;margin:0 auto;padding:2rem var(--gap) 4rem}
-.back-btn{display:inline-flex;align-items:center;gap:.5rem;font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;color:var(--spray-yellow);cursor:pointer;margin-bottom:1.5rem;background:none;border:none;text-transform:uppercase;padding:.5rem 0}
+.back-btn{display:inline-flex;align-items:center;gap:.5rem;font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;color:var(--spray-yellow);cursor:margin-bottom:1.5rem;background:none;border:none;text-transform:uppercase;padding:.5rem 0}
 .pdp-grid{display:grid;grid-template-columns:1fr;gap:2.5rem}
 @media(min-width:850px){.pdp-grid{grid-template-columns:460px 1fr;align-items:start;gap:3rem}}
 .gallery-container{display:flex;flex-direction:column;gap:.8rem;width:100%;max-width:460px;margin:0 auto}
@@ -156,14 +156,19 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .cart-empty-state{text-align:center;padding:3rem 1rem;color:var(--grey);font-family:'Space Mono',monospace;font-size:.85rem}
 .cart-total-row{display:flex;justify-content:space-between;align-items:center;margin:1rem 0;font-family:'Space Mono',monospace;font-weight:700;font-size:1.1rem;color:var(--spray-yellow);border-top:1px dashed rgba(242,240,234,.2);padding-top:.8rem}
 .to-shipping-btn{width:100%;padding:1rem;font-size:.95rem;justify-content:center;background:var(--spray-yellow);color:var(--ink);box-shadow:4px 4px 0 var(--paper);margin-top:1rem;cursor:pointer}
+
+/* Shipping & Billing Form Enhanced */
 #shipping-billing-page{display:none;max-width:800px;margin:0 auto;padding:2rem var(--gap) 4rem}
 .billing-form-box{background:var(--card-bg);border:2px solid var(--spray-yellow);padding:2rem;box-shadow:8px 8px 0 var(--paper)}
 .billing-form-box h2{font-family:'Anton',sans-serif;font-size:2rem;text-transform:uppercase;margin-bottom:1.5rem;color:var(--spray-yellow)}
 .b-row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
-.b-field{margin-bottom:1rem}
+@media(max-width:600px){.b-row{grid-template-columns:1fr}}
+.b-field{margin-bottom:1.1rem}
 .b-field label{font-family:'Space Mono',monospace;font-size:.75rem;text-transform:uppercase;display:block;margin-bottom:.4rem;color:var(--paper);font-weight:700}
-.b-field input,.b-field select{width:100%;background:#1a1a1d;border:1.5px solid rgba(242,240,234,.2);color:var(--paper);font-family:'Space Mono',monospace;padding:.7rem;font-size:.85rem}
+.b-field input,.b-field select{width:100%;background:#1a1a1d;border:1.5px solid rgba(242,240,234,.2);color:var(--paper);font-family:'Space Mono',monospace;padding:.75rem;font-size:.85rem;border-radius:2px}
 .b-field input:focus,.b-field select:focus{border-color:var(--spray-yellow);outline:none}
+.b-hint{font-family:'Space Mono',monospace;font-size:.65rem;color:var(--spray-yellow);margin-top:3px;display:block}
+
 .auth-modal,.admin-auth-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem}
 .admin-auth-modal{background:rgba(0,0,0,0.92);z-index:220}
 .auth-box,.admin-auth-box{width:100%;max-width:440px;background:#141416;border:2px solid var(--spray-yellow);box-shadow:8px 8px 0 var(--paper);padding:2rem;position:relative;max-height:90vh;overflow-y:auto}
@@ -288,6 +293,7 @@ footer a:hover{color:var(--paper)}
       <button class="cart-btn" onclick="toggleCartDrawer(true)">Cart (<span id="cart-count">0</span>)</button>
     </div>
   </header>
+
   <main id="home-view">
     <section class="hero">
       <div>
@@ -331,6 +337,7 @@ footer a:hover{color:var(--paper)}
       <button class="btn btn--solid" onclick="openCustomOrderPage()" id="compact-custom-btn">Start Custom Order Now →</button>
     </section>
   </main>
+
   <section id="category-page">
     <button class="back-btn" onclick="showHomeView()">← Back to Store</button>
     <div class="section__head" style="margin-bottom:1rem;">
@@ -339,6 +346,7 @@ footer a:hover{color:var(--paper)}
     </div>
     <div class="cat-prod-grid" id="category-page-grid"></div>
   </section>
+
   <section id="custom-order-page">
     <button class="back-btn" onclick="showHomeView()">← Back to Store</button>
     <div class="custom-form-box">
@@ -395,6 +403,7 @@ footer a:hover{color:var(--paper)}
       <button class="btn btn--solid" style="width:100%; justify-content:center; margin-top:1.5rem;" onclick="addCustomOrderToCart()">Add Custom Order to Cart →</button>
     </div>
   </section>
+
   <section id="product-page">
     <button class="back-btn" onclick="showHomeView()">← Back to Store</button>
     <div class="pdp-grid">
@@ -434,6 +443,7 @@ footer a:hover{color:var(--paper)}
       </div>
     </div>
   </section>
+
   <div class="cart-overlay" id="cart-overlay" onclick="toggleCartDrawer(false)"></div>
   <aside class="cart-drawer" id="cart-drawer">
     <div class="cart-header">
@@ -455,14 +465,18 @@ footer a:hover{color:var(--paper)}
     </div>
     <button class="btn to-shipping-btn" onclick="goToShippingPage()">Shipping and Billing Address →</button>
   </aside>
+
+  <!-- RESTRUCTURED SHIPPING & BILLING ADDRESS SECTION -->
   <section id="shipping-billing-page">
     <button class="back-btn" onclick="goBackFromShipping()">← Back</button>
     <div class="billing-form-box">
       <h2>📍 Shipping & Billing Address</h2>
+      
       <div class="b-field">
         <label>Full Name *</label>
         <input type="text" id="b-name" placeholder="John Doe" required>
       </div>
+
       <div class="b-row">
         <div class="b-field">
           <label>Mobile Number *</label>
@@ -473,36 +487,43 @@ footer a:hover{color:var(--paper)}
           <input type="tel" id="b-alt-phone" placeholder="Optional">
         </div>
       </div>
+
       <div class="b-field">
         <label>Email Address *</label>
         <input type="email" id="b-email" placeholder="john@example.com" required>
       </div>
+
       <div class="b-field">
         <label>Address Line 1 *</label>
-        <input type="text" id="b-address1" placeholder="Door No, Street Name, Area" required>
+        <input type="text" id="b-address1" placeholder="Door No, Building, Street, Area" required>
       </div>
+
       <div class="b-field">
         <label>Address Line 2 (Optional)</label>
-        <input type="text" id="b-address2" placeholder="Apartment, Landmark, Floor">
+        <input type="text" id="b-address2" placeholder="Landmark, Apartment Name, Floor">
       </div>
+
       <div class="b-row">
         <div class="b-field">
           <label>Pincode *</label>
-          <input type="text" id="b-pincode" placeholder="600017" maxlength="6" oninput="onPincodeInput(this.value)" required>
+          <input type="text" id="b-pincode" placeholder="6-digit Pincode (e.g. 600001)" maxlength="6" oninput="handlePincodeLookup(this.value)" required>
+          <span class="b-hint" id="pincode-status-text"></span>
         </div>
         <div class="b-field">
           <label>State *</label>
-          <select id="b-state" class="form-control" onchange="onStateChange()" required>
+          <select id="b-state" class="form-control" onchange="onStateSelectChange()" required>
             <option value="">Select State</option>
           </select>
         </div>
       </div>
+
       <div class="b-field">
-        <label>District / City *</label>
+        <label>District *</label>
         <select id="b-district" class="form-control" required>
           <option value="">Select District</option>
         </select>
       </div>
+
       <button class="btn btn--solid" id="pay-submit-btn" style="width:100%; justify-content:center; margin-top:1.5rem;" onclick="proceedToPayment()">Proceed to Payment →</button>
     </div>
   </section>
@@ -569,6 +590,7 @@ footer a:hover{color:var(--paper)}
       </div>
     </div>
   </div>
+
   <div class="auth-modal" id="profile-modal">
     <div class="profile-modal-box">
       <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeProfileModal()">×</button>
@@ -576,6 +598,7 @@ footer a:hover{color:var(--paper)}
       <div id="profile-content-area"></div>
     </div>
   </div>
+
   <div class="auth-modal" id="orders-modal">
     <div class="profile-modal-box" style="max-width: 600px;">
       <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeOrdersModal()">×</button>
@@ -583,6 +606,7 @@ footer a:hover{color:var(--paper)}
       <div id="orders-content-area" style="max-height: 60vh; overflow-y: auto;"></div>
     </div>
   </div>
+
   <div class="admin-auth-modal" id="admin-auth-modal">
     <div class="admin-auth-box">
       <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeAdminAuth()">×</button>
@@ -595,6 +619,7 @@ footer a:hover{color:var(--paper)}
       <button class="btn btn--solid" style="width:100%; justify-content:center; margin-top:.5rem;" onclick="verifyAdminCredentials()">Authenticate</button>
     </div>
   </div>
+
   <section id="admin-view">
     <div class="admin-header">
       <div>
@@ -734,6 +759,7 @@ footer a:hover{color:var(--paper)}
         </table>
       </div>
     </div>
+
     <div class="admin-sub-page" id="subpage-date-chart">
       <div class="sub-page-header">
         <h2>📅 Date-wise Order Chart & Interactive Calendar</h2>
@@ -780,6 +806,7 @@ footer a:hover{color:var(--paper)}
         </table>
       </div>
     </div>
+
     <div class="admin-sub-page" id="subpage-offers">
       <div class="sub-page-header">
         <h2>🏷️ Offer Code & Discount Management</h2>
@@ -797,6 +824,7 @@ footer a:hover{color:var(--paper)}
       </div>
       <button class="btn btn--solid" style="min-height:38px; padding:0 1rem; font-size:0.8rem;" onclick="saveOfferSettings()">Update Offer Code 💾</button>
     </div>
+
     <div class="admin-sub-page" id="subpage-staff">
       <div class="sub-page-header">
         <h2>👥 Staff User Accounts Creator</h2>
@@ -815,6 +843,7 @@ footer a:hover{color:var(--paper)}
       <button class="btn btn--solid" style="padding:.4rem 1rem; font-size:.75rem;" onclick="createStaffAccount()">+ Create Staff Account</button>
       <div id="staff-list-display" style="margin-top:1rem; font-family:'Space Mono'; font-size:.8rem; color:var(--spray-yellow);"></div>
     </div>
+
     <div class="admin-sub-page" id="subpage-products">
       <div class="sub-page-header">
         <h2>⚙️ T-Shirt Categories & Products Manager</h2>
@@ -839,7 +868,9 @@ footer a:hover{color:var(--paper)}
       </div>
     </div>
   </section>
+
   <div class="toast" id="toast">✓ Success!</div>
+
   <footer style="background:#111113; border-top:1px solid rgba(242,240,234,0.1); margin-top: 3rem;">
     <div class="wrap" style="padding-top: 2rem;">
       <div style="background:#f2f0ea; color:#0b0b0c; padding:2.5rem; margin-bottom:2.5rem; border-radius:4px; box-shadow:6px 6px 0 var(--spray-yellow);">
@@ -917,6 +948,7 @@ footer a:hover{color:var(--paper)}
       </div>
     </div>
   </footer>
+
 <script>
 // --- SUPABASE CONFIGURATION ---
 const SUPABASE_PROJECT_URL = 'https://rdqzslvgqtajhiwxwauo.supabase.co';
@@ -939,79 +971,111 @@ try {
   console.warn("Supabase init fallback:", e);
 }
 
-// India States and Districts Database
-const INDIA_STATES_DISTRICTS = {
-  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Tirunelveli", "Erode", "Vellore", "Thoothukudi", "Dindigul", "Thanjavur", "Ranipet", "Sivagangai", "Virudhunagar", "Tiruppur", "Kanyakumari", "Cuddalore", "Kancheepuram", "Villupuram", "Tiruvannamalai", "Namakkal", "Krishnagiri", "Dharmapuri", "Karur", "Nagapattinam", "Pudukkottai", "Ramanathapuram", "Theni", "Nilgiris", "Perambalur", "Ariyalur", "Tiruvarur", "Tenkasi", "Kallakurichi", "Tirupattur", "Chengalpattu", "Ranipet", "Mayiladuthurai"],
-  "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur", "Nellore", "Kurnool", "Kakinada", "Tirupati", "Rajahmundry", "Kadapa", "Anantapur", "Vizianagaram", "Eluru", "Ongole", "Nandyal", "Machilipatnam", "Adoni", "Tenali", "Proddatur", "Chittoor", "Hindupur"],
-  "Karnataka": ["Bangalore Urban", "Mysore", "Hubli-Dharwad", "Mangalore", "Belgaum", "Gulbarga", "Davanagere", "Bellary", "Shimoga", "Tumkur", "Raichur", "Bidar", "Hospet", "Hassan", "Gadag-Betageri", "Udupi", "Robertsonpet", "Bhadravati", "Chitradurga", "Kolar"],
-  "Kerala": ["Thiruvananthapuram", "Kochi", "Kozhikode", "Kollam", "Thrissur", "Kannur", "Alappuzha", "Kottayam", "Palakkad", "Manjeri", "Thalassery", "Ponnani", "Vatakara", "Kanhangad", "Payyanur", "Koyilandy", "Neyyattinkara", "Kayamkulam", "Nedumangad", "Tirur"],
-  "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Thane", "Pimpri-Chinchwad", "Nashik", "Kalyan-Dombivli", "Vasai-Virar", "Aurangabad", "Navi Mumbai", "Solapur", "Mira-Bhayandar", "Bhiwandi-Nizampur", "Amravati", "Nanded", "Kolhapur", "Akola", "Ulhasnagar", "Sangli", "Malegaon"],
+// --- ALL INDIAN STATES & DISTRICTS DATABASE ---
+const INDIA_LOCATIONS = {
+  "Tamil Nadu": ["Ariyalur", "Chengalpattu", "Chennai", "Coimbatore", "Cuddalore", "Dharmapuri", "Dindigul", "Erode", "Kallakurichi", "Kanchipuram", "Kanyakumari", "Karur", "Krishnagiri", "Madurai", "Mayiladuthurai", "Nagapattinam", "Namakkal", "Nilgiris", "Perambalur", "Pudukkottai", "Ramanathapuram", "Ranipet", "Salem", "Sivagangai", "Tenkasi", "Thanjavur", "Theni", "Thoothukudi", "Tiruchirappalli", "Tirunelveli", "Tirupattur", "Tiruppur", "Tiruvallur", "Tiruvannamalai", "Tiruvarur", "Vellore", "Viluppuram", "Virudhunagar"],
+  "Andhra Pradesh": ["Ananthapuramu", "Chittoor", "East Godavari", "Guntur", "Kadapa", "Krishna", "Kurnool", "Nellore", "Prakasam", "Srikakulam", "Visakhapatnam", "Vizianagaram", "West Godavari"],
+  "Karnataka": ["Bagalkot", "Ballari", "Belagavi", "Bengaluru Rural", "Bengaluru Urban", "Bidar", "Chamarajanagar", "Chikkaballapura", "Chikkamagaluru", "Chitradurga", "Dakshina Kannada", "Davanagere", "Dharwad", "Gadag", "Hassan", "Haveri", "Kalaburagi", "Kodagu", "Kolar", "Koppal", "Mandya", "Mysuru", "Raichur", "Ramanagara", "Shivamogga", "Tumakuru", "Udupi", "Uttara Kannada", "Vijayapura", "Yadgir"],
+  "Kerala": ["Alappuzha", "Ernakulam", "Idukki", "Kannur", "Kasaragod", "Kollam", "Kottayam", "Kozhikode", "Malappuram", "Palakkad", "Pathanamthitta", "Thiruvananthapuram", "Thrissur", "Wayanad"],
+  "Maharashtra": ["Ahmednagar", "Akola", "Amravati", "Aurangabad", "Beed", "Bhandara", "Buldhana", "Chandrapur", "Dhule", "Gadchiroli", "Gondia", "Hingoli", "Jalgaon", "Jalna", "Kolhapur", "Latur", "Mumbai City", "Mumbai Suburban", "Nagpur", "Nanded", "Nandurbar", "Nashik", "Osmanabad", "Palghar", "Parbhani", "Pune", "Raigad", "Ratnagiri", "Sangli", "Satara", "Sindhudurg", "Solapur", "Thane", "Wardha", "Washim", "Yavatmal"],
+  "Telangana": ["Adilabad", "Bhadradri Kothagudem", "Hyderabad", "Jagtial", "Jangaon", "Jayashankar Bhupalpally", "Jogulamba Gadwal", "Kamareddy", "Karimnagar", "Khammam", "Kumuram Bheem", "Mahabubabad", "Mahabubnagar", "Mancherial", "Medak", "Medchal Malkajgiri", "Mulugu", "Nagarkurnool", "Nalgonda", "Narayanpet", "Nirmal", "Nizamabad", "Peddapalli", "Rajanna Sircilla", "Rangareddy", "Sangareddy", "Siddipet", "Suryapet", "Vikarabad", "Wanaparthy", "Warangal", "Yadadri Bhuvanagiri"],
   "Delhi": ["Central Delhi", "East Delhi", "New Delhi", "North Delhi", "North East Delhi", "North West Delhi", "Shahdara", "South Delhi", "South East Delhi", "South West Delhi", "West Delhi"],
-  "Karnataka": ["Bangalore", "Mysore", "Hubli", "Mangalore", "Belgaum"],
-  "Telangana": ["Hyderabad", "Warangal", "Nizamabad", "Karimnagar", "Ramagundam", "Khammam", "Mahbubnagar", "Nalgonda", "Adilabad", "Suryapet"],
-  "Uttar Pradesh": ["Lucknow", "Kanpur", "Ghaziabad", "Agra", "Varanasi", "Meerut", "Prayagraj", "Bareilly", "Aligarh", "Moradabad", "Saharanpur", "Gorakhpur", "Noida", "Firozabad", "Jhansi"],
-  "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Jamnagar", "Junagadh", "Gandhinagar", "Anand", "Navsari", "Morbi", "Nadiad", "Mehsana"]
+  "Gujarat": ["Ahmedabad", "Amreli", "Anand", "Aravalli", "Banaskantha", "Bharuch", "Bhavnagar", "Botad", "Chhota Udaipur", "Dahod", "Dang", "Devbhoomi Dwarka", "Gandhinagar", "Gir Somnath", "Jamnagar", "Junagadh", "Kheda", "Kutch", "Mahisagar", "Mehsana", "Morbi", "Narmada", "Navsari", "Panchmahal", "Patan", "Porbandar", "Rajkot", "Sabarkantha", "Surat", "Surendranagar", "Tapi", "Vadodara", "Valsad"],
+  "Uttar Pradesh": ["Agra", "Aligarh", "Ayodhya", "Bareilly", "Ghaziabad", "Gorakhpur", "Kanpur", "Lucknow", "Mathura", "Meerut", "Moradabad", "Noida", "Prayagraj", "Varanasi"],
+  "Puducherry": ["Karaikal", "Mahe", "Puducherry", "Yanam"]
 };
 
-// Default catch-all map for generic states
-const ALL_INDIAN_STATES = Object.keys(INDIA_STATES_DISTRICTS);
-
-function populateStatesDropdown() {
+// Initialize State dropdown
+function initStatesDropdown() {
   const stateSelect = document.getElementById('b-state');
   if (!stateSelect) return;
   stateSelect.innerHTML = '<option value="">Select State</option>';
-  ALL_INDIAN_STATES.forEach(st => {
+  Object.keys(INDIA_LOCATIONS).sort().forEach(state => {
     const opt = document.createElement('option');
-    opt.value = st;
-    opt.innerText = st;
+    opt.value = state;
+    opt.textContent = state;
     stateSelect.appendChild(opt);
   });
 }
 
-function onStateChange() {
-  const stateVal = document.getElementById('b-state').value;
-  const distSelect = document.getElementById('b-district');
-  distSelect.innerHTML = '<option value="">Select District</option>';
-  if (stateVal && INDIA_STATES_DISTRICTS[stateVal]) {
-    INDIA_STATES_DISTRICTS[stateVal].forEach(dist => {
+// When State is manually selected
+function onStateSelectChange(selectedDistrict = '') {
+  const stateSelect = document.getElementById('b-state');
+  const districtSelect = document.getElementById('b-district');
+  const chosenState = stateSelect.value;
+  
+  districtSelect.innerHTML = '<option value="">Select District</option>';
+  
+  if (chosenState && INDIA_LOCATIONS[chosenState]) {
+    INDIA_LOCATIONS[chosenState].forEach(dist => {
       const opt = document.createElement('option');
       opt.value = dist;
-      opt.innerText = dist;
-      distSelect.appendChild(opt);
-    });
-  } else if (stateVal) {
-    // Fallback districts if specific list not loaded
-    ['District 1', 'District 2', 'District 3'].forEach(d => {
-      const opt = document.createElement('option');
-      opt.value = d;
-      opt.innerText = d;
-      distSelect.appendChild(opt);
+      opt.textContent = dist;
+      if (selectedDistrict && dist.toLowerCase() === selectedDistrict.toLowerCase()) {
+        opt.selected = true;
+      }
+      districtSelect.appendChild(opt);
     });
   }
 }
 
-function onPincodeInput(pincode) {
-  if (pincode.length === 6) {
-    // Simulated smart pin-code lookup for Tamil Nadu / India
-    if (pincode.startsWith('60') || pincode.startsWith('61') || pincode.startsWith('62') || pincode.startsWith('63') || pincode.startsWith('64')) {
-      document.getElementById('b-state').value = 'Tamil Nadu';
-      onStateChange();
-      if (pincode.startsWith('60')) document.getElementById('b-district').value = 'Chennai';
-      else if (pincode.startsWith('64')) document.getElementById('b-district').value = 'Coimbatore';
-      else if (pincode.startsWith('62')) document.getElementById('b-district').value = 'Madurai';
-    } else if (pincode.startsWith('50')) {
-      document.getElementById('b-state').value = 'Telangana';
-      onStateChange();
-      document.getElementById('b-district').value = 'Hyderabad';
-    } else if (pincode.startsWith('56') || pincode.startsWith('57')) {
-      document.getElementById('b-state').value = 'Karnataka';
-      onStateChange();
-      document.getElementById('b-district').value = 'Bangalore Urban';
-    } else if (pincode.startsWith('40') || pincode.startsWith('41') || pincode.startsWith('42')) {
-      document.getElementById('b-state').value = 'Maharashtra';
-      onStateChange();
-      document.getElementById('b-district').value = 'Mumbai';
+// Auto-fetch State & District based on Pincode
+async function handlePincodeLookup(pincode) {
+  const statusHint = document.getElementById('pincode-status-text');
+  pincode = pincode.trim();
+  
+  if (pincode.length !== 6 || isNaN(pincode)) {
+    statusHint.innerText = '';
+    return;
+  }
+
+  statusHint.innerText = 'Detecting state & district...';
+
+  try {
+    const res = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+    const data = await res.json();
+    
+    if (data && data[0] && data[0].Status === "Success" && data[0].PostOffice && data[0].PostOffice.length > 0) {
+      const postOffice = data[0].PostOffice[0];
+      const apiState = postOffice.State;
+      const apiDistrict = postOffice.District;
+
+      // Auto Select State
+      const stateSelect = document.getElementById('b-state');
+      let matchedState = Object.keys(INDIA_LOCATIONS).find(s => s.toLowerCase() === apiState.toLowerCase());
+      
+      if (!matchedState) {
+        // Fallback for new states
+        const opt = document.createElement('option');
+        opt.value = apiState;
+        opt.textContent = apiState;
+        stateSelect.appendChild(opt);
+        matchedState = apiState;
+      }
+
+      stateSelect.value = matchedState;
+      
+      // Populate and Auto Select District
+      onStateSelectChange(apiDistrict);
+      
+      const districtSelect = document.getElementById('b-district');
+      let matchedDist = Array.from(districtSelect.options).find(o => o.value.toLowerCase() === apiDistrict.toLowerCase());
+      if (matchedDist) {
+        districtSelect.value = matchedDist.value;
+      } else {
+        const dOpt = document.createElement('option');
+        dOpt.value = apiDistrict;
+        dOpt.textContent = apiDistrict;
+        dOpt.selected = true;
+        districtSelect.appendChild(dOpt);
+      }
+
+      statusHint.innerText = `✓ Detected: ${apiDistrict}, ${apiState}`;
+    } else {
+      statusHint.innerText = 'Pincode not found. Please choose State & District manually.';
     }
+  } catch (err) {
+    statusHint.innerText = 'Auto-detect offline. Please choose State & District.';
   }
 }
 
@@ -1556,7 +1620,7 @@ function showShippingFormView() {
   document.getElementById('admin-view').style.display = 'none';
   document.getElementById('shipping-billing-page').style.display = 'block';
   
-  populateStatesDropdown();
+  initStatesDropdown();
 
   if (loggedInUser) {
     if (loggedInUser.name) document.getElementById('b-name').value = loggedInUser.name;
@@ -1565,11 +1629,9 @@ function showShippingFormView() {
     if (loggedInUser.email) document.getElementById('b-email').value = loggedInUser.email;
     if (loggedInUser.address1) document.getElementById('b-address1').value = loggedInUser.address1;
     if (loggedInUser.address2) document.getElementById('b-address2').value = loggedInUser.address2;
-    if (loggedInUser.pincode) document.getElementById('b-pincode').value = loggedInUser.pincode;
-    if (loggedInUser.state) {
-      document.getElementById('b-state').value = loggedInUser.state;
-      onStateChange();
-      if (loggedInUser.district) document.getElementById('b-district').value = loggedInUser.district;
+    if (loggedInUser.pincode) {
+      document.getElementById('b-pincode').value = loggedInUser.pincode;
+      handlePincodeLookup(loggedInUser.pincode);
     }
   }
   window.location.hash = '#shipping';
@@ -1596,17 +1658,24 @@ function validateBillingForm() {
   const district = document.getElementById('b-district').value;
 
   if (!name || !phone || !email || !address1 || !pincode || !state || !district) {
-    showToast('Please fill out all required address fields!');
+    showToast('Please fill out all required fields: Address Line 1, Pincode, State & District!');
     return false;
   }
   return {
-    name, phone, altPhone: document.getElementById('b-alt-phone').value.trim(),
-    email, address1, address2, pincode, state, district,
-    address: `${address1}${address2 ? ', ' + address2 : ''}, District: ${district}, State: ${state} - Pincode: ${pincode}`
+    name, 
+    phone, 
+    altPhone: document.getElementById('b-alt-phone').value.trim(),
+    email, 
+    address1, 
+    address2, 
+    pincode, 
+    state, 
+    district,
+    address: `${address1}${address2 ? ', ' + address2 : ''}, ${district}, ${state} - ${pincode}`
   };
 }
 
-// --- DIRECT RAZORPAY HOSTED PAYMENT GATEWAY TRIGGER ---
+// --- DIRECT RAZORPAY PAYMENT GATEWAY TRIGGER ---
 async function proceedToPayment() {
   const billingData = validateBillingForm();
   if (!billingData) return;
