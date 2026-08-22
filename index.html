@@ -163,7 +163,7 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .b-field{margin-bottom:1rem}
 .b-field label{font-family:'Space Mono',monospace;font-size:.75rem;text-transform:uppercase;display:block;margin-bottom:.4rem;color:var(--paper);font-weight:700}
 .b-field input,.b-field select{width:100%;background:#1a1a1d;border:1.5px solid rgba(242,240,234,.2);color:var(--paper);font-family:'Space Mono',monospace;padding:.7rem;font-size:.85rem}
-.b-field input:focus{border-color:var(--spray-yellow);outline:none}
+.b-field input:focus,.b-field select:focus{border-color:var(--spray-yellow);outline:none}
 .auth-modal,.admin-auth-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem}
 .admin-auth-modal{background:rgba(0,0,0,0.92);z-index:220}
 .auth-box,.admin-auth-box{width:100%;max-width:440px;background:#141416;border:2px solid var(--spray-yellow);box-shadow:8px 8px 0 var(--paper);padding:2rem;position:relative;max-height:90vh;overflow-y:auto}
@@ -477,43 +477,31 @@ footer a:hover{color:var(--paper)}
         <label>Email Address *</label>
         <input type="email" id="b-email" placeholder="john@example.com" required>
       </div>
-      <div class="b-row">
-        <div class="b-field">
-          <label>Door / Plot No *</label>
-          <input type="text" id="b-door" placeholder="#42" required>
-        </div>
-        <div class="b-field">
-          <label>Floor / Block *</label>
-          <input type="text" id="b-floor" placeholder="1st Floor" required>
-        </div>
+      <div class="b-field">
+        <label>Address Line 1 *</label>
+        <input type="text" id="b-address1" placeholder="Door No, Street Name, Area" required>
       </div>
       <div class="b-field">
-        <label>Street Name *</label>
-        <input type="text" id="b-street" placeholder="Gandhi Nagar 2nd Street" required>
-      </div>
-      <div class="b-field">
-        <label>Area / Locality *</label>
-        <input type="text" id="b-area" placeholder="T. Nagar" required>
+        <label>Address Line 2 (Optional)</label>
+        <input type="text" id="b-address2" placeholder="Apartment, Landmark, Floor">
       </div>
       <div class="b-row">
-        <div class="b-field">
-          <label>Landmark</label>
-          <input type="text" id="b-landmark" placeholder="Near Temple">
-        </div>
-        <div class="b-field">
-          <label>District *</label>
-          <input type="text" id="b-district" placeholder="Chennai" required>
-        </div>
-      </div>
-      <div class="b-row">
-        <div class="b-field">
-          <label>State *</label>
-          <input type="text" id="b-state" value="Tamil Nadu" required>
-        </div>
         <div class="b-field">
           <label>Pincode *</label>
-          <input type="text" id="b-pincode" placeholder="600017" required>
+          <input type="text" id="b-pincode" placeholder="600017" maxlength="6" oninput="onPincodeInput(this.value)" required>
         </div>
+        <div class="b-field">
+          <label>State *</label>
+          <select id="b-state" class="form-control" onchange="onStateChange()" required>
+            <option value="">Select State</option>
+          </select>
+        </div>
+      </div>
+      <div class="b-field">
+        <label>District / City *</label>
+        <select id="b-district" class="form-control" required>
+          <option value="">Select District</option>
+        </select>
       </div>
       <button class="btn btn--solid" id="pay-submit-btn" style="width:100%; justify-content:center; margin-top:1.5rem;" onclick="proceedToPayment()">Proceed to Payment →</button>
     </div>
@@ -570,40 +558,8 @@ footer a:hover{color:var(--paper)}
         </div>
         <label class="admin-field-label">Email Address *</label>
         <input type="email" id="reg-email" placeholder="john@example.com" class="admin-input-full" style="margin-bottom:0.6rem;" autocomplete="off">
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.5rem;">
-          <div>
-            <label class="admin-field-label">Door / Plot No *</label>
-            <input type="text" id="reg-door" placeholder="#42" class="admin-input-full" style="margin-bottom:0.6rem;" autocomplete="off">
-          </div>
-          <div>
-            <label class="admin-field-label">Floor / Block *</label>
-            <input type="text" id="reg-floor" placeholder="1st Floor" class="admin-input-full" style="margin-bottom:0.6rem;" autocomplete="off">
-          </div>
-        </div>
-        <label class="admin-field-label">Street Name *</label>
-        <input type="text" id="reg-street" placeholder="Gandhi Nagar" class="admin-input-full" style="margin-bottom:0.6rem;" autocomplete="off">
-        <label class="admin-field-label">Area / Locality *</label>
-        <input type="text" id="reg-area" placeholder="T. Nagar" class="admin-input-full" style="margin-bottom:0.6rem;" autocomplete="off">
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.5rem;">
-          <div>
-            <label class="admin-field-label">District *</label>
-            <input type="text" id="reg-district" placeholder="Chennai" class="admin-input-full" style="margin-bottom:0.6rem;" autocomplete="off">
-          </div>
-          <div>
-            <label class="admin-field-label">State *</label>
-            <input type="text" id="reg-state" value="Tamil Nadu" class="admin-input-full" style="margin-bottom:0.6rem;" autocomplete="off">
-          </div>
-        </div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.5rem;">
-          <div>
-            <label class="admin-field-label">Pincode *</label>
-            <input type="text" id="reg-pincode" placeholder="600017" class="admin-input-full" style="margin-bottom:0.6rem;" autocomplete="off">
-          </div>
-          <div>
-            <label class="admin-field-label">Username *</label>
-            <input type="text" id="reg-username" placeholder="johndoe" class="admin-input-full" style="margin-bottom:0.6rem;" autocomplete="off">
-          </div>
-        </div>
+        <label class="admin-field-label">Username *</label>
+        <input type="text" id="reg-username" placeholder="johndoe" class="admin-input-full" style="margin-bottom:0.6rem;" autocomplete="off">
         <label class="admin-field-label">Password *</label>
         <input type="password" id="reg-password" placeholder="••••••••" class="admin-input-full" style="margin-bottom:1rem;" autocomplete="new-password">
         <button class="btn btn--solid" style="width:100%; justify-content:center; margin-bottom:1rem;" id="reg-submit-btn" onclick="registerNewAccount()">Create Account →</button>
@@ -981,6 +937,82 @@ try {
   }
 } catch (e) {
   console.warn("Supabase init fallback:", e);
+}
+
+// India States and Districts Database
+const INDIA_STATES_DISTRICTS = {
+  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Tirunelveli", "Erode", "Vellore", "Thoothukudi", "Dindigul", "Thanjavur", "Ranipet", "Sivagangai", "Virudhunagar", "Tiruppur", "Kanyakumari", "Cuddalore", "Kancheepuram", "Villupuram", "Tiruvannamalai", "Namakkal", "Krishnagiri", "Dharmapuri", "Karur", "Nagapattinam", "Pudukkottai", "Ramanathapuram", "Theni", "Nilgiris", "Perambalur", "Ariyalur", "Tiruvarur", "Tenkasi", "Kallakurichi", "Tirupattur", "Chengalpattu", "Ranipet", "Mayiladuthurai"],
+  "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur", "Nellore", "Kurnool", "Kakinada", "Tirupati", "Rajahmundry", "Kadapa", "Anantapur", "Vizianagaram", "Eluru", "Ongole", "Nandyal", "Machilipatnam", "Adoni", "Tenali", "Proddatur", "Chittoor", "Hindupur"],
+  "Karnataka": ["Bangalore Urban", "Mysore", "Hubli-Dharwad", "Mangalore", "Belgaum", "Gulbarga", "Davanagere", "Bellary", "Shimoga", "Tumkur", "Raichur", "Bidar", "Hospet", "Hassan", "Gadag-Betageri", "Udupi", "Robertsonpet", "Bhadravati", "Chitradurga", "Kolar"],
+  "Kerala": ["Thiruvananthapuram", "Kochi", "Kozhikode", "Kollam", "Thrissur", "Kannur", "Alappuzha", "Kottayam", "Palakkad", "Manjeri", "Thalassery", "Ponnani", "Vatakara", "Kanhangad", "Payyanur", "Koyilandy", "Neyyattinkara", "Kayamkulam", "Nedumangad", "Tirur"],
+  "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Thane", "Pimpri-Chinchwad", "Nashik", "Kalyan-Dombivli", "Vasai-Virar", "Aurangabad", "Navi Mumbai", "Solapur", "Mira-Bhayandar", "Bhiwandi-Nizampur", "Amravati", "Nanded", "Kolhapur", "Akola", "Ulhasnagar", "Sangli", "Malegaon"],
+  "Delhi": ["Central Delhi", "East Delhi", "New Delhi", "North Delhi", "North East Delhi", "North West Delhi", "Shahdara", "South Delhi", "South East Delhi", "South West Delhi", "West Delhi"],
+  "Karnataka": ["Bangalore", "Mysore", "Hubli", "Mangalore", "Belgaum"],
+  "Telangana": ["Hyderabad", "Warangal", "Nizamabad", "Karimnagar", "Ramagundam", "Khammam", "Mahbubnagar", "Nalgonda", "Adilabad", "Suryapet"],
+  "Uttar Pradesh": ["Lucknow", "Kanpur", "Ghaziabad", "Agra", "Varanasi", "Meerut", "Prayagraj", "Bareilly", "Aligarh", "Moradabad", "Saharanpur", "Gorakhpur", "Noida", "Firozabad", "Jhansi"],
+  "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Jamnagar", "Junagadh", "Gandhinagar", "Anand", "Navsari", "Morbi", "Nadiad", "Mehsana"]
+};
+
+// Default catch-all map for generic states
+const ALL_INDIAN_STATES = Object.keys(INDIA_STATES_DISTRICTS);
+
+function populateStatesDropdown() {
+  const stateSelect = document.getElementById('b-state');
+  if (!stateSelect) return;
+  stateSelect.innerHTML = '<option value="">Select State</option>';
+  ALL_INDIAN_STATES.forEach(st => {
+    const opt = document.createElement('option');
+    opt.value = st;
+    opt.innerText = st;
+    stateSelect.appendChild(opt);
+  });
+}
+
+function onStateChange() {
+  const stateVal = document.getElementById('b-state').value;
+  const distSelect = document.getElementById('b-district');
+  distSelect.innerHTML = '<option value="">Select District</option>';
+  if (stateVal && INDIA_STATES_DISTRICTS[stateVal]) {
+    INDIA_STATES_DISTRICTS[stateVal].forEach(dist => {
+      const opt = document.createElement('option');
+      opt.value = dist;
+      opt.innerText = dist;
+      distSelect.appendChild(opt);
+    });
+  } else if (stateVal) {
+    // Fallback districts if specific list not loaded
+    ['District 1', 'District 2', 'District 3'].forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d;
+      opt.innerText = d;
+      distSelect.appendChild(opt);
+    });
+  }
+}
+
+function onPincodeInput(pincode) {
+  if (pincode.length === 6) {
+    // Simulated smart pin-code lookup for Tamil Nadu / India
+    if (pincode.startsWith('60') || pincode.startsWith('61') || pincode.startsWith('62') || pincode.startsWith('63') || pincode.startsWith('64')) {
+      document.getElementById('b-state').value = 'Tamil Nadu';
+      onStateChange();
+      if (pincode.startsWith('60')) document.getElementById('b-district').value = 'Chennai';
+      else if (pincode.startsWith('64')) document.getElementById('b-district').value = 'Coimbatore';
+      else if (pincode.startsWith('62')) document.getElementById('b-district').value = 'Madurai';
+    } else if (pincode.startsWith('50')) {
+      document.getElementById('b-state').value = 'Telangana';
+      onStateChange();
+      document.getElementById('b-district').value = 'Hyderabad';
+    } else if (pincode.startsWith('56') || pincode.startsWith('57')) {
+      document.getElementById('b-state').value = 'Karnataka';
+      onStateChange();
+      document.getElementById('b-district').value = 'Bangalore Urban';
+    } else if (pincode.startsWith('40') || pincode.startsWith('41') || pincode.startsWith('42')) {
+      document.getElementById('b-state').value = 'Maharashtra';
+      onStateChange();
+      document.getElementById('b-district').value = 'Mumbai';
+    }
+  }
 }
 
 let DEFAULT_CATEGORIES = [
@@ -1429,8 +1461,10 @@ function addToCart() {
 }
 
 function updateCartBadge() {
-  const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
-  document.getElementById('cart-count').innerText = totalItems;
+  const currentCart = Array.isArray(cart) ? cart : [];
+  const totalItems = currentCart.reduce((sum, item) => sum + Number(item.qty || 0), 0);
+  const cartCountEl = document.getElementById('cart-count');
+  if (cartCountEl) cartCountEl.innerText = totalItems;
 }
 
 function applyCoupon() {
@@ -1451,36 +1485,37 @@ function applyCoupon() {
 }
 
 function renderCartDrawer() {
-  const listContainer = document.getElementById('cart-items-list');
+  const list = document.getElementById('cart-items-list');
+  const countEl = document.getElementById('cart-count');
   const totalEl = document.getElementById('cart-total-price');
+  list.innerHTML = '';
   if (cart.length === 0) {
-    listContainer.innerHTML = '<div class="cart-empty-state">Your bag is empty.</div>';
+    list.innerHTML = `<div class="cart-empty-state">Your bag is empty.</div>`;
     totalEl.innerText = 'ரூ 0';
+    countEl.innerText = '0';
     return;
   }
-  let subtotal = 0;
-  listContainer.innerHTML = '';
+  let total = 0;
   cart.forEach((item, index) => {
     let itemTotal = item.price * item.qty;
     if (isCouponApplied && !item.isCustom) {
       itemTotal = Math.round(itemTotal * (1 - activeDiscountPercent / 100));
     }
-    subtotal += itemTotal;
-    const itemEl = document.createElement('div');
-    itemEl.className = 'cart-item';
-    let printDetails = item.isCustom ? `<div style="font-size:0.65rem; color:var(--spray-yellow);">Custom Print Uploaded (Qty: ${item.qty})</div>` : '';
-    itemEl.innerHTML = `
+    total += itemTotal;
+    const div = document.createElement('div');
+    div.className = 'cart-item';
+    div.innerHTML = `
       <div>
         <h5>${item.title}</h5>
-        <div class="cart-item-meta">Size: <strong>${item.size}</strong> · Qty: <strong>${item.qty}</strong></div>
-        ${printDetails}
+        <div class="cart-item-meta">Size: <strong>${item.size}</strong> | Qty: ${item.qty}</div>
         <div class="cart-item-price">ரூ ${itemTotal}</div>
       </div>
       <button class="cart-item-remove" onclick="removeCartItem(${index})">Remove</button>
     `;
-    listContainer.appendChild(itemEl);
+    list.appendChild(div);
   });
-  totalEl.innerText = 'ரூ ' + subtotal;
+  totalEl.innerText = 'ரூ ' + total;
+  countEl.innerText = cart.reduce((s, i) => s + i.qty, 0);
 }
 
 function removeCartItem(index) {
@@ -1489,14 +1524,16 @@ function removeCartItem(index) {
   renderCartDrawer();
 }
 
-function toggleCartDrawer(isOpen) {
+function toggleCartDrawer(open) {
   const drawer = document.getElementById('cart-drawer');
   const overlay = document.getElementById('cart-overlay');
-  if (isOpen) {
+  if (open) {
     renderCartDrawer();
-    drawer.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow = 'hidden';
+    drawer.classList.add('open');
+    overlay.classList.add('open');
   } else {
-    drawer.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow = '';
+    drawer.classList.remove('open');
+    overlay.classList.remove('open');
   }
 }
 
@@ -1518,18 +1555,22 @@ function showShippingFormView() {
   document.getElementById('category-page').style.display = 'none';
   document.getElementById('admin-view').style.display = 'none';
   document.getElementById('shipping-billing-page').style.display = 'block';
+  
+  populateStatesDropdown();
+
   if (loggedInUser) {
     if (loggedInUser.name) document.getElementById('b-name').value = loggedInUser.name;
     if (loggedInUser.phone) document.getElementById('b-phone').value = loggedInUser.phone;
     if (loggedInUser.altPhone) document.getElementById('b-alt-phone').value = loggedInUser.altPhone;
     if (loggedInUser.email) document.getElementById('b-email').value = loggedInUser.email;
-    if (loggedInUser.door) document.getElementById('b-door').value = loggedInUser.door;
-    if (loggedInUser.floor) document.getElementById('b-floor').value = loggedInUser.floor;
-    if (loggedInUser.street) document.getElementById('b-street').value = loggedInUser.street;
-    if (loggedInUser.area) document.getElementById('b-area').value = loggedInUser.area;
-    if (loggedInUser.district) document.getElementById('b-district').value = loggedInUser.district;
-    if (loggedInUser.state) document.getElementById('b-state').value = loggedInUser.state;
+    if (loggedInUser.address1) document.getElementById('b-address1').value = loggedInUser.address1;
+    if (loggedInUser.address2) document.getElementById('b-address2').value = loggedInUser.address2;
     if (loggedInUser.pincode) document.getElementById('b-pincode').value = loggedInUser.pincode;
+    if (loggedInUser.state) {
+      document.getElementById('b-state').value = loggedInUser.state;
+      onStateChange();
+      if (loggedInUser.district) document.getElementById('b-district').value = loggedInUser.district;
+    }
   }
   window.location.hash = '#shipping';
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1548,20 +1589,20 @@ function validateBillingForm() {
   const name = document.getElementById('b-name').value.trim();
   const phone = document.getElementById('b-phone').value.trim();
   const email = document.getElementById('b-email').value.trim();
-  const door = document.getElementById('b-door').value.trim();
-  const floor = document.getElementById('b-floor').value.trim();
-  const street = document.getElementById('b-street').value.trim();
-  const area = document.getElementById('b-area').value.trim();
-  const district = document.getElementById('b-district').value.trim();
-  const state = document.getElementById('b-state').value.trim();
+  const address1 = document.getElementById('b-address1').value.trim();
+  const address2 = document.getElementById('b-address2').value.trim();
   const pincode = document.getElementById('b-pincode').value.trim();
-  if (!name || !phone || !email || !door || !floor || !street || !area || !district || !state || !pincode) {
+  const state = document.getElementById('b-state').value;
+  const district = document.getElementById('b-district').value;
+
+  if (!name || !phone || !email || !address1 || !pincode || !state || !district) {
     showToast('Please fill out all required address fields!');
     return false;
   }
   return {
     name, phone, altPhone: document.getElementById('b-alt-phone').value.trim(),
-    email, address: `${door}, ${floor}, ${street}, ${area}, ${district}, ${state} - ${pincode}`
+    email, address1, address2, pincode, state, district,
+    address: `${address1}${address2 ? ', ' + address2 : ''}, District: ${district}, State: ${state} - Pincode: ${pincode}`
   };
 }
 
@@ -1623,7 +1664,6 @@ async function proceedToPayment() {
     }
 
     if (data.short_url) {
-      // Direct full-page redirect to Razorpay
       window.location.href = data.short_url;
     } else {
       throw new Error('Razorpay link not received from server.');
@@ -1704,7 +1744,6 @@ function checkRazorpayReturnStatus() {
   }
 }
 
-// Celebration Popup trigger function
 function showOrderSuccessCelebration(orderId, paymentId) {
   document.getElementById('shipping-billing-page').style.display = 'none';
   const successModal = document.getElementById('order-success-modal');
@@ -2160,10 +2199,8 @@ document.addEventListener('DOMContentLoaded', () => {
     userInput.addEventListener('keydown', handleEnter);
   }
 
-  // Check if redirect back from Razorpay Payment
   checkRazorpayReturnStatus();
 
-  // Restore saved session
   const savedSession = sessionStorage.getItem('rebel_user_session');
   if (savedSession) {
     try {
@@ -2174,7 +2211,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Supabase Auth State Handler (Google Sign-In Session capture)
   if (supabaseClient) {
     supabaseClient.auth.getSession().then(({ data: { session } }) => {
       if (session && session.user) {
@@ -2334,13 +2370,6 @@ function handleAuthClick(e) {
     document.getElementById('reg-phone').value = '';
     document.getElementById('reg-altphone').value = '';
     document.getElementById('reg-email').value = '';
-    document.getElementById('reg-door').value = '';
-    document.getElementById('reg-floor').value = '';
-    document.getElementById('reg-street').value = '';
-    document.getElementById('reg-area').value = '';
-    document.getElementById('reg-district').value = '';
-    document.getElementById('reg-state').value = 'Tamil Nadu';
-    document.getElementById('reg-pincode').value = '';
     document.getElementById('reg-username').value = '';
     document.getElementById('reg-password').value = '';
     document.getElementById('auth-modal').style.display = 'flex';
@@ -2384,31 +2413,22 @@ async function registerNewAccount() {
   const phone = document.getElementById('reg-phone').value.trim();
   const altPhone = document.getElementById('reg-altphone').value.trim();
   const email = document.getElementById('reg-email').value.trim();
-  const door = document.getElementById('reg-door').value.trim();
-  const floor = document.getElementById('reg-floor').value.trim();
-  const street = document.getElementById('reg-street').value.trim();
-  const area = document.getElementById('reg-area').value.trim();
-  const district = document.getElementById('reg-district').value.trim();
-  const state = document.getElementById('reg-state').value.trim();
-  const pincode = document.getElementById('reg-pincode').value.trim();
   const username = document.getElementById('reg-username').value.trim();
   const password = document.getElementById('reg-password').value.trim();
 
-  if (!name || !phone || !email || !door || !floor || !street || !area || !district || !state || !pincode || !username || !password) {
+  if (!name || !phone || !email || !username || !password) {
     showToast('Please fill out all required fields to register!');
     return;
   }
 
-  const fullAddress = `${door}, ${floor}, ${street}, ${area}, ${district}, ${state} - ${pincode}`;
-  loggedInUser = { name, phone, altPhone, email, address: fullAddress, door, floor, street, area, district, state, pincode, username, password };
+  loggedInUser = { name, phone, altPhone, email, username, password };
   
   sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
 
   if (supabaseClient) {
     try {
       await supabaseClient.from('users').insert([{
-        name, phone, alt_phone: altPhone || null, email, plot_no: door, floor_block: floor,
-        street_name: street, area_locality: area, district, state, pin_code: pincode, username, password
+        name, phone, alt_phone: altPhone || null, email, username, password
       }]);
     } catch(e) {}
   }
@@ -2446,20 +2466,11 @@ async function processUserLogin() {
   }
 
   if (foundUser) {
-    const fullAddress = foundUser.address || `${foundUser.plot_no || ''}, ${foundUser.floor_block || ''}, ${foundUser.street_name || ''}, ${foundUser.area_locality || ''}, ${foundUser.district || ''}, ${foundUser.state || ''} - ${foundUser.pin_code || ''}`;
     loggedInUser = {
       name: foundUser.name,
       phone: foundUser.phone,
       altPhone: foundUser.alt_phone,
       email: foundUser.email,
-      address: fullAddress,
-      door: foundUser.plot_no,
-      floor: foundUser.floor_block,
-      street: foundUser.street_name,
-      area: foundUser.area_locality,
-      district: foundUser.district,
-      state: foundUser.state,
-      pincode: foundUser.pin_code,
       username: foundUser.username
     };
   } else {
@@ -2494,10 +2505,7 @@ async function loginWithGoogleSocial() {
     showToast('Supabase client not initialized');
     if (googleBtn) {
       googleBtn.style.opacity = '1';
-      googleBtn.innerHTML = `
-        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.616z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.173 0 7.547 0 9s.347 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/></svg>
-        Continue with Google
-      `;
+      googleBtn.innerHTML = `Continue with Google`;
     }
     return;
   }
@@ -2508,10 +2516,7 @@ async function loginWithGoogleSocial() {
       provider: 'google',
       options: {
         redirectTo: redirectTarget,
-        queryParams: {
-          access_type: 'offline',
-          prompt: 'consent'
-        }
+        queryParams: { access_type: 'offline', prompt: 'consent' }
       }
     });
 
@@ -2519,20 +2524,14 @@ async function loginWithGoogleSocial() {
       showToast('Google sign-in error: ' + error.message);
       if (googleBtn) {
         googleBtn.style.opacity = '1';
-        googleBtn.innerHTML = `
-          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.616z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.173 0 7.547 0 9s.347 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/></svg>
-          Continue with Google
-        `;
+        googleBtn.innerHTML = `Continue with Google`;
       }
     }
   } catch (err) {
     showToast('Failed to connect with Google');
     if (googleBtn) {
       googleBtn.style.opacity = '1';
-      googleBtn.innerHTML = `
-        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.616z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.173 0 7.547 0 9s.347 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/></svg>
-        Continue with Google
-      `;
+      googleBtn.innerHTML = `Continue with Google`;
     }
   }
 }
@@ -2556,7 +2555,6 @@ function openProfileModal() {
     <div class="profile-info-row"><span>Username:</span> ${loggedInUser.username}</div>
     <div class="profile-info-row"><span>Phone:</span> ${loggedInUser.phone || 'Not Provided'}</div>
     <div class="profile-info-row"><span>Email:</span> ${loggedInUser.email}</div>
-    <div class="profile-info-row"><span>Address:</span> ${loggedInUser.address || 'Not Provided'}</div>
   `;
   document.getElementById('profile-modal').style.display = 'flex';
 }
@@ -2603,5 +2601,3 @@ function showToast(msg) {
 </script>
 </body>
 </html>
-
-
