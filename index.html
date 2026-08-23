@@ -6,9 +6,9 @@
 <title>REBEL STORE — Wear the Uprising</title>
 
 <!-- Browser Tab Favicon Icon -->
-<link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=19">
-<link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=19">
-<link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=19">
+<link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=21">
+<link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=21">
+<link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=21">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Noto+Sans+Tamil:wght@600;700;900&family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -23,28 +23,15 @@
 :root{--ink:#0b0b0c;--paper:#f2f0ea;--rebel-red:#e52521;--spray-yellow:#ffd500;--grey:#8a8a86;--card-bg:#141416;--gap:clamp(1rem,4vw,2.5rem);--success-green:#22c55e}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{background:var(--ink);color:var(--paper);font-family:'Work Sans',sans-serif;overflow-x:hidden;position:relative}
+body{background:var(--ink);color:var(--paper);font-family:'Work Sans',sans-serif;overflow-x:hidden}
 
-/* Mouse Cursor Glow Follower */
-#cursor-glow {
-  pointer-events: none;
-  position: fixed;
-  width: 250px;
-  height: 250px;
-  background: radial-gradient(circle, rgba(255,213,0,0.12) 0%, rgba(11,11,12,0) 70%);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: width 0.3s, height 0.3s;
-  z-index: 9999;
-}
-
-/* Smooth iOS-like Animations & Transitions */
+/* Smooth iOS-like Fade & Slide Transitions */
 main, section, .admin-sub-page {
-  animation: iosPageTransition 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: iosPageTransition 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 @keyframes iosPageTransition {
-  from { opacity: 0; transform: translateY(8px) scale(0.99); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 a{color:inherit;text-decoration:none}
@@ -58,7 +45,7 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--spray-yellow);outli
 .ticker__track span{padding:.5rem 1.5rem;display:inline-block}
 @keyframes scrollTicker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-header{display:flex;align-items:center;justify-content:space-between;padding:.8rem var(--gap);border-bottom:1px solid rgba(242,240,234,.12);position:sticky;top:0;z-index:90;background:rgba(11,11,12,.94);backdrop-filter:blur(12px);transition:all 0.3s ease}
+header{display:flex;align-items:center;justify-content:space-between;padding:.8rem var(--gap);border-bottom:1px solid rgba(242,240,234,.12);position:sticky;top:0;z-index:90;background:rgba(11,11,12,.94);backdrop-filter:blur(12px)}
 .logo-wrap{display:flex;align-items:center;cursor:pointer;user-select:none}
 .rebel-brand-logo{display:inline-flex;align-items:center;gap:8px;width:150px;height:75px}
 .rebel-brand-logo svg,.rebel-brand-logo img{width:100%;height:100%;object-fit:contain;display:block}
@@ -70,7 +57,7 @@ nav a:hover::after{width:100%}
 .header-actions{display:flex;align-items:center;gap:.8rem;position:relative}
 .user-badge{font-family:'Space Mono',monospace;font-size:.75rem;text-transform:uppercase;border:1px solid rgba(242,240,234,.3);padding:.5rem .85rem;border-radius:4px;background:#161618;color:var(--paper);cursor:pointer;display:flex;align-items:center;gap:.4rem;transition:all 0.2s}
 .user-badge:hover{border-color:var(--spray-yellow);color:var(--spray-yellow);transform:translateY(-1px)}
-.user-dropdown-menu{position:absolute;top:100%;right:0;width:220px;background:#161619;border:1.5px solid var(--spray-yellow);box-shadow:6px 6px 0 var(--paper);display:none;flex-direction:column;z-index:100;margin-top:6px;border-radius:2px;animation:iosPageTransition 0.2s ease}
+.user-dropdown-menu{position:absolute;top:100%;right:0;width:220px;background:#161619;border:1.5px solid var(--spray-yellow);box-shadow:6px 6px 0 var(--paper);display:none;flex-direction:column;z-index:100;margin-top:6px;border-radius:2px}
 .user-dropdown-menu.open{display:flex}
 .user-dropdown-item{font-family:'Space Mono',monospace;font-size:0.78rem;padding:0.8rem 1rem;color:var(--paper);border-bottom:1px solid rgba(242,240,234,0.1);cursor:pointer;text-transform:uppercase;transition:background 0.2s}
 .user-dropdown-item:hover{background:var(--spray-yellow);color:var(--ink);font-weight:bold}
@@ -81,7 +68,7 @@ nav a:hover::after{width:100%}
 .btn--solid{background:var(--spray-yellow);color:var(--ink);box-shadow:4px 4px 0 var(--paper)}
 .btn--ghost{border:1.5px solid var(--paper);color:var(--paper);box-shadow:4px 4px 0 var(--spray-yellow);background:transparent}
 
-/* Breadcrumb Web Path styling */
+/* Breadcrumb Path */
 .breadcrumb-bar {
   font-family: 'Space Mono', monospace;
   font-size: 0.75rem;
@@ -317,9 +304,6 @@ footer a:hover{color:var(--paper)}
 </style>
 </head>
 <body>
-  <!-- Mouse Cursor Glow Effect -->
-  <div id="cursor-glow"></div>
-
   <div class="ticker" aria-hidden="true">
     <div class="ticker__track" id="ticker-track-box">
       <span id="ticker-msg-1">★ 48H DISPATCH · 3–5 DAYS DELIVERY IN TN¹</span>
@@ -354,7 +338,7 @@ footer a:hover{color:var(--paper)}
 
   <!-- Web Breadcrumbs / Path -->
   <div class="breadcrumb-bar">
-    Home / <span id="current-breadcrumb-path">Store / Collections</span>
+    Home / <span id="current-breadcrumb-path">Store / Home</span>
   </div>
 
   <main id="home-view">
@@ -2694,15 +2678,6 @@ document.addEventListener('DOMContentLoaded', () => {
     passInput.addEventListener('keydown', handleEnter);
     userInput.addEventListener('keydown', handleEnter);
   }
-
-  // Mouse Cursor Glow Tracker
-  const cursorGlow = document.getElementById('cursor-glow');
-  window.addEventListener('mousemove', (e) => {
-    if (cursorGlow) {
-      cursorGlow.style.left = e.clientX + 'px';
-      cursorGlow.style.top = e.clientY + 'px';
-    }
-  });
 
   checkRazorpayReturnStatus();
 
