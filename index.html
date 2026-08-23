@@ -6,9 +6,9 @@
 <title>REBEL STORE — Wear the Uprising</title>
 
 <!-- Browser Tab Favicon Icon -->
-<link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=9">
-<link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=9">
-<link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=9">
+<link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=10">
+<link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=10">
+<link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=10">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Noto+Sans+Tamil:wght@600;700;900&family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -648,7 +648,7 @@ footer a:hover{color:var(--paper)}
         <h3 id="adm-revenue">ரூ 0</h3>
       </div>
       <div class="stat-card">
-        <span class="label">Total Orders</span>
+        <span class="label">Total Orders Count</span>
         <h3 id="adm-orders-count">0 Orders</h3>
       </div>
     </div>
@@ -662,10 +662,10 @@ footer a:hover{color:var(--paper)}
       </div>
       <div class="admin-nav-card" onclick="openAdminSubPage('subpage-date-chart')">
         <div>
-          <h3 id="card-title-date">📅 Date-wise Orders & Graph</h3>
-          <p>Yearly calendar view with month/year navigation & graph.</p>
+          <h3 id="card-title-date">📅 Date-wise Orders & Status Tracker</h3>
+          <p>Calendar view, order counts, status filters & management.</p>
         </div>
-        <button class="rename-btn" onclick="event.stopPropagation(); renameCardTitle('card-title-date', 'Date-wise Orders & Graph')">✏️</button>
+        <button class="rename-btn" onclick="event.stopPropagation(); renameCardTitle('card-title-date', 'Date-wise Orders & Status Tracker')">✏️</button>
       </div>
       <div class="admin-nav-card owner-only-card" onclick="openAdminSubPage('subpage-customers')">
         <div>
@@ -805,15 +805,18 @@ footer a:hover{color:var(--paper)}
       </div>
     </div>
 
+    <!-- DATE-WISE ORDERS & STATUS TRACKER SUBPAGE -->
     <div class="admin-sub-page" id="subpage-date-chart">
       <div class="sub-page-header">
-        <h2>📅 Date-wise Order Chart & Interactive Calendar</h2>
+        <h2>📅 Date-wise Orders & Status Tracker</h2>
         <button class="btn btn--ghost" style="padding:0.4rem 1rem; font-size:0.8rem;" onclick="closeAdminSubPages()">← Back to Dashboard</button>
       </div>
+
       <div class="graph-container">
-        <label class="admin-field-label">Revenue Growth Chart</label>
+        <label class="admin-field-label">7-Day Revenue & Total Orders Trend (Click Date below to filter)</label>
         <div class="graph-bars" id="admin-graph-bars"></div>
       </div>
+
       <div class="calendar-section-box">
         <div class="cal-nav-bar">
           <button class="cal-nav-btn" onclick="changeCalendarMonth(-1)">◀ Prev</button>
@@ -831,24 +834,43 @@ footer a:hover{color:var(--paper)}
           <div class="calendar-day-name">Sun</div><div class="calendar-day-name">Mon</div><div class="calendar-day-name">Tue</div><div class="calendar-day-name">Wed</div><div class="calendar-day-name">Thu</div><div class="calendar-day-name">Fri</div><div class="calendar-day-name">Sat</div>
         </div>
         <div class="calendar-grid" id="calendar-days-grid" style="margin-top: 8px;"></div>
-        <div style="margin-top: 1rem; display: flex; justify-content: space-between; align-items: center;">
+        <div style="margin-top: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap:0.5rem;">
           <span id="selected-cal-date-label" style="font-family:'Space Mono'; font-size:0.8rem; color:var(--spray-yellow);">Selected Date: None (Showing All)</span>
           <button class="preview-link-btn" onclick="resetCalendarFilter()">Reset Filter</button>
         </div>
       </div>
+
+      <!-- FILTER TABS & SEARCH BAR FOR ORDERS -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+        <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;" id="order-status-tabs">
+          <button class="preview-link-btn" style="background:var(--paper); color:var(--ink);" onclick="filterOrdersByStatus('All', this)">All</button>
+          <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Pending Print', this)">Pending Print</button>
+          <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Go For Print', this)">Go For Print</button>
+          <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Print Received', this)">Print Received</button>
+          <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Product Ready', this)">Product Ready</button>
+          <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Delivered', this)">Delivered</button>
+          <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Completed', this)">Completed</button>
+          <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Returned', this)">Returned</button>
+        </div>
+        <div>
+          <input type="text" id="order-search-input" class="admin-input-small" placeholder="Search Order ID / Name..." oninput="handleOrderSearch(this.value)" style="width: 220px; margin-bottom:0;">
+        </div>
+      </div>
+
       <div class="admin-table-wrap">
         <table class="date-chart-table">
           <thead>
             <tr>
               <th>Order ID & Date</th>
-              <th>Customer</th>
-              <th>Items Qty</th>
-              <th>Revenue</th>
-              <th>Payment & Ref ID</th>
+              <th>Customer & Address</th>
+              <th>Items & Specs</th>
+              <th>Amount</th>
+              <th>Payment Ref</th>
+              <th>Update Status</th>
             </tr>
           </thead>
           <tbody id="date-chart-tbody">
-            <tr><td colspan="5" style="text-align:center; color:var(--grey);">No orders placed yet.</td></tr>
+            <tr><td colspan="6" style="text-align:center; color:var(--grey);">No orders placed yet.</td></tr>
           </tbody>
         </table>
       </div>
@@ -1189,6 +1211,8 @@ const STORE_START_DATE = new Date(2026, 7, 1);
 let calCurrentYear = 2026;
 let calCurrentMonth = 7;
 let currentSelectedDateFilter = '';
+let currentStatusFilter = 'All';
+let currentSearchQuery = '';
 
 let logoClickCount = 0;
 let logoClickTimer = null;
@@ -1501,7 +1525,6 @@ function openProductByDetails(catName, productId) {
   validImages.forEach((imgUrl, idx) => {
     const cleanUrl = imgUrl ? imgUrl.trim() : '';
 
-    // 1. Big Slider Slide Item
     const slideDiv = document.createElement('div');
     slideDiv.className = 'slide-item';
     if (cleanUrl) {
@@ -1511,7 +1534,6 @@ function openProductByDetails(catName, productId) {
     }
     sliderTrack.appendChild(slideDiv);
 
-    // 2. Small Thumbnail Preview Card
     const thumbDiv = document.createElement('div');
     thumbDiv.className = `thumb-card ${idx === 0 ? 'active' : ''}`;
     thumbDiv.onclick = () => goToSlide(idx);
@@ -1545,7 +1567,6 @@ function updateSliderPosition() {
   track.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
   document.getElementById('pdp-angle-label').innerText = angleLabels[currentSlideIndex] || 'View';
   
-  // Highlight active thumbnail
   document.querySelectorAll('#thumb-row-container .thumb-card').forEach((thumb, idx) => {
     if (idx === currentSlideIndex) {
       thumb.classList.add('active');
@@ -1737,7 +1758,7 @@ function validateBillingForm() {
   };
 }
 
-// --- SECURE RAZORPAY PAYMENT TRIGGER (Directly Saves to Supabase) ---
+// --- SECURE RAZORPAY PAYMENT TRIGGER ---
 async function proceedToPayment() {
   const billingData = validateBillingForm();
   if (!billingData) return;
@@ -1841,7 +1862,8 @@ async function handleOrderSuccessDirect(paymentId) {
     total_qty: totalQuantity,
     total_amount: savedOrder.totalAmount,
     payment_status: 'paid',
-    razorpay_payment_id: paymentId
+    razorpay_payment_id: paymentId,
+    order_status: 'Pending Print'
   };
 
   if (supabaseClient) {
@@ -1864,7 +1886,8 @@ async function handleOrderSuccessDirect(paymentId) {
     totalAmount: savedOrder.totalAmount,
     items: savedOrder.items,
     paymentStatus: 'paid',
-    paymentId: paymentId
+    paymentId: paymentId,
+    orderStatus: 'Pending Print'
   });
   localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
 
@@ -1954,13 +1977,12 @@ async function loadAdminDataFromSupabase() {
   if (!supabaseClient) return;
 
   try {
-    // 1. Fetch Orders & Payment Details from Supabase
     const { data: ordersData, error: ordersError } = await supabaseClient
       .from('orders')
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (!ordersError && ordersData && ordersData.length > 0) {
+    if (!ordersError && ordersData) {
       ordersHistory = ordersData.map(o => ({
         id: o.order_id,
         date: o.created_at ? o.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
@@ -1974,11 +1996,11 @@ async function loadAdminDataFromSupabase() {
         totalAmount: Number(o.total_amount),
         items: o.items,
         paymentStatus: o.payment_status || 'paid',
-        paymentId: o.razorpay_payment_id || 'N/A'
+        paymentId: o.razorpay_payment_id || 'N/A',
+        orderStatus: o.order_status || 'Pending Print'
       }));
     }
 
-    // 2. Fetch Customer Details from Supabase
     const { data: usersData, error: usersError } = await supabaseClient
       .from('profiles')
       .select('*')
@@ -2010,10 +2032,51 @@ async function loadAdminDataFromSupabase() {
   }
 }
 
+async function updateOrderStatusInSupabase(orderId, newStatus) {
+  // Update local
+  const found = ordersHistory.find(o => o.id === orderId);
+  if (found) found.orderStatus = newStatus;
+
+  // Update cloud
+  if (supabaseClient) {
+    try {
+      await supabaseClient
+        .from('orders')
+        .update({ order_status: newStatus })
+        .eq('order_id', orderId);
+    } catch (err) {
+      console.error("Status update error:", err);
+    }
+  }
+  showToast(`Order ${orderId} status updated to ${newStatus}!`);
+  renderAdminPanels(currentSelectedDateFilter);
+}
+
+function filterOrdersByStatus(status, btnElement) {
+  currentStatusFilter = status;
+  document.querySelectorAll('#order-status-tabs button').forEach(b => {
+    b.style.background = '#1a1a1d';
+    b.style.color = 'var(--paper)';
+  });
+  if (btnElement) {
+    btnElement.style.background = 'var(--paper)';
+    btnElement.style.color = 'var(--ink)';
+  }
+  renderAdminPanels(currentSelectedDateFilter);
+}
+
+function handleOrderSearch(query) {
+  currentSearchQuery = query.trim().toLowerCase();
+  renderAdminPanels(currentSelectedDateFilter);
+}
+
 function renderAdminPanels(filterDate = '') {
+  // Calculate total revenue and total orders count (summing up total items/quantities or individual orders)
   let totalRev = ordersHistory.reduce((sum, o) => sum + o.totalAmount, 0);
+  let totalOrderCount = ordersHistory.length;
+  
   document.getElementById('adm-revenue').innerText = 'ரூ ' + totalRev;
-  document.getElementById('adm-orders-count').innerText = ordersHistory.length + ' Orders';
+  document.getElementById('adm-orders-count').innerText = totalOrderCount + ' Orders';
   
   const customTbody = document.getElementById('admin-custom-orders-tbody');
   customTbody.innerHTML = '';
@@ -2039,26 +2102,49 @@ function renderAdminPanels(filterDate = '') {
 
   const chartTbody = document.getElementById('date-chart-tbody');
   chartTbody.innerHTML = '';
-  if (ordersHistory.length === 0) {
-    chartTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--grey);">No orders placed yet.</td></tr>`;
+  
+  // Filtering by Date, Status, and Search Query
+  let filteredOrders = ordersHistory.filter(ord => {
+    let matchDate = !filterDate || ord.date === filterDate;
+    let matchStatus = currentStatusFilter === 'All' || ord.orderStatus === currentStatusFilter;
+    let matchSearch = !currentSearchQuery || ord.id.toLowerCase().includes(currentSearchQuery) || ord.billing.name.toLowerCase().includes(currentSearchQuery) || ord.billing.phone.includes(currentSearchQuery);
+    return matchDate && matchStatus && matchSearch;
+  });
+
+  if (filteredOrders.length === 0) {
+    chartTbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--grey);">No matching orders found.</td></tr>`;
   } else {
-    let filteredOrders = ordersHistory.filter(ord => !filterDate || ord.date === filterDate);
-    if (filteredOrders.length === 0) {
-      chartTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--grey);">No orders on selected date.</td></tr>`;
-    } else {
-      filteredOrders.forEach(ord => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><strong>${ord.id}</strong><br><span style="font-size:0.7rem; color:var(--grey);">${ord.date}</span></td>
-          <td>${ord.billing.name}<br>${ord.billing.phone}</td>
-          <td>${ord.totalQty} Items</td>
-          <td style="color:var(--spray-yellow);">ரூ ${ord.totalAmount}</td>
-          <td><span style="background:rgba(34,197,94,0.2); color:#22c55e; padding:2px 6px; font-size:0.7rem; border-radius:2px;">${ord.paymentStatus}</span><br><span style="font-size:0.65rem; color:var(--grey);">Ref: ${ord.paymentId}</span></td>
-        `;
-        chartTbody.appendChild(tr);
+    filteredOrders.forEach(ord => {
+      let itemsListHtml = '';
+      if (ord.items && Array.isArray(ord.items)) {
+        ord.items.forEach(it => {
+          itemsListHtml += `<div style="font-size:0.78rem;">• <strong>${it.title}</strong> (${it.size}) × ${it.qty}</div>`;
+        });
+      }
+
+      const statuses = ['Pending Print', 'Go For Print', 'Print Received', 'Product Ready', 'Delivered', 'Completed', 'Returned'];
+      let statusOptionsHtml = '';
+      statuses.forEach(st => {
+        statusOptionsHtml += `<option value="${st}" ${ord.orderStatus === st ? 'selected' : ''}>${st}</option>`;
       });
-    }
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${ord.id}</strong><br><span style="font-size:0.7rem; color:var(--grey);">${ord.date}</span></td>
+        <td>${ord.billing.name}<br>${ord.billing.phone}<br><span style="font-size:0.72rem; color:var(--grey);">${ord.billing.address}</span></td>
+        <td>${itemsListHtml} <span style="font-size:0.75rem; color:var(--spray-yellow);">Total Qty: ${ord.totalQty}</span></td>
+        <td style="color:var(--spray-yellow); font-weight:bold;">ரூ ${ord.totalAmount}</td>
+        <td><span style="background:rgba(34,197,94,0.2); color:#22c55e; padding:2px 6px; font-size:0.7rem; border-radius:2px;">${ord.paymentStatus}</span><br><span style="font-size:0.65rem; color:var(--grey);">Ref: ${ord.paymentId}</span></td>
+        <td>
+          <select class="cal-dropdown" style="font-size:0.78rem; padding:4px;" onchange="updateOrderStatusInSupabase('${ord.id}', this.value)">
+            ${statusOptionsHtml}
+          </select>
+        </td>
+      `;
+      chartTbody.appendChild(tr);
+    });
   }
+
   renderInteractiveCalendar(filterDate);
   renderGraphChart();
 }
@@ -2085,17 +2171,34 @@ function renderInteractiveCalendar(selectedDateStr = '') {
     const formattedM = String(calCurrentMonth + 1).padStart(2, '0');
     const dateKey = `${calCurrentYear}-${formattedM}-${formattedD}`;
     const thisDateObj = new Date(calCurrentYear, calCurrentMonth, d);
-    cell.innerText = d;
+    
+    // Count total orders & total items for this specific date
+    const dateOrders = ordersHistory.filter(o => o.date === dateKey);
+    const dateOrderCount = dateOrders.length;
+    const dateTotalItemsCount = dateOrders.reduce((sum, o) => sum + Number(o.totalQty || 0), 0);
+
+    cell.innerHTML = `<div>${d}</div>`;
+    if (dateOrderCount > 0) {
+      const badge = document.createElement('div');
+      badge.style.fontSize = '0.62rem';
+      badge.style.color = 'var(--ink)';
+      badge.style.background = 'var(--spray-yellow)';
+      badge.style.marginTop = '2px';
+      badge.style.borderRadius = '2px';
+      badge.style.fontWeight = 'bold';
+      badge.innerText = `${dateOrderCount} Ord (${dateTotalItemsCount} pcs)`;
+      cell.appendChild(badge);
+    }
+
     if (thisDateObj < STORE_START_DATE || thisDateObj > today) {
       cell.classList.add('blackout');
     } else {
       cell.classList.add('active-selectable');
-      const hasOrder = ordersHistory.some(o => o.date === dateKey);
-      if (hasOrder) cell.classList.add('has-order');
+      if (dateOrderCount > 0) cell.classList.add('has-order');
       if (dateKey === selectedDateStr) cell.classList.add('selected');
       cell.onclick = () => {
         currentSelectedDateFilter = dateKey;
-        document.getElementById('selected-cal-date-label').innerText = `Selected Date: ${dateKey}`;
+        document.getElementById('selected-cal-date-label').innerText = `Selected Date: ${dateKey} (${dateOrderCount} Orders, ${dateTotalItemsCount} Items)`;
         renderAdminPanels(dateKey);
       };
     }
@@ -2137,16 +2240,25 @@ function renderGraphChart() {
     const d = new Date();
     d.setDate(d.getDate() - i);
     const dStr = d.toISOString().split('T')[0];
-    const dayRev = ordersHistory.filter(o => o.date === dStr).reduce((sum, o) => sum + o.totalAmount, 0);
-    last7Days.push({ label: d.toLocaleDateString('en-US', { weekday: 'short' }), rev: dayRev });
+    const dayOrders = ordersHistory.filter(o => o.date === dStr);
+    const dayRev = dayOrders.reduce((sum, o) => sum + o.totalAmount, 0);
+    const dayCount = dayOrders.length;
+    last7Days.push({ label: d.toLocaleDateString('en-US', { weekday: 'short' }), rev: dayRev, count: dayCount, dateStr: dStr });
   }
   const maxRev = Math.max(...last7Days.map(x => x.rev), 1000);
   last7Days.forEach(item => {
     const heightPct = Math.max((item.rev / maxRev) * 100, 10);
     const col = document.createElement('div');
     col.className = 'graph-bar-col';
+    col.style.cursor = 'pointer';
+    col.title = `${item.dateStr}: ${item.count} orders, ரூ${item.rev}`;
+    col.onclick = () => {
+      currentSelectedDateFilter = item.dateStr;
+      document.getElementById('selected-cal-date-label').innerText = `Selected Date: ${item.dateStr} (${item.count} Orders)`;
+      renderAdminPanels(item.dateStr);
+    };
     col.innerHTML = `
-      <span style="font-family:'Space Mono'; font-size:0.6rem; color:var(--spray-yellow);">ரூ${item.rev}</span>
+      <span style="font-family:'Space Mono'; font-size:0.58rem; color:var(--spray-yellow);">${item.count} ord</span>
       <div class="graph-bar" style="height: ${heightPct}%;"></div>
       <span class="graph-label">${item.label}</span>
     `;
@@ -2864,7 +2976,7 @@ function openOrdersModal() {
             <span>Date: ${ord.date}</span>
           </div>
           <div style="font-family:'Space Mono'; font-size:0.75rem; color:var(--paper); margin:0.4rem 0;">
-            Total Items: ${ord.totalQty} | Total Amount: <strong>ரூ ${ord.totalAmount}</strong>
+            Total Items: ${ord.totalQty} | Total Amount: <strong>ரூ ${ord.totalAmount}</strong> | Status: <strong>${ord.orderStatus}</strong>
           </div>
         </div>
       `;
