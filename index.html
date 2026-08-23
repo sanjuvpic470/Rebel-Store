@@ -6,9 +6,9 @@
 <title>REBEL STORE — Wear the Uprising</title>
 
 <!-- Browser Tab Favicon Icon -->
-<link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=15">
-<link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=15">
-<link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=15">
+<link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=16">
+<link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=16">
+<link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=16">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Noto+Sans+Tamil:wght@600;700;900&family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -914,7 +914,7 @@ footer a:hover{color:var(--paper)}
 
     <div class="admin-sub-page" id="subpage-products">
       <div class="sub-page-header">
-        <h2>⚙️ T-Shirt Categories & Products Manager</h2>
+        <h2>⚙️ T-Shirt Product Manager & Categories</h2>
         <button class="btn btn--ghost" style="padding:0.4rem 1rem; font-size:0.8rem;" onclick="closeAdminSubPages()">← Back to Dashboard</button>
       </div>
       <div style="background:#111; padding:1.2rem; border:1px solid rgba(242,240,234,.15); margin-bottom:1.5rem;">
@@ -1130,6 +1130,12 @@ async function handlePincodeLookup(pincode) {
         dOpt.textContent = apiDistrict;
         dOpt.selected = true;
         districtSelect.appendChild(dOpt);
+      }
+
+      if (loggedInUser) {
+        loggedInUser.state = matchedState;
+        loggedInUser.district = apiDistrict;
+        sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
       }
 
       statusHint.innerText = `✓ Detected: ${apiDistrict}, ${apiState}`;
@@ -1750,6 +1756,9 @@ function showShippingFormView() {
         if (loggedInUser.state) {
           document.getElementById('b-state').value = loggedInUser.state;
           onStateSelectChange(loggedInUser.district || '');
+          if (loggedInUser.district) {
+            document.getElementById('b-district').value = loggedInUser.district;
+          }
         }
       });
     }
@@ -1803,7 +1812,7 @@ function validateBillingForm() {
   };
 }
 
-// --- SECURE RAZORPAY PAYMENT TRIGGER (Testing Mode Simulation Active) ---
+// --- SECURE RAZORPAY PAYMENT TRIGGER ---
 async function proceedToPayment() {
   const billingData = validateBillingForm();
   if (!billingData) return;
@@ -2074,16 +2083,16 @@ async function updateAdminOrderMeta(orderId, field, val) {
   showToast(`Order ${orderId} updated!`);
 }
 
-function toggleOrderExpand(rowId) {
+function toggleOrderExpand(event, rowId) {
+  // If user clicked inside the select dropdown or checkbox/input, do not toggle row expand
+  if (['SELECT', 'INPUT', 'LABEL', 'OPTION'].includes(event.target.tagName)) return;
+
   const detailEl = document.getElementById(`order-detail-${rowId}`);
-  const arrowEl = document.getElementById(`order-arrow-${rowId}`);
   if (detailEl) {
     if (detailEl.style.display === 'none') {
       detailEl.style.display = 'block';
-      if (arrowEl) arrowEl.innerText = '▲';
     } else {
       detailEl.style.display = 'none';
-      if (arrowEl) arrowEl.innerText = '▼';
     }
   }
 }
@@ -2158,23 +2167,32 @@ function renderAdminPanels(filterDate = '') {
   if (filteredOrders.length === 0) {
     chartTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--grey);">No matching orders found.</td></tr>`;
   } else {
-    filteredOrders.forEach((ord, index) => {
-      let itemsSummary = '';
+    filteredOrders.forEach((ord) => {
+      let itemsSummaryHtml = '';
       let itemsDetailedHtml = '';
       
       if (ord.items && Array.isArray(ord.items)) {
-        let firstIt = ord.items[0];
-        itemsSummary = `${firstIt.title} (${firstIt.size}) × ${firstIt.qty} ${ord.items.length > 1 ? ` +${ord.items.length - 1} more` : ''}`;
-
         ord.items.forEach(it => {
           let imgHtml = it.image ? `<img src="${it.image}" style="width:40px; height:40px; object-fit:contain; background:#111; border:1px solid #333; border-radius:2px; display:inline-block; vertical-align:middle; margin-right:8px;">` : '';
           let printSpec = it.isCustom ? '<span style="color:var(--spray-yellow); font-size:0.7rem;">[Custom Order]</span>' : '';
-          itemsDetailedHtml += `
-            <div style="display:flex; align-items:center; margin-bottom:6px; border-bottom:1px dashed rgba(242,240,234,0.1); padding-bottom:4px;">
+          
+          itemsSummaryHtml += `
+            <div style="display:flex; align-items:center; margin-bottom:4px;">
               ${imgHtml}
               <div>
-                <strong>${it.title}</strong> ${printSpec}<br>
-                <span style="font-size:0.75rem; color:var(--spray-yellow);">Size: <strong>${it.size}</strong> | Qty: ${it.qty} | Price: ரூ ${it.price}</span>
+                <strong>${it.title}</strong> ${printSpec} — <span style="color:var(--spray-yellow);">Size: ${it.size} | Qty: ${it.qty}</span>
+              </div>
+            </div>
+          `;
+
+          itemsDetailedHtml += `
+            <div style="display:flex; flex-direction:column; gap:4px; margin-bottom:8px; border-bottom:1px dashed rgba(242,240,234,0.15); padding-bottom:6px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                ${imgHtml}
+                <div>
+                  <strong>${it.title}</strong> ${printSpec}<br>
+                  <span style="font-size:0.75rem; color:var(--grey);">Size: <strong>${it.size}</strong> | Qty: ${it.qty} | Price: ரூ ${it.price}</span>
+                </div>
               </div>
             </div>
           `;
@@ -2188,29 +2206,27 @@ function renderAdminPanels(filterDate = '') {
       });
 
       const tr = document.createElement('tr');
+      tr.style.cursor = 'pointer';
+      tr.onclick = (e) => toggleOrderExpand(e, ord.id);
       tr.innerHTML = `
-        <td>
-          <div style="display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="toggleOrderExpand('${ord.id}')">
-            <strong>${ord.id}</strong>
-            <span id="order-arrow-${ord.id}" style="font-size:0.75rem; color:var(--spray-yellow);">▼</span>
-          </div>
-          <span style="font-size:0.7rem; color:var(--grey);">${ord.date}</span>
-        </td>
+        <td><strong>${ord.id}</strong><br><span style="font-size:0.7rem; color:var(--grey);">${ord.date}</span></td>
         <td><strong>${ord.billing.name}</strong><br>${ord.billing.phone}</td>
         <td>
-          ${itemsSummary}
-          <div id="order-detail-${ord.id}" style="display:none; margin-top:8px; background:#18181b; padding:8px; border:1px solid rgba(242,240,234,0.15);">
-            <div style="font-size:0.72rem; color:var(--spray-yellow); margin-bottom:4px;">Full Address: ${ord.billing.address}</div>
-            ${itemsDetailedHtml}
-            <div style="margin-top:6px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-              <label style="font-size:0.75rem; cursor:pointer;"><input type="checkbox" ${ord.stockAvailable ? 'checked' : ''} onchange="updateAdminOrderMeta('${ord.id}', 'stock', this.checked)"> Stock Available</label>
-              <input type="text" class="admin-input-small" placeholder="Admin Notes/Comments..." value="${ord.adminComments || ''}" onchange="updateAdminOrderMeta('${ord.id}', 'comments', this.value)" style="width:180px; margin-bottom:0; font-size:0.75rem; padding:2px 4px;">
+          ${itemsSummaryHtml}
+          <div id="order-detail-${ord.id}" style="display:none; margin-top:8px; background:#18181b; padding:10px; border:1px solid rgba(242,240,234,0.2);">
+            <div style="font-size:0.75rem; color:var(--spray-yellow); margin-bottom:6px;"><strong>Full Shipping Address:</strong> ${ord.billing.address}</div>
+            <div style="margin-bottom:8px;">${itemsDetailedHtml}</div>
+            <div style="margin-top:8px; display:flex; gap:15px; align-items:center; flex-wrap:wrap; border-top:1px solid rgba(242,240,234,0.1); pt:8px;">
+              <label style="font-size:0.75rem; cursor:pointer; display:flex; gap:5px; align-items:center;">
+                <input type="checkbox" ${ord.stockAvailable ? 'checked' : ''} onchange="updateAdminOrderMeta('${ord.id}', 'stock', this.checked)"> Stock Available
+              </label>
+              <input type="text" class="admin-input-small" placeholder="Admin Notes / Comments..." value="${ord.adminComments || ''}" onchange="updateAdminOrderMeta('${ord.id}', 'comments', this.value)" style="width:200px; margin-bottom:0; font-size:0.75rem; padding:4px 6px;" onclick="event.stopPropagation()">
             </div>
           </div>
         </td>
-        <td style="color:var(--spray-yellow); font-weight:bold;">ரூ ${ord.totalAmount}</td>
+        <td style="color:var(--spray-yellow); font-weight:bold;">ரூ ${ord.totalAmount}<br><span style="background:rgba(34,197,94,0.2); color:#22c55e; padding:1px 5px; font-size:0.65rem; border-radius:2px;">${ord.paymentStatus}</span></td>
         <td>
-          <select class="cal-dropdown" style="font-size:0.78rem; padding:4px;" onchange="updateOrderStatusInSupabase('${ord.id}', this.value)">
+          <select class="cal-dropdown" style="font-size:0.78rem; padding:4px;" onchange="updateOrderStatusInSupabase('${ord.id}', this.value)" onclick="event.stopPropagation()">
             ${statusOptionsHtml}
           </select>
         </td>
