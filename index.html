@@ -310,8 +310,8 @@ footer a:hover{color:var(--paper)}
   <header>
     <div class="logo-wrap" id="brand-logo-trigger" onclick="handleLogoClick(event)">
       <div class="rebel-brand-logo" id="header-logo-container">
-        <!-- Full Brand Logo in Header -->
-        <img id="site-header-logo-img" src="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20LOGO.png" alt="Rebel Store Logo" style="width:100%; height:100%; object-fit:contain;">
+        <!-- Full Brand Logo in Header (Replaced with Favicon4.png URL as requested) -->
+        <img id="site-header-logo-img" src="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon4.png" alt="Rebel Store Logo" style="width:100%; height:100%; object-fit:contain;">
       </div>
     </div>
     <nav>
@@ -1041,7 +1041,7 @@ footer a:hover{color:var(--paper)}
           <div class="logo-wrap" style="margin-bottom:1rem;" onclick="showHomeView()">
             <div class="rebel-brand-logo footer-logo-container">
               <!-- Full Brand Logo in Footer -->
-              <img id="site-footer-logo-img" src="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20LOGO.png" alt="Rebel Store Logo" style="width:100%; height:100%; object-fit:contain;">
+              <img id="site-footer-logo-img" src="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon4.png" alt="Rebel Store Logo" style="width:100%; height:100%; object-fit:contain;">
             </div>
           </div>
           <p style="color:var(--grey); font-size:.85rem;" id="footer-tagline-text">Independent streetwear label. Heavyweight tees for people who don't wait for permission.</p>
@@ -1093,6 +1093,16 @@ function handleNavContactClick() {
     const ft = document.getElementById('footer-section');
     if(ft) ft.scrollIntoView({ behavior: 'smooth' });
   }, 100);
+}
+
+// --- FORCE CLEAR OLD LOCALSTORAGE CACHE FOR DESIGN FIX ---
+if(localStorage.getItem('rebel_site_content')) {
+  let sc = JSON.parse(localStorage.getItem('rebel_site_content'));
+  sc.feat1Title = "240GSM Heavyweight Cotton";
+  sc.feat1Desc = "Boxy fit, no shrink, no fade after wash 50.";
+  sc.feat2Title = "Small-Batch Drops";
+  sc.feat2Desc = "Every design is limited — once it's gone, it's archived, not restocked.";
+  localStorage.setItem('rebel_site_content', JSON.stringify(sc));
 }
 
 // --- ZOHO INVOICE CREDENTIALS ---
@@ -1326,10 +1336,10 @@ function handleLogoClick(event) {
 
 function renameCardTitle(elementId, defaultName) {
   const el = document.getElementById(elementId);
-  const currentText = el.innerText.replace(/^[⚡📅🗑️⚙️✍️]\s*/, '');
+  const currentText = el.innerText.replace(/^[⚡📅🏷️⚙️✍️]\s*/, '');
   const newName = prompt("Enter new title name:", currentText);
   if (newName && newName.trim() !== "") {
-    const icon = el.innerText.match(/^[⚡📅🗑️⚙️✍️]/)?.[0] || '⚙️';
+    const icon = el.innerText.match(/^[⚡📅🏷️⚙️✍️]/)?.[0] || '⚙️';
     el.innerText = `${icon} ${newName.trim()}`;
     showToast("Title renamed successfully!");
   }
