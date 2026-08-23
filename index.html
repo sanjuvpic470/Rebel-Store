@@ -6,9 +6,9 @@
 <title>REBEL STORE — Wear the Uprising</title>
 
 <!-- Browser Tab Favicon Icon -->
-<link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=10">
-<link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=10">
-<link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=10">
+<link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=11">
+<link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=11">
+<link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=11">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Noto+Sans+Tamil:wght@600;700;900&family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -840,17 +840,17 @@ footer a:hover{color:var(--paper)}
         </div>
       </div>
 
-      <!-- FILTER TABS & SEARCH BAR FOR ORDERS -->
+      <!-- FILTER TABS & SEARCH BAR FOR ORDERS WITH DYNAMIC COUNTS -->
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
         <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;" id="order-status-tabs">
-          <button class="preview-link-btn" style="background:var(--paper); color:var(--ink);" onclick="filterOrdersByStatus('All', this)">All</button>
-          <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Pending Print', this)">Pending Print</button>
-          <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Go For Print', this)">Go For Print</button>
-          <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Print Received', this)">Print Received</button>
-          <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Product Ready', this)">Product Ready</button>
-          <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Delivered', this)">Delivered</button>
-          <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Completed', this)">Completed</button>
-          <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Returned', this)">Returned</button>
+          <button class="preview-link-btn" style="background:var(--paper); color:var(--ink);" onclick="filterOrdersByStatus('All', this)">All (<span id="cnt-all">0</span>)</button>
+          <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Pending Print', this)">Pending Print (<span id="cnt-pending">0</span>)</button>
+          <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Go For Print', this)">Go For Print (<span id="cnt-gofor">0</span>)</button>
+          <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Print Received', this)">Print Received (<span id="cnt-received">0</span>)</button>
+          <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Product Ready', this)">Product Ready (<span id="cnt-ready">0</span>)</button>
+          <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Delivered', this)">Delivered (<span id="cnt-delivered">0</span>)</button>
+          <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Completed', this)">Completed (<span id="cnt-completed">0</span>)</button>
+          <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Returned', this)">Returned (<span id="cnt-returned">0</span>)</button>
         </div>
         <div>
           <input type="text" id="order-search-input" class="admin-input-small" placeholder="Search Order ID / Name..." oninput="handleOrderSearch(this.value)" style="width: 220px; margin-bottom:0;">
@@ -863,7 +863,7 @@ footer a:hover{color:var(--paper)}
             <tr>
               <th>Order ID & Date</th>
               <th>Customer & Address</th>
-              <th>Items & Specs</th>
+              <th>Design & Item Specs</th>
               <th>Amount</th>
               <th>Payment Ref</th>
               <th>Update Status</th>
@@ -1594,13 +1594,19 @@ function changeQty(amount) {
 }
 
 function addToCart() {
+  let productImg = '';
+  if (currentProduct.images && currentProduct.images[0] && currentProduct.images[0].trim() !== '') {
+    productImg = currentProduct.images[0].trim();
+  }
+
   cart.push({
     isCustom: false,
     id: currentProduct.id,
     title: currentProduct.title,
     size: selectedSize,
     price: currentProduct.price,
-    qty: selectedQty
+    qty: selectedQty,
+    image: productImg
   });
   updateCartBadge();
   renderCartDrawer();
@@ -1652,10 +1658,13 @@ function renderCartDrawer() {
     const div = document.createElement('div');
     div.className = 'cart-item';
     div.innerHTML = `
-      <div>
-        <h5>${item.title}</h5>
-        <div class="cart-item-meta">Size: <strong>${item.size}</strong> | Qty: ${item.qty}</div>
-        <div class="cart-item-price">ரூ ${itemTotal}</div>
+      <div style="display:flex; gap:10px; align-items:center;">
+        ${item.image ? `<img src="${item.image}" style="width:45px; height:45px; object-fit:contain; background:#111; border:1px solid #333;">` : ''}
+        <div>
+          <h5>${item.title}</h5>
+          <div class="cart-item-meta">Size: <strong>${item.size}</strong> | Qty: ${item.qty}</div>
+          <div class="cart-item-price">ரூ ${itemTotal}</div>
+        </div>
       </div>
       <button class="cart-item-remove" onclick="removeCartItem(${index})">Remove</button>
     `;
@@ -1843,7 +1852,6 @@ async function proceedToPayment() {
   }
 }
 
-// Save Order & Payment directly to Supabase Orders Table & Admin Sync
 async function handleOrderSuccessDirect(paymentId) {
   const savedOrder = JSON.parse(localStorage.getItem('rebel_pending_order'));
   if (!savedOrder) return;
@@ -1868,10 +1876,7 @@ async function handleOrderSuccessDirect(paymentId) {
 
   if (supabaseClient) {
     try {
-      const { error: insertErr } = await supabaseClient.from('orders').insert([orderRecord]);
-      if (insertErr) {
-        console.error("Supabase order insert error:", insertErr.message);
-      }
+      await supabaseClient.from('orders').insert([orderRecord]);
     } catch (e) {
       console.error("Order save exception:", e);
     }
@@ -1972,7 +1977,7 @@ function closeAdminSubPages() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Live Admin Data Sync (Fetching Customer, Orders & Payment Details from Supabase)
+// Live Admin Data Sync
 async function loadAdminDataFromSupabase() {
   if (!supabaseClient) return;
 
@@ -1982,7 +1987,7 @@ async function loadAdminDataFromSupabase() {
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (!ordersError && ordersData) {
+    if (!ordersError && ordersData && ordersData.length > 0) {
       ordersHistory = ordersData.map(o => ({
         id: o.order_id,
         date: o.created_at ? o.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
@@ -2033,11 +2038,9 @@ async function loadAdminDataFromSupabase() {
 }
 
 async function updateOrderStatusInSupabase(orderId, newStatus) {
-  // Update local
   const found = ordersHistory.find(o => o.id === orderId);
   if (found) found.orderStatus = newStatus;
 
-  // Update cloud
   if (supabaseClient) {
     try {
       await supabaseClient
@@ -2071,13 +2074,24 @@ function handleOrderSearch(query) {
 }
 
 function renderAdminPanels(filterDate = '') {
-  // Calculate total revenue and total orders count (summing up total items/quantities or individual orders)
   let totalRev = ordersHistory.reduce((sum, o) => sum + o.totalAmount, 0);
   let totalOrderCount = ordersHistory.length;
   
   document.getElementById('adm-revenue').innerText = 'ரூ ' + totalRev;
   document.getElementById('adm-orders-count').innerText = totalOrderCount + ' Orders';
   
+  // Calculate dynamic counts for status tabs based on current date filter
+  let baseOrdersForCounts = filterDate ? ordersHistory.filter(o => o.date === filterDate) : ordersHistory;
+  
+  document.getElementById('cnt-all').innerText = baseOrdersForCounts.length;
+  document.getElementById('cnt-pending').innerText = baseOrdersForCounts.filter(o => o.orderStatus === 'Pending Print').length;
+  document.getElementById('cnt-gofor').innerText = baseOrdersForCounts.filter(o => o.orderStatus === 'Go For Print').length;
+  document.getElementById('cnt-received').innerText = baseOrdersForCounts.filter(o => o.orderStatus === 'Print Received').length;
+  document.getElementById('cnt-ready').innerText = baseOrdersForCounts.filter(o => o.orderStatus === 'Product Ready').length;
+  document.getElementById('cnt-delivered').innerText = baseOrdersForCounts.filter(o => o.orderStatus === 'Delivered').length;
+  document.getElementById('cnt-completed').innerText = baseOrdersForCounts.filter(o => o.orderStatus === 'Completed').length;
+  document.getElementById('cnt-returned').innerText = baseOrdersForCounts.filter(o => o.orderStatus === 'Returned').length;
+
   const customTbody = document.getElementById('admin-custom-orders-tbody');
   customTbody.innerHTML = '';
   if (customOrdersHistory.length === 0) {
@@ -2103,12 +2117,10 @@ function renderAdminPanels(filterDate = '') {
   const chartTbody = document.getElementById('date-chart-tbody');
   chartTbody.innerHTML = '';
   
-  // Filtering by Date, Status, and Search Query
-  let filteredOrders = ordersHistory.filter(ord => {
-    let matchDate = !filterDate || ord.date === filterDate;
+  let filteredOrders = baseOrdersForCounts.filter(ord => {
     let matchStatus = currentStatusFilter === 'All' || ord.orderStatus === currentStatusFilter;
     let matchSearch = !currentSearchQuery || ord.id.toLowerCase().includes(currentSearchQuery) || ord.billing.name.toLowerCase().includes(currentSearchQuery) || ord.billing.phone.includes(currentSearchQuery);
-    return matchDate && matchStatus && matchSearch;
+    return matchStatus && matchSearch;
   });
 
   if (filteredOrders.length === 0) {
@@ -2118,7 +2130,17 @@ function renderAdminPanels(filterDate = '') {
       let itemsListHtml = '';
       if (ord.items && Array.isArray(ord.items)) {
         ord.items.forEach(it => {
-          itemsListHtml += `<div style="font-size:0.78rem;">• <strong>${it.title}</strong> (${it.size}) × ${it.qty}</div>`;
+          let imgHtml = it.image ? `<img src="${it.image}" style="width:36px; height:36px; object-fit:contain; background:#111; border:1px solid #333; border-radius:2px; display:inline-block; vertical-align:middle; margin-right:6px;">` : '';
+          let printSpec = it.isCustom ? '<span style="color:var(--spray-yellow); font-size:0.7rem;">[Custom Order]</span>' : '';
+          itemsListHtml += `
+            <div style="display:flex; align-items:center; margin-bottom:4px;">
+              ${imgHtml}
+              <div>
+                <strong>${it.title}</strong> ${printSpec}<br>
+                <span style="font-size:0.75rem; color:var(--grey);">Size: <strong>${it.size}</strong> | Qty: ${it.qty}</span>
+              </div>
+            </div>
+          `;
         });
       }
 
@@ -2132,7 +2154,7 @@ function renderAdminPanels(filterDate = '') {
       tr.innerHTML = `
         <td><strong>${ord.id}</strong><br><span style="font-size:0.7rem; color:var(--grey);">${ord.date}</span></td>
         <td>${ord.billing.name}<br>${ord.billing.phone}<br><span style="font-size:0.72rem; color:var(--grey);">${ord.billing.address}</span></td>
-        <td>${itemsListHtml} <span style="font-size:0.75rem; color:var(--spray-yellow);">Total Qty: ${ord.totalQty}</span></td>
+        <td>${itemsListHtml}</td>
         <td style="color:var(--spray-yellow); font-weight:bold;">ரூ ${ord.totalAmount}</td>
         <td><span style="background:rgba(34,197,94,0.2); color:#22c55e; padding:2px 6px; font-size:0.7rem; border-radius:2px;">${ord.paymentStatus}</span><br><span style="font-size:0.65rem; color:var(--grey);">Ref: ${ord.paymentId}</span></td>
         <td>
@@ -2172,7 +2194,6 @@ function renderInteractiveCalendar(selectedDateStr = '') {
     const dateKey = `${calCurrentYear}-${formattedM}-${formattedD}`;
     const thisDateObj = new Date(calCurrentYear, calCurrentMonth, d);
     
-    // Count total orders & total items for this specific date
     const dateOrders = ordersHistory.filter(o => o.date === dateKey);
     const dateOrderCount = dateOrders.length;
     const dateTotalItemsCount = dateOrders.reduce((sum, o) => sum + Number(o.totalQty || 0), 0);
