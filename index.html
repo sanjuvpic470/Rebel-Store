@@ -8,10 +8,10 @@
 <!-- Google Search Console Verification Meta Tag -->
 <meta name="google-site-verification" content="820c37cc797b4dc9" />
 
-<!-- Browser Tab Favicon Icon -->
-<link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=22">
-<link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=22">
-<link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=22">
+<!-- Browser Tab Favicon Icon (Original Favicon_FIanl.png) -->
+<link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png">
+<link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png">
+<link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Noto+Sans+Tamil:wght@600;700;900&family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -53,7 +53,8 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--spray-yellow);outli
 
 header{display:flex;align-items:center;justify-content:space-between;padding:.8rem var(--gap);border-bottom:1px solid rgba(242,240,234,.12);position:sticky;top:0;z-index:90;background:rgba(11,11,12,.94);backdrop-filter:blur(12px)}
 .logo-wrap{display:flex;align-items:center;cursor:pointer;user-select:none}
-.rebel-brand-logo{display:inline-flex;align-items:center;gap:8px;width:150px;height:75px}
+/* Header Logo Size Increased by 70% (Width: 300px, Height: 150px) */
+.rebel-brand-logo{display:inline-flex;align-items:center;gap:8px;width:300px;height:150px}
 .rebel-brand-logo svg,.rebel-brand-logo img{width:100%;height:100%;object-fit:contain;display:block}
 nav{display:none;gap:1.8rem;font-family:'Space Mono',monospace;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em}
 nav a{position:relative;padding:.25rem 0;cursor:pointer;transition:color 0.2s}
@@ -309,15 +310,14 @@ footer a:hover{color:var(--paper)}
   <header>
     <div class="logo-wrap" id="brand-logo-trigger" onclick="handleLogoClick(event)">
       <div class="rebel-brand-logo" id="header-logo-container">
-        <!-- Full Brand Logo in Header -->
+        <!-- Full Brand Logo in Header (70% Larger Size: 300px x 150px) -->
         <img id="site-header-logo-img" src="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20LOGO.png" alt="Rebel Store Logo" style="width:100%; height:100%; object-fit:contain;">
       </div>
     </div>
     <nav>
-      <a onclick="showHomeView()" id="nav-link-shop">Shop</a>
-      <a onclick="showHomeView()" id="nav-link-manifesto">Manifesto</a>
-      <a onclick="showHomeView()" id="nav-link-drops">New Drops</a>
-      <a onclick="showHomeView()" id="nav-link-contact">Contact</a>
+      <a href="#collections" id="nav-link-shop">Shop</a>
+      <a onclick="openCustomOrderPage()" id="nav-link-manifesto">Manifesto</a>
+      <a href="#footer-section" id="nav-link-contact">Contact</a>
     </nav>
     <div class="header-actions">
       <div class="user-badge" id="user-badge" onclick="handleAuthClick(event)">👤 <span id="user-name">Login</span></div>
@@ -785,21 +785,21 @@ footer a:hover{color:var(--paper)}
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.8rem;">
             <div>
               <label class="admin-field-label">Feature 01 Title</label>
-              <input type="text" id="cms-f1-title" class="admin-input-full" value="240 GSM Heavy Cotton">
+              <input type="text" id="cms-f1-title" class="admin-input-full" value="240GSM Heavyweight Cotton">
               <label class="admin-field-label">Feature 01 Description</label>
-              <input type="text" id="cms-f1-desc" class="admin-input-full" value="Premium combed cotton built for durability and heavyweight streetwear comfort.">
+              <input type="text" id="cms-f1-desc" class="admin-input-full" value="Boxy fit, no shrink, no fade after wash 50.">
             </div>
             <div>
               <label class="admin-field-label">Feature 02 Title</label>
-              <input type="text" id="cms-f2-title" class="admin-input-full" value="Small Batch Drops">
+              <input type="text" id="cms-f2-title" class="admin-input-full" value="Small-Batch Drops">
               <label class="admin-field-label">Feature 02 Description</label>
-              <input type="text" id="cms-f2-desc" class="admin-input-full" value="Exclusive designs printed in limited quantities so you always stand out.">
+              <input type="text" id="cms-f2-desc" class="admin-input-full" value="Every design is limited — once it's gone, it's archived, not restocked.">
             </div>
           </div>
         </div>
         <div>
           <label class="admin-field-label">Footer Tagline</label>
-          <input type="text" id="cms-footer-tagline" class="admin-input-full" value="Custom streetwear & ready heavyweight drops designed for the fearless.">
+          <input type="text" id="cms-footer-tagline" class="admin-input-full" value="Independent streetwear label. Heavyweight tees for people who don't wait for permission.">
         </div>
         <button class="btn btn--solid" id="save-cms-btn" style="width:100%; justify-content:center; margin-top:0.5rem;" onclick="saveWebsiteContentCMS()">Save Site Content 💾 (Cloud Persistent)</button>
       </div>
@@ -962,41 +962,44 @@ footer a:hover{color:var(--paper)}
 
   <div class="toast" id="toast">✓ Success!</div>
 
-  <footer style="background:#111113; border-top:1px solid rgba(242,240,234,0.1); margin-top: 3rem;">
+  <footer id="footer-section" style="background:#111113; border-top:1px solid rgba(242,240,234,0.1); margin-top: 3rem;">
     <div class="wrap" style="padding-top: 2rem;">
       <div style="background:#f2f0ea; color:#0b0b0c; padding:2.5rem; margin-bottom:2.5rem; border-radius:4px; box-shadow:6px 6px 0 var(--spray-yellow);">
-        <h3 style="font-family:'Anton', sans-serif; font-size:2rem; text-transform:uppercase; color:#0b0b0c; margin-bottom:1.8rem; letter-spacing:0.02em;">Why Rebel Store?</h3>
+        <h3 style="font-family:'Anton', sans-serif; font-size:2rem; text-transform:uppercase; color:#0b0b0c; margin-bottom:1.8rem; letter-spacing:0.02em;" id="feat-main-heading">Why Rebel Store?</h3>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:2rem;">
           <div style="padding-bottom:1.5rem; border-bottom:1px solid rgba(11,11,12,0.15);">
             <div style="font-family:'Anton', sans-serif; font-size:1.6rem; color:var(--spray-yellow); -webkit-text-stroke: 1px #0b0b0c; margin-bottom:0.2rem;">01</div>
-            <h4 style="font-family:'Archivo Black'; font-size:1.1rem; text-transform:uppercase; margin-bottom:0.3rem; color:#0b0b0c;" id="feat-1-title">240 GSM Heavy Cotton</h4>
-            <p style="font-family:'Space Mono'; font-size:0.78rem; color:#333; line-height:1.4;" id="feat-1-desc">Premium combed cotton built for durability and heavyweight streetwear comfort.</p>
+            <h4 style="font-family:'Archivo Black'; font-size:1.1rem; text-transform:uppercase; margin-bottom:0.3rem; color:#0b0b0c;" id="feat-1-title">240GSM Heavyweight Cotton</h4>
+            <p style="font-family:'Space Mono'; font-size:0.78rem; color:#333; line-height:1.4;" id="feat-1-desc">Boxy fit, no shrink, no fade after wash 50.</p>
           </div>
           <div style="padding-bottom:1.5rem; border-bottom:1px solid rgba(11,11,12,0.15);">
             <div style="font-family:'Anton', sans-serif; font-size:1.6rem; color:var(--spray-yellow); -webkit-text-stroke: 1px #0b0b0c; margin-bottom:0.2rem;">02</div>
-            <h4 style="font-family:'Archivo Black'; font-size:1.1rem; text-transform:uppercase; margin-bottom:0.3rem; color:#0b0b0c;" id="feat-2-title">Small Batch Drops</h4>
-            <p style="font-family:'Space Mono'; font-size:0.78rem; color:#333; line-height:1.4;" id="feat-2-desc">Exclusive designs printed in limited quantities so you always stand out.</p>
+            <h4 style="font-family:'Archivo Black'; font-size:1.1rem; text-transform:uppercase; margin-bottom:0.3rem; color:#0b0b0c;" id="feat-2-title">Small-Batch Drops</h4>
+            <p style="font-family:'Space Mono'; font-size:0.78rem; color:#333; line-height:1.4;" id="feat-2-desc">Every design is limited — once it's gone, it's archived, not restocked.</p>
           </div>
           <div>
             <div style="font-family:'Anton', sans-serif; font-size:1.6rem; color:var(--spray-yellow); -webkit-text-stroke: 1px #0b0b0c; margin-bottom:0.2rem;">03</div>
-            <h4 style="font-family:'Archivo Black'; font-size:1.1rem; text-transform:uppercase; margin-bottom:0.3rem; color:#0b0b0c;" id="feat-3-title">DTF High-Def Printing</h4>
-            <p style="font-family:'Space Mono'; font-size:0.78rem; color:#333; line-height:1.4;" id="feat-3-desc">Vibrant colors and crack-resistant high-definition direct-to-film prints.</p>
+            <h4 style="font-family:'Archivo Black'; font-size:1.1rem; text-transform:uppercase; margin-bottom:0.3rem; color:#0b0b0c;" id="feat-3-title">Screen-Printed, Not Cheap Vinyl</h4>
+            <p style="font-family:'Space Mono'; font-size:0.78rem; color:#333; line-height:1.4;" id="feat-3-desc">Hand-pulled prints that crack-resist and age like denim.</p>
           </div>
           <div>
             <div style="font-family:'Anton', sans-serif; font-size:1.6rem; color:var(--spray-yellow); -webkit-text-stroke: 1px #0b0b0c; margin-bottom:0.2rem;">04</div>
-            <h4 style="font-family:'Archivo Black'; font-size:1.1rem; text-transform:uppercase; margin-bottom:0.3rem; color:#0b0b0c;" id="feat-4-title">24–48H Express Shipping</h4>
-            <p style="font-family:'Space Mono'; font-size:0.78rem; color:#333; line-height:1.4;" id="feat-4-desc">Lightning fast dispatch and reliable delivery straight across Tamil Nadu.</p>
+            <h4 style="font-family:'Archivo Black'; font-size:1.1rem; text-transform:uppercase; margin-bottom:0.3rem; color:#0b0b0c;" id="feat-4-title">Shipped in 48 Hours</h4>
+            <p style="font-family:'Space Mono'; font-size:0.78rem; color:#333; line-height:1.4;" id="feat-4-desc">Ordered today, on your doorstep before the weekend.</p>
           </div>
+        </div>
+        <div style="margin-top: 1.5rem; font-family:'Space Mono'; font-size:0.75rem; color:#444; border-top: 1px dashed rgba(11,11,12,0.2); padding-top: 1rem;" id="feat-extra-note">
+          No fluff. Just fabric that holds up and graphics that mean something.
         </div>
       </div>
     </div>
     <div style="background:var(--spray-yellow); color:var(--ink); width:100%; padding:2.5rem var(--gap); margin-bottom:2.5rem; text-align:center;">
       <div style="max-width:700px; margin:0 auto;">
         <h3 style="font-family:'Anton', sans-serif; font-size:clamp(1.8rem,4vw,2.4rem); text-transform:uppercase; margin-bottom:0.4rem;">Join the Rebel List</h3>
-        <p style="font-family:'Space Mono'; font-size:0.82rem; margin-bottom:1.5rem; font-weight:700;">First access to new drops, restocks and 10% off your first order.</p>
+        <p style="font-family:'Space Mono'; font-size:0.82rem; margin-bottom:1.5rem; font-weight:700;">First access to new drops, restocks, and 10% off your first order.</p>
         <div style="display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap;">
           <input type="email" id="newsletter-email" class="form-control" placeholder="Enter your email" style="max-width:320px; background:#fff; color:#0b0b0c; border:2px solid #0b0b0c; margin-bottom:0;">
-          <button class="btn btn--solid" style="background:#0b0b0c; color:#ffd500; box-shadow:4px 4px 0 #fff; padding:0 1.5rem; min-height:46px; font-size:0.8rem;" onclick="showToast('Subscribed successfully!')">Get 10% Off</button>
+          <button class="btn btn--solid" style="background:#0b0b0c; color:#ffd500; box-shadow:4px 4px 0 #fff; padding:0 1.5rem; min-height:46px; font-size:0.8rem;" onclick="showToast('Subscribed successfully!')">Get 10% Off →</button>
         </div>
       </div>
     </div>
@@ -1009,39 +1012,50 @@ footer a:hover{color:var(--paper)}
               <img id="site-footer-logo-img" src="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20LOGO.png" alt="Rebel Store Logo" style="width:100%; height:100%; object-fit:contain;">
             </div>
           </div>
-          <p style="color:var(--grey); font-size:.85rem;" id="footer-tagline-text">Custom streetwear & ready heavyweight drops designed for the fearless.</p>
+          <p style="color:var(--grey); font-size:.85rem;" id="footer-tagline-text">Independent streetwear label. Heavyweight tees for people who don't wait for permission.</p>
         </div>
         <div>
-          <h5>Quick Links</h5>
+          <h5>Shop</h5>
           <ul id="footer-shop-links">
-            <li><a onclick="showHomeView()">Home</a></li>
-            <li><a onclick="openCustomOrderPage()">Custom Orders</a></li>
+            <li><a onclick="showHomeView()">Riot Collection</a></li>
+            <li><a onclick="showHomeView()">Volt Collection</a></li>
+            <li><a onclick="showHomeView()">Bone Collection</a></li>
           </ul>
         </div>
         <div>
-          <h5>Policies</h5>
+          <h5>Support</h5>
           <ul>
-            <li><a onclick="showToast('48H Dispatch & Express Shipping across Tamil Nadu')">Shipping Info</a></li>
-            <li><a onclick="showToast('Easy 7-day exchange and returns policy')">Returns & Exchange</a></li>
-            <li><a onclick="showToast('Secure SSL Encrypted Payments')">Privacy Policy</a></li>
+            <li><a onclick="showToast('Shipping information & FAQs')">Shipping</a></li>
+            <li><a onclick="showToast('Easy returns and exchange policy')">Returns</a></li>
+            <li><a onclick="showToast('Size guide reference')">Size Guide</a></li>
           </ul>
         </div>
         <div>
-          <h5>Account</h5>
-          <ul><li><a onclick="handleAuthClick()">Login / Signup</a></li></ul>
+          <h5>Follow</h5>
+          <ul>
+            <li><a href="#" target="_blank">Instagram</a></li>
+            <li><a href="#" target="_blank">TikTok</a></li>
+          </ul>
         </div>
-      </div>
-      <div class="footer-disclaimer">
-        1. 48H Dispatch applies to all standard drops and custom print orders within Tamil Nadu. 2. Free shipping is valid across all districts of Tamil Nadu on prepaid orders.
       </div>
       <div class="footer-bottom">
         <span>© 2026 Rebel Store. All rights reserved.</span>
-        <span>Wear the Uprising, Not the Uniform.</span>
+        <span>Built different.</span>
       </div>
     </div>
   </footer>
 
 <script>
+// --- FORCE CLEAR OLD LOCALSTORAGE CACHE FOR DESIGN FIX ---
+if(localStorage.getItem('rebel_site_content')) {
+  let sc = JSON.parse(localStorage.getItem('rebel_site_content'));
+  sc.feat1Title = "240GSM Heavyweight Cotton";
+  sc.feat1Desc = "Boxy fit, no shrink, no fade after wash 50.";
+  sc.feat2Title = "Small-Batch Drops";
+  sc.feat2Desc = "Every design is limited — once it's gone, it's archived, not restocked.";
+  localStorage.setItem('rebel_site_content', JSON.stringify(sc));
+}
+
 // --- ZOHO INVOICE CREDENTIALS ---
 const ZOHO_CLIENT_ID = "1000.48QVXYWE9JBL8LYH7J165IMT0U8NRA";
 const ZOHO_CLIENT_SECRET = "918803c297b3f077ef8c53f117fd76c4a2b14b6883";
@@ -1210,11 +1224,11 @@ let DEFAULT_SITE_CONTENT = {
   heroT3: "NOT THE UNIFORM",
   heroSub: "240 GSM premium combed cotton tees, high-definition DTF prints, zero compromises.",
   heroStamp: "EST. 2026 · REBEL GANG",
-  feat1Title: "240 GSM Heavy Cotton",
-  feat1Desc: "Premium combed cotton built for durability and heavyweight streetwear comfort.",
-  feat2Title: "Small Batch Drops",
-  feat2Desc: "Exclusive designs printed in limited quantities so you always stand out.",
-  footerTagline: "Custom streetwear & ready heavyweight drops designed for the fearless."
+  feat1Title: "240GSM Heavyweight Cotton",
+  feat1Desc: "Boxy fit, no shrink, no fade after wash 50.",
+  feat2Title: "Small-Batch Drops",
+  feat2Desc: "Every design is limited — once it's gone, it's archived, not restocked.",
+  footerTagline: "Independent streetwear label. Heavyweight tees for people who don't wait for permission."
 };
 
 let CATEGORIES = JSON.parse(localStorage.getItem('rebel_categories')) || DEFAULT_CATEGORIES;
@@ -1368,11 +1382,8 @@ function renderStorefront() {
   const container = document.getElementById('home-categories-container');
   const footerLinks = document.getElementById('footer-shop-links');
   container.innerHTML = '';
-  footerLinks.innerHTML = '<li><a onclick="showHomeView()">Home</a></li><li><a onclick="openCustomOrderPage()">Custom Orders</a></li>';
+  footerLinks.innerHTML = '<li><a onclick="showHomeView()">Riot Collection</a></li><li><a onclick="showHomeView()">Volt Collection</a></li><li><a onclick="showHomeView()">Bone Collection</a></li>';
   CATEGORIES.forEach(cat => {
-    const li = document.createElement('li');
-    li.innerHTML = `<a onclick="filterCategoryFromFooter('${cat.name}')">${cat.name}</a>`;
-    footerLinks.appendChild(li);
     const rowBlock = document.createElement('div');
     rowBlock.className = 'category-row-block';
     const rowTitle = document.createElement('div');
@@ -1399,11 +1410,6 @@ function renderStorefront() {
   document.getElementById('t-discount-2').innerText = activeDiscountPercent + '%';
   if(document.getElementById('hero-coupon-display')) document.getElementById('hero-coupon-display').innerText = activeOfferCode;
   if(document.getElementById('hero-discount-display')) document.getElementById('hero-discount-display').innerText = activeDiscountPercent + '%';
-}
-
-function filterCategoryFromFooter(catName) {
-  showHomeView();
-  openCategoryDedicatedPage(catName);
 }
 
 function createProductCard(catName, prod, index) {
