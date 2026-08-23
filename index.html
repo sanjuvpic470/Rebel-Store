@@ -6,9 +6,9 @@
 <title>REBEL STORE — Wear the Uprising</title>
 
 <!-- Browser Tab Favicon Icon -->
-<link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=17">
-<link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=17">
-<link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=17">
+<link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=18">
+<link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=18">
+<link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=18">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Noto+Sans+Tamil:wght@600;700;900&family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -24,37 +24,50 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{background:var(--ink);color:var(--paper);font-family:'Work Sans',sans-serif;overflow-x:hidden}
+
+/* Smooth iOS-like Fade Transitions */
+main, section {
+  animation: fadeInSmooth 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes fadeInSmooth {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 a{color:inherit;text-decoration:none}
 img{max-width:100%;display:block}
 .wrap{max-width:1200px;margin:0 auto;padding:0 var(--gap)}
 ::selection{background:var(--spray-yellow);color:var(--ink)}
 a:focus-visible,button:focus-visible{outline:3px solid var(--spray-yellow);outline-offset:3px}
+
 .ticker{background:var(--spray-yellow);color:var(--ink);font-family:'Space Mono',monospace;font-weight:700;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;border-bottom:2px solid var(--ink);display:flex}
 .ticker__track{display:flex;width:max-content;animation:scrollTicker 24s linear infinite}
 .ticker__track span{padding:.5rem 1.5rem;display:inline-block}
 @keyframes scrollTicker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-header{display:flex;align-items:center;justify-content:space-between;padding:.8rem var(--gap);border-bottom:1px solid rgba(242,240,234,.12);position:sticky;top:0;z-index:90;background:rgba(11,11,12,.94);backdrop-filter:blur(10px)}
+
+header{display:flex;align-items:center;justify-content:space-between;padding:.8rem var(--gap);border-bottom:1px solid rgba(242,240,234,.12);position:sticky;top:0;z-index:90;background:rgba(11,11,12,.94);backdrop-filter:blur(12px);transition:all 0.3s ease}
 .logo-wrap{display:flex;align-items:center;cursor:pointer;user-select:none}
 .rebel-brand-logo{display:inline-flex;align-items:center;gap:8px;width:150px;height:75px}
 .rebel-brand-logo svg,.rebel-brand-logo img{width:100%;height:100%;object-fit:contain;display:block}
 nav{display:none;gap:1.8rem;font-family:'Space Mono',monospace;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em}
-nav a{position:relative;padding:.25rem 0;cursor:pointer}
+nav a{position:relative;padding:.25rem 0;cursor:pointer;transition:color 0.2s}
 nav a::after{content:'';position:absolute;left:0;bottom:-2px;width:0;height:2px;background:var(--spray-yellow);transition:width .25s ease}
 nav a:hover::after{width:100%}
 @media(min-width:890px){nav{display:flex}}
 .header-actions{display:flex;align-items:center;gap:.8rem;position:relative}
-.user-badge{font-family:'Space Mono',monospace;font-size:.75rem;text-transform:uppercase;border:1px solid rgba(242,240,234,.3);padding:.5rem .85rem;border-radius:4px;background:#161618;color:var(--paper);cursor:pointer;display:flex;align-items:center;gap:.4rem}
-.user-badge:hover{border-color:var(--spray-yellow);color:var(--spray-yellow)}
-.user-dropdown-menu{position:absolute;top:100%;right:0;width:220px;background:#161619;border:1.5px solid var(--spray-yellow);box-shadow:6px 6px 0 var(--paper);display:none;flex-direction:column;z-index:100;margin-top:6px;border-radius:2px}
+.user-badge{font-family:'Space Mono',monospace;font-size:.75rem;text-transform:uppercase;border:1px solid rgba(242,240,234,.3);padding:.5rem .85rem;border-radius:4px;background:#161618;color:var(--paper);cursor:pointer;display:flex;align-items:center;gap:.4rem;transition:all 0.2s}
+.user-badge:hover{border-color:var(--spray-yellow);color:var(--spray-yellow);transform:translateY(-1px)}
+.user-dropdown-menu{position:absolute;top:100%;right:0;width:220px;background:#161619;border:1.5px solid var(--spray-yellow);box-shadow:6px 6px 0 var(--paper);display:none;flex-direction:column;z-index:100;margin-top:6px;border-radius:2px;animation:fadeInSmooth 0.2s ease}
 .user-dropdown-menu.open{display:flex}
-.user-dropdown-item{font-family:'Space Mono',monospace;font-size:0.78rem;padding:0.8rem 1rem;color:var(--paper);border-bottom:1px solid rgba(242,240,234,0.1);cursor:pointer;text-transform:uppercase}
+.user-dropdown-item{font-family:'Space Mono',monospace;font-size:0.78rem;padding:0.8rem 1rem;color:var(--paper);border-bottom:1px solid rgba(242,240,234,0.1);cursor:pointer;text-transform:uppercase;transition:background 0.2s}
 .user-dropdown-item:hover{background:var(--spray-yellow);color:var(--ink);font-weight:bold}
-.cart-btn{font-family:'Space Mono',monospace;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;border:1.5px solid var(--paper);padding:.5rem 1.1rem;border-radius:999px;background:transparent;color:var(--paper);cursor:pointer;font-weight:700;transition:all .2s ease;display:inline-flex;align-items:center;gap:.4rem;min-height:40px}
-.cart-btn:hover{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow)}
-.btn{font-family:'Space Mono',monospace;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:.85rem;padding:.9rem 1.5rem;border-radius:2px;display:inline-flex;align-items:center;gap:.6rem;transition:transform .15s ease,box-shadow .15s ease;cursor:pointer;border:none;text-align:center;min-height:46px}
+.cart-btn{font-family:'Space Mono',monospace;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;border:1.5px solid var(--paper);padding:.5rem 1.1rem;border-radius:999px;background:transparent;color:var(--paper);cursor:pointer;font-weight:700;transition:all .2s cubic-bezier(0.16,1,0.3,1);display:inline-flex;align-items:center;gap:.4rem;min-height:40px}
+.cart-btn:hover{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow);transform:scale(1.03)}
+.btn{font-family:'Space Mono',monospace;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:.85rem;padding:.9rem 1.5rem;border-radius:2px;display:inline-flex;align-items:center;gap:.6rem;transition:transform .2s cubic-bezier(0.16,1,0.3,1),box-shadow .2s cubic-bezier(0.16,1,0.3,1);cursor:pointer;border:none;text-align:center;min-height:46px}
 .btn:hover{transform:translate(-2px,-2px)}
 .btn--solid{background:var(--spray-yellow);color:var(--ink);box-shadow:4px 4px 0 var(--paper)}
 .btn--ghost{border:1.5px solid var(--paper);color:var(--paper);box-shadow:4px 4px 0 var(--spray-yellow);background:transparent}
+
 .hero{position:relative;padding:clamp(2.5rem,6vw,5rem) var(--gap) clamp(2rem,5vw,3.5rem);display:grid;grid-template-columns:1fr;gap:2.5rem;align-items:center;max-width:1200px;margin:0 auto}
 @media(min-width:900px){.hero{grid-template-columns:1.1fr .9fr}}
 .hero__eyebrow{font-family:'Space Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--spray-yellow);margin-bottom:.8rem;display:inline-block}
@@ -80,8 +93,8 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .horizontal-scroll-grid::-webkit-scrollbar-thumb{background:var(--spray-yellow);border-radius:4px}
 .horizontal-scroll-grid .card,.cat-prod-grid .card{min-width:330px;width:330px;flex:0 0 auto;height:500px;display:flex;flex-direction:column;justify-content:space-between}
 @media(max-width:768px){.horizontal-scroll-grid .card,.cat-prod-grid .card{min-width:280px;width:280px;height:480px}}
-.card{background:var(--card-bg);border:1px solid rgba(242,240,234,.12);padding:1.4rem;position:relative;overflow:hidden;transition:transform .2s ease,border-color .2s ease;cursor:pointer}
-.card:hover{transform:translateY(-4px);border-color:var(--spray-yellow)}
+.card{background:var(--card-bg);border:1px solid rgba(242,240,234,.12);padding:1.4rem;position:relative;overflow:hidden;transition:transform .25s cubic-bezier(0.16,1,0.3,1),border-color .2s ease;cursor:pointer}
+.card:hover{transform:translateY(-6px);border-color:var(--spray-yellow)}
 .card__tag{font-family:'Space Mono',monospace;font-size:.68rem;text-transform:uppercase;color:var(--spray-yellow);letter-spacing:.08em;margin-bottom:.4rem;display:block;flex-shrink:0}
 .tee-swatch{width:100%;aspect-ratio:1 / 1;border-radius:2px;margin-bottom:0.8rem;display:flex;align-items:center;justify-content:center;font-family:'Anton',sans-serif;font-size:2.5rem;text-transform:uppercase;position:relative;overflow:hidden;background-size:contain;background-position:center;background-repeat:no-repeat;flex-shrink:0;background-color:#141416}
 .swatch--1{background-color:#ffd500;color:#0b0b0c}
@@ -843,13 +856,14 @@ footer a:hover{color:var(--paper)}
       <!-- FILTER TABS & SEARCH BAR FOR ORDERS WITH DYNAMIC COUNTS -->
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
         <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;" id="order-status-tabs">
-          <button class="preview-link-btn" style="background:var(--paper); color:var(--ink);" onclick="filterOrdersByStatus('All', this)">All (<span id="cnt-all">0</span>)</button>
+          <button class="preview-link-btn" style="background:var(--paper); color:var(--ink);" onclick="filterOrdersByStatus('New', this)">New Orders (<span id="cnt-new">0</span>)</button>
+          <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('All', this)">All (<span id="cnt-all">0</span>)</button>
           <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Pending Print', this)">Pending Print (<span id="cnt-pending">0</span>)</button>
           <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Go For Print', this)">Go For Print (<span id="cnt-gofor">0</span>)</button>
           <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Print Received', this)">Print Received (<span id="cnt-received">0</span>)</button>
           <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Product Ready', this)">Product Ready (<span id="cnt-ready">0</span>)</button>
           <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Delivered', this)">Delivered (<span id="cnt-delivered">0</span>)</button>
-          <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Completed', this)">Completed (<span id="cnt-completed">0</span>)</button>
+          <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Completed', this)">Completed Projects (<span id="cnt-completed">0</span>)</button>
           <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Returned', this)">Returned (<span id="cnt-returned">0</span>)</button>
         </div>
         <div>
@@ -863,9 +877,9 @@ footer a:hover{color:var(--paper)}
             <tr>
               <th>Order ID & Date</th>
               <th>Customer & Address</th>
-              <th>Items Preview (Click Row to Expand)</th>
+              <th>Items & Stock Check (Click row to expand)</th>
               <th>Amount & Payment</th>
-              <th>Update Status</th>
+              <th>Update Status / Action</th>
             </tr>
           </thead>
           <tbody id="date-chart-tbody">
@@ -1216,7 +1230,7 @@ const STORE_START_DATE = new Date(2026, 7, 1);
 let calCurrentYear = 2026;
 let calCurrentMonth = 7;
 let currentSelectedDateFilter = '';
-let currentStatusFilter = 'All';
+let currentStatusFilter = 'New';
 let currentSearchQuery = '';
 
 let logoClickCount = 0;
@@ -1420,9 +1434,8 @@ function openCategoryDedicatedPage(catName) {
   document.getElementById('product-page').style.display = 'none';
   document.getElementById('custom-order-page').style.display = 'none';
   document.getElementById('shipping-billing-page').style.display = 'none';
-  document.getElementById('category-page').style.display = 'none';
-  document.getElementById('admin-view').style.display = 'none';
   document.getElementById('category-page').style.display = 'block';
+  document.getElementById('admin-view').style.display = 'none';
   window.location.hash = `#shop/${catName.toLowerCase().replace(/\s+/g, '-')}`;
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1861,7 +1874,6 @@ async function handleOrderSuccessDirect(paymentId) {
   const finalOrderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
   const totalQuantity = savedOrder.items.reduce((s, i) => s + Number(i.qty || 1), 0);
 
-  // Initialize stockStatus for each item
   const formattedItems = savedOrder.items.map(it => ({
     ...it,
     stockStatus: { available: true, notes: '' }
@@ -1878,7 +1890,7 @@ async function handleOrderSuccessDirect(paymentId) {
     total_amount: savedOrder.totalAmount,
     payment_status: 'paid',
     razorpay_payment_id: paymentId,
-    order_status: 'Pending Print'
+    order_status: 'New'
   };
 
   if (supabaseClient) {
@@ -1899,7 +1911,7 @@ async function handleOrderSuccessDirect(paymentId) {
     items: formattedItems,
     paymentStatus: 'paid',
     paymentId: paymentId,
-    orderStatus: 'Pending Print'
+    orderStatus: 'New'
   });
   localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
 
@@ -2012,7 +2024,7 @@ async function loadAdminDataFromSupabase() {
         })),
         paymentStatus: o.payment_status || 'paid',
         paymentId: o.razorpay_payment_id || 'N/A',
-        orderStatus: o.order_status || 'Pending Print'
+        orderStatus: o.order_status || 'New'
       }));
     }
 
@@ -2045,6 +2057,24 @@ async function loadAdminDataFromSupabase() {
   } catch (err) {
     console.error("Admin data sync error:", err);
   }
+}
+
+async function acceptNewOrder(orderId) {
+  const found = ordersHistory.find(o => o.id === orderId);
+  if (found) found.orderStatus = 'Pending Print';
+
+  if (supabaseClient) {
+    try {
+      await supabaseClient
+        .from('orders')
+        .update({ order_status: 'Pending Print' })
+        .eq('order_id', orderId);
+    } catch (err) {
+      console.error("Accept order error:", err);
+    }
+  }
+  showToast(`Order ${orderId} accepted into tracker!`);
+  renderAdminPanels(currentSelectedDateFilter);
 }
 
 async function updateOrderStatusInSupabase(orderId, newStatus) {
@@ -2086,7 +2116,7 @@ async function updateItemStockMeta(orderId, itemIndex, field, val) {
 }
 
 function toggleOrderExpand(event, rowId) {
-  if (['SELECT', 'INPUT', 'LABEL', 'OPTION'].includes(event.target.tagName)) return;
+  if (['SELECT', 'INPUT', 'LABEL', 'OPTION', 'BUTTON'].includes(event.target.tagName)) return;
 
   const detailEl = document.getElementById(`order-detail-${rowId}`);
   if (detailEl) {
@@ -2125,7 +2155,8 @@ function renderAdminPanels(filterDate = '') {
   
   let baseOrdersForCounts = filterDate ? ordersHistory.filter(o => o.date === filterDate) : ordersHistory;
   
-  document.getElementById('cnt-all').innerText = baseOrdersForCounts.length;
+  document.getElementById('cnt-new').innerText = baseOrdersForCounts.filter(o => o.orderStatus === 'New').length;
+  document.getElementById('cnt-all').innerText = baseOrdersForCounts.filter(o => o.orderStatus !== 'New' && o.orderStatus !== 'Completed').length;
   document.getElementById('cnt-pending').innerText = baseOrdersForCounts.filter(o => o.orderStatus === 'Pending Print').length;
   document.getElementById('cnt-gofor').innerText = baseOrdersForCounts.filter(o => o.orderStatus === 'Go For Print').length;
   document.getElementById('cnt-received').innerText = baseOrdersForCounts.filter(o => o.orderStatus === 'Print Received').length;
@@ -2160,7 +2191,17 @@ function renderAdminPanels(filterDate = '') {
   chartTbody.innerHTML = '';
   
   let filteredOrders = baseOrdersForCounts.filter(ord => {
-    let matchStatus = currentStatusFilter === 'All' || ord.orderStatus === currentStatusFilter;
+    let matchStatus = false;
+    if (currentStatusFilter === 'New') {
+      matchStatus = (ord.orderStatus === 'New');
+    } else if (currentStatusFilter === 'All') {
+      matchStatus = (ord.orderStatus !== 'New' && ord.orderStatus !== 'Completed');
+    } else if (currentStatusFilter === 'Completed') {
+      matchStatus = (ord.orderStatus === 'Completed' || ord.orderStatus === 'Delivered');
+    } else {
+      matchStatus = (ord.orderStatus === currentStatusFilter);
+    }
+
     let matchSearch = !currentSearchQuery || ord.id.toLowerCase().includes(currentSearchQuery) || ord.billing.name.toLowerCase().includes(currentSearchQuery) || ord.billing.phone.includes(currentSearchQuery);
     return matchStatus && matchSearch;
   });
@@ -2189,10 +2230,10 @@ function renderAdminPanels(filterDate = '') {
               </div>
               <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-left:48px;">
                 <label style="font-size:0.75rem; cursor:pointer; display:flex; gap:4px; align-items:center; color:var(--success-green);">
-                  <input type="radio" name="stock-${ord.id}-${itIdx}" ${st.available ? 'checked' : ''} onchange="updateItemStockMeta('${ord.id}', ${itIdx}, 'available', true)"> Available
+                  <input type="radio" name="stock-${ord.id}-${itIdx}" ${st.available ? 'checked' : ''} onchange="updateItemStockMeta('${ord.id}', ${itIdx}, 'available', true)"> 🟢 Available
                 </label>
                 <label style="font-size:0.75rem; cursor:pointer; display:flex; gap:4px; align-items:center; color:var(--rebel-red);">
-                  <input type="radio" name="stock-${ord.id}-${itIdx}" ${!st.available ? 'checked' : ''} onchange="updateItemStockMeta('${ord.id}', ${itIdx}, 'available', false)"> Unavailable
+                  <input type="radio" name="stock-${ord.id}-${itIdx}" ${!st.available ? 'checked' : ''} onchange="updateItemStockMeta('${ord.id}', ${itIdx}, 'available', false)"> 🔴 Unavailable
                 </label>
                 <input type="text" class="admin-input-small" placeholder="Notes (e.g. only 2 left)..." value="${st.notes || ''}" onchange="updateItemStockMeta('${ord.id}', ${itIdx}, 'notes', this.value)" style="width:200px; margin-bottom:0; font-size:0.75rem; padding:3px 6px;" onclick="event.stopPropagation()">
               </div>
@@ -2206,6 +2247,17 @@ function renderAdminPanels(filterDate = '') {
       statuses.forEach(st => {
         statusOptionsHtml += `<option value="${st}" ${ord.orderStatus === st ? 'selected' : ''}>${st}</option>`;
       });
+
+      let actionColHtml = '';
+      if (ord.orderStatus === 'New') {
+        actionColHtml = `<button class="btn btn--solid" style="padding:4px 10px; font-size:0.75rem; min-height:auto;" onclick="acceptNewOrder('${ord.id}')">Accept Order ✓</button>`;
+      } else {
+        actionColHtml = `
+          <select class="cal-dropdown" style="font-size:0.78rem; padding:4px;" onchange="updateOrderStatusInSupabase('${ord.id}', this.value)" onclick="event.stopPropagation()">
+            ${statusOptionsHtml}
+          </select>
+        `;
+      }
 
       const tr = document.createElement('tr');
       tr.style.cursor = 'pointer';
@@ -2221,11 +2273,7 @@ function renderAdminPanels(filterDate = '') {
           </div>
         </td>
         <td style="color:var(--spray-yellow); font-weight:bold;">ரூ ${ord.totalAmount}<br><span style="background:rgba(34,197,94,0.2); color:#22c55e; padding:1px 5px; font-size:0.65rem; border-radius:2px;">${ord.paymentStatus}</span></td>
-        <td>
-          <select class="cal-dropdown" style="font-size:0.78rem; padding:4px;" onchange="updateOrderStatusInSupabase('${ord.id}', this.value)" onclick="event.stopPropagation()">
-            ${statusOptionsHtml}
-          </select>
-        </td>
+        <td>${actionColHtml}</td>
       `;
       chartTbody.appendChild(tr);
     });
@@ -2258,7 +2306,7 @@ function renderInteractiveCalendar(selectedDateStr = '') {
     const dateKey = `${calCurrentYear}-${formattedM}-${formattedD}`;
     const thisDateObj = new Date(calCurrentYear, calCurrentMonth, d);
     
-    const dateOrders = ordersHistory.filter(o => o.date === dateKey);
+    const dateOrders = ordersHistory.filter(o => o.date === dateKey && o.orderStatus !== 'New');
     const dateOrderCount = dateOrders.length;
     const dateTotalItemsCount = dateOrders.reduce((sum, o) => sum + Number(o.totalQty || 0), 0);
 
@@ -2325,7 +2373,7 @@ function renderGraphChart() {
     const d = new Date();
     d.setDate(d.getDate() - i);
     const dStr = d.toISOString().split('T')[0];
-    const dayOrders = ordersHistory.filter(o => o.date === dStr);
+    const dayOrders = ordersHistory.filter(o => o.date === dStr && o.orderStatus !== 'New');
     const dayRev = dayOrders.reduce((sum, o) => sum + o.totalAmount, 0);
     const dayCount = dayOrders.length;
     last7Days.push({ label: d.toLocaleDateString('en-US', { weekday: 'short' }), rev: dayRev, count: dayCount, dateStr: dStr });
