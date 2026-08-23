@@ -6,9 +6,9 @@
 <title>REBEL STORE — Wear the Uprising</title>
 
 <!-- Browser Tab Favicon Icon -->
-<link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=11">
-<link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=11">
-<link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=11">
+<link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=13">
+<link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=13">
+<link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=13">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Noto+Sans+Tamil:wght@600;700;900&family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -627,9 +627,9 @@ footer a:hover{color:var(--paper)}
       <h3>Staff / Owner Access</h3>
       <p>Enter Username and Password. Press Enter or click Authenticate.</p>
       <label class="admin-field-label">Username</label>
-      <input type="text" id="admin-user-input" class="admin-input-full" placeholder="Username" autocomplete="off">
+      <input type="text" id="admin-user-input" class="admin-input-full" placeholder="Username" autocomplete="off" name="admin_usr_dummy">
       <label class="admin-field-label">Password</label>
-      <input type="password" id="admin-pass-input" class="admin-input-full" placeholder="••••••••••" autocomplete="new-password">
+      <input type="password" id="admin-pass-input" class="admin-input-full" placeholder="••••••••••" autocomplete="new-password" name="admin_pwd_dummy">
       <button class="btn btn--solid" style="width:100%; justify-content:center; margin-top:.5rem;" onclick="verifyAdminCredentials()">Authenticate</button>
     </div>
   </div>
@@ -853,7 +853,7 @@ footer a:hover{color:var(--paper)}
           <button class="preview-link-btn" style="background:#1a1a1d; color:var(--paper);" onclick="filterOrdersByStatus('Returned', this)">Returned (<span id="cnt-returned">0</span>)</button>
         </div>
         <div>
-          <input type="text" id="order-search-input" class="admin-input-small" placeholder="Search Order ID / Name..." oninput="handleOrderSearch(this.value)" style="width: 220px; margin-bottom:0;">
+          <input type="text" id="order-search-input" class="admin-input-small" placeholder="Search Order ID / Name..." oninput="handleOrderSearch(this.value)" style="width: 220px; margin-bottom:0;" autocomplete="off">
         </div>
       </div>
 
@@ -1485,7 +1485,8 @@ async function addCustomOrderToCart() {
     size: custSize,
     price: custUnitPrice,
     qty: custQty,
-    prints: { center: centerPrint, left: leftPrint, back: backPrint }
+    prints: { center: centerPrint, left: leftPrint, back: backPrint },
+    image: centerPrint ? centerPrint.path : ''
   };
   cart.push(customItem);
   updateCartBadge();
@@ -1767,7 +1768,7 @@ function validateBillingForm() {
   };
 }
 
-// --- SECURE RAZORPAY PAYMENT TRIGGER ---
+// --- SECURE RAZORPAY PAYMENT TRIGGER (Testing Mode Simulation Active) ---
 async function proceedToPayment() {
   const billingData = validateBillingForm();
   if (!billingData) return;
@@ -1786,7 +1787,7 @@ async function proceedToPayment() {
 
   const payBtn = document.getElementById('pay-submit-btn');
   payBtn.disabled = true;
-  payBtn.innerText = 'Connecting to Razorpay...';
+  payBtn.innerText = 'Processing Order...';
 
   const pendingOrder = {
     billing: billingData,
@@ -1796,60 +1797,14 @@ async function proceedToPayment() {
   };
   localStorage.setItem('rebel_pending_order', JSON.stringify(pendingOrder));
 
-  const RAZORPAY_ACTIVE_KEY = 'rzp_test_51HQ70bKqX1234'; 
+  // Dummy testing simulation for instant order creation & success trigger
+  const simulatedPaymentId = 'RZP_TEST_' + Math.floor(100000000 + Math.random() * 900000000);
 
-  const options = {
-    key: RAZORPAY_ACTIVE_KEY,
-    amount: subtotal * 100,
-    currency: 'INR',
-    name: 'REBEL STORE',
-    description: 'Heavyweight Apparel Order',
-    prefill: {
-      name: billingData.name,
-      email: billingData.email,
-      contact: billingData.phone
-    },
-    notes: {
-      address: billingData.address
-    },
-    theme: {
-      color: '#ffd500'
-    },
-    handler: async function (response) {
-      await handleOrderSuccessDirect(response.razorpay_payment_id || ('RZP_' + Date.now()));
-      payBtn.disabled = false;
-      payBtn.innerText = 'Proceed to Payment →';
-    },
-    modal: {
-      ondismiss: function () {
-        payBtn.disabled = false;
-        payBtn.innerText = 'Proceed to Payment →';
-        showToast('Payment cancelled.');
-      }
-    }
-  };
-
-  try {
-    if (typeof Razorpay !== 'undefined') {
-      const rzp = new Razorpay(options);
-      rzp.on('payment.failed', function (response) {
-        showToast('Payment failed: ' + (response.error.description || 'Unknown error'));
-        payBtn.disabled = false;
-        payBtn.innerText = 'Proceed to Payment →';
-      });
-      rzp.open();
-    } else {
-      await handleOrderSuccessDirect('RZP_DIRECT_' + Date.now());
-      payBtn.disabled = false;
-      payBtn.innerText = 'Proceed to Payment →';
-    }
-  } catch (err) {
-    console.error("Payment trigger error:", err);
-    showToast("Processing payment...");
-    await handleOrderSuccessDirect('RZP_DIRECT_' + Date.now());
+  setTimeout(async () => {
+    await handleOrderSuccessDirect(simulatedPaymentId);
     payBtn.disabled = false;
     payBtn.innerText = 'Proceed to Payment →';
-  }
+  }, 1000);
 }
 
 async function handleOrderSuccessDirect(paymentId) {
@@ -2080,7 +2035,6 @@ function renderAdminPanels(filterDate = '') {
   document.getElementById('adm-revenue').innerText = 'ரூ ' + totalRev;
   document.getElementById('adm-orders-count').innerText = totalOrderCount + ' Orders';
   
-  // Calculate dynamic counts for status tabs based on current date filter
   let baseOrdersForCounts = filterDate ? ordersHistory.filter(o => o.date === filterDate) : ordersHistory;
   
   document.getElementById('cnt-all').innerText = baseOrdersForCounts.length;
@@ -2130,14 +2084,14 @@ function renderAdminPanels(filterDate = '') {
       let itemsListHtml = '';
       if (ord.items && Array.isArray(ord.items)) {
         ord.items.forEach(it => {
-          let imgHtml = it.image ? `<img src="${it.image}" style="width:36px; height:36px; object-fit:contain; background:#111; border:1px solid #333; border-radius:2px; display:inline-block; vertical-align:middle; margin-right:6px;">` : '';
+          let imgHtml = it.image ? `<img src="${it.image}" style="width:40px; height:40px; object-fit:contain; background:#111; border:1px solid #333; border-radius:2px; display:inline-block; vertical-align:middle; margin-right:8px;">` : '';
           let printSpec = it.isCustom ? '<span style="color:var(--spray-yellow); font-size:0.7rem;">[Custom Order]</span>' : '';
           itemsListHtml += `
-            <div style="display:flex; align-items:center; margin-bottom:4px;">
+            <div style="display:flex; align-items:center; margin-bottom:6px;">
               ${imgHtml}
               <div>
                 <strong>${it.title}</strong> ${printSpec}<br>
-                <span style="font-size:0.75rem; color:var(--grey);">Size: <strong>${it.size}</strong> | Qty: ${it.qty}</span>
+                <span style="font-size:0.75rem; color:var(--spray-yellow);">Size: <strong>${it.size}</strong> | Qty: ${it.qty}</span>
               </div>
             </div>
           `;
