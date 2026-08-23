@@ -6,9 +6,9 @@
 <title>REBEL STORE — Wear the Uprising</title>
 
 <!-- Browser Tab Favicon Icon -->
-<link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=13">
-<link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=13">
-<link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=13">
+<link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=14">
+<link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=14">
+<link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=14">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Noto+Sans+Tamil:wght@600;700;900&family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -488,44 +488,44 @@ footer a:hover{color:var(--paper)}
       
       <div class="b-field">
         <label>Full Name *</label>
-        <input type="text" id="b-name" placeholder="John Doe" required>
+        <input type="text" id="b-name" placeholder="John Doe" required autocomplete="name">
       </div>
 
       <div class="b-row">
         <div class="b-field">
           <label>Mobile Number *</label>
-          <input type="tel" id="b-phone" placeholder="9876543210" required>
+          <input type="tel" id="b-phone" placeholder="9876543210" required autocomplete="tel">
         </div>
         <div class="b-field">
           <label>Alternate Mobile</label>
-          <input type="tel" id="b-alt-phone" placeholder="Optional">
+          <input type="tel" id="b-alt-phone" placeholder="Optional" autocomplete="tel">
         </div>
       </div>
 
       <div class="b-field">
         <label>Email Address *</label>
-        <input type="email" id="b-email" placeholder="john@example.com" required>
+        <input type="email" id="b-email" placeholder="john@example.com" required autocomplete="email">
       </div>
 
       <div class="b-field">
         <label>Address Line 1 *</label>
-        <input type="text" id="b-address1" placeholder="Door No, Building, Street, Area" required>
+        <input type="text" id="b-address1" placeholder="Door No, Building, Street, Area" required autocomplete="address-line1">
       </div>
 
       <div class="b-field">
         <label>Address Line 2 (Optional)</label>
-        <input type="text" id="b-address2" placeholder="Landmark, Apartment Name, Floor">
+        <input type="text" id="b-address2" placeholder="Landmark, Apartment Name, Floor" autocomplete="address-line2">
       </div>
 
       <div class="b-row">
         <div class="b-field">
           <label>Pincode *</label>
-          <input type="text" id="b-pincode" placeholder="6-digit Pincode (e.g. 600001)" maxlength="6" oninput="handlePincodeLookup(this.value)" required>
+          <input type="text" id="b-pincode" placeholder="6-digit Pincode (e.g. 600001)" maxlength="6" oninput="handlePincodeLookup(this.value)" required autocomplete="postal-code">
           <span class="b-hint" id="pincode-status-text"></span>
         </div>
         <div class="b-field">
           <label>State *</label>
-          <select id="b-state" class="form-control" onchange="onStateSelectChange()" required>
+          <select id="b-state" class="form-control" onchange="onStateSelectChange()" required autocomplete="address-level1">
             <option value="">Select State</option>
           </select>
         </div>
@@ -533,7 +533,7 @@ footer a:hover{color:var(--paper)}
 
       <div class="b-field">
         <label>District *</label>
-        <select id="b-district" class="form-control" required>
+        <select id="b-district" class="form-control" required autocomplete="address-level2">
           <option value="">Select District</option>
         </select>
       </div>
@@ -563,9 +563,9 @@ footer a:hover{color:var(--paper)}
         <h3>Rebel Store Login</h3>
         <p>Enter your username/email and password to sign in.</p>
         <label class="admin-field-label">Username / Email</label>
-        <input type="text" id="login-user" placeholder="Username or Email" class="admin-input-full" autocomplete="off">
+        <input type="text" id="login-user" placeholder="Username or Email" class="admin-input-full" autocomplete="username">
         <label class="admin-field-label">Password</label>
-        <input type="password" id="login-pass" placeholder="••••••••" class="admin-input-full" autocomplete="new-password">
+        <input type="password" id="login-pass" placeholder="••••••••" class="admin-input-full" autocomplete="current-password">
         <button class="btn btn--solid" style="width:100%; justify-content:center; margin-bottom:1rem;" id="login-submit-btn" onclick="processUserLogin()">Login →</button>
         <div class="auth-divider"><span>OR</span></div>
         <button class="social-btn" id="google-login-btn" onclick="loginWithGoogleSocial()">
@@ -580,21 +580,21 @@ footer a:hover{color:var(--paper)}
         <h3>Create New Account</h3>
         <p>Fill out details to register your account.</p>
         <label class="admin-field-label">Full Name *</label>
-        <input type="text" id="reg-name" placeholder="John Doe" class="admin-input-full" style="margin-bottom:0.6rem;" autocomplete="off">
+        <input type="text" id="reg-name" placeholder="John Doe" class="admin-input-full" style="margin-bottom:0.6rem;" autocomplete="name">
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.5rem;">
           <div>
             <label class="admin-field-label">Mobile Number *</label>
-            <input type="tel" id="reg-phone" placeholder="9876543210" class="admin-input-full" style="margin-bottom:0.6rem;" autocomplete="off">
+            <input type="tel" id="reg-phone" placeholder="9876543210" class="admin-input-full" style="margin-bottom:0.6rem;" autocomplete="tel">
           </div>
           <div>
             <label class="admin-field-label">Alternate Mobile</label>
-            <input type="tel" id="reg-altphone" placeholder="Optional" class="admin-input-full" style="margin-bottom:0.6rem;" autocomplete="off">
+            <input type="tel" id="reg-altphone" placeholder="Optional" class="admin-input-full" style="margin-bottom:0.6rem;" autocomplete="tel">
           </div>
         </div>
         <label class="admin-field-label">Email Address *</label>
-        <input type="email" id="reg-email" placeholder="john@example.com" class="admin-input-full" style="margin-bottom:0.6rem;" autocomplete="off">
+        <input type="email" id="reg-email" placeholder="john@example.com" class="admin-input-full" style="margin-bottom:0.6rem;" autocomplete="email">
         <label class="admin-field-label">Username *</label>
-        <input type="text" id="reg-username" placeholder="johndoe" class="admin-input-full" style="margin-bottom:0.6rem;" autocomplete="off">
+        <input type="text" id="reg-username" placeholder="johndoe" class="admin-input-full" style="margin-bottom:0.6rem;" autocomplete="username">
         <label class="admin-field-label">Password *</label>
         <input type="password" id="reg-password" placeholder="••••••••" class="admin-input-full" style="margin-bottom:1rem;" autocomplete="new-password">
         <button class="btn btn--solid" style="width:100%; justify-content:center; margin-bottom:1rem;" id="reg-submit-btn" onclick="registerNewAccount()">Create Account →</button>
@@ -627,9 +627,9 @@ footer a:hover{color:var(--paper)}
       <h3>Staff / Owner Access</h3>
       <p>Enter Username and Password. Press Enter or click Authenticate.</p>
       <label class="admin-field-label">Username</label>
-      <input type="text" id="admin-user-input" class="admin-input-full" placeholder="Username" autocomplete="off" name="admin_usr_dummy">
+      <input type="text" id="admin-user-input" class="admin-input-full" placeholder="Username" autocomplete="username" name="adm_usr_name">
       <label class="admin-field-label">Password</label>
-      <input type="password" id="admin-pass-input" class="admin-input-full" placeholder="••••••••••" autocomplete="new-password" name="admin_pwd_dummy">
+      <input type="password" id="admin-pass-input" class="admin-input-full" placeholder="••••••••••" autocomplete="current-password" name="adm_pwd_name">
       <button class="btn btn--solid" style="width:100%; justify-content:center; margin-top:.5rem;" onclick="verifyAdminCredentials()">Authenticate</button>
     </div>
   </div>
@@ -1509,11 +1509,20 @@ function openProductByDetails(catName, productId) {
   if (!foundProd) { foundCat = CATEGORIES[0]; foundProd = CATEGORIES[0].products[0]; }
   lastViewedProductId = foundProd.id;
   currentProduct = foundProd;
+  
+  // Reset quantity to 1 whenever a product or size is opened
+  selectedQty = 1;
+  const qtyEl = document.getElementById('pdp-qty');
+  if (qtyEl) qtyEl.innerText = '1';
+
   document.getElementById('pdp-title').innerText = foundProd.title;
   document.getElementById('pdp-tag-text').innerText = `${foundCat.name} // ` + foundProd.code;
   document.getElementById('pdp-desc-text').innerText = foundProd.desc;
   document.getElementById('pdp-mrp').innerText = 'ரூ ' + foundProd.mrp;
   document.getElementById('pdp-store-price').innerText = 'ரூ ' + foundProd.price;
+  if(document.getElementById('add-btn')) {
+    document.getElementById('add-btn').innerText = `Add to Cart — ரூ ${foundProd.price * selectedQty}`;
+  }
   
   const sliderTrack = document.getElementById('slider-track');
   const thumbRow = document.getElementById('thumb-row-container');
@@ -1585,13 +1594,22 @@ function selectSize(btn, size) {
   selectedSize = size;
   document.querySelectorAll('.pdp-info .size-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
+  // Reset quantity to 1 when size changes
+  selectedQty = 1;
+  const qtyEl = document.getElementById('pdp-qty');
+  if (qtyEl) qtyEl.innerText = '1';
+  if (currentProduct && document.getElementById('add-btn')) {
+    document.getElementById('add-btn').innerText = `Add to Cart — ரூ ${currentProduct.price * selectedQty}`;
+  }
 }
 
 function changeQty(amount) {
   selectedQty += amount;
   if (selectedQty < 1) selectedQty = 1;
   document.getElementById('pdp-qty').innerText = selectedQty;
-  document.getElementById('add-btn').innerText = `Add to Cart — ரூ ${currentProduct.price * selectedQty}`;
+  if(currentProduct) {
+    document.getElementById('add-btn').innerText = `Add to Cart — ரூ ${currentProduct.price * selectedQty}`;
+  }
 }
 
 function addToCart() {
@@ -1612,6 +1630,14 @@ function addToCart() {
   updateCartBadge();
   renderCartDrawer();
   showToast(`Added to cart successfully!`);
+  
+  // Reset quantity back to 1 after adding to cart
+  selectedQty = 1;
+  const qtyEl = document.getElementById('pdp-qty');
+  if (qtyEl) qtyEl.innerText = '1';
+  if (currentProduct && document.getElementById('add-btn')) {
+    document.getElementById('add-btn').innerText = `Add to Cart — ரூ ${currentProduct.price * selectedQty}`;
+  }
 }
 
 function updateCartBadge() {
@@ -1797,7 +1823,6 @@ async function proceedToPayment() {
   };
   localStorage.setItem('rebel_pending_order', JSON.stringify(pendingOrder));
 
-  // Dummy testing simulation for instant order creation & success trigger
   const simulatedPaymentId = 'RZP_TEST_' + Math.floor(100000000 + Math.random() * 900000000);
 
   setTimeout(async () => {
