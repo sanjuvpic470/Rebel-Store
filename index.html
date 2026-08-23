@@ -6,9 +6,9 @@
 <title>REBEL STORE — Wear the Uprising</title>
 
 <!-- Browser Tab Favicon Icon -->
-<link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=18">
-<link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=18">
-<link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=18">
+<link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=19">
+<link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=19">
+<link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=19">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Noto+Sans+Tamil:wght@600;700;900&family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -23,15 +23,28 @@
 :root{--ink:#0b0b0c;--paper:#f2f0ea;--rebel-red:#e52521;--spray-yellow:#ffd500;--grey:#8a8a86;--card-bg:#141416;--gap:clamp(1rem,4vw,2.5rem);--success-green:#22c55e}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{background:var(--ink);color:var(--paper);font-family:'Work Sans',sans-serif;overflow-x:hidden}
+body{background:var(--ink);color:var(--paper);font-family:'Work Sans',sans-serif;overflow-x:hidden;position:relative}
 
-/* Smooth iOS-like Fade Transitions */
-main, section {
-  animation: fadeInSmooth 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+/* Mouse Cursor Glow Follower */
+#cursor-glow {
+  pointer-events: none;
+  position: fixed;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(255,213,0,0.12) 0%, rgba(11,11,12,0) 70%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+  z-index: 9999;
 }
-@keyframes fadeInSmooth {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
+
+/* Smooth iOS-like Animations & Transitions */
+main, section, .admin-sub-page {
+  animation: iosPageTransition 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes iosPageTransition {
+  from { opacity: 0; transform: translateY(8px) scale(0.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 a{color:inherit;text-decoration:none}
@@ -57,7 +70,7 @@ nav a:hover::after{width:100%}
 .header-actions{display:flex;align-items:center;gap:.8rem;position:relative}
 .user-badge{font-family:'Space Mono',monospace;font-size:.75rem;text-transform:uppercase;border:1px solid rgba(242,240,234,.3);padding:.5rem .85rem;border-radius:4px;background:#161618;color:var(--paper);cursor:pointer;display:flex;align-items:center;gap:.4rem;transition:all 0.2s}
 .user-badge:hover{border-color:var(--spray-yellow);color:var(--spray-yellow);transform:translateY(-1px)}
-.user-dropdown-menu{position:absolute;top:100%;right:0;width:220px;background:#161619;border:1.5px solid var(--spray-yellow);box-shadow:6px 6px 0 var(--paper);display:none;flex-direction:column;z-index:100;margin-top:6px;border-radius:2px;animation:fadeInSmooth 0.2s ease}
+.user-dropdown-menu{position:absolute;top:100%;right:0;width:220px;background:#161619;border:1.5px solid var(--spray-yellow);box-shadow:6px 6px 0 var(--paper);display:none;flex-direction:column;z-index:100;margin-top:6px;border-radius:2px;animation:iosPageTransition 0.2s ease}
 .user-dropdown-menu.open{display:flex}
 .user-dropdown-item{font-family:'Space Mono',monospace;font-size:0.78rem;padding:0.8rem 1rem;color:var(--paper);border-bottom:1px solid rgba(242,240,234,0.1);cursor:pointer;text-transform:uppercase;transition:background 0.2s}
 .user-dropdown-item:hover{background:var(--spray-yellow);color:var(--ink);font-weight:bold}
@@ -67,6 +80,21 @@ nav a:hover::after{width:100%}
 .btn:hover{transform:translate(-2px,-2px)}
 .btn--solid{background:var(--spray-yellow);color:var(--ink);box-shadow:4px 4px 0 var(--paper)}
 .btn--ghost{border:1.5px solid var(--paper);color:var(--paper);box-shadow:4px 4px 0 var(--spray-yellow);background:transparent}
+
+/* Breadcrumb Web Path styling */
+.breadcrumb-bar {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--grey);
+  padding: 0.6rem var(--gap);
+  background: #111113;
+  border-bottom: 1px solid rgba(242,240,234,0.08);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.breadcrumb-bar span {
+  color: var(--spray-yellow);
+}
 
 .hero{position:relative;padding:clamp(2.5rem,6vw,5rem) var(--gap) clamp(2rem,5vw,3.5rem);display:grid;grid-template-columns:1fr;gap:2.5rem;align-items:center;max-width:1200px;margin:0 auto}
 @media(min-width:900px){.hero{grid-template-columns:1.1fr .9fr}}
@@ -289,6 +317,9 @@ footer a:hover{color:var(--paper)}
 </style>
 </head>
 <body>
+  <!-- Mouse Cursor Glow Effect -->
+  <div id="cursor-glow"></div>
+
   <div class="ticker" aria-hidden="true">
     <div class="ticker__track" id="ticker-track-box">
       <span id="ticker-msg-1">★ 48H DISPATCH · 3–5 DAYS DELIVERY IN TN¹</span>
@@ -320,6 +351,11 @@ footer a:hover{color:var(--paper)}
       <button class="cart-btn" onclick="toggleCartDrawer(true)">Cart (<span id="cart-count">0</span>)</button>
     </div>
   </header>
+
+  <!-- Web Breadcrumbs / Path -->
+  <div class="breadcrumb-bar">
+    Home / <span id="current-breadcrumb-path">Store / Collections</span>
+  </div>
 
   <main id="home-view">
     <section class="hero">
@@ -928,7 +964,7 @@ footer a:hover{color:var(--paper)}
 
     <div class="admin-sub-page" id="subpage-products">
       <div class="sub-page-header">
-        <h2>⚙️ T-Shirt Categories & Products Manager</h2>
+        <h2>⚙️ T-Shirt Product Manager & Categories</h2>
         <button class="btn btn--ghost" style="padding:0.4rem 1rem; font-size:0.8rem;" onclick="closeAdminSubPages()">← Back to Dashboard</button>
       </div>
       <div style="background:#111; padding:1.2rem; border:1px solid rgba(242,240,234,.15); margin-bottom:1.5rem;">
@@ -1256,6 +1292,11 @@ function handleLogoClick(event) {
   }
 }
 
+function updateBreadcrumb(pathText) {
+  const bc = document.getElementById('current-breadcrumb-path');
+  if (bc) bc.innerText = pathText;
+}
+
 function renameCardTitle(elementId, defaultName) {
   const el = document.getElementById(elementId);
   const currentText = el.innerText.replace(/^[⚡📅🏷️👥⚙️✍️]\s*/, '');
@@ -1436,6 +1477,7 @@ function openCategoryDedicatedPage(catName) {
   document.getElementById('shipping-billing-page').style.display = 'none';
   document.getElementById('category-page').style.display = 'block';
   document.getElementById('admin-view').style.display = 'none';
+  updateBreadcrumb(`Store / ${catName}`);
   window.location.hash = `#shop/${catName.toLowerCase().replace(/\s+/g, '-')}`;
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1447,6 +1489,7 @@ function showHomeView() {
   document.getElementById('category-page').style.display = 'none';
   document.getElementById('admin-view').style.display = 'none';
   document.getElementById('home-view').style.display = 'block';
+  updateBreadcrumb('Store / Home');
   window.location.hash = '#home';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1458,6 +1501,7 @@ function openCustomOrderPage() {
   document.getElementById('category-page').style.display = 'none';
   document.getElementById('admin-view').style.display = 'none';
   document.getElementById('custom-order-page').style.display = 'block';
+  updateBreadcrumb('Store / Custom Order Builder');
   window.location.hash = '#custom-order';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1587,6 +1631,7 @@ function openProductByDetails(catName, productId) {
   
   const catSlug = foundCat.name.toLowerCase().replace(/\s+/g, '-');
   const prodSlug = foundProd.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  updateBreadcrumb(`Store / ${foundCat.name} / ${foundProd.title}`);
   window.location.hash = `#shop/${catSlug}/${prodSlug}`;
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1756,6 +1801,7 @@ function showShippingFormView() {
   document.getElementById('category-page').style.display = 'none';
   document.getElementById('admin-view').style.display = 'none';
   document.getElementById('shipping-billing-page').style.display = 'block';
+  updateBreadcrumb('Store / Checkout / Shipping');
   
   initStatesDropdown();
 
@@ -1987,6 +2033,7 @@ function openAdminSubPage(subPageId) {
       backToAdminCategoriesGrid();
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    updateBreadcrumb(`Admin / ${target.querySelector('h2').innerText}`);
   }
 }
 
@@ -1994,6 +2041,7 @@ function closeAdminSubPages() {
   document.querySelectorAll('.admin-sub-page').forEach(p => p.classList.remove('active'));
   document.getElementById('admin-nav-grid').style.display = 'grid';
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  updateBreadcrumb('Admin / Dashboard');
 }
 
 // Live Admin Data Sync
@@ -2073,7 +2121,7 @@ async function acceptNewOrder(orderId) {
       console.error("Accept order error:", err);
     }
   }
-  showToast(`Order ${orderId} accepted into tracker!`);
+  showToast(`Order ${orderId} accepted into active tracker!`);
   renderAdminPanels(currentSelectedDateFilter);
 }
 
@@ -2116,7 +2164,7 @@ async function updateItemStockMeta(orderId, itemIndex, field, val) {
 }
 
 function toggleOrderExpand(event, rowId) {
-  if (['SELECT', 'INPUT', 'LABEL', 'OPTION', 'BUTTON'].includes(event.target.tagName)) return;
+  if (['SELECT', 'INPUT', 'LABEL', 'OPTION', 'BUTTON', 'RADIO'].includes(event.target.tagName)) return;
 
   const detailEl = document.getElementById(`order-detail-${rowId}`);
   if (detailEl) {
@@ -2148,7 +2196,7 @@ function handleOrderSearch(query) {
 
 function renderAdminPanels(filterDate = '') {
   let totalRev = ordersHistory.reduce((sum, o) => sum + o.totalAmount, 0);
-  let totalOrderCount = ordersHistory.length;
+  let totalOrderCount = ordersHistory.filter(o => o.orderStatus !== 'New').length;
   
   document.getElementById('adm-revenue').innerText = 'ரூ ' + totalRev;
   document.getElementById('adm-orders-count').innerText = totalOrderCount + ' Orders';
@@ -2156,7 +2204,7 @@ function renderAdminPanels(filterDate = '') {
   let baseOrdersForCounts = filterDate ? ordersHistory.filter(o => o.date === filterDate) : ordersHistory;
   
   document.getElementById('cnt-new').innerText = baseOrdersForCounts.filter(o => o.orderStatus === 'New').length;
-  document.getElementById('cnt-all').innerText = baseOrdersForCounts.filter(o => o.orderStatus !== 'New' && o.orderStatus !== 'Completed').length;
+  document.getElementById('cnt-all').innerText = baseOrdersForCounts.filter(o => o.orderStatus !== 'New' && o.orderStatus !== 'Completed' && o.orderStatus !== 'Delivered').length;
   document.getElementById('cnt-pending').innerText = baseOrdersForCounts.filter(o => o.orderStatus === 'Pending Print').length;
   document.getElementById('cnt-gofor').innerText = baseOrdersForCounts.filter(o => o.orderStatus === 'Go For Print').length;
   document.getElementById('cnt-received').innerText = baseOrdersForCounts.filter(o => o.orderStatus === 'Print Received').length;
@@ -2195,7 +2243,7 @@ function renderAdminPanels(filterDate = '') {
     if (currentStatusFilter === 'New') {
       matchStatus = (ord.orderStatus === 'New');
     } else if (currentStatusFilter === 'All') {
-      matchStatus = (ord.orderStatus !== 'New' && ord.orderStatus !== 'Completed');
+      matchStatus = (ord.orderStatus !== 'New' && ord.orderStatus !== 'Completed' && ord.orderStatus !== 'Delivered');
     } else if (currentStatusFilter === 'Completed') {
       matchStatus = (ord.orderStatus === 'Completed' || ord.orderStatus === 'Delivered');
     } else {
@@ -2210,7 +2258,7 @@ function renderAdminPanels(filterDate = '') {
     chartTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--grey);">No matching orders found.</td></tr>`;
   } else {
     filteredOrders.forEach((ord) => {
-      let itemsSummaryHtml = `Total Items Count: <strong>${ord.totalQty} pcs</strong>`;
+      let itemsSummaryHtml = `Total Items: <strong>${ord.totalQty} pcs</strong>`;
       let itemsDetailedHtml = '';
       
       if (ord.items && Array.isArray(ord.items)) {
@@ -2220,7 +2268,7 @@ function renderAdminPanels(filterDate = '') {
           let st = it.stockStatus || { available: true, notes: '' };
 
           itemsDetailedHtml += `
-            <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:10px; border-bottom:1px dashed rgba(242,240,234,0.15); padding-bottom:8px;">
+            <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px; border-bottom:1px dashed rgba(242,240,234,0.15); padding-bottom:8px;">
               <div style="display:flex; align-items:center; gap:8px;">
                 ${imgHtml}
                 <div>
@@ -2228,14 +2276,14 @@ function renderAdminPanels(filterDate = '') {
                   <span style="font-size:0.75rem; color:var(--grey);">Size: <strong style="color:var(--spray-yellow);">${it.size}</strong> | Qty: ${it.qty} | Price: ரூ ${it.price}</span>
                 </div>
               </div>
-              <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-left:48px;">
-                <label style="font-size:0.75rem; cursor:pointer; display:flex; gap:4px; align-items:center; color:var(--success-green);">
+              <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin-left:48px;">
+                <label style="font-size:0.75rem; cursor:pointer; display:flex; gap:4px; align-items:center; color:var(--success-green); font-weight:700;">
                   <input type="radio" name="stock-${ord.id}-${itIdx}" ${st.available ? 'checked' : ''} onchange="updateItemStockMeta('${ord.id}', ${itIdx}, 'available', true)"> 🟢 Available
                 </label>
-                <label style="font-size:0.75rem; cursor:pointer; display:flex; gap:4px; align-items:center; color:var(--rebel-red);">
+                <label style="font-size:0.75rem; cursor:pointer; display:flex; gap:4px; align-items:center; color:var(--rebel-red); font-weight:700;">
                   <input type="radio" name="stock-${ord.id}-${itIdx}" ${!st.available ? 'checked' : ''} onchange="updateItemStockMeta('${ord.id}', ${itIdx}, 'available', false)"> 🔴 Unavailable
                 </label>
-                <input type="text" class="admin-input-small" placeholder="Notes (e.g. only 2 left)..." value="${st.notes || ''}" onchange="updateItemStockMeta('${ord.id}', ${itIdx}, 'notes', this.value)" style="width:200px; margin-bottom:0; font-size:0.75rem; padding:3px 6px;" onclick="event.stopPropagation()">
+                <input type="text" class="admin-input-small" placeholder="Notes (e.g. only 2 left)..." value="${st.notes || ''}" onchange="updateItemStockMeta('${ord.id}', ${itIdx}, 'notes', this.value)" style="width:220px; margin-bottom:0; font-size:0.75rem; padding:4px 8px;" onclick="event.stopPropagation()">
               </div>
             </div>
           `;
@@ -2647,6 +2695,15 @@ document.addEventListener('DOMContentLoaded', () => {
     userInput.addEventListener('keydown', handleEnter);
   }
 
+  // Mouse Cursor Glow Tracker
+  const cursorGlow = document.getElementById('cursor-glow');
+  window.addEventListener('mousemove', (e) => {
+    if (cursorGlow) {
+      cursorGlow.style.left = e.clientX + 'px';
+      cursorGlow.style.top = e.clientY + 'px';
+    }
+  });
+
   checkRazorpayReturnStatus();
 
   const savedSession = sessionStorage.getItem('rebel_user_session');
@@ -2779,6 +2836,7 @@ function grantAdminAccess() {
   document.getElementById('shipping-billing-page').style.display = 'none';
   document.getElementById('category-page').style.display = 'none';
   document.getElementById('admin-view').style.display = 'block';
+  updateBreadcrumb('Admin / Dashboard');
   window.location.hash = '#admin';
   window.scrollTo({ top: 0, behavior: 'smooth' });
   closeAdminSubPages();
