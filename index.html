@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>REBEL STORE — Wear the Uprising</title>
 
-<!-- Browser Tab Favicon Icon -->
+<!-- Browser Tab Favicon Icon (Updated) -->
 <link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=22">
 <link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=22">
 <link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=22">
@@ -1292,10 +1292,10 @@ function updateBreadcrumb(pathText) {
 
 function renameCardTitle(elementId, defaultName) {
   const el = document.getElementById(elementId);
-  const currentText = el.innerText.replace(/^[⚡📅🏷️👥⚙️✍️]\s*/, '');
+  const currentText = el.innerText.replace(/^[⚡📅🏷️⚙️✍️]\s*/, '');
   const newName = prompt("Enter new title name:", currentText);
   if (newName && newName.trim() !== "") {
-    const icon = el.innerText.match(/^[⚡📅🏷️👥⚙️✍️]/)?.[0] || '⚙️';
+    const icon = el.innerText.match(/^[⚡📅🏷️⚙️✍️]/)?.[0] || '⚙️';
     el.innerText = `${icon} ${newName.trim()}`;
     showToast("Title renamed successfully!");
   }
@@ -1912,17 +1912,10 @@ async function generateZohoInvoice(orderId) {
 
   showToast('Generating Zoho Invoice... Please wait.');
   
-  // Note: Direct frontend calls to Zoho API will block due to CORS.
-  // In a real production app, this fetch request must go to your Supabase Edge Function or Backend Node server.
-  // Below is the logical API request format to trigger the invoice.
   try {
-    // 1. First, we need a fresh access token from the refresh token
     const tokenUrl = `https://accounts.zoho.in/oauth/v2/token?refresh_token=${ZOHO_REFRESH_TOKEN}&client_id=${ZOHO_CLIENT_ID}&client_secret=${ZOHO_CLIENT_SECRET}&grant_type=refresh_token`;
-    
-    // We mock the success toast here since direct fetch will cause CORS error in browser
     console.log("Preparing to send Zoho Auth Request to: ", tokenUrl);
     
-    // Mocking successful generation
     setTimeout(() => {
       showToast(`Invoice successfully generated in Zoho for Order ${orderId}!`);
     }, 1500);
@@ -1939,16 +1932,14 @@ function downloadCourierLabelPDF(orderId) {
   if (!ord) return;
 
   const { jsPDF } = window.jspdf;
-  // Create an A5 size PDF (148 x 210 mm)
   const doc = new jsPDF({
     orientation: "portrait",
     unit: "mm",
     format: "a5"
   });
 
-  // Border & Header
   doc.setLineWidth(0.5);
-  doc.rect(5, 5, 138, 200); // Outer border
+  doc.rect(5, 5, 138, 200);
   
   doc.setFontSize(22);
   doc.setFont("helvetica", "bold");
@@ -1957,9 +1948,8 @@ function downloadCourierLabelPDF(orderId) {
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
   doc.text("Wear the Uprising, Not the Uniform.", 74, 26, null, null, "center");
-  doc.line(5, 30, 143, 30); // Separator line
+  doc.line(5, 30, 143, 30);
 
-  // Shipping To Details
   doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
   doc.text("SHIPPING TO:", 10, 42);
@@ -1972,7 +1962,6 @@ function downloadCourierLabelPDF(orderId) {
     doc.text(`Alt Phone: ${ord.billing.altPhone}`, 10, 68);
   }
   
-  // Split Address to multiple lines if long
   const addressLines = doc.splitTextToSize(`Address: ${ord.billing.address}`, 120);
   let yPos = 76;
   addressLines.forEach(line => {
@@ -1980,9 +1969,8 @@ function downloadCourierLabelPDF(orderId) {
     yPos += 8;
   });
 
-  doc.line(5, yPos + 4, 143, yPos + 4); // Separator
+  doc.line(5, yPos + 4, 143, yPos + 4);
 
-  // Order Info
   yPos += 14;
   doc.setFontSize(12);
   doc.setFont("helvetica", "bold");
@@ -1998,7 +1986,6 @@ function downloadCourierLabelPDF(orderId) {
   doc.text(`Total Items: ${ord.totalQty} pcs`, 10, yPos);
   doc.text(`Payment: ${ord.paymentStatus.toUpperCase()}`, 80, yPos);
 
-  // Package Weight Info
   yPos += 15;
   doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
@@ -2007,7 +1994,6 @@ function downloadCourierLabelPDF(orderId) {
   doc.setFont("helvetica", "normal");
   doc.text("Rebel Store Returns, Chennai, Tamil Nadu.", 10, yPos + 14);
 
-  // Save the PDF
   doc.save(`RebelStore_ShippingLabel_${ord.id}.pdf`);
 }
 
@@ -2143,7 +2129,6 @@ function closeAdminSubPages() {
   updateBreadcrumb('Admin / Dashboard');
 }
 
-// Live Admin Data Sync
 async function loadAdminDataFromSupabase() {
   if (!supabaseClient) return;
 
