@@ -74,21 +74,6 @@ nav a:hover::after{width:100%}
 .btn--solid{background:var(--spray-yellow);color:var(--ink);box-shadow:4px 4px 0 var(--paper)}
 .btn--ghost{border:1.5px solid var(--paper);color:var(--paper);box-shadow:4px 4px 0 var(--spray-yellow);background:transparent}
 
-/* Breadcrumb Path */
-.breadcrumb-bar {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.75rem;
-  color: var(--grey);
-  padding: 0.6rem var(--gap);
-  background: #111113;
-  border-bottom: 1px solid rgba(242,240,234,0.08);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-.breadcrumb-bar span {
-  color: var(--spray-yellow);
-}
-
 .hero{position:relative;padding:clamp(2.5rem,6vw,5rem) var(--gap) clamp(2rem,5vw,3.5rem);display:grid;grid-template-columns:1fr;gap:2.5rem;align-items:center;max-width:1200px;margin:0 auto}
 @media(min-width:900px){.hero{grid-template-columns:1.1fr .9fr}}
 .hero__eyebrow{font-family:'Space Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--spray-yellow);margin-bottom:.8rem;display:inline-block}
@@ -344,11 +329,6 @@ footer a:hover{color:var(--paper)}
       <button class="cart-btn" onclick="toggleCartDrawer(true)">Cart (<span id="cart-count">0</span>)</button>
     </div>
   </header>
-
-  <!-- Web Breadcrumbs / Path -->
-  <div class="breadcrumb-bar">
-    Home / <span id="current-breadcrumb-path">Store / Home</span>
-  </div>
 
   <main id="home-view">
     <section class="hero">
@@ -1290,11 +1270,6 @@ function handleLogoClick(event) {
   }
 }
 
-function updateBreadcrumb(pathText) {
-  const bc = document.getElementById('current-breadcrumb-path');
-  if (bc) bc.innerText = pathText;
-}
-
 function renameCardTitle(elementId, defaultName) {
   const el = document.getElementById(elementId);
   const currentText = el.innerText.replace(/^[⚡📅🏷️⚙️✍️]\s*/, '');
@@ -1475,7 +1450,6 @@ function openCategoryDedicatedPage(catName) {
   document.getElementById('shipping-billing-page').style.display = 'none';
   document.getElementById('category-page').style.display = 'block';
   document.getElementById('admin-view').style.display = 'none';
-  updateBreadcrumb(`Store / ${catName}`);
   window.location.hash = `#shop/${catName.toLowerCase().replace(/\s+/g, '-')}`;
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1487,7 +1461,6 @@ function showHomeView() {
   document.getElementById('category-page').style.display = 'none';
   document.getElementById('admin-view').style.display = 'none';
   document.getElementById('home-view').style.display = 'block';
-  updateBreadcrumb('Store / Home');
   window.location.hash = '#home';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1499,7 +1472,6 @@ function openCustomOrderPage() {
   document.getElementById('category-page').style.display = 'none';
   document.getElementById('admin-view').style.display = 'none';
   document.getElementById('custom-order-page').style.display = 'block';
-  updateBreadcrumb('Store / Custom Order Builder');
   window.location.hash = '#custom-order';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1629,7 +1601,6 @@ function openProductByDetails(catName, productId) {
   
   const catSlug = foundCat.name.toLowerCase().replace(/\s+/g, '-');
   const prodSlug = foundProd.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-  updateBreadcrumb(`Store / ${foundCat.name} / ${foundProd.title}`);
   window.location.hash = `#shop/${catSlug}/${prodSlug}`;
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1799,7 +1770,6 @@ function showShippingFormView() {
   document.getElementById('category-page').style.display = 'none';
   document.getElementById('admin-view').style.display = 'none';
   document.getElementById('shipping-billing-page').style.display = 'block';
-  updateBreadcrumb('Store / Checkout / Shipping');
   
   initStatesDropdown();
 
@@ -2123,7 +2093,6 @@ function openAdminSubPage(subPageId) {
       backToAdminCategoriesGrid();
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    updateBreadcrumb(`Admin / ${target.querySelector('h2').innerText}`);
   }
 }
 
@@ -2131,7 +2100,6 @@ function closeAdminSubPages() {
   document.querySelectorAll('.admin-sub-page').forEach(p => p.classList.remove('active'));
   document.getElementById('admin-nav-grid').style.display = 'grid';
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  updateBreadcrumb('Admin / Dashboard');
 }
 
 async function loadAdminDataFromSupabase() {
@@ -2920,7 +2888,6 @@ function grantAdminAccess() {
   document.getElementById('shipping-billing-page').style.display = 'none';
   document.getElementById('category-page').style.display = 'none';
   document.getElementById('admin-view').style.display = 'block';
-  updateBreadcrumb('Admin / Dashboard');
   window.location.hash = '#admin';
   window.scrollTo({ top: 0, behavior: 'smooth' });
   closeAdminSubPages();
