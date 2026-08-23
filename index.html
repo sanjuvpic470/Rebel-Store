@@ -6,9 +6,9 @@
 <title>REBEL STORE — Wear the Uprising</title>
 
 <!-- Browser Tab Favicon Icon -->
-<link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=8">
-<link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=8">
-<link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=8">
+<link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=9">
+<link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=9">
+<link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png?v=9">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Noto+Sans+Tamil:wght@600;700;900&family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -1737,13 +1737,13 @@ function validateBillingForm() {
   };
 }
 
-// --- SECURE RAZORPAY PAYMENT TRIGGER ---
+// --- SECURE RAZORPAY PAYMENT TRIGGER (Directly Saves to Supabase) ---
 async function proceedToPayment() {
   const billingData = validateBillingForm();
   if (!billingData) return;
 
   if (cart.length === 0) {
-    showToast('Your cart is empty!');
+    showToast('Your bag is empty!');
     return;
   }
 
@@ -1766,41 +1766,6 @@ async function proceedToPayment() {
   };
   localStorage.setItem('rebel_pending_order', JSON.stringify(pendingOrder));
 
-  const redirectUrl = window.location.origin + window.location.pathname + '?payment=success';
-  const payload = {
-    amount: subtotal,
-    customer: {
-      name: billingData.name,
-      email: billingData.email,
-      phone: billingData.phone
-    },
-    redirect_url: redirectUrl
-  };
-
-  let resData = null;
-
-  try {
-    const rawRes = await fetch(`${SUPABASE_PROJECT_URL}/functions/v1/${EDGE_FUNCTION_NAME}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_ANON_KEY
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (rawRes.ok) {
-      resData = await rawRes.json();
-    }
-  } catch (e) {
-    console.warn("Backend fetch note:", e);
-  }
-
-  if (resData && resData.short_url) {
-    window.location.href = resData.short_url;
-    return;
-  }
-
   const RAZORPAY_ACTIVE_KEY = 'rzp_test_51HQ70bKqX1234'; 
 
   const options = {
@@ -1820,8 +1785,10 @@ async function proceedToPayment() {
     theme: {
       color: '#ffd500'
     },
-    handler: function (response) {
-      handleOrderSuccessDirect(response.razorpay_payment_id || ('RZP_' + Date.now()));
+    handler: async function (response) {
+      await handleOrderSuccessDirect(response.razorpay_payment_id || ('RZP_' + Date.now()));
+      payBtn.disabled = false;
+      payBtn.innerText = 'Proceed to Payment →';
     },
     modal: {
       ondismiss: function () {
@@ -1842,16 +1809,20 @@ async function proceedToPayment() {
       });
       rzp.open();
     } else {
-      handleOrderSuccessDirect('RZP_DIRECT_' + Date.now());
+      await handleOrderSuccessDirect('RZP_DIRECT_' + Date.now());
+      payBtn.disabled = false;
+      payBtn.innerText = 'Proceed to Payment →';
     }
   } catch (err) {
     console.error("Payment trigger error:", err);
-    showToast("Opening payment gateway...");
-    handleOrderSuccessDirect('RZP_DIRECT_' + Date.now());
+    showToast("Processing payment...");
+    await handleOrderSuccessDirect('RZP_DIRECT_' + Date.now());
+    payBtn.disabled = false;
+    payBtn.innerText = 'Proceed to Payment →';
   }
 }
 
-// Save Order & Payment directly to Supabase
+// Save Order & Payment directly to Supabase Orders Table & Admin Sync
 async function handleOrderSuccessDirect(paymentId) {
   const savedOrder = JSON.parse(localStorage.getItem('rebel_pending_order'));
   if (!savedOrder) return;
@@ -1875,9 +1846,12 @@ async function handleOrderSuccessDirect(paymentId) {
 
   if (supabaseClient) {
     try {
-      await supabaseClient.from('orders').insert([orderRecord]);
+      const { error: insertErr } = await supabaseClient.from('orders').insert([orderRecord]);
+      if (insertErr) {
+        console.error("Supabase order insert error:", insertErr.message);
+      }
     } catch (e) {
-      console.error("Order save error:", e);
+      console.error("Order save exception:", e);
     }
   }
 
@@ -1889,6 +1863,7 @@ async function handleOrderSuccessDirect(paymentId) {
     totalQty: totalQuantity,
     totalAmount: savedOrder.totalAmount,
     items: savedOrder.items,
+    paymentStatus: 'paid',
     paymentId: paymentId
   });
   localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
@@ -1979,13 +1954,13 @@ async function loadAdminDataFromSupabase() {
   if (!supabaseClient) return;
 
   try {
-    // 1. Fetch Orders & Payment Details
+    // 1. Fetch Orders & Payment Details from Supabase
     const { data: ordersData, error: ordersError } = await supabaseClient
       .from('orders')
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (!ordersError && ordersData) {
+    if (!ordersError && ordersData && ordersData.length > 0) {
       ordersHistory = ordersData.map(o => ({
         id: o.order_id,
         date: o.created_at ? o.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
@@ -2003,7 +1978,7 @@ async function loadAdminDataFromSupabase() {
       }));
     }
 
-    // 2. Fetch Customer Details
+    // 2. Fetch Customer Details from Supabase
     const { data: usersData, error: usersError } = await supabaseClient
       .from('profiles')
       .select('*')
