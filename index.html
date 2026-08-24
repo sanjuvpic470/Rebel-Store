@@ -31,7 +31,6 @@
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{background:var(--ink);color:var(--paper);font-family:'Work Sans',sans-serif;overflow-x:hidden}
 
-/* Smooth iOS-like Fade & Slide Transitions */
 main, section, .admin-sub-page {
   animation: iosPageTransition 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -53,7 +52,6 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--spray-yellow);outli
 
 header{display:flex;align-items:center;justify-content:space-between;padding:.5rem var(--gap);border-bottom:1px solid rgba(242,240,234,.12);position:sticky;top:0;z-index:90;background:rgba(11,11,12,.94);backdrop-filter:blur(12px);height:80px}
 .logo-wrap{display:flex;align-items:center;cursor:pointer;user-select:none;height:100%}
-/* Header Box Height Normal, Logo 70% Bigger inside */
 .rebel-brand-logo{display:inline-flex;align-items:center;gap:8px;width:260px;height:70px;overflow:visible}
 .rebel-brand-logo svg,.rebel-brand-logo img{width:100%;height:100%;object-fit:contain;display:block;transform:scale(1.7);transform-origin:left center}
 nav{display:none;gap:1.8rem;font-family:'Space Mono',monospace;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em}
@@ -283,7 +281,6 @@ footer a:hover{color:var(--paper)}
 .profile-info-row{font-family:'Space Mono',monospace;font-size:0.85rem;margin-bottom:0.8rem;color:var(--paper)}
 .profile-info-row span{color:var(--grey)}
 
-/* Success Modal */
 .success-modal{position:fixed;inset:0;background:rgba(0,0,0,0.88);backdrop-filter:blur(8px);z-index:300;display:none;align-items:center;justify-content:center;padding:1.5rem}
 .success-card{background:#141416;border:3px solid var(--spray-yellow);box-shadow:10px 10px 0 var(--paper);padding:2.5rem 2rem;width:100%;max-width:480px;text-align:center;animation:popSuccess 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);position:relative}
 @keyframes popSuccess{0%{transform:scale(0.8);opacity:0}100%{transform:scale(1);opacity:1}}
@@ -639,16 +636,17 @@ footer a:hover{color:var(--paper)}
     </div>
   </div>
 
+  <!-- ADMIN AUTH MODAL (Activated via 5-click on Logo) -->
   <div class="admin-auth-modal" id="admin-auth-modal">
     <div class="admin-auth-box">
       <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeAdminAuth()">×</button>
       <h3>Staff / Owner Access</h3>
-      <p>Enter Username and Password. Press Enter or click Authenticate.</p>
-      <label class="admin-field-label">Username</label>
-      <input type="text" id="admin-user-input" class="admin-input-full" placeholder="Username" autocomplete="username" name="adm_usr_name">
+      <p>Enter Supabase Admin Email & Password.</p>
+      <label class="admin-field-label">Admin Email</label>
+      <input type="email" id="admin-user-input" class="admin-input-full" placeholder="admin@rebelstore.in" autocomplete="username">
       <label class="admin-field-label">Password</label>
-      <input type="password" id="admin-pass-input" class="admin-input-full" placeholder="••••••••••" autocomplete="current-password" name="adm_pwd_name">
-      <button class="btn btn--solid" style="width:100%; justify-content:center; margin-top:.5rem;" onclick="verifyAdminCredentials()">Authenticate</button>
+      <input type="password" id="admin-pass-input" class="admin-input-full" placeholder="••••••••••" autocomplete="current-password">
+      <button class="btn btn--solid" style="width:100%; justify-content:center; margin-top:.5rem;" onclick="verifyAdminCredentialsFromSupabase()">Authenticate via Supabase</button>
     </div>
   </div>
 
@@ -1103,6 +1101,7 @@ const ZOHO_CLIENT_SECRET = "918803c297b3f077ef8c53f117fd76c4a2b14b6883";
 const ZOHO_REFRESH_TOKEN = "1000.a4c324d91e73eb928f6c3c7044f48fea.29018644ed9166f209b582f5d3356672";
 const ZOHO_ORG_ID = "60083739244";
 
+// --- SUPABASE CONFIGURATION (Project URL & Anon/Publishable Key) ---
 const SUPABASE_PROJECT_URL = 'https://rdqzslvgqtajhiwxwauo.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_3DE6FO6lDP6esci9vw-RgQ_DTWhe1xR';
 
@@ -1292,7 +1291,6 @@ let selectedQty = 1;
 let currentSlideIndex = 0;
 let currentProduct = null;
 let loggedInUser = null;
-const MASTER_ADMIN = { user: "admin", pass: "0000" };
 const angleLabels = ['Angle 01 // Front View', 'Angle 02 // Back Graphic', 'Angle 03 // Detail', 'Angle 04 // Fit'];
 const STORE_START_DATE = new Date(2026, 7, 1);
 let calCurrentYear = 2026;
@@ -1888,7 +1886,6 @@ function validateBillingForm() {
   };
 }
 
-// --- SECURE RAZORPAY PAYMENT GATEWAY IMPLEMENTATION WITH CORRECT EDGE FUNCTION URL ---
 async function proceedToPayment() {
   const billingData = validateBillingForm();
   if (!billingData) return;
@@ -1918,7 +1915,6 @@ async function proceedToPayment() {
   localStorage.setItem('rebel_pending_order', JSON.stringify(pendingOrder));
 
   try {
-    // 1. CALL BACKEND (EDGE FUNCTION) USING THE EXACT URL WITH CAPITAL LETTERS & UNDERSCORE
     const response = await fetch('https://rdqzslvgqtajhiwxwauo.supabase.co/functions/v1/Create_razorpay_order', {
       method: 'POST',
       headers: {
@@ -1936,7 +1932,6 @@ async function proceedToPayment() {
       throw new Error(data.error || "Failed to create order ID from backend.");
     }
 
-    // 2. OPEN RAZORPAY STANDARD CHECKOUT WITH THE GENERATED ORDER_ID
     var options = {
       "key": "rzp_live_TSmy7WSAeEXpQH",
       "amount": data.amount,
@@ -1987,7 +1982,6 @@ async function proceedToPayment() {
   }
 }
 
-// Generate Zoho Invoice Manually via Admin Function
 async function generateZohoInvoice(orderId) {
   const foundOrder = ordersHistory.find(o => o.id === orderId);
   if (!foundOrder) return;
@@ -2008,7 +2002,6 @@ async function generateZohoInvoice(orderId) {
   }
 }
 
-// PDF Courier Shipping Label Generator using jsPDF
 function downloadCourierLabelPDF(orderId) {
   const ord = ordersHistory.find(o => o.id === orderId);
   if (!ord) return;
@@ -2209,7 +2202,6 @@ function closeAdminSubPages() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// --- TRASH BIN & DELETE ORDER LOGIC ---
 function deleteOrderToTrash(orderId) {
   const index = ordersHistory.findIndex(o => o.id === orderId);
   if (index !== -1) {
@@ -2248,7 +2240,6 @@ function permanentlyDeleteOrder(orderId) {
   }
 }
 
-// Auto cleanup trash items older than 7 days
 function checkTrashBinExpiry() {
   const now = new Date();
   const validTrash = [];
@@ -2952,7 +2943,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const userInput = document.getElementById('admin-user-input');
   if (passInput && userInput) {
     const handleEnter = (e) => {
-      if (e.key === 'Enter') verifyAdminCredentials();
+      if (e.key === 'Enter') verifyAdminCredentialsFromSupabase();
     };
     passInput.addEventListener('keydown', handleEnter);
     userInput.addEventListener('keydown', handleEnter);
@@ -2970,7 +2961,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Supabase Auth Sync
   if (supabaseClient) {
     supabaseClient.auth.getSession().then(async ({ data: { session } }) => {
       if (session && session.user) {
@@ -3043,7 +3033,7 @@ function handleRouteFromHash() {
   } else if (hash === '#shipping') {
     goToShippingPage();
   } else if (hash === '#admin') {
-    currentRole = 'owner';
+    // Admin access via URL route requires prior session or prompt
     grantAdminAccess();
   } else if (hash.startsWith('#shop/')) {
     const parts = hash.replace('#shop/', '').split('/');
@@ -3065,20 +3055,40 @@ function handleRouteFromHash() {
   }
 }
 
-function verifyAdminCredentials() {
-  const u = document.getElementById('admin-user-input').value.trim();
-  const p = document.getElementById('admin-pass-input').value.trim();
-  if (u === MASTER_ADMIN.user && p === MASTER_ADMIN.pass) {
-    currentRole = 'owner';
-    grantAdminAccess();
-  } else {
-    const foundStaff = staffAccounts.find(s => s.user === u && s.pass === p);
-    if (foundStaff) {
-      currentRole = 'staff';
-      grantAdminAccess();
-    } else {
-      showToast('Invalid username or password');
+// --- SECURE SUPABASE ADMIN AUTHENTICATION (Replaced hardcoded admin/0000) ---
+async function verifyAdminCredentialsFromSupabase() {
+  const emailInput = document.getElementById('admin-user-input').value.trim();
+  const passInput = document.getElementById('admin-pass-input').value.trim();
+
+  if (!emailInput || !passInput) {
+    showToast('Please enter admin email and password');
+    return;
+  }
+
+  if (!supabaseClient) {
+    showToast('Supabase client not initialized');
+    return;
+  }
+
+  try {
+    // Authenticate directly with Supabase Auth server securely
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email: emailInput,
+      password: passInput
+    });
+
+    if (error) {
+      throw error;
     }
+
+    if (data && data.user) {
+      currentRole = 'owner';
+      grantAdminAccess();
+      showToast('Admin authenticated securely via Supabase!');
+    }
+  } catch (err) {
+    console.error("Admin Authentication Error:", err);
+    alert("Admin Login Failed: " + err.message);
   }
 }
 
@@ -3105,7 +3115,6 @@ function grantAdminAccess() {
   renderAdminCategoriesMainGrid();
   renderAdminPanels();
   loadAdminDataFromSupabase();
-  showToast(currentRole === 'owner' ? 'Owner full access granted' : 'Staff view opened');
 }
 
 function createStaffAccount() {
@@ -3187,7 +3196,6 @@ window.addEventListener('click', () => {
   if (menu) menu.classList.remove('open');
 });
 
-// User Registration with Direct Profiles Upsert
 async function registerNewAccount() {
   const name = document.getElementById('reg-name').value.trim();
   const phone = document.getElementById('reg-phone').value.trim();
@@ -3260,7 +3268,6 @@ async function registerNewAccount() {
   }
 }
 
-// User Login with Supabase Auth
 async function processUserLogin() {
   const inputVal = document.getElementById('login-user').value.trim();
   const passVal = document.getElementById('login-pass').value.trim();
@@ -3340,7 +3347,6 @@ async function processUserLogin() {
   }
 }
 
-// Google OAuth Login
 async function loginWithGoogleSocial() {
   const googleBtn = document.getElementById('google-login-btn');
   if (googleBtn) {
@@ -3437,7 +3443,7 @@ function closeOrdersModal() {
 function showToast(msg) {
   const toast = document.getElementById('toast');
   toast.innerText = msg; toast.classList.add('show');
-  setTimeout(() => { toast.classList.remove('show'); }, 3500);
+  setTimeout(() => { toast.classList.remove('side-panel'); toast.classList.remove('show'); }, 3500);
 }
 </script>
 </body>
