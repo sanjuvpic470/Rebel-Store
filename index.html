@@ -168,7 +168,10 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .qty-selector{display:inline-flex;align-items:center;border:1.5px solid rgba(242,240,234,.25);background:#18181b;margin-bottom:1.8rem}
 .qty-btn{width:46px;height:46px;background:transparent;border:none;color:var(--paper);font-family:'Space Mono',monospace;font-size:1.3rem;font-weight:700;cursor:pointer}
 .qty-val{min-width:45px;text-align:center;font-family:'Space Mono',monospace;font-weight:700;font-size:1rem}
-.add-to-cart-btn{width:100%;padding:1.1rem;font-size:1rem;justify-content:center;background:var(--spray-yellow);color:var(--ink);box-shadow:5px 5px 0 var(--paper)}
+.add-to-cart-btn{width:100%;padding:1.1rem;font-size:1rem;justify-content:center;background:var(--spray-yellow);color:var(--ink);box-shadow:5px 5px 0 var(--paper);margin-bottom:.8rem}
+.wishlist-pdp-btn{width:100%;padding:1rem;font-size:.95rem;justify-content:center;background:transparent;color:var(--spray-yellow);border:1.5px solid var(--spray-yellow);box-shadow:4px 4px 0 var(--paper);cursor:pointer;font-family:'Space Mono',monospace;font-weight:700;text-transform:uppercase}
+.wishlist-pdp-btn:hover{background:var(--spray-yellow);color:var(--ink)}
+
 .cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(4px);z-index:150;opacity:0;pointer-events:none;transition:opacity .25s ease}
 .cart-overlay.open{opacity:1;pointer-events:auto}
 .cart-drawer{position:fixed;top:0;right:0;width:100%;max-width:480px;height:100%;background:#121214;border-left:2px solid var(--spray-yellow);z-index:160;display:flex;flex-direction:column;padding:1.5rem;transform:translateX(100%);transition:transform .3s cubic-bezier(0.16,1,0.3,1);overflow-y:auto}
@@ -453,6 +456,17 @@ footer a:hover{color:var(--paper)}
           <span class="pdp-price" id="pdp-store-price">ரூ 713</span>
           <span class="pdp-discount">33% OFF</span>
         </div>
+        
+        <!-- PRODUCT PAGE COUPON BOX (Added right below price offers) -->
+        <div class="coupon-section" style="padding:0.8rem 0; margin-bottom:1rem; border-top:1px dashed rgba(242,240,234,.15); border-bottom:1px dashed rgba(242,240,234,.15);">
+          <span class="option-label" style="margin-bottom:.2rem;">Have a Coupon Code?</span>
+          <div class="coupon-input-wrap" style="display:flex; gap:.5rem; margin-top:.4rem;">
+            <input type="text" id="pdp-coupon-code-input" class="form-control" placeholder="Enter Coupon Code (e.g. REBEL16)" value="" style="text-transform:uppercase;">
+            <button class="btn btn--solid" style="padding:0 1rem; min-height:38px; font-size:.78rem;" onclick="applyPdpCoupon()">Apply</button>
+          </div>
+          <div id="pdp-coupon-msg" style="font-family:'Space Mono'; font-size:.7rem; margin-top:.4rem;"></div>
+        </div>
+
         <p class="pdp-desc" id="pdp-desc-text">240 GSM premium combed cotton.</p>
         <span class="option-label">Select Size</span>
         <div class="size-selector">
@@ -469,6 +483,7 @@ footer a:hover{color:var(--paper)}
           <button class="qty-btn" onclick="changeQty(1)">+</button>
         </div>
         <button class="btn btn--solid add-to-cart-btn" id="add-btn" onclick="addToCart()">Add to Cart — ரூ 713</button>
+        <button class="wishlist-pdp-btn" onclick="addToWishlist()">Add to Wishlist ❤️</button>
       </div>
     </div>
   </section>
@@ -669,6 +684,13 @@ footer a:hover{color:var(--paper)}
       </div>
     </div>
     <div class="admin-nav-grid" id="admin-nav-grid">
+      <div class="admin-nav-card" onclick="openAdminSubPage('subpage-wishlist')">
+        <div>
+          <h3 id="card-title-wishlist">❤️ Customer Wishlists</h3>
+          <p>View items added to wishlist grouped by user.</p>
+        </div>
+        <button class="rename-btn" onclick="event.stopPropagation(); renameCardTitle('card-title-wishlist', 'Customer Wishlists')">✏️</button>
+      </div>
       <div class="admin-nav-card" onclick="openAdminSubPage('subpage-custom-orders')">
         <div>
           <h3 id="card-title-custom">⚡ Custom Print Orders</h3>
@@ -724,6 +746,30 @@ footer a:hover{color:var(--paper)}
           <p>Manage categories and products.</p>
         </div>
         <button class="rename-btn" onclick="event.stopPropagation(); renameCardTitle('card-title-products', 'T-Shirt Product Manager & Categories')">✏️</button>
+      </div>
+    </div>
+
+    <!-- Customer Wishlists Subpage -->
+    <div class="admin-sub-page" id="subpage-wishlist">
+      <div class="sub-page-header">
+        <h2>❤️ Customer Wishlists</h2>
+        <button class="btn btn--ghost" style="padding:0.4rem 1rem; font-size:0.8rem;" onclick="closeAdminSubPages()">← Back to Dashboard</button>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="date-chart-table">
+          <thead>
+            <tr>
+              <th>Customer Email / ID</th>
+              <th>Customer Name</th>
+              <th>Product Name</th>
+              <th>Price</th>
+              <th>Added Date</th>
+            </tr>
+          </thead>
+          <tbody id="admin-wishlist-tbody">
+            <tr><td colspan="5" style="text-align:center; color:var(--grey);">No wishlist items found.</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -1101,7 +1147,7 @@ const ZOHO_CLIENT_SECRET = "918803c297b3f077ef8c53f117fd76c4a2b14b6883";
 const ZOHO_REFRESH_TOKEN = "1000.a4c324d91e73eb928f6c3c7044f48fea.29018644ed9166f209b582f5d3356672";
 const ZOHO_ORG_ID = "60083739244";
 
-// --- SUPABASE CONFIGURATION (Updated with your Anon Key) ---
+// --- SUPABASE CONFIGURATION ---
 const SUPABASE_PROJECT_URL = 'https://rdqzslvgqtajhiwxwauo.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkcXpzbHZncXRhamhpd3h3YXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyMjYyMTYsImV4cCI6MjEwMjgwMjIxNn0.lSrbO0h57wBBqgu_z4D9fhffN8VawX-HcaDANOUOKok';
 
@@ -1276,7 +1322,10 @@ let trashOrdersHistory = JSON.parse(localStorage.getItem('rebel_trash_orders_his
 let customOrdersHistory = JSON.parse(localStorage.getItem('rebel_custom_orders_history')) || [];
 let staffAccounts = JSON.parse(localStorage.getItem('rebel_staff_accounts')) || [];
 
-let cart = [];
+// Cart & Wishlist local state initialized from localStorage
+let cart = JSON.parse(localStorage.getItem('rebel_cart')) || [];
+let wishlist = JSON.parse(localStorage.getItem('rebel_wishlist')) || [];
+
 let currentRole = 'owner';
 let lastViewedProductId = null;
 let activeAdminEditingCategoryName = 'Oversized Tee';
@@ -1324,10 +1373,10 @@ function handleLogoClick(event) {
 
 function renameCardTitle(elementId, defaultName) {
   const el = document.getElementById(elementId);
-  const currentText = el.innerText.replace(/^[⚡📅🏷️⚙️✍️]\s*/, '');
+  const currentText = el.innerText.replace(/^[⚡📅🏷️⚙️✍️❤️]\s*/, '');
   const newName = prompt("Enter new title name:", currentText);
   if (newName && newName.trim() !== "") {
-    const icon = el.innerText.match(/^[⚡📅🏷️⚙️✍️]/)?.[0] || '⚙️';
+    const icon = el.innerText.match(/^[⚡📅🏷️⚙️✍️❤️]/)?.[0] || '⚙️';
     el.innerText = `${icon} ${newName.trim()}`;
     showToast("Title renamed successfully!");
   }
@@ -1567,6 +1616,7 @@ async function addCustomOrderToCart() {
     stockStatus: { available: true, notes: '' }
   };
   cart.push(customItem);
+  localStorage.setItem('rebel_cart', JSON.stringify(cart));
   updateCartBadge();
   renderCartDrawer();
   showToast('Custom order added to cart successfully!');
@@ -1704,6 +1754,23 @@ function addToCart() {
     image: productImg,
     stockStatus: { available: true, notes: '' }
   });
+  
+  // Persist cart to localStorage to prevent loss on reload
+  localStorage.setItem('rebel_cart', JSON.stringify(cart));
+  
+  // If user is logged in, sync/save cart item to Supabase database as well
+  if (loggedInUser && supabaseClient) {
+    supabaseClient.from('cart_items').insert([{
+      user_id: loggedInUser.email || loggedInUser.username,
+      product_name: currentProduct.title,
+      product_price: currentProduct.price,
+      product_image: productImg,
+      quantity: selectedQty
+    }]).then(({ error }) => {
+      if (error) console.error("Cloud cart sync error:", error.message);
+    });
+  }
+
   updateCartBadge();
   renderCartDrawer();
   showToast(`Added to cart successfully!`);
@@ -1714,6 +1781,44 @@ function addToCart() {
   if (currentProduct && document.getElementById('add-btn')) {
     document.getElementById('add-btn').innerText = `Add to Cart — ரூ ${currentProduct.price * selectedQty}`;
   }
+}
+
+// Add to Wishlist Function supporting persistence and Admin viewing
+async function addToWishlist() {
+  if (!currentProduct) return;
+  
+  let productImg = '';
+  if (currentProduct.images && currentProduct.images[0] && currentProduct.images[0].trim() !== '') {
+    productImg = currentProduct.images[0].trim();
+  }
+
+  const wishItem = {
+    id: currentProduct.id,
+    title: currentProduct.title,
+    price: currentProduct.price,
+    image: productImg,
+    date: new Date().toISOString()
+  };
+
+  wishlist.push(wishItem);
+  localStorage.setItem('rebel_wishlist', JSON.stringify(wishlist));
+
+  // Sync to Supabase database so admin page can view all user wishlist items grouped together
+  if (loggedInUser && supabaseClient) {
+    try {
+      await supabaseClient.from('wishlist_items').insert([{
+        user_id: loggedInUser.email || loggedInUser.username,
+        customer_name: loggedInUser.name || loggedInUser.username,
+        product_name: currentProduct.title,
+        product_price: currentProduct.price,
+        product_image: productImg
+      }]);
+    } catch (e) {
+      console.warn("Cloud wishlist sync note:", e);
+    }
+  }
+
+  showToast(`Added to Wishlist! ❤️`);
 }
 
 function updateCartBadge() {
@@ -1738,6 +1843,27 @@ function applyCoupon() {
     msgEl.style.color = 'var(--rebel-red)';
   }
   renderCartDrawer();
+}
+
+// Dedicated Coupon Application for Product Page Box
+function applyPdpCoupon() {
+  const code = document.getElementById('pdp-coupon-code-input').value.trim().toUpperCase();
+  const msgEl = document.getElementById('pdp-coupon-msg');
+  if (code === activeOfferCode) {
+    isCouponApplied = true;
+    // Also sync to cart drawer coupon input
+    const cartInput = document.getElementById('coupon-code-input');
+    if (cartInput) cartInput.value = code;
+    msgEl.innerText = `Code ${activeOfferCode} applied successfully! Extra ${activeDiscountPercent}% off in bag.`;
+    msgEl.style.color = 'var(--spray-yellow)';
+    showToast(`Coupon ${activeOfferCode} applied!`);
+  } else if (code === '') {
+    isCouponApplied = false; msgEl.innerText = '';
+  } else {
+    isCouponApplied = false;
+    msgEl.innerText = 'Invalid coupon code';
+    msgEl.style.color = 'var(--rebel-red)';
+  }
 }
 
 function renderCartDrawer() {
@@ -1779,6 +1905,7 @@ function renderCartDrawer() {
 
 function removeCartItem(index) {
   cart.splice(index, 1);
+  localStorage.setItem('rebel_cart', JSON.stringify(cart));
   updateCartBadge();
   renderCartDrawer();
 }
@@ -2123,6 +2250,7 @@ async function handleOrderSuccessDirect(paymentId) {
 
   localStorage.removeItem('rebel_pending_order');
   cart = [];
+  localStorage.removeItem('rebel_cart');
   updateCartBadge();
   showOrderSuccessCelebration(finalOrderId, paymentId);
 }
@@ -2192,6 +2320,9 @@ function openAdminSubPage(subPageId) {
     if (subPageId === 'subpage-products') {
       backToAdminCategoriesGrid();
     }
+    if (subPageId === 'subpage-wishlist') {
+      loadAdminWishlistFromSupabase();
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
@@ -2200,6 +2331,53 @@ function closeAdminSubPages() {
   document.querySelectorAll('.admin-sub-page').forEach(p => p.classList.remove('active'));
   document.getElementById('admin-nav-grid').style.display = 'grid';
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Function to load and display all user wishlist items in Admin Page grouped by user
+async function loadAdminWishlistFromSupabase() {
+  const tbody = document.getElementById('admin-wishlist-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--grey);">Loading wishlist items...</td></tr>`;
+
+  if (!supabaseClient) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--grey);">Supabase not connected.</td></tr>`;
+    return;
+  }
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('wishlist_items')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    tbody.innerHTML = '';
+    if (!data || data.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--grey);">No customer wishlists found.</td></tr>`;
+      return;
+    }
+
+    data.forEach(item => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${item.user_id}</strong></td>
+        <td>${item.customer_name || 'Customer'}</td>
+        <td>
+          <div style="display:flex; align-items:center; gap:8px;">
+            ${item.product_image ? `<img src="${item.product_image}" style="width:35px; height:35px; object-fit:contain; background:#111; border:1px solid #333;">` : ''}
+            <span>${item.product_name}</span>
+          </div>
+        </td>
+        <td style="color:var(--spray-yellow);">ரூ ${item.product_price}</td>
+        <td>${item.created_at ? new Date(item.created_at).toLocaleString() : 'N/A'}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (err) {
+    console.error("Error loading admin wishlist:", err);
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--rebel-red);">Failed to load wishlist data.</td></tr>`;
+  }
 }
 
 function deleteOrderToTrash(orderId) {
@@ -3014,6 +3192,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  updateCartBadge();
   applySiteContentToDOM();
   renderAdminCategoriesMainGrid();
   renderStorefront();
