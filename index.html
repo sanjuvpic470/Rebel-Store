@@ -309,6 +309,31 @@ footer a:hover{color:var(--paper)}
 </head>
 <body>
 
+  <!-- MAINTENANCE / COMING SOON OVERLAY (Temporary Live Disable as requested) -->
+  <div id="maintenance-overlay" style="position: fixed; inset: 0; background: #0b0b0c; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem;">
+      <h1 style="font-family: 'Anton', sans-serif; font-size: 3rem; color: var(--spray-yellow); text-transform: uppercase; margin-bottom: 1rem;">Coming Soon ⚡</h1>
+      <p style="font-family: 'Space Mono', monospace; color: var(--paper); font-size: 0.9rem; max-width: 40ch; line-height: 1.5; margin-bottom: 2rem;">Our store is currently undergoing final testing and fine-tuning. We will be live for everyone very soon!</p>
+      <button class="btn btn--solid" onclick="bypassMaintenance()">Owner Preview Access 🔓</button>
+  </div>
+
+  <script>
+  function bypassMaintenance() {
+      const pin = prompt("Enter Owner Preview PIN:");
+      if (pin === "rebel2026") {
+          document.getElementById('maintenance-overlay').style.display = 'none';
+          sessionStorage.setItem('owner_preview', 'true');
+      } else {
+          alert("Incorrect PIN");
+      }
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+      if (sessionStorage.getItem('owner_preview') === 'true') {
+          document.getElementById('maintenance-overlay').style.display = 'none';
+      }
+  });
+  </script>
+
   <div class="ticker" aria-hidden="true">
     <div class="ticker__track" id="ticker-track-box">
       <span id="ticker-msg-1">★ 48H DISPATCH · 3–5 DAYS DELIVERY IN TN¹</span>
@@ -331,19 +356,16 @@ footer a:hover{color:var(--paper)}
       <a onclick="handleNavContactClick()" id="nav-link-contact">Contact</a>
     </nav>
     <div class="header-actions">
-      <!-- USER BADGE SHOWING ONLY CIRCULAR AVATAR (NO BOX BORDER) -->
       <div class="user-badge" id="user-badge" onclick="handleAuthClick(event)">
         <span id="user-avatar-icon" style="display:inline-flex; width:34px; height:34px; border-radius:50%; background:#222; overflow:hidden; align-items:center; justify-content:center; font-size:14px;">👤</span>
         <span id="user-name" style="display:none;">Login</span>
       </div>
-      <!-- DROPDOWN MENU WITH WISHLIST INCLUDED -->
       <div class="user-dropdown-menu" id="user-dropdown-menu">
         <div class="user-dropdown-item" onclick="openProfileModal()">👤 Profile</div>
         <div class="user-dropdown-item" onclick="openOrdersModal()">📦 My Orders</div>
         <div class="user-dropdown-item" onclick="openWishlistModal()">❤️ Wishlist</div>
         <div class="user-dropdown-item" onclick="logoutUser()" style="color:var(--rebel-red);">🚪 Logout</div>
       </div>
-      <!-- DESKTOP WISHLIST ICON -->
       <button class="wishlist-icon-btn" onclick="openWishlistModal()" title="View Wishlist">❤️</button>
       <button class="cart-btn" onclick="toggleCartDrawer(true)">Cart (<span id="cart-count">0</span>)</button>
     </div>
@@ -486,13 +508,9 @@ footer a:hover{color:var(--paper)}
 
         <p class="pdp-desc" id="pdp-desc-text">240 GSM premium combed cotton.</p>
         <span class="option-label">Select Size</span>
-        <div class="size-selector" id="pdp-size-selector">
-          <!-- Dynamically populated sizes -->
-        </div>
-        <span class="option-label">Select Color</span>
-        <div class="size-selector" id="pdp-color-selector">
-          <!-- Dynamically populated colors -->
-        </div>
+        <div class="size-selector" id="pdp-size-selector"></div>
+        <span class="option-label">Select Color (Default: Yellow & White)</span>
+        <div class="size-selector" id="pdp-color-selector"></div>
         <span class="option-label">Quantity</span>
         <div class="qty-selector">
           <button class="qty-btn" onclick="changeQty(-1)">−</button>
@@ -771,7 +789,7 @@ footer a:hover{color:var(--paper)}
       <div class="admin-nav-card owner-only-card" onclick="openAdminSubPage('subpage-products')">
         <div>
           <h3 id="card-title-products">⚙️ T-Shirt Product Manager & Categories</h3>
-          <p>Manage categories and products.</p>
+          <p>Manage categories, colors, sizes and products.</p>
         </div>
         <button class="rename-btn" onclick="event.stopPropagation(); renameCardTitle('card-title-products', 'T-Shirt Product Manager & Categories')">✏️</button>
       </div>
@@ -1037,7 +1055,7 @@ footer a:hover{color:var(--paper)}
 
     <div class="admin-sub-page" id="subpage-products">
       <div class="sub-page-header">
-        <h2>⚙️ T-Shirt Product Manager & Categories</h2>
+        <h2>⚙️ T-Shirt Product Manager & Colors/Sizes Editor</h2>
         <button class="btn btn--ghost" style="padding:0.4rem 1rem; font-size:0.8rem;" onclick="closeAdminSubPages()">← Back to Dashboard</button>
       </div>
       <div style="background:#111; padding:1.2rem; border:1px solid rgba(242,240,234,.15); margin-bottom:1.5rem;">
@@ -1055,7 +1073,7 @@ footer a:hover{color:var(--paper)}
           <button class="btn btn--solid" style="padding:.4rem .8rem; font-size:.7rem;" onclick="addProdToCurrentAdminCategory()">+ Add Product</button>
         </div>
         <div id="admin-categories-container" style="display:flex; flex-direction:column; gap:1.5rem;"></div>
-        <button class="btn btn--solid" id="save-categories-btn" style="width:100%; justify-content:center; margin-top:2rem;" onclick="saveAllCategoriesAndProducts()">Save Products & Categories 💾</button>
+        <button class="btn btn--solid" id="save-categories-btn" style="width:100%; justify-content:center; margin-top:2rem;" onclick="saveAllCategoriesAndProducts()">Save Products & Colors/Sizes 💾</button>
       </div>
     </div>
   </section>
@@ -1104,7 +1122,6 @@ footer a:hover{color:var(--paper)}
       </div>
     </div>
     <div class="wrap" style="padding-bottom: 2rem;">
-      <!-- FIXED FOOTER GRID CONTAINER TO PREVENT OVERLAP -->
       <div class="footer-grid" style="display:grid; grid-template-columns:1fr; gap:2.5rem; align-items:start;">
         <div style="width:100%;">
           <div class="logo-wrap" style="margin-bottom:1.2rem; display:block;" onclick="showHomeView()">
@@ -1306,24 +1323,24 @@ let DEFAULT_CATEGORIES = [
     id: 'cat-oversized',
     name: 'Oversized Tee',
     products: [
-      { id: 'o1', code: 'RIOT', title: 'The Riot Oversized Tee', desc: 'Acid Yellow & Distressed Grunge Graphic. 240 GSM.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'Black'], sizes: ['S', 'M', 'L', 'XL'] },
-      { id: 'o2', code: 'VOLT', title: 'The Volt Oversized Tee', desc: 'Stealth Black with High-Voltage Neon Typography.', mrp: 1070, price: 713, images: [''], colors: ['Black', 'Blue'], sizes: ['S', 'M', 'L', 'XL'] },
-      { id: 'o3', code: 'VOID', title: 'The Void Acid Tee', desc: 'Acid wash dark grey streetwear style.', mrp: 1070, price: 713, images: [''], colors: ['Grey', 'Black'], sizes: ['M', 'L', 'XL'] },
-      { id: 'o4', code: 'REB1', title: 'Rebel Heavyweight Tee 01', desc: '240 GSM heavy combed cotton.', mrp: 1070, price: 713, images: [''], colors: ['Black', 'White'], sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
-      { id: 'o5', code: 'REB2', title: 'Rebel Heavyweight Tee 02', desc: '240 GSM heavy combed cotton.', mrp: 1070, price: 713, images: [''], colors: ['Black', 'Yellow'], sizes: ['S', 'M', 'L', 'XL'] },
-      { id: 'o6', code: 'REB3', title: 'Rebel Heavyweight Tee 03', desc: '240 GSM heavy combed cotton.', mrp: 1070, price: 713, images: [''], colors: ['White', 'Blue'], sizes: ['S', 'M', 'L', 'XL'] }
+      { id: 'o1', code: 'RIOT', title: 'The Riot Oversized Tee', desc: 'Acid Yellow & Distressed Grunge Graphic. 240 GSM.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
+      { id: 'o2', code: 'VOLT', title: 'The Volt Oversized Tee', desc: 'Stealth Black with High-Voltage Neon Typography.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
+      { id: 'o3', code: 'VOID', title: 'The Void Acid Tee', desc: 'Acid wash dark grey streetwear style.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['M', 'L', 'XL'] },
+      { id: 'o4', code: 'REB1', title: 'Rebel Heavyweight Tee 01', desc: '240 GSM heavy combed cotton.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
+      { id: 'o5', code: 'REB2', title: 'Rebel Heavyweight Tee 02', desc: '240 GSM heavy combed cotton.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
+      { id: 'o6', code: 'REB3', title: 'Rebel Heavyweight Tee 03', desc: '240 GSM heavy combed cotton.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] }
     ]
   },
   {
     id: 'cat-hoodie',
     name: 'Hoodie',
     products: [
-      { id: 'h1', code: 'HOD1', title: 'The Bone Neutral Hoodie', desc: 'Vintage Washed Off-White heavyweight hoodie.', mrp: 1899, price: 1299, images: [''], colors: ['White', 'Black'], sizes: ['M', 'L', 'XL', 'XXL'] },
-      { id: 'h2', code: 'HOD2', title: 'Dark Cyber Hoodie 01', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Black', 'Grey'], sizes: ['S', 'M', 'L', 'XL'] },
-      { id: 'h3', code: 'HOD3', title: 'Dark Cyber Hoodie 02', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Black', 'Blue'], sizes: ['S', 'M', 'L', 'XL'] },
-      { id: 'h4', code: 'HOD4', title: 'Street Riot Hoodie 01', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'Black'], sizes: ['S', 'M', 'L', 'XL'] },
-      { id: 'h5', code: 'HOD5', title: 'Street Riot Hoodie 02', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['White', 'Black'], sizes: ['M', 'L', 'XL'] },
-      { id: 'h6', code: 'HOD6', title: 'Urban Dissent Hoodie', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Black', 'Grey'], sizes: ['S', 'M', 'L', 'XL'] }
+      { id: 'h1', code: 'HOD1', title: 'The Bone Neutral Hoodie', desc: 'Vintage Washed Off-White heavyweight hoodie.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['M', 'L', 'XL', 'XXL'] },
+      { id: 'h2', code: 'HOD2', title: 'Dark Cyber Hoodie 01', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
+      { id: 'h3', code: 'HOD3', title: 'Dark Cyber Hoodie 02', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
+      { id: 'h4', code: 'HOD4', title: 'Street Riot Hoodie 01', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
+      { id: 'h5', code: 'HOD5', title: 'Street Riot Hoodie 02', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['M', 'L', 'XL'] },
+      { id: 'h6', code: 'HOD6', title: 'Urban Dissent Hoodie', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] }
     ]
   }
 ];
@@ -1363,7 +1380,7 @@ let custSize = 'M';
 let custQty = 2;
 let custUnitPrice = 699;
 let selectedSize = 'M';
-let selectedColor = 'Yellow'; // Default selected color
+let selectedColor = 'Yellow';
 let selectedQty = 1;
 let currentSlideIndex = 0;
 let currentProduct = null;
@@ -1598,7 +1615,7 @@ function openCategoryDedicatedPage(catName) {
   document.getElementById('product-page').style.display = 'none';
   document.getElementById('custom-order-page').style.display = 'none';
   document.getElementById('shipping-billing-page').style.display = 'none';
-  document.getElementById('category-page').style.display = 'none';
+  document.getElementById('category-page').style.display = 'block';
   document.getElementById('admin-view').style.display = 'none';
   window.location.hash = `#shop/${catName.toLowerCase().replace(/\s+/g, '-')}`;
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1721,13 +1738,12 @@ function openProductByDetails(catName, productId) {
     document.getElementById('add-btn').innerText = `Add to Cart — ரூ ${foundProd.price * selectedQty}`;
   }
   
-  // Render Dynamic Colors and Sizes from Product Data
   const colorContainer = document.getElementById('pdp-color-selector');
   const sizeContainer = document.getElementById('pdp-size-selector');
   colorContainer.innerHTML = '';
   sizeContainer.innerHTML = '';
 
-  const prodColors = (foundProd.colors && foundProd.colors.length > 0) ? foundProd.colors : ['Yellow', 'Black'];
+  const prodColors = (foundProd.colors && foundProd.colors.length > 0) ? foundProd.colors : ['Yellow', 'White'];
   const prodSizes = (foundProd.sizes && foundProd.sizes.length > 0) ? foundProd.sizes : ['S', 'M', 'L', 'XL'];
 
   selectedColor = prodColors[0];
@@ -3064,6 +3080,9 @@ function renderAdminProductFormsForCategory(catName) {
   if (!catObj) return;
   const cIndex = CATEGORIES.indexOf(catObj);
   catObj.products.forEach((prod, pIndex) => {
+    if(!prod.colors) prod.colors = ['Yellow', 'White'];
+    if(!prod.sizes) prod.sizes = ['S', 'M', 'L', 'XL'];
+
     let urlsHtml = '';
     if (!prod.images || prod.images.length === 0) prod.images = [''];
     prod.images.forEach((imgUrl, imgIndex) => {
@@ -3090,6 +3109,10 @@ function renderAdminProductFormsForCategory(catName) {
         <div><label class="admin-field-label">MRP</label><input type="number" id="prod-mrp-${cIndex}-${pIndex}" class="admin-input-small" value="${prod.mrp}"></div>
         <div><label class="admin-field-label">Price</label><input type="number" id="prod-price-${cIndex}-${pIndex}" class="admin-input-small" value="${prod.price}"></div>
       </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:.8rem; margin-bottom:.5rem;">
+        <div><label class="admin-field-label">Colors (Comma separated)</label><input type="text" id="prod-colors-${cIndex}-${pIndex}" class="admin-input-small" value="${prod.colors.join(', ')}"></div>
+        <div><label class="admin-field-label">Sizes (Comma separated)</label><input type="text" id="prod-sizes-${cIndex}-${pIndex}" class="admin-input-small" value="${prod.sizes.join(', ')}"></div>
+      </div>
       <label class="admin-field-label">Supabase Image URLs</label>
       <div id="prod-urls-wrap-${cIndex}-${pIndex}" style="margin-bottom:.4rem;">${urlsHtml}</div>
       <button class="btn btn--ghost" style="padding:.2rem .6rem; font-size:0.65rem; min-height:auto;" onclick="addProdImageUrlInput(${cIndex}, ${pIndex})">+ Add Image URL</button>
@@ -3109,7 +3132,7 @@ function addNewCategory() {
     id: 'cat-' + Date.now(),
     name: name,
     products: [
-      { id: 'p' + Date.now(), code: 'NEW1', title: `New ${name} 01`, desc: 'Heavyweight cotton drop.', mrp: 1200, price: 800, images: [''] }
+      { id: 'p' + Date.now(), code: 'NEW1', title: `New ${name} 01`, desc: 'Heavyweight cotton drop.', mrp: 1200, price: 800, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] }
     ]
   });
   document.getElementById('new-category-input').value = '';
@@ -3130,7 +3153,9 @@ function addProdToCurrentAdminCategory() {
       desc: '240 GSM premium cotton.',
       mrp: 1070,
       price: 713,
-      images: ['']
+      images: [''],
+      colors: ['Yellow', 'White'],
+      sizes: ['S', 'M', 'L', 'XL']
     });
     renderAdminProductFormsForCategory(activeAdminEditingCategoryName);
   }
@@ -3171,10 +3196,16 @@ function collectCategoryFormValues() {
     const titleInput = document.getElementById(`prod-title-${cIndex}-${pIndex}`);
     const mrpInput = document.getElementById(`prod-mrp-${cIndex}-${pIndex}`);
     const priceInput = document.getElementById(`prod-price-${cIndex}-${pIndex}`);
+    const colorsInput = document.getElementById(`prod-colors-${cIndex}-${pIndex}`);
+    const sizesInput = document.getElementById(`prod-sizes-${cIndex}-${pIndex}`);
+
     if (codeInput) prod.code = codeInput.value.trim().toUpperCase();
     if (titleInput) prod.title = titleInput.value.trim();
     if (mrpInput) prod.mrp = parseInt(mrpInput.value) || 1070;
     if (priceInput) prod.price = parseInt(priceInput.value) || 713;
+    if (colorsInput) prod.colors = colorsInput.value.split(',').map(s => s.trim()).filter(Boolean);
+    if (sizesInput) prod.sizes = sizesInput.value.split(',').map(s => s.trim()).filter(Boolean);
+
     const urlInputs = document.querySelectorAll(`.prod-url-${cIndex}-${pIndex}`);
     if (urlInputs.length > 0) {
       prod.images = [];
@@ -3205,7 +3236,7 @@ async function saveAllCategoriesAndProducts() {
     }
   }
   showToast('Products saved successfully!');
-  if(saveBtn) saveBtn.innerText = 'Save Products & Categories 💾';
+  if(saveBtn) saveBtn.innerText = 'Save Products & Colors/Sizes 💾';
 }
 
 async function loadCategoriesFromCloud() {
