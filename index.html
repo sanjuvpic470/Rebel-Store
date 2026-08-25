@@ -48,15 +48,15 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--spray-yellow);outli
 .ticker__track span{padding:.5rem 1.5rem;display:inline-block}
 @keyframes scrollTicker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-/* --- HEADER & LOGO ALIGNMENT WITH TOP/BOTTOM FREE SPACE --- */
-header{display:flex;align-items:center;justify-content:space-between;padding:.8rem var(--gap);border-bottom:1px solid rgba(242,240,234,.12);position:sticky;top:0;z-index:90;background:rgba(11,11,12,.94);backdrop-filter:blur(12px);min-height:85px;gap:.5rem}
+/* --- PERFECT HEADER & FIXED LOGO ALIGNMENT (NO EDGE OVERFLOW) --- */
+header{display:flex;align-items:center;justify-content:space-between;padding:.6rem var(--gap);border-bottom:1px solid rgba(242,240,234,.12);position:sticky;top:0;z-index:90;background:rgba(11,11,12,.94);backdrop-filter:blur(12px);min-height:80px;gap:.5rem}
 .logo-wrap{display:flex;align-items:center;cursor:pointer;user-select:none;height:100%;flex-shrink:0}
-.rebel-brand-logo{display:inline-flex;align-items:center;width:140px;height:55px;overflow:visible}
-.rebel-brand-logo svg,.rebel-brand-logo img{width:100%;height:100%;object-fit:contain;display:block;transform:scale(2.0);transform-origin:left center}
+.rebel-brand-logo{display:inline-flex;align-items:center;width:130px;height:50px;overflow:visible}
+.rebel-brand-logo svg,.rebel-brand-logo img{width:100%;height:100%;object-fit:contain;display:block;transform:scale(1.4);transform-origin:left center}
 @media(min-width:768px){
   header{min-height:95px;padding:1rem var(--gap)}
-  .rebel-brand-logo{width:240px;height:75px}
-  .rebel-brand-logo svg,.rebel-brand-logo img{transform:scale(2.4)}
+  .rebel-brand-logo{width:220px;height:70px}
+  .rebel-brand-logo svg,.rebel-brand-logo img{transform:scale(1.8)}
 }
 
 nav{display:none;gap:1.8rem;font-family:'Space Mono',monospace;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em}
@@ -65,10 +65,10 @@ nav a::after{content:'';position:absolute;left:0;bottom:-2px;width:0;height:2px;
 nav a:hover::after{width:100%}
 @media(min-width:890px){nav{display:flex}}
 
-.header-actions{display:flex;align-items:center;gap:.5rem;position:relative}
+.header-actions{display:flex;align-items:center;gap:.4rem;position:relative}
 @media(min-width:768px){.header-actions{gap:.8rem}}
 
-.user-badge{font-family:'Space Mono',monospace;font-size:.65rem;text-transform:uppercase;border:1px solid rgba(242,240,234,.3);padding:.35rem .5rem;border-radius:4px;background:#161618;color:var(--paper);cursor:pointer;display:flex;align-items:center;gap:.3rem;transition:all 0.2s;white-space:nowrap}
+.user-badge{font-family:'Space Mono',monospace;font-size:.65rem;text-transform:uppercase;border:1px solid rgba(242,240,234,.3);padding:.3rem .5rem;border-radius:4px;background:#161618;color:var(--paper);cursor:pointer;display:flex;align-items:center;gap:.3rem;transition:all 0.2s;white-space:nowrap}
 @media(min-width:768px){.user-badge{font-size:.75rem;padding:.5rem .85rem;gap:.5rem}}
 .user-badge:hover{border-color:var(--spray-yellow);color:var(--spray-yellow);transform:translateY(-1px)}
 
@@ -77,12 +77,11 @@ nav a:hover::after{width:100%}
 .user-dropdown-item{font-family:'Space Mono',monospace;font-size:0.78rem;padding:0.8rem 1rem;color:var(--paper);border-bottom:1px solid rgba(242,240,234,0.1);cursor:pointer;text-transform:uppercase;transition:background 0.2s}
 .user-dropdown-item:hover{background:var(--spray-yellow);color:var(--ink);font-weight:bold}
 
-/* WISHLIST ICON HIDDEN ON MOBILE VIEW (AS REQUESTED) */
 .wishlist-icon-btn{display:none; font-family:'Space Mono',monospace;font-size:.9rem;border:1.5px solid var(--paper);background:transparent;color:var(--paper);width:38px;height:38px;border-radius:50%;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;flex-shrink:0}
 @media(min-width:768px){.wishlist-icon-btn{display:inline-flex}}
 .wishlist-icon-btn:hover{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow);transform:scale(1.05)}
 
-/* --- REDUCED COMPACT CART BUTTON --- */
+/* --- COMPACT CART BUTTON --- */
 .cart-btn{font-family:'Space Mono',monospace;font-size:.62rem;text-transform:uppercase;letter-spacing:.02em;border:1.5px solid var(--paper);padding:.3rem .5rem;border-radius:999px;background:transparent;color:var(--paper);cursor:pointer;font-weight:700;transition:all .2s cubic-bezier(0.16,1,0.3,1);display:inline-flex;align-items:center;gap:.15rem;min-height:30px;white-space:nowrap}
 @media(min-width:768px){.cart-btn{font-size:.78rem;padding:.5rem 1.1rem;gap:.4rem;min-height:40px}}
 .cart-btn:hover{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow);transform:scale(1.03)}
@@ -335,19 +334,19 @@ footer a:hover{color:var(--paper)}
       <a onclick="handleNavContactClick()" id="nav-link-contact">Contact</a>
     </nav>
     <div class="header-actions">
-      <!-- USER BADGE SHOWING AVATAR OR INITIALS ON MOBILE/DESKTOP -->
+      <!-- USER BADGE SHOWING ONLY CIRCULAR AVATAR OR CLEAN ICON ON MOBILE -->
       <div class="user-badge" id="user-badge" onclick="handleAuthClick(event)">
-        <span id="user-avatar-icon" style="display:inline-block; width:22px; height:22px; border-radius:50%; background:#222; overflow:hidden; text-align:center; line-height:22px; font-size:11px;">👤</span>
-        <span id="user-name">Login</span>
+        <span id="user-avatar-icon" style="display:inline-flex; width:24px; height:24px; border-radius:50%; background:#222; overflow:hidden; align-items:center; justify-content:center; font-size:12px;">👤</span>
+        <span id="user-name" style="display:none;">Login</span>
       </div>
-      <!-- USER DROPDOWN WITH WISHLIST INCLUDED -->
+      <!-- DROPDOWN MENU WITH WISHLIST INCLUDED (NO WISHLIST ICON ON MOBILE HEADER) -->
       <div class="user-dropdown-menu" id="user-dropdown-menu">
         <div class="user-dropdown-item" onclick="openProfileModal()">👤 Profile</div>
         <div class="user-dropdown-item" onclick="openOrdersModal()">📦 My Orders</div>
         <div class="user-dropdown-item" onclick="openWishlistModal()">❤️ Wishlist</div>
         <div class="user-dropdown-item" onclick="logoutUser()" style="color:var(--rebel-red);">🚪 Logout</div>
       </div>
-      <!-- WISHLIST ICON HIDDEN ON MOBILE (ACCESSIBLE VIA DROPDOWN), VISIBLE ON DESKTOP -->
+      <!-- WISHLIST ICON DESKTOP ONLY -->
       <button class="wishlist-icon-btn" onclick="openWishlistModal()" title="View Wishlist">❤️</button>
       <button class="cart-btn" onclick="toggleCartDrawer(true)">Cart (<span id="cart-count">0</span>)</button>
     </div>
@@ -665,7 +664,7 @@ footer a:hover{color:var(--paper)}
     </div>
   </div>
 
-  <!-- PROFILE MODAL WITH CLICK-TO-UPLOAD AVATAR & 1:1 SQUARE CROPPING -->
+  <!-- PROFILE MODAL WITH DIRECT CLICK-TO-UPLOAD AVATAR & 1:1 SQUARE CROPPING -->
   <div class="auth-modal" id="profile-modal">
     <div class="profile-modal-box">
       <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeProfileModal()">×</button>
@@ -1111,11 +1110,11 @@ footer a:hover{color:var(--paper)}
       <div class="footer-grid">
         <div>
           <div class="logo-wrap" style="margin-bottom:1rem;" onclick="showHomeView()">
-            <div class="rebel-brand-logo footer-logo-container">
-              <img id="site-footer-logo-img" src="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon4.png" alt="Rebel Store Logo" style="width:100%; height:100%; object-fit:contain;">
+            <div class="rebel-brand-logo footer-logo-container" style="width:140px; height:50px; overflow:visible;">
+              <img id="site-footer-logo-img" src="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon4.png" alt="Rebel Store Logo" style="width:100%; height:100%; object-fit:contain; transform:scale(1.8); transform-origin:left center;">
             </div>
           </div>
-          <p style="color:var(--grey); font-size:.85rem;" id="footer-tagline-text">Independent streetwear label. Heavyweight tees for people who don't wait for permission.</p>
+          <p style="color:var(--grey); font-size:.85rem; margin-top: 15px;" id="footer-tagline-text">Independent streetwear label. Heavyweight tees for people who don't wait for permission.</p>
         </div>
         <div>
           <h5 style="display:block; margin-bottom:0.8rem;">Shop</h5>
@@ -1444,32 +1443,6 @@ function applySiteContentToDOM() {
 
   if (document.getElementById('pdp-active-coupon-code')) document.getElementById('pdp-active-coupon-code').innerText = activeOfferCode;
   if (document.getElementById('pdp-active-coupon-disc')) document.getElementById('pdp-active-coupon-disc').innerText = activeDiscountPercent + '%';
-  
-  updateUserBadgeDisplay();
-}
-
-// Function to update header user badge dynamically with avatar or clean icon
-function updateUserBadgeDisplay() {
-  const nameEl = document.getElementById('user-name');
-  const iconEl = document.getElementById('user-avatar-icon');
-  if (!nameEl || !iconEl) return;
-
-  if (loggedInUser) {
-    if (loggedInUser.avatarUrl) {
-      iconEl.innerHTML = `<img src="${loggedInUser.avatarUrl}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
-    } else {
-      iconEl.innerHTML = `👤`;
-    }
-    // On mobile view, show only icon (or clean style without clutter), on desktop show username
-    if (window.innerWidth < 768) {
-      nameEl.innerText = ''; // Hide text on mobile header to save space
-    } else {
-      nameEl.innerText = loggedInUser.username || loggedInUser.name || 'User';
-    }
-  } else {
-    iconEl.innerHTML = `👤`;
-    nameEl.innerText = 'Login';
-  }
 }
 
 async function saveWebsiteContentCMS() {
@@ -2133,7 +2106,7 @@ async function proceedToPayment() {
   localStorage.setItem('rebel_pending_order', JSON.stringify(pendingOrder));
 
   try {
-    const response = await fetch('https://rdqzslvgqtajhiwxwauo.supabase.co/functions/v1/Create_razorpay_order', {
+    const response = await fetch('https://rdqzslvgqtajhiwxwauo.supabase.co/functions/v1/Create_razor_order', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -3558,7 +3531,7 @@ async function processUserLogin() {
     if (!inputVal.includes('@') && supabaseClient) {
       const { data: profileData } = await supabaseClient
         .from('profiles')
-        .select('email')
+        .select('email, avatar_url, name, phone')
         .eq('username', inputVal)
         .maybeSingle();
 
@@ -3577,14 +3550,16 @@ async function processUserLogin() {
 
       if (authData && authData.user) {
         const u = authData.user;
-        const gName = u.user_metadata?.full_name || u.user_metadata?.name || inputVal;
+        const { data: dbProf } = await supabaseClient.from('profiles').select('*').eq('id', u.id).maybeSingle();
+        const gName = dbProf?.name || u.user_metadata?.full_name || u.user_metadata?.name || inputVal;
+        
         loggedInUser = {
           name: gName,
-          username: u.user_metadata?.username || inputVal,
+          username: dbProf?.username || u.user_metadata?.username || inputVal,
           email: u.email,
-          phone: u.user_metadata?.phone || '',
-          altPhone: u.user_metadata?.alt_phone || '',
-          avatarUrl: u.user_metadata?.avatar_url || ''
+          phone: dbProf?.phone || u.user_metadata?.phone || '',
+          altPhone: '',
+          avatarUrl: dbProf?.avatar_url || u.user_metadata?.avatar_url || ''
         };
       }
     } else {
@@ -3665,19 +3640,17 @@ async function logoutUser() {
   showHomeView();
 }
 
-// PROFILE MODAL WITH CLICK-TO-UPLOAD AVATAR & 1:1 SQUARE CROPPING
 function openProfileModal() {
   if (!loggedInUser) return;
   const area = document.getElementById('profile-content-area');
-  const avatarDisplay = loggedInUser.avatarUrl ? `<img id="profile-avatar-preview" src="${loggedInUser.avatarUrl}" style="width:80px; height:80px; border-radius:50%; object-fit:cover; margin:0 auto 10px; border:2px solid var(--spray-yellow); cursor:pointer;" title="Click to change photo">` : `<div id="profile-avatar-preview" style="width:80px; height:80px; border-radius:50%; background:#222; display:flex; align-items:center; justify-content:center; margin:0 auto 10px; font-size:1.8rem; border:2px dashed var(--spray-yellow); cursor:pointer;" title="Click to upload photo">👤</div>`;
+  const avatarDisplay = loggedInUser.avatarUrl ? `<img id="profile-avatar-preview" src="${loggedInUser.avatarUrl}" style="width:85px; height:85px; border-radius:50%; object-fit:cover; margin:0 auto 10px; border:2px solid var(--spray-yellow); cursor:pointer;" title="Click to change photo">` : `<div id="profile-avatar-preview" style="width:85px; height:85px; border-radius:50%; background:#222; display:flex; align-items:center; justify-content:center; margin:0 auto 10px; font-size:2rem; border:2px dashed var(--spray-yellow); cursor:pointer;" title="Click to upload photo">👤</div>`;
 
   area.innerHTML = `
     <div style="display:flex; flex-direction:column; gap:10px; font-family:'Space Mono'; font-size:0.85rem; text-align:center;">
       <div style="cursor:pointer;" onclick="document.getElementById('hidden-avatar-input').click()">
         ${avatarDisplay}
-        <span style="font-size:0.7rem; color:var(--spray-yellow); text-decoration:underline;">Click picture to upload/change (Max 1MB, 1:1 Square)</span>
+        <span style="font-size:0.7rem; color:var(--spray-yellow); text-decoration:underline; display:block;">Click photo to upload/change (Max 1MB, 1:1 Square)</span>
       </div>
-      <!-- Hidden file input triggered directly by clicking profile avatar -->
       <input type="file" id="hidden-avatar-input" accept="image/*" style="display:none;" onchange="previewAndCropAvatar(event)">
       
       <div style="text-align:left;">
@@ -3708,7 +3681,6 @@ function closeProfileModal() {
 
 let croppedAvatarBlob = null;
 
-// 1:1 Cropping preview helper when avatar image is selected
 function previewAndCropAvatar(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -3740,7 +3712,7 @@ function previewAndCropAvatar(event) {
         if (prevEl.tagName === 'IMG') {
           prevEl.src = previewUrl;
         } else {
-          prevEl.outerHTML = `<img id="profile-avatar-preview" src="${previewUrl}" style="width:80px; height:80px; border-radius:50%; object-fit:cover; margin:0 auto 10px; border:2px solid var(--spray-yellow); cursor:pointer;">`;
+          prevEl.outerHTML = `<img id="profile-avatar-preview" src="${previewUrl}" style="width:85px; height:85px; border-radius:50%; object-fit:cover; margin:0 auto 10px; border:2px solid var(--spray-yellow); cursor:pointer;">`;
         }
         showToast('Image cropped 1:1 successfully!');
       }, 'image/jpeg', 0.9);
