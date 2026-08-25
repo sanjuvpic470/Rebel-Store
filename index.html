@@ -1101,9 +1101,9 @@ const ZOHO_CLIENT_SECRET = "918803c297b3f077ef8c53f117fd76c4a2b14b6883";
 const ZOHO_REFRESH_TOKEN = "1000.a4c324d91e73eb928f6c3c7044f48fea.29018644ed9166f209b582f5d3356672";
 const ZOHO_ORG_ID = "60083739244";
 
-// --- SUPABASE CONFIGURATION (Project URL & Anon/Publishable Key) ---
+// --- SUPABASE CONFIGURATION (Updated with your Anon Key) ---
 const SUPABASE_PROJECT_URL = 'https://rdqzslvgqtajhiwxwauo.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_3DE6FO6lDP6esci9vw-RgQ_DTWhe1xR';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkcXpzbHZncXRhamhpd3h3YXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyMjYyMTYsImV4cCI6MjEwMjgwMjIxNn0.lSrbO0h57wBBqgu_z4D9fhffN8VawX-HcaDANOUOKok';
 
 let supabaseClient = null;
 
@@ -1933,7 +1933,7 @@ async function proceedToPayment() {
     }
 
     var options = {
-      "key": "rzp_test_TTj0p8owj4fZZT",
+      "key": "rzp_test_TTJ0p8owj4fZZT", // டெஸ்ட் கீ (Test Key)
       "amount": data.amount,
       "currency": data.currency,
       "order_id": data.order_id,
@@ -3033,7 +3033,6 @@ function handleRouteFromHash() {
   } else if (hash === '#shipping') {
     goToShippingPage();
   } else if (hash === '#admin') {
-    // Admin access via URL route requires prior session or prompt
     grantAdminAccess();
   } else if (hash.startsWith('#shop/')) {
     const parts = hash.replace('#shop/', '').split('/');
@@ -3055,7 +3054,6 @@ function handleRouteFromHash() {
   }
 }
 
-// --- SECURE SUPABASE ADMIN AUTHENTICATION (Replaced hardcoded admin/0000) ---
 async function verifyAdminCredentialsFromSupabase() {
   const emailInput = document.getElementById('admin-user-input').value.trim();
   const passInput = document.getElementById('admin-pass-input').value.trim();
@@ -3071,7 +3069,6 @@ async function verifyAdminCredentialsFromSupabase() {
   }
 
   try {
-    // Authenticate directly with Supabase Auth server securely
     const { data, error } = await supabaseClient.auth.signInWithPassword({
       email: emailInput,
       password: passInput
