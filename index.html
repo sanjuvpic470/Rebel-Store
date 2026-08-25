@@ -635,19 +635,21 @@ footer a:hover{color:var(--paper)}
     </div>
   </div>
 
+  <!-- PROFILE MODAL WITH EDIT CAPABILITY (Username & Email Locked) -->
   <div class="auth-modal" id="profile-modal">
     <div class="profile-modal-box">
       <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeProfileModal()">×</button>
       <h3>User Profile</h3>
-      <div id="profile-content-area"></div>
+      <div id="profile-content-area" style="margin-top:1rem;"></div>
     </div>
   </div>
 
+  <!-- MY ORDERS MODAL WITH DETAILED VIEW ON CLICK -->
   <div class="auth-modal" id="orders-modal">
-    <div class="profile-modal-box" style="max-width: 600px;">
+    <div class="profile-modal-box" style="max-width: 650px;">
       <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeOrdersModal()">×</button>
       <h3>My Order History</h3>
-      <div id="orders-content-area" style="max-height: 60vh; overflow-y: auto;"></div>
+      <div id="orders-content-area" style="max-height: 65vh; overflow-y: auto; margin-top:1rem;"></div>
     </div>
   </div>
 
@@ -1322,7 +1324,7 @@ let trashOrdersHistory = JSON.parse(localStorage.getItem('rebel_trash_orders_his
 let customOrdersHistory = JSON.parse(localStorage.getItem('rebel_custom_orders_history')) || [];
 let staffAccounts = JSON.parse(localStorage.getItem('rebel_staff_accounts')) || [];
 
-// Cart & Wishlist local state initialized from localStorage
+// Cart & Wishlist initialized from localStorage
 let cart = JSON.parse(localStorage.getItem('rebel_cart')) || [];
 let wishlist = JSON.parse(localStorage.getItem('rebel_wishlist')) || [];
 
@@ -1755,10 +1757,9 @@ function addToCart() {
     stockStatus: { available: true, notes: '' }
   });
   
-  // Persist cart to localStorage to prevent loss on reload
+  // Persist cart locally and to Supabase database if logged in
   localStorage.setItem('rebel_cart', JSON.stringify(cart));
   
-  // If user is logged in, sync/save cart item to Supabase database as well
   if (loggedInUser && supabaseClient) {
     supabaseClient.from('cart_items').insert([{
       user_id: loggedInUser.email || loggedInUser.username,
@@ -1783,7 +1784,7 @@ function addToCart() {
   }
 }
 
-// Add to Wishlist Function supporting persistence and Admin viewing
+// Add to Wishlist Function recording user details for admin page grouped view
 async function addToWishlist() {
   if (!currentProduct) return;
   
@@ -1803,7 +1804,6 @@ async function addToWishlist() {
   wishlist.push(wishItem);
   localStorage.setItem('rebel_wishlist', JSON.stringify(wishlist));
 
-  // Sync to Supabase database so admin page can view all user wishlist items grouped together
   if (loggedInUser && supabaseClient) {
     try {
       await supabaseClient.from('wishlist_items').insert([{
@@ -1845,16 +1845,14 @@ function applyCoupon() {
   renderCartDrawer();
 }
 
-// Dedicated Coupon Application for Product Page Box
 function applyPdpCoupon() {
   const code = document.getElementById('pdp-coupon-code-input').value.trim().toUpperCase();
   const msgEl = document.getElementById('pdp-coupon-msg');
   if (code === activeOfferCode) {
     isCouponApplied = true;
-    // Also sync to cart drawer coupon input
     const cartInput = document.getElementById('coupon-code-input');
     if (cartInput) cartInput.value = code;
-    msgEl.innerText = `Code ${activeOfferCode} applied successfully! Extra ${activeDiscountPercent}% off in bag.`;
+    msgEl.innerText = `Code ${activeOfferCode} applied! Extra ${activeDiscountPercent}% off in bag.`;
     msgEl.style.color = 'var(--spray-yellow)';
     showToast(`Coupon ${activeOfferCode} applied!`);
   } else if (code === '') {
@@ -2495,6 +2493,7 @@ async function loadAdminDataFromSupabase() {
         paymentId: o.razorpay_payment_id || 'N/A',
         orderStatus: o.order_status || 'New'
       }));
+      localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
     }
 
     const { data: usersData, error: usersError } = await supabaseClient
@@ -3570,14 +3569,30 @@ async function logoutUser() {
   showHomeView();
 }
 
+// Editable Profile Modal (Username & Email are Locked/Disabled)
 function openProfileModal() {
   if (!loggedInUser) return;
   const area = document.getElementById('profile-content-area');
   area.innerHTML = `
-    <div class="profile-info-row"><span>Full Name:</span> ${loggedInUser.name}</div>
-    <div class="profile-info-row"><span>Username:</span> ${loggedInUser.username}</div>
-    <div class="profile-info-row"><span>Phone:</span> ${loggedInUser.phone || 'Not Provided'}</div>
-    <div class="profile-info-row"><span>Email:</span> ${loggedInUser.email}</div>
+    <div style="display:flex; flex-direction:column; gap:10px; font-family:'Space Mono'; font-size:0.85rem;">
+      <div>
+        <label style="color:var(--grey); font-size:0.7rem; display:block;">Full Name (Editable)</label>
+        <input type="text" id="edit-profile-name" class="admin-input-full" value="${loggedInUser.name || ''}" style="margin-bottom:0;">
+      </div>
+      <div>
+        <label style="color:var(--grey); font-size:0.7rem; display:block;">Phone (Editable)</label>
+        <input type="tel" id="edit-profile-phone" class="admin-input-full" value="${loggedInUser.phone || ''}" style="margin-bottom:0;">
+      </div>
+      <div>
+        <label style="color:var(--grey); font-size:0.7rem; display:block;">Username (Locked)</label>
+        <input type="text" class="admin-input-full" value="${loggedInUser.username || ''}" disabled style="background:#111; color:var(--grey); margin-bottom:0; cursor:not-allowed;">
+      </div>
+      <div>
+        <label style="color:var(--grey); font-size:0.7rem; display:block;">Email (Locked)</label>
+        <input type="email" class="admin-input-full" value="${loggedInUser.email || ''}" disabled style="background:#111; color:var(--grey); margin-bottom:0; cursor:not-allowed;">
+      </div>
+      <button class="btn btn--solid" style="width:100%; justify-content:center; margin-top:1rem;" onclick="saveUserProfileEdits()">Save Profile Changes 💾</button>
+    </div>
   `;
   document.getElementById('profile-modal').style.display = 'flex';
 }
@@ -3586,23 +3601,67 @@ function closeProfileModal() {
   document.getElementById('profile-modal').style.display = 'none';
 }
 
+async function saveUserProfileEdits() {
+  const newName = document.getElementById('edit-profile-name').value.trim();
+  const newPhone = document.getElementById('edit-profile-phone').value.trim();
+
+  if (!newName) {
+    showToast('Name cannot be empty!');
+    return;
+  }
+
+  loggedInUser.name = newName;
+  loggedInUser.phone = newPhone;
+  sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
+
+  if (supabaseClient) {
+    try {
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      if (user) {
+        await supabaseClient.from('profiles').update({
+          name: newName,
+          phone: newPhone
+        }).eq('id', user.id);
+      }
+    } catch (err) {
+      console.warn("Profile cloud update error:", err);
+    }
+  }
+
+  showToast('Profile updated successfully!');
+  closeProfileModal();
+}
+
+// My Orders Modal with full item details on click
 function openOrdersModal() {
   if (!loggedInUser) return;
   const area = document.getElementById('orders-content-area');
   const myOrders = ordersHistory.filter(o => o.userEmail === loggedInUser.email || (o.billing && o.billing.email === loggedInUser.email));
+  
   if (myOrders.length === 0) {
     area.innerHTML = `<div style="font-family:'Space Mono'; color:var(--grey); padding: 1rem; text-align:center;">No order history found.</div>`;
   } else {
     let html = '';
     myOrders.forEach(ord => {
+      let itemsListHtml = '';
+      if (ord.items && Array.isArray(ord.items)) {
+        ord.items.forEach(it => {
+          itemsListHtml += `<div style="font-size:0.75rem; color:var(--paper); padding:2px 0;">• ${it.title} (Size: ${it.size}, Qty: ${it.qty}) - ரூ ${it.price * it.qty}</div>`;
+        });
+      }
       html += `
-        <div style="background:#1a1a1d; border:1px solid rgba(242,240,234,0.15); padding:1rem; margin-bottom:1rem; border-radius:4px;">
+        <div style="background:#1a1a1d; border:1px solid rgba(242,240,234,0.15); padding:1rem; margin-bottom:1rem; border-radius:4px; cursor:pointer;" onclick="toggleUserOrderExpand('${ord.id}')">
           <div style="display:flex; justify-content:space-between; font-family:'Space Mono'; font-size:0.8rem; color:var(--spray-yellow);">
             <span>Order ID: ${ord.id}</span>
             <span>Date: ${ord.date}</span>
           </div>
           <div style="font-family:'Space Mono'; font-size:0.75rem; color:var(--paper); margin:0.4rem 0;">
-            Total Items: ${ord.totalQty} | Total Amount: <strong>ரூ ${ord.totalAmount}</strong> | Status: <strong>${ord.orderStatus}</strong>
+            Total Items: ${ord.totalQty} | Total Amount: <strong>ரூ ${ord.totalAmount}</strong> | Status: <strong style="color:var(--success-green);">${ord.orderStatus}</strong>
+          </div>
+          <div id="user-order-items-${ord.id}" style="display:none; margin-top:8px; border-top:1px dashed rgba(242,240,234,0.2); padding-top:6px;">
+            <div style="font-size:0.75rem; color:var(--spray-yellow); margin-bottom:4px;"><strong>Ordered Items:</strong></div>
+            ${itemsListHtml}
+            <div style="font-size:0.75rem; color:var(--grey); margin-top:4px;"><strong>Shipping Address:</strong> ${ord.billing.address}</div>
           </div>
         </div>
       `;
@@ -3610,6 +3669,13 @@ function openOrdersModal() {
     area.innerHTML = html;
   }
   document.getElementById('orders-modal').style.display = 'flex';
+}
+
+function toggleUserOrderExpand(orderId) {
+  const el = document.getElementById(`user-order-items-${orderId}`);
+  if (el) {
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  }
 }
 
 function closeOrdersModal() {
