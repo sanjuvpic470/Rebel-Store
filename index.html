@@ -5,10 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>REBEL STORE — Wear the Uprising</title>
 
-<!-- Google Search Console Verification Meta Tag -->
 <meta name="google-site-verification" content="820c37cc797b4dc9" />
 
-<!-- Browser Tab Favicon Icon -->
 <link rel="icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png">
 <link rel="shortcut icon" type="image/png" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png">
 <link rel="apple-touch-icon" href="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon_FIanl.png">
@@ -50,16 +48,14 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--spray-yellow);outli
 .ticker__track span{padding:.5rem 1.5rem;display:inline-block}
 @keyframes scrollTicker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-/* --- FIXED RESPONSIVE HEADER FOR MOBILE --- */
-header{display:flex;align-items:center;justify-content:space-between;padding:.5rem var(--gap);border-bottom:1px solid rgba(242,240,234,.12);position:sticky;top:0;z-index:90;background:rgba(11,11,12,.94);backdrop-filter:blur(12px);height:75px;gap:.5rem}
-.logo-wrap{display:flex;align-items:center;cursor:pointer;user-select:none;height:100%;max-width:150px}
-.rebel-brand-logo{display:inline-flex;align-items:center;gap:4px;width:140px;height:50px;overflow:visible}
-.rebel-brand-logo svg,.rebel-brand-logo img{width:100%;height:100%;object-fit:contain;display:block;transform:scale(1.2);transform-origin:left center}
+header{display:flex;align-items:center;justify-content:space-between;padding:.4rem var(--gap);border-bottom:1px solid rgba(242,240,234,.12);position:sticky;top:0;z-index:90;background:rgba(11,11,12,.94);backdrop-filter:blur(12px);height:75px;gap:.3rem}
+.logo-wrap{display:flex;align-items:center;cursor:pointer;user-select:none;height:100%;flex-shrink:0}
+.rebel-brand-logo{display:inline-flex;align-items:center;width:130px;height:48px;overflow:visible}
+.rebel-brand-logo svg,.rebel-brand-logo img{width:100%;height:100%;object-fit:contain;display:block;transform:scale(2.2);transform-origin:left center}
 @media(min-width:768px){
   header{height:80px;padding:.5rem var(--gap)}
-  .logo-wrap{max-width:260px}
-  .rebel-brand-logo{width:260px;height:70px}
-  .rebel-brand-logo svg,.rebel-brand-logo img{transform:scale(1.7)}
+  .rebel-brand-logo{width:240px;height:70px}
+  .rebel-brand-logo svg,.rebel-brand-logo img{transform:scale(2.5)}
 }
 
 nav{display:none;gap:1.8rem;font-family:'Space Mono',monospace;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em}
@@ -68,10 +64,10 @@ nav a::after{content:'';position:absolute;left:0;bottom:-2px;width:0;height:2px;
 nav a:hover::after{width:100%}
 @media(min-width:890px){nav{display:flex}}
 
-.header-actions{display:flex;align-items:center;gap:.4rem;position:relative}
+.header-actions{display:flex;align-items:center;gap:.35rem;position:relative}
 @media(min-width:768px){.header-actions{gap:.8rem}}
 
-.user-badge{font-family:'Space Mono',monospace;font-size:.65rem;text-transform:uppercase;border:1px solid rgba(242,240,234,.3);padding:.35rem .5rem;border-radius:4px;background:#161618;color:var(--paper);cursor:pointer;display:flex;align-items:center;gap:.2rem;transition:all 0.2s;white-space:nowrap}
+.user-badge{font-family:'Space Mono',monospace;font-size:.6rem;text-transform:uppercase;border:1px solid rgba(242,240,234,.3);padding:.3rem .4rem;border-radius:4px;background:#161618;color:var(--paper);cursor:pointer;display:flex;align-items:center;gap:.2rem;transition:all 0.2s;white-space:nowrap}
 @media(min-width:768px){.user-badge{font-size:.75rem;padding:.5rem .85rem;gap:.4rem}}
 .user-badge:hover{border-color:var(--spray-yellow);color:var(--spray-yellow);transform:translateY(-1px)}
 
@@ -80,11 +76,11 @@ nav a:hover::after{width:100%}
 .user-dropdown-item{font-family:'Space Mono',monospace;font-size:0.78rem;padding:0.8rem 1rem;color:var(--paper);border-bottom:1px solid rgba(242,240,234,0.1);cursor:pointer;text-transform:uppercase;transition:background 0.2s}
 .user-dropdown-item:hover{background:var(--spray-yellow);color:var(--ink);font-weight:bold}
 
-.wishlist-icon-btn{font-family:'Space Mono',monospace;font-size:.8rem;border:1.5px solid var(--paper);background:transparent;color:var(--paper);width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;flex-shrink:0}
+.wishlist-icon-btn{font-family:'Space Mono',monospace;font-size:.75rem;border:1.5px solid var(--paper);background:transparent;color:var(--paper);width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;flex-shrink:0}
 @media(min-width:768px){.wishlist-icon-btn{width:40px;height:40px;font-size:.9rem}}
 .wishlist-icon-btn:hover{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow);transform:scale(1.05)}
 
-.cart-btn{font-family:'Space Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;border:1.5px solid var(--paper);padding:.35rem .6rem;border-radius:999px;background:transparent;color:var(--paper);cursor:pointer;font-weight:700;transition:all .2s cubic-bezier(0.16,1,0.3,1);display:inline-flex;align-items:center;gap:.2rem;min-height:32px;white-space:nowrap}
+.cart-btn{font-family:'Space Mono',monospace;font-size:.62rem;text-transform:uppercase;letter-spacing:.02em;border:1.5px solid var(--paper);padding:.3rem .5rem;border-radius:999px;background:transparent;color:var(--paper);cursor:pointer;font-weight:700;transition:all .2s cubic-bezier(0.16,1,0.3,1);display:inline-flex;align-items:center;gap:.15rem;min-height:30px;white-space:nowrap}
 @media(min-width:768px){.cart-btn{font-size:.78rem;padding:.5rem 1.1rem;gap:.4rem;min-height:40px}}
 .cart-btn:hover{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow);transform:scale(1.03)}
 
@@ -293,7 +289,7 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 footer{padding:2.5rem 0 1.5rem}
 .footer-grid{display:grid;grid-template-columns:1fr;gap:1.8rem;padding-bottom:1.8rem;max-width:1200px;margin:0 auto;padding-left:var(--gap);padding-right:var(--gap)}
 @media(min-width:680px){.footer-grid{grid-template-columns:2fr 1fr 1fr 1fr}}
-footer h5{font-family:'Space Mono',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--spray-yellow);margin-bottom:.8rem}
+footer h5{font-family:'Space Mono',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--spray-yellow);margin-bottom:.8rem;display:block;}
 footer ul{list-style:none;display:flex;flex-direction:column;gap:.5rem}
 footer a{color:var(--grey);font-size:.85rem;cursor:pointer}
 footer a:hover{color:var(--paper)}
@@ -327,7 +323,7 @@ footer a:hover{color:var(--paper)}
   <header>
     <div class="logo-wrap" id="brand-logo-trigger" onclick="handleLogoClick(event)">
       <div class="rebel-brand-logo" id="header-logo-container">
-        <img id="site-header-logo-img" src="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon4.png" alt="Rebel Store Logo" style="width:100%; height:100%; object-fit:contain;">
+        <img id="site-header-logo-img" src="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon4.png" alt="Rebel Store Logo">
       </div>
     </div>
     <nav>
@@ -337,12 +333,13 @@ footer a:hover{color:var(--paper)}
     </nav>
     <div class="header-actions">
       <div class="user-badge" id="user-badge" onclick="handleAuthClick(event)">👤 <span id="user-name">Login</span></div>
+      <!-- USER DROPDOWN WITH WISHLIST FOR MOBILE -->
       <div class="user-dropdown-menu" id="user-dropdown-menu">
         <div class="user-dropdown-item" onclick="openProfileModal()">👤 Profile</div>
         <div class="user-dropdown-item" onclick="openOrdersModal()">📦 My Orders</div>
+        <div class="user-dropdown-item" onclick="openWishlistModal()">❤️ Wishlist</div>
         <div class="user-dropdown-item" onclick="logoutUser()" style="color:var(--rebel-red);">🚪 Logout</div>
       </div>
-      <!-- Wishlist Header Icon -->
       <button class="wishlist-icon-btn" onclick="openWishlistModal()" title="View Wishlist">❤️</button>
       <button class="cart-btn" onclick="toggleCartDrawer(true)">Cart (<span id="cart-count">0</span>)</button>
     </div>
@@ -479,9 +476,8 @@ footer a:hover{color:var(--paper)}
           <span class="pdp-discount">33% OFF</span>
         </div>
         
-        <!-- SMALL COUPON BADGE DISPLAY (Header style coupon code shown right below price) -->
         <div style="font-family:'Space Mono', monospace; font-size:0.75rem; background:rgba(255,213,0,0.15); border:1px dashed var(--spray-yellow); padding:0.5rem 0.8rem; margin-bottom:1.2rem; border-radius:2px; color:var(--spray-yellow);">
-          🔥 Use code <strong id="pdp-active-coupon-code" style="color:#fff;">REBEL16</strong> in cart for extra <strong id="pdp-active-coupon-disc" style="color:#fff;">16%</strong> off!
+          🔥 Use code <strong id="pdp-active-coupon-code" style="color:#fff;">REBEL16</strong> in bag for extra <strong id="pdp-active-coupon-disc" style="color:#fff;">16%</strong> off!
         </div>
 
         <p class="pdp-desc" id="pdp-desc-text">240 GSM premium combed cotton.</p>
@@ -505,7 +501,7 @@ footer a:hover{color:var(--paper)}
     </div>
   </section>
 
-  <!-- CUSTOMER WISHLIST MODAL FOR CLIENT WITH CLICK-TO-VIEW PRODUCT FEATURE -->
+  <!-- CUSTOMER WISHLIST MODAL -->
   <div class="auth-modal" id="wishlist-modal">
     <div class="profile-modal-box" style="max-width: 500px;">
       <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeWishlistModal()">×</button>
@@ -661,7 +657,7 @@ footer a:hover{color:var(--paper)}
     </div>
   </div>
 
-  <!-- PROFILE MODAL WITH EDIT CAPABILITY (Username & Email Locked) -->
+  <!-- PROFILE MODAL WITH EDIT CAPABILITY & PROFILE PICTURE UPLOAD -->
   <div class="auth-modal" id="profile-modal">
     <div class="profile-modal-box">
       <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeProfileModal()">×</button>
@@ -670,7 +666,7 @@ footer a:hover{color:var(--paper)}
     </div>
   </div>
 
-  <!-- MY ORDERS MODAL WITH DETAILED VIEW ON CLICK -->
+  <!-- MY ORDERS MODAL -->
   <div class="auth-modal" id="orders-modal">
     <div class="profile-modal-box" style="max-width: 650px;">
       <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeOrdersModal()">×</button>
@@ -679,7 +675,7 @@ footer a:hover{color:var(--paper)}
     </div>
   </div>
 
-  <!-- ADMIN AUTH MODAL (Activated via 5-click on Logo) -->
+  <!-- ADMIN AUTH MODAL -->
   <div class="admin-auth-modal" id="admin-auth-modal">
     <div class="admin-auth-box">
       <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeAdminAuth()">×</button>
@@ -1114,7 +1110,7 @@ footer a:hover{color:var(--paper)}
           <p style="color:var(--grey); font-size:.85rem;" id="footer-tagline-text">Independent streetwear label. Heavyweight tees for people who don't wait for permission.</p>
         </div>
         <div>
-          <h5>Shop</h5>
+          <h5 style="display:block; margin-bottom:0.8rem;">Shop</h5>
           <ul id="footer-shop-links">
             <li><a onclick="showHomeView()">Riot Collection</a></li>
             <li><a onclick="showHomeView()">Volt Collection</a></li>
@@ -1350,7 +1346,6 @@ let trashOrdersHistory = JSON.parse(localStorage.getItem('rebel_trash_orders_his
 let customOrdersHistory = JSON.parse(localStorage.getItem('rebel_custom_orders_history')) || [];
 let staffAccounts = JSON.parse(localStorage.getItem('rebel_staff_accounts')) || [];
 
-// Cart & Wishlist initialized from localStorage
 let cart = JSON.parse(localStorage.getItem('rebel_cart')) || [];
 let wishlist = JSON.parse(localStorage.getItem('rebel_wishlist')) || [];
 
@@ -1615,14 +1610,25 @@ function changeCustQty(amount) {
   document.getElementById('cust-total-price-display').innerText = 'ரூ ' + (custUnitPrice * custQty);
 }
 
-async function getFileCloudPath(fileInputId) {
+async function uploadFileToSupabaseStorage(fileInputId, bucketName = 'custom-prints') {
   const fileInput = document.getElementById(fileInputId);
-  if (fileInput.files && fileInput.files[0]) {
-    const file = fileInput.files[0];
-    const localPath = URL.createObjectURL(file);
-    return { name: file.name, path: localPath };
+  if (!fileInput || !fileInput.files || !fileInput.files[0]) return null;
+  const file = fileInput.files[0];
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+  const filePath = `${fileName}`;
+
+  if (supabaseClient) {
+    try {
+      const { data, error } = await supabaseClient.storage.from(bucketName).upload(filePath, file);
+      if (error) throw error;
+      const { data: publicUrlData } = supabaseClient.storage.from(bucketName).getPublicUrl(filePath);
+      return { name: file.name, path: publicUrlData.publicUrl };
+    } catch (err) {
+      console.warn("Storage upload fallback to local URL:", err);
+    }
   }
-  return null;
+  return { name: file.name, path: URL.createObjectURL(file) };
 }
 
 async function addCustomOrderToCart() {
@@ -1631,9 +1637,11 @@ async function addCustomOrderToCart() {
     return;
   }
   const garment = document.getElementById('cust-garment').value;
-  const centerPrint = await getFileCloudPath('cust-file-center');
-  const leftPrint = await getFileCloudPath('cust-file-left');
-  const backPrint = await getFileCloudPath('cust-file-back');
+  showToast('Uploading custom print files to cloud...');
+  const centerPrint = await uploadFileToSupabaseStorage('cust-file-center');
+  const leftPrint = await uploadFileToSupabaseStorage('cust-file-left');
+  const backPrint = await uploadFileToSupabaseStorage('cust-file-back');
+  
   if (!centerPrint && !leftPrint && !backPrint) {
     showToast('Please upload at least one print file!');
     return;
@@ -1814,7 +1822,6 @@ function addToCart() {
   }
 }
 
-// Add to Wishlist Function storing locally and in Supabase
 async function addToWishlist() {
   if (!currentProduct) return;
   
@@ -1853,7 +1860,6 @@ async function addToWishlist() {
   showToast(`Added to Wishlist! ❤️`);
 }
 
-// Open client wishlist modal and allow clicking items to view product page directly
 function openWishlistModal() {
   const modal = document.getElementById('wishlist-modal');
   const area = document.getElementById('wishlist-modal-items');
@@ -2385,7 +2391,6 @@ function closeAdminSubPages() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Function to load and display all user wishlist items in Admin Page grouped by user
 async function loadAdminWishlistFromSupabase() {
   const tbody = document.getElementById('admin-wishlist-tbody');
   if (!tbody) return;
@@ -3203,7 +3208,8 @@ document.addEventListener('DOMContentLoaded', () => {
           username: u.user_metadata?.username || gName,
           email: u.email,
           phone: u.user_metadata?.phone || '',
-          altPhone: u.user_metadata?.alt_phone || ''
+          altPhone: u.user_metadata?.alt_phone || '',
+          avatarUrl: u.user_metadata?.avatar_url || ''
         };
         sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
         document.getElementById('user-name').innerText = loggedInUser.username;
@@ -3213,7 +3219,8 @@ document.addEventListener('DOMContentLoaded', () => {
           name: loggedInUser.name,
           email: loggedInUser.email,
           phone: loggedInUser.phone,
-          username: loggedInUser.username
+          username: loggedInUser.username,
+          avatar_url: loggedInUser.avatarUrl
         }, { onConflict: 'id' });
       }
     });
@@ -3227,7 +3234,8 @@ document.addEventListener('DOMContentLoaded', () => {
           username: u.user_metadata?.username || gName,
           email: u.email,
           phone: u.user_metadata?.phone || '',
-          altPhone: u.user_metadata?.alt_phone || ''
+          altPhone: u.user_metadata?.alt_phone || '',
+          avatarUrl: u.user_metadata?.avatar_url || ''
         };
         sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
         document.getElementById('user-name').innerText = loggedInUser.username;
@@ -3237,7 +3245,8 @@ document.addEventListener('DOMContentLoaded', () => {
           name: loggedInUser.name,
           email: loggedInUser.email,
           phone: loggedInUser.phone,
-          username: loggedInUser.username
+          username: loggedInUser.username,
+          avatar_url: loggedInUser.avatarUrl
         }, { onConflict: 'id' });
 
         closeAuthModal();
@@ -3473,7 +3482,7 @@ async function registerNewAccount() {
       }
     }
 
-    loggedInUser = { name, phone, altPhone, email, username };
+    loggedInUser = { name, phone, altPhone, email, username, avatarUrl: '' };
     sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
 
     const userBadgeEl = document.getElementById('user-name');
@@ -3543,7 +3552,8 @@ async function processUserLogin() {
           username: u.user_metadata?.username || inputVal,
           email: u.email,
           phone: u.user_metadata?.phone || '',
-          altPhone: u.user_metadata?.alt_phone || ''
+          altPhone: u.user_metadata?.alt_phone || '',
+          avatarUrl: u.user_metadata?.avatar_url || ''
         };
       }
     } else {
@@ -3552,7 +3562,8 @@ async function processUserLogin() {
         username: inputVal,
         email: inputVal.includes('@') ? inputVal : `${inputVal}@rebelstore.in`,
         phone: '',
-        altPhone: ''
+        altPhone: '',
+        avatarUrl: ''
       };
     }
 
@@ -3626,21 +3637,28 @@ async function logoutUser() {
 function openProfileModal() {
   if (!loggedInUser) return;
   const area = document.getElementById('profile-content-area');
+  const avatarDisplay = loggedInUser.avatarUrl ? `<img src="${loggedInUser.avatarUrl}" style="width:70px; height:70px; border-radius:50%; object-fit:cover; margin:0 auto 10px; border:2px solid var(--spray-yellow);">` : `<div style="width:70px; height:70px; border-radius:50%; background:#222; display:flex; align-items:center; justify-content:center; margin:0 auto 10px; font-size:1.5rem;">👤</div>`;
+
   area.innerHTML = `
-    <div style="display:flex; flex-direction:column; gap:10px; font-family:'Space Mono'; font-size:0.85rem;">
+    <div style="display:flex; flex-direction:column; gap:10px; font-family:'Space Mono'; font-size:0.85rem; text-align:center;">
+      ${avatarDisplay}
       <div>
+        <label style="color:var(--grey); font-size:0.7rem; display:block; margin-bottom:4px;">Profile Picture (Max 1MB)</label>
+        <input type="file" id="profile-avatar-file" class="admin-input-full" accept="image/*" style="font-size:0.75rem; padding:5px;">
+      </div>
+      <div style="text-align:left;">
         <label style="color:var(--grey); font-size:0.7rem; display:block;">Full Name (Editable)</label>
         <input type="text" id="edit-profile-name" class="admin-input-full" value="${loggedInUser.name || ''}" style="margin-bottom:0;">
       </div>
-      <div>
+      <div style="text-align:left;">
         <label style="color:var(--grey); font-size:0.7rem; display:block;">Phone (Editable)</label>
         <input type="tel" id="edit-profile-phone" class="admin-input-full" value="${loggedInUser.phone || ''}" style="margin-bottom:0;">
       </div>
-      <div>
+      <div style="text-align:left;">
         <label style="color:var(--grey); font-size:0.7rem; display:block;">Username (Locked)</label>
         <input type="text" class="admin-input-full" value="${loggedInUser.username || ''}" disabled style="background:#111; color:var(--grey); margin-bottom:0; cursor:not-allowed;">
       </div>
-      <div>
+      <div style="text-align:left;">
         <label style="color:var(--grey); font-size:0.7rem; display:block;">Email (Locked)</label>
         <input type="email" class="admin-input-full" value="${loggedInUser.email || ''}" disabled style="background:#111; color:var(--grey); margin-bottom:0; cursor:not-allowed;">
       </div>
@@ -3657,14 +3675,40 @@ function closeProfileModal() {
 async function saveUserProfileEdits() {
   const newName = document.getElementById('edit-profile-name').value.trim();
   const newPhone = document.getElementById('edit-profile-phone').value.trim();
+  const fileInput = document.getElementById('profile-avatar-file');
 
   if (!newName) {
     showToast('Name cannot be empty!');
     return;
   }
 
+  let avatarUrl = loggedInUser.avatarUrl || '';
+
+  if (fileInput.files && fileInput.files[0]) {
+    const file = fileInput.files[0];
+    if (file.size > 1024 * 1024) {
+      showToast('File size exceeds 1MB limit!');
+      return;
+    }
+    const fileExt = file.name.split('.').pop();
+    const fileName = `avatar_${Date.now()}.${fileExt}`;
+    if (supabaseClient) {
+      try {
+        showToast('Uploading profile picture...');
+        const { error: uploadErr } = await supabaseClient.storage.from('avatars').upload(fileName, file);
+        if (!uploadErr) {
+          const { data: pubData } = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
+          if (pubData) avatarUrl = pubData.publicUrl;
+        }
+      } catch (e) {
+        console.warn('Avatar upload exception:', e);
+      }
+    }
+  }
+
   loggedInUser.name = newName;
   loggedInUser.phone = newPhone;
+  loggedInUser.avatarUrl = avatarUrl;
   sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
 
   if (supabaseClient) {
@@ -3673,7 +3717,8 @@ async function saveUserProfileEdits() {
       if (user) {
         await supabaseClient.from('profiles').update({
           name: newName,
-          phone: newPhone
+          phone: newPhone,
+          avatar_url: avatarUrl
         }).eq('id', user.id);
       }
     } catch (err) {
