@@ -487,7 +487,7 @@ footer a:hover{color:var(--paper)}
     </div>
   </section>
 
-  <!-- CUSTOMER WISHLIST MODAL FOR CLIENT -->
+  <!-- CUSTOMER WISHLIST MODAL FOR CLIENT WITH CLICK-TO-VIEW PRODUCT FEATURE -->
   <div class="auth-modal" id="wishlist-modal">
     <div class="profile-modal-box" style="max-width: 500px;">
       <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeWishlistModal()">×</button>
@@ -1796,7 +1796,7 @@ function addToCart() {
   }
 }
 
-// Add to Wishlist Function ensuring client can view their wishlist instantly
+// Add to Wishlist Function storing locally and in Supabase
 async function addToWishlist() {
   if (!currentProduct) return;
   
@@ -1813,7 +1813,6 @@ async function addToWishlist() {
     date: new Date().toISOString()
   };
 
-  // Prevent duplicate additions for same product
   if (!wishlist.some(w => w.id === currentProduct.id)) {
     wishlist.push(wishItem);
     localStorage.setItem('rebel_wishlist', JSON.stringify(wishlist));
@@ -1836,6 +1835,7 @@ async function addToWishlist() {
   showToast(`Added to Wishlist! ❤️`);
 }
 
+// Open client wishlist modal and allow clicking items to view product page directly
 function openWishlistModal() {
   const modal = document.getElementById('wishlist-modal');
   const area = document.getElementById('wishlist-modal-items');
@@ -1848,14 +1848,14 @@ function openWishlistModal() {
     wishlist.forEach((item, idx) => {
       html += `
         <div style="background:#1a1a1d; border:1px solid rgba(242,240,234,0.15); padding:1rem; margin-bottom:1rem; border-radius:4px; display:flex; justify-content:space-between; align-items:center;">
-          <div style="display:flex; gap:10px; align-items:center;">
+          <div style="display:flex; gap:10px; align-items:center; cursor:pointer;" onclick="closeWishlistModal(); openProductByDetails('', '${item.id}')">
             ${item.image ? `<img src="${item.image}" style="width:45px; height:45px; object-fit:contain; background:#111; border:1px solid #333;">` : ''}
             <div>
-              <h5 style="font-family:'Archivo Black'; font-size:0.9rem; text-transform:uppercase;">${item.title}</h5>
-              <div style="font-family:'Space Mono'; font-size:0.8rem; color:var(--spray-yellow);">ரூ ${item.price}</div>
+              <h5 style="font-family:'Archivo Black'; font-size:0.9rem; text-transform:uppercase; color:var(--paper);">${item.title}</h5>
+              <div style="font-family:'Space Mono'; font-size:0.8rem; color:var(--spray-yellow);">ரூ ${item.price} <span style="font-size:0.65rem; color:var(--grey);">(Click to View)</span></div>
             </div>
           </div>
-          <button class="cart-item-remove" onclick="removeFromWishlist(${idx})">Remove</button>
+          <button class="cart-item-remove" onclick="removeFromWishlist(event, ${idx})">Remove</button>
         </div>
       `;
     });
@@ -1868,7 +1868,8 @@ function closeWishlistModal() {
   document.getElementById('wishlist-modal').style.display = 'none';
 }
 
-function removeFromWishlist(idx) {
+function removeFromWishlist(e, idx) {
+  e.stopPropagation();
   wishlist.splice(idx, 1);
   localStorage.setItem('rebel_wishlist', JSON.stringify(wishlist));
   openWishlistModal();
@@ -3604,7 +3605,6 @@ async function logoutUser() {
   showHomeView();
 }
 
-// Editable Profile Modal (Username & Email are Locked/Disabled)
 function openProfileModal() {
   if (!loggedInUser) return;
   const area = document.getElementById('profile-content-area');
@@ -3667,7 +3667,6 @@ async function saveUserProfileEdits() {
   closeProfileModal();
 }
 
-// My Orders Modal with full item details and fetching all history properly
 function openOrdersModal() {
   if (!loggedInUser) return;
   const area = document.getElementById('orders-content-area');
