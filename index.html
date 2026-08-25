@@ -37,16 +37,6 @@ main, section, .admin-sub-page {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- SCROLL/ENTRANCE ANIMATION SYSTEM ---
-   .card gets a guaranteed pop-in (CSS-only, so products can never get stuck invisible).
-   .reveal-on-scroll fades up into view; it stays fully visible by default so if JS
-   or IntersectionObserver ever fails, content is never hidden — the animation is a
-   bonus, not a requirement. */
-@keyframes cardPopIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
-.reveal-on-scroll{opacity:1}
-.reveal-on-scroll.will-animate{opacity:0;transform:translateY(28px)}
-.reveal-on-scroll.will-animate.in-view{opacity:1;transform:translateY(0);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
-
 a{color:inherit;text-decoration:none}
 img{max-width:100%;display:block}
 .wrap{max-width:1200px;margin:0 auto;padding:0 var(--gap)}
@@ -58,14 +48,15 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--spray-yellow);outli
 .ticker__track span{padding:.5rem 1.5rem;display:inline-block}
 @keyframes scrollTicker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-/* --- HEADER FIX: STRICT LEFT-ALIGNED LOGO & PROPER PADDING --- */
+/* --- HEADER FIX: STRICT LEFT-ALIGNED LOGO (NO CENTER DRIFT) --- */
 header{display:flex;align-items:center;justify-content:space-between;padding:.6rem var(--gap);border-bottom:1px solid rgba(242,240,234,.12);position:sticky;top:0;z-index:90;background:rgba(11,11,12,.94);backdrop-filter:blur(12px);min-height:85px;gap:.5rem}
 .logo-wrap{display:flex;align-items:center;justify-content:flex-start;cursor:pointer;user-select:none;height:100%;flex-shrink:0;margin-right:auto}
-.rebel-brand-logo{display:inline-flex;align-items:center;justify-content:flex-start;width:150px;height:52px;overflow:hidden}
-.rebel-brand-logo svg,.rebel-brand-logo img{width:100%;height:100%;object-fit:contain;object-position:left center;display:block}
+.rebel-brand-logo{display:inline-flex;align-items:center;justify-content:flex-start;width:150px;height:55px;overflow:visible}
+.rebel-brand-logo svg,.rebel-brand-logo img{width:100%;height:100%;object-fit:contain;object-position:left center;display:block;transform:scale(2.2);transform-origin:left center}
 @media(min-width:768px){
   header{min-height:95px;padding:1rem var(--gap)}
-  .rebel-brand-logo{width:190px;height:66px}
+  .rebel-brand-logo{width:220px;height:70px}
+  .rebel-brand-logo svg,.rebel-brand-logo img{transform:scale(2.5)}
 }
 
 nav{display:none;gap:1.8rem;font-family:'Space Mono',monospace;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em}
@@ -76,6 +67,7 @@ nav a:hover::after{width:100%}
 
 .header-actions{display:flex;align-items:center;gap:.5rem;position:relative;flex-shrink:0}
 
+/* PROFILE AVATAR BUTTON (NO BOX BORDER) */
 .user-badge{background:transparent;border:none;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.2s}
 .user-badge:hover{transform:scale(1.08)}
 
@@ -122,7 +114,7 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .horizontal-scroll-grid::-webkit-scrollbar-thumb{background:var(--spray-yellow);border-radius:4px}
 .horizontal-scroll-grid .card,.cat-prod-grid .card{min-width:330px;width:330px;flex:0 0 auto;height:500px;display:flex;flex-direction:column;justify-content:space-between}
 @media(max-width:768px){.horizontal-scroll-grid .card,.cat-prod-grid .card{min-width:280px;width:280px;height:480px}}
-.card{background:var(--card-bg);border:1px solid rgba(242,240,234,.12);padding:1.4rem;position:relative;overflow:hidden;transition:transform .25s cubic-bezier(0.16,1,0.3,1),border-color .2s ease;cursor:pointer;animation:cardPopIn .5s cubic-bezier(0.16,1,0.3,1) both}
+.card{background:var(--card-bg);border:1px solid rgba(242,240,234,.12);padding:1.4rem;position:relative;overflow:hidden;transition:transform .25s cubic-bezier(0.16,1,0.3,1),border-color .2s ease;cursor:pointer}
 .card:hover{transform:translateY(-6px);border-color:var(--spray-yellow)}
 .card__tag{font-family:'Space Mono',monospace;font-size:.68rem;text-transform:uppercase;color:var(--spray-yellow);letter-spacing:.08em;margin-bottom:.4rem;display:block;flex-shrink:0}
 .tee-swatch{width:100%;aspect-ratio:1 / 1;border-radius:2px;margin-bottom:0.8rem;display:flex;align-items:center;justify-content:center;font-family:'Anton',sans-serif;font-size:2.5rem;text-transform:uppercase;position:relative;overflow:hidden;background-size:contain;background-position:center;background-repeat:no-repeat;flex-shrink:0;background-color:#141416}
@@ -1121,6 +1113,7 @@ footer a:hover{color:var(--paper)}
               <img id="site-footer-logo-img" src="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon4.png" alt="Rebel Store Logo" style="width:100%; height:100%; object-fit:contain; object-position:left center;">
             </div>
           </div>
+          <!-- FIX: Added clear margin-top and clear block so footer tagline never overlaps with shop -->
           <p style="color:var(--grey); font-size:.85rem; margin-top:0; display:block;" id="footer-tagline-text">Independent streetwear label. Heavyweight tees for people who don't wait for permission.</p>
         </div>
         <div>
@@ -1450,6 +1443,30 @@ function applySiteContentToDOM() {
 
   if (document.getElementById('pdp-active-coupon-code')) document.getElementById('pdp-active-coupon-code').innerText = activeOfferCode;
   if (document.getElementById('pdp-active-coupon-disc')) document.getElementById('pdp-active-coupon-disc').innerText = activeDiscountPercent + '%';
+  
+  updateUserBadgeDisplay();
+}
+
+function updateUserBadgeDisplay() {
+  const nameEl = document.getElementById('user-name');
+  const iconEl = document.getElementById('user-avatar-icon');
+  if (!nameEl || !iconEl) return;
+
+  if (loggedInUser) {
+    if (loggedInUser.avatarUrl) {
+      iconEl.innerHTML = `<img src="${loggedInUser.avatarUrl}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+    } else {
+      iconEl.innerHTML = `👤`;
+    }
+    if (window.innerWidth < 768) {
+      nameEl.innerText = '';
+    } else {
+      nameEl.innerText = loggedInUser.username || loggedInUser.name || 'User';
+    }
+  } else {
+    iconEl.innerHTML = `👤`;
+    nameEl.innerText = 'Login';
+  }
 }
 
 async function saveWebsiteContentCMS() {
@@ -3280,28 +3297,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadSiteContentFromCloud();
   window.addEventListener('hashchange', handleRouteFromHash);
   handleRouteFromHash();
-  initScrollReveal();
 });
-
-function initScrollReveal() {
-  // Safety first: everything with .reveal-on-scroll is opacity:1 by default in CSS.
-  // We only ever ADD motion here — never hide content that JS fails to reach.
-  if (!('IntersectionObserver' in window)) return;
-  const targets = document.querySelectorAll('.reveal-on-scroll:not(.will-animate)');
-  if (!targets.length) return;
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('in-view');
-        io.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
-  targets.forEach(el => {
-    el.classList.add('will-animate');
-    io.observe(el);
-  });
-}
 
 function handleRouteFromHash() {
   const hash = window.location.hash;
