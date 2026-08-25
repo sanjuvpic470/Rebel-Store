@@ -48,9 +48,9 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--spray-yellow);outli
 .ticker__track span{padding:.5rem 1.5rem;display:inline-block}
 @keyframes scrollTicker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-/* --- HEADER FIX: STRICT LEFT-ALIGNED LOGO (NO CENTER DRIFT) --- */
+/* --- HEADER FIX: LEFT LOGO, CENTERED NAV LINKS --- */
 header{display:flex;align-items:center;justify-content:space-between;padding:.6rem var(--gap);border-bottom:1px solid rgba(242,240,234,.12);position:sticky;top:0;z-index:90;background:rgba(11,11,12,.94);backdrop-filter:blur(12px);min-height:85px;gap:.5rem}
-.logo-wrap{display:flex;align-items:center;justify-content:flex-start;cursor:pointer;user-select:none;height:100%;flex-shrink:0;margin-right:auto}
+.logo-wrap{display:flex;align-items:center;justify-content:flex-start;cursor:pointer;user-select:none;height:100%;flex-shrink:0}
 .rebel-brand-logo{display:inline-flex;align-items:center;justify-content:flex-start;width:150px;height:55px;overflow:visible}
 .rebel-brand-logo svg,.rebel-brand-logo img{width:100%;height:100%;object-fit:contain;object-position:left center;display:block;transform:scale(2.2);transform-origin:left center}
 @media(min-width:768px){
@@ -59,7 +59,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:.6r
   .rebel-brand-logo svg,.rebel-brand-logo img{transform:scale(2.5)}
 }
 
-nav{display:none;gap:1.8rem;font-family:'Space Mono',monospace;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em}
+nav{display:none;position:absolute;left:50%;transform:translateX(-50%);gap:1.8rem;font-family:'Space Mono',monospace;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em}
 nav a{position:relative;padding:.25rem 0;cursor:pointer;transition:color 0.2s}
 nav a::after{content:'';position:absolute;left:0;bottom:-2px;width:0;height:2px;background:var(--spray-yellow);transition:width .25s ease}
 nav a:hover::after{width:100%}
@@ -67,7 +67,6 @@ nav a:hover::after{width:100%}
 
 .header-actions{display:flex;align-items:center;gap:.5rem;position:relative;flex-shrink:0}
 
-/* PROFILE AVATAR BUTTON (NO BOX BORDER) */
 .user-badge{background:transparent;border:none;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.2s}
 .user-badge:hover{transform:scale(1.08)}
 
@@ -487,12 +486,12 @@ footer a:hover{color:var(--paper)}
 
         <p class="pdp-desc" id="pdp-desc-text">240 GSM premium combed cotton.</p>
         <span class="option-label">Select Size</span>
-        <div class="size-selector">
-          <button class="size-btn" onclick="selectSize(this, 'S')">S</button>
-          <button class="size-btn selected" onclick="selectSize(this, 'M')">M</button>
-          <button class="size-btn" onclick="selectSize(this, 'L')">L</button>
-          <button class="size-btn" onclick="selectSize(this, 'XL')">XL</button>
-          <button class="size-btn" onclick="selectSize(this, 'XXL')">XXL</button>
+        <div class="size-selector" id="pdp-size-selector">
+          <!-- Dynamically populated sizes -->
+        </div>
+        <span class="option-label">Select Color</span>
+        <div class="size-selector" id="pdp-color-selector">
+          <!-- Dynamically populated colors -->
         </div>
         <span class="option-label">Quantity</span>
         <div class="qty-selector">
@@ -1105,19 +1104,18 @@ footer a:hover{color:var(--paper)}
       </div>
     </div>
     <div class="wrap" style="padding-bottom: 2rem;">
-      <div class="footer-grid">
-        <div>
-          <!-- FOOTER LOGO PROPERLY ALIGNED -->
-          <div class="logo-wrap" style="margin-bottom:1.2rem;" onclick="showHomeView()">
-            <div class="rebel-brand-logo footer-logo-container" style="width:170px; height:64px; overflow:hidden; justify-content:flex-start;">
-              <img id="site-footer-logo-img" src="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon4.png" alt="Rebel Store Logo" style="width:100%; height:100%; object-fit:contain; object-position:left center;">
+      <!-- FIXED FOOTER GRID CONTAINER TO PREVENT OVERLAP -->
+      <div class="footer-grid" style="display:grid; grid-template-columns:1fr; gap:2.5rem; align-items:start;">
+        <div style="width:100%;">
+          <div class="logo-wrap" style="margin-bottom:1.2rem; display:block;" onclick="showHomeView()">
+            <div class="rebel-brand-logo footer-logo-container" style="width:180px; height:60px; overflow:visible;">
+              <img id="site-footer-logo-img" src="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon4.png" alt="Rebel Store Logo" style="width:100%; height:100%; object-fit:contain; transform:scale(2.2); transform-origin:left center;">
             </div>
           </div>
-          <!-- FIX: Added clear margin-top and clear block so footer tagline never overlaps with shop -->
-          <p style="color:var(--grey); font-size:.85rem; margin-top:0; display:block;" id="footer-tagline-text">Independent streetwear label. Heavyweight tees for people who don't wait for permission.</p>
+          <p style="color:var(--grey); font-size:.85rem; margin-top:1.5rem; display:block; clear:both;" id="footer-tagline-text">Independent streetwear label. Heavyweight tees for people who don't wait for permission.</p>
         </div>
         <div>
-          <h5 style="display:block; margin-bottom:0.8rem;">Shop</h5>
+          <h5 style="display:block; margin-bottom:0.8rem; font-family:'Space Mono'; color:var(--spray-yellow);">Shop</h5>
           <ul id="footer-shop-links">
             <li><a onclick="showHomeView()">Riot Collection</a></li>
             <li><a onclick="showHomeView()">Volt Collection</a></li>
@@ -1125,7 +1123,7 @@ footer a:hover{color:var(--paper)}
           </ul>
         </div>
         <div>
-          <h5>Support</h5>
+          <h5 style="display:block; margin-bottom:0.8rem; font-family:'Space Mono'; color:var(--spray-yellow);">Support</h5>
           <ul>
             <li><a onclick="showToast('Shipping information & FAQs')">Shipping</a></li>
             <li><a onclick="showToast('Easy returns and exchange policy')">Returns</a></li>
@@ -1133,7 +1131,7 @@ footer a:hover{color:var(--paper)}
           </ul>
         </div>
         <div>
-          <h5>Follow</h5>
+          <h5 style="display:block; margin-bottom:0.8rem; font-family:'Space Mono'; color:var(--spray-yellow);">Follow</h5>
           <ul>
             <li><a href="#" target="_blank">Instagram</a></li>
             <li><a href="#" target="_blank">TikTok</a></li>
@@ -1308,24 +1306,24 @@ let DEFAULT_CATEGORIES = [
     id: 'cat-oversized',
     name: 'Oversized Tee',
     products: [
-      { id: 'o1', code: 'RIOT', title: 'The Riot Oversized Tee', desc: 'Acid Yellow & Distressed Grunge Graphic. 240 GSM.', mrp: 1070, price: 713, images: [''] },
-      { id: 'o2', code: 'VOLT', title: 'The Volt Oversized Tee', desc: 'Stealth Black with High-Voltage Neon Typography.', mrp: 1070, price: 713, images: [''] },
-      { id: 'o3', code: 'VOID', title: 'The Void Acid Tee', desc: 'Acid wash dark grey streetwear style.', mrp: 1070, price: 713, images: [''] },
-      { id: 'o4', code: 'REB1', title: 'Rebel Heavyweight Tee 01', desc: '240 GSM heavy combed cotton.', mrp: 1070, price: 713, images: [''] },
-      { id: 'o5', code: 'REB2', title: 'Rebel Heavyweight Tee 02', desc: '240 GSM heavy combed cotton.', mrp: 1070, price: 713, images: [''] },
-      { id: 'o6', code: 'REB3', title: 'Rebel Heavyweight Tee 03', desc: '240 GSM heavy combed cotton.', mrp: 1070, price: 713, images: [''] }
+      { id: 'o1', code: 'RIOT', title: 'The Riot Oversized Tee', desc: 'Acid Yellow & Distressed Grunge Graphic. 240 GSM.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'Black'], sizes: ['S', 'M', 'L', 'XL'] },
+      { id: 'o2', code: 'VOLT', title: 'The Volt Oversized Tee', desc: 'Stealth Black with High-Voltage Neon Typography.', mrp: 1070, price: 713, images: [''], colors: ['Black', 'Blue'], sizes: ['S', 'M', 'L', 'XL'] },
+      { id: 'o3', code: 'VOID', title: 'The Void Acid Tee', desc: 'Acid wash dark grey streetwear style.', mrp: 1070, price: 713, images: [''], colors: ['Grey', 'Black'], sizes: ['M', 'L', 'XL'] },
+      { id: 'o4', code: 'REB1', title: 'Rebel Heavyweight Tee 01', desc: '240 GSM heavy combed cotton.', mrp: 1070, price: 713, images: [''], colors: ['Black', 'White'], sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
+      { id: 'o5', code: 'REB2', title: 'Rebel Heavyweight Tee 02', desc: '240 GSM heavy combed cotton.', mrp: 1070, price: 713, images: [''], colors: ['Black', 'Yellow'], sizes: ['S', 'M', 'L', 'XL'] },
+      { id: 'o6', code: 'REB3', title: 'Rebel Heavyweight Tee 03', desc: '240 GSM heavy combed cotton.', mrp: 1070, price: 713, images: [''], colors: ['White', 'Blue'], sizes: ['S', 'M', 'L', 'XL'] }
     ]
   },
   {
     id: 'cat-hoodie',
     name: 'Hoodie',
     products: [
-      { id: 'h1', code: 'HOD1', title: 'The Bone Neutral Hoodie', desc: 'Vintage Washed Off-White heavyweight hoodie.', mrp: 1899, price: 1299, images: [''] },
-      { id: 'h2', code: 'HOD2', title: 'Dark Cyber Hoodie 01', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''] },
-      { id: 'h3', code: 'HOD3', title: 'Dark Cyber Hoodie 02', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''] },
-      { id: 'h4', code: 'HOD4', title: 'Street Riot Hoodie 01', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''] },
-      { id: 'h5', code: 'HOD5', title: 'Street Riot Hoodie 02', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''] },
-      { id: 'h6', code: 'HOD6', title: 'Urban Dissent Hoodie', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''] }
+      { id: 'h1', code: 'HOD1', title: 'The Bone Neutral Hoodie', desc: 'Vintage Washed Off-White heavyweight hoodie.', mrp: 1899, price: 1299, images: [''], colors: ['White', 'Black'], sizes: ['M', 'L', 'XL', 'XXL'] },
+      { id: 'h2', code: 'HOD2', title: 'Dark Cyber Hoodie 01', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Black', 'Grey'], sizes: ['S', 'M', 'L', 'XL'] },
+      { id: 'h3', code: 'HOD3', title: 'Dark Cyber Hoodie 02', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Black', 'Blue'], sizes: ['S', 'M', 'L', 'XL'] },
+      { id: 'h4', code: 'HOD4', title: 'Street Riot Hoodie 01', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'Black'], sizes: ['S', 'M', 'L', 'XL'] },
+      { id: 'h5', code: 'HOD5', title: 'Street Riot Hoodie 02', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['White', 'Black'], sizes: ['M', 'L', 'XL'] },
+      { id: 'h6', code: 'HOD6', title: 'Urban Dissent Hoodie', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Black', 'Grey'], sizes: ['S', 'M', 'L', 'XL'] }
     ]
   }
 ];
@@ -1365,6 +1363,7 @@ let custSize = 'M';
 let custQty = 2;
 let custUnitPrice = 699;
 let selectedSize = 'M';
+let selectedColor = 'Yellow'; // Default selected color
 let selectedQty = 1;
 let currentSlideIndex = 0;
 let currentProduct = null;
@@ -1722,6 +1721,44 @@ function openProductByDetails(catName, productId) {
     document.getElementById('add-btn').innerText = `Add to Cart — ரூ ${foundProd.price * selectedQty}`;
   }
   
+  // Render Dynamic Colors and Sizes from Product Data
+  const colorContainer = document.getElementById('pdp-color-selector');
+  const sizeContainer = document.getElementById('pdp-size-selector');
+  colorContainer.innerHTML = '';
+  sizeContainer.innerHTML = '';
+
+  const prodColors = (foundProd.colors && foundProd.colors.length > 0) ? foundProd.colors : ['Yellow', 'Black'];
+  const prodSizes = (foundProd.sizes && foundProd.sizes.length > 0) ? foundProd.sizes : ['S', 'M', 'L', 'XL'];
+
+  selectedColor = prodColors[0];
+  selectedSize = prodSizes[1] || prodSizes[0];
+
+  prodColors.forEach((col, idx) => {
+    const cBtn = document.createElement('button');
+    cBtn.type = 'button';
+    cBtn.className = `size-btn ${idx === 0 ? 'selected' : ''}`;
+    cBtn.innerText = col;
+    cBtn.onclick = () => {
+      selectedColor = col;
+      document.querySelectorAll('#pdp-color-selector .size-btn').forEach(b => b.classList.remove('selected'));
+      cBtn.classList.add('selected');
+    };
+    colorContainer.appendChild(cBtn);
+  });
+
+  prodSizes.forEach((sz, idx) => {
+    const sBtn = document.createElement('button');
+    sBtn.type = 'button';
+    sBtn.className = `size-btn ${sz === selectedSize ? 'selected' : ''}`;
+    sBtn.innerText = sz;
+    sBtn.onclick = () => {
+      selectedSize = sz;
+      document.querySelectorAll('#pdp-size-selector .size-btn').forEach(b => b.classList.remove('selected'));
+      sBtn.classList.add('selected');
+    };
+    sizeContainer.appendChild(sBtn);
+  });
+
   const sliderTrack = document.getElementById('slider-track');
   const thumbRow = document.getElementById('thumb-row-container');
   sliderTrack.innerHTML = '';
@@ -1818,7 +1855,7 @@ function addToCart() {
   cart.push({
     isCustom: false,
     id: currentProduct.id,
-    title: currentProduct.title,
+    title: `${currentProduct.title} (${selectedColor})`,
     size: selectedSize,
     price: currentProduct.price,
     qty: selectedQty,
@@ -1831,7 +1868,7 @@ function addToCart() {
   if (loggedInUser && supabaseClient) {
     supabaseClient.from('cart_items').insert([{
       user_id: loggedInUser.email || loggedInUser.username,
-      product_name: currentProduct.title,
+      product_name: `${currentProduct.title} (${selectedColor})`,
       product_price: currentProduct.price,
       product_image: productImg,
       quantity: selectedQty
@@ -1862,7 +1899,7 @@ async function addToWishlist() {
 
   const wishItem = {
     id: currentProduct.id,
-    title: currentProduct.title,
+    title: `${currentProduct.title} (${selectedColor})`,
     price: currentProduct.price,
     image: productImg,
     date: new Date().toISOString()
@@ -1878,7 +1915,7 @@ async function addToWishlist() {
       await supabaseClient.from('wishlist_items').insert([{
         user_id: loggedInUser.email || loggedInUser.username,
         customer_name: loggedInUser.name || loggedInUser.username,
-        product_name: currentProduct.title,
+        product_name: `${currentProduct.title} (${selectedColor})`,
         product_price: currentProduct.price,
         product_image: productImg
       }]);
