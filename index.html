@@ -66,6 +66,8 @@ nav a:hover::after{width:100%}
 .user-dropdown-menu.open{display:flex}
 .user-dropdown-item{font-family:'Space Mono',monospace;font-size:0.78rem;padding:0.8rem 1rem;color:var(--paper);border-bottom:1px solid rgba(242,240,234,0.1);cursor:pointer;text-transform:uppercase;transition:background 0.2s}
 .user-dropdown-item:hover{background:var(--spray-yellow);color:var(--ink);font-weight:bold}
+.wishlist-icon-btn{font-family:'Space Mono',monospace;font-size:.9rem;border:1.5px solid var(--paper);background:transparent;color:var(--paper);width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
+.wishlist-icon-btn:hover{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow);transform:scale(1.05)}
 .cart-btn{font-family:'Space Mono',monospace;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;border:1.5px solid var(--paper);padding:.5rem 1.1rem;border-radius:999px;background:transparent;color:var(--paper);cursor:pointer;font-weight:700;transition:all .2s cubic-bezier(0.16,1,0.3,1);display:inline-flex;align-items:center;gap:.4rem;min-height:40px}
 .cart-btn:hover{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow);transform:scale(1.03)}
 .btn{font-family:'Space Mono',monospace;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:.85rem;padding:.9rem 1.5rem;border-radius:2px;display:inline-flex;align-items:center;gap:.6rem;transition:transform .2s cubic-bezier(0.16,1,0.3,1),box-shadow .2s cubic-bezier(0.16,1,0.3,1);cursor:pointer;border:none;text-align:center;min-height:46px}
@@ -322,6 +324,8 @@ footer a:hover{color:var(--paper)}
         <div class="user-dropdown-item" onclick="openOrdersModal()">📦 My Orders</div>
         <div class="user-dropdown-item" onclick="logoutUser()" style="color:var(--rebel-red);">🚪 Logout</div>
       </div>
+      <!-- Wishlist Header Icon -->
+      <button class="wishlist-icon-btn" onclick="openWishlistModal()" title="View Wishlist">❤️</button>
       <button class="cart-btn" onclick="toggleCartDrawer(true)">Cart (<span id="cart-count">0</span>)</button>
     </div>
   </header>
@@ -457,14 +461,9 @@ footer a:hover{color:var(--paper)}
           <span class="pdp-discount">33% OFF</span>
         </div>
         
-        <!-- PRODUCT PAGE COUPON BOX (Added right below price offers) -->
-        <div class="coupon-section" style="padding:0.8rem 0; margin-bottom:1rem; border-top:1px dashed rgba(242,240,234,.15); border-bottom:1px dashed rgba(242,240,234,.15);">
-          <span class="option-label" style="margin-bottom:.2rem;">Have a Coupon Code?</span>
-          <div class="coupon-input-wrap" style="display:flex; gap:.5rem; margin-top:.4rem;">
-            <input type="text" id="pdp-coupon-code-input" class="form-control" placeholder="Enter Coupon Code (e.g. REBEL16)" value="" style="text-transform:uppercase;">
-            <button class="btn btn--solid" style="padding:0 1rem; min-height:38px; font-size:.78rem;" onclick="applyPdpCoupon()">Apply</button>
-          </div>
-          <div id="pdp-coupon-msg" style="font-family:'Space Mono'; font-size:.7rem; margin-top:.4rem;"></div>
+        <!-- SMALL COUPON BADGE DISPLAY (Header style coupon code shown right below price) -->
+        <div style="font-family:'Space Mono', monospace; font-size:0.75rem; background:rgba(255,213,0,0.15); border:1px dashed var(--spray-yellow); padding:0.5rem 0.8rem; margin-bottom:1.2rem; border-radius:2px; color:var(--spray-yellow);">
+          🔥 Use code <strong id="pdp-active-coupon-code" style="color:#fff;">REBEL16</strong> in cart for extra <strong id="pdp-active-coupon-disc" style="color:#fff;">16%</strong> off!
         </div>
 
         <p class="pdp-desc" id="pdp-desc-text">240 GSM premium combed cotton.</p>
@@ -487,6 +486,15 @@ footer a:hover{color:var(--paper)}
       </div>
     </div>
   </section>
+
+  <!-- CUSTOMER WISHLIST MODAL FOR CLIENT -->
+  <div class="auth-modal" id="wishlist-modal">
+    <div class="profile-modal-box" style="max-width: 500px;">
+      <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeWishlistModal()">×</button>
+      <h3>My Wishlist ❤️</h3>
+      <div id="wishlist-modal-items" style="max-height: 60vh; overflow-y: auto; margin-top:1rem;"></div>
+    </div>
+  </div>
 
   <div class="cart-overlay" id="cart-overlay" onclick="toggleCartDrawer(false)"></div>
   <aside class="cart-drawer" id="cart-drawer">
@@ -1413,6 +1421,9 @@ function applySiteContentToDOM() {
   if (document.getElementById('cms-f2-title')) document.getElementById('cms-f2-title').value = SITE_CONTENT.feat2Title;
   if (document.getElementById('cms-f2-desc')) document.getElementById('cms-f2-desc').value = SITE_CONTENT.feat2Desc;
   if (document.getElementById('cms-footer-tagline')) document.getElementById('cms-footer-tagline').value = SITE_CONTENT.footerTagline;
+
+  if (document.getElementById('pdp-active-coupon-code')) document.getElementById('pdp-active-coupon-code').innerText = activeOfferCode;
+  if (document.getElementById('pdp-active-coupon-disc')) document.getElementById('pdp-active-coupon-disc').innerText = activeDiscountPercent + '%';
 }
 
 async function saveWebsiteContentCMS() {
@@ -1499,6 +1510,8 @@ function renderStorefront() {
   document.getElementById('t-discount-2').innerText = activeDiscountPercent + '%';
   if(document.getElementById('hero-coupon-display')) document.getElementById('hero-coupon-display').innerText = activeOfferCode;
   if(document.getElementById('hero-discount-display')) document.getElementById('hero-discount-display').innerText = activeDiscountPercent + '%';
+  if(document.getElementById('pdp-active-coupon-code')) document.getElementById('pdp-active-coupon-code').innerText = activeOfferCode;
+  if(document.getElementById('pdp-active-coupon-disc')) document.getElementById('pdp-active-coupon-disc').innerText = activeDiscountPercent + '%';
 }
 
 function createProductCard(catName, prod, index) {
@@ -1757,7 +1770,6 @@ function addToCart() {
     stockStatus: { available: true, notes: '' }
   });
   
-  // Persist cart locally and to Supabase database if logged in
   localStorage.setItem('rebel_cart', JSON.stringify(cart));
   
   if (loggedInUser && supabaseClient) {
@@ -1784,7 +1796,7 @@ function addToCart() {
   }
 }
 
-// Add to Wishlist Function recording user details for admin page grouped view
+// Add to Wishlist Function ensuring client can view their wishlist instantly
 async function addToWishlist() {
   if (!currentProduct) return;
   
@@ -1801,8 +1813,11 @@ async function addToWishlist() {
     date: new Date().toISOString()
   };
 
-  wishlist.push(wishItem);
-  localStorage.setItem('rebel_wishlist', JSON.stringify(wishlist));
+  // Prevent duplicate additions for same product
+  if (!wishlist.some(w => w.id === currentProduct.id)) {
+    wishlist.push(wishItem);
+    localStorage.setItem('rebel_wishlist', JSON.stringify(wishlist));
+  }
 
   if (loggedInUser && supabaseClient) {
     try {
@@ -1819,6 +1834,45 @@ async function addToWishlist() {
   }
 
   showToast(`Added to Wishlist! ❤️`);
+}
+
+function openWishlistModal() {
+  const modal = document.getElementById('wishlist-modal');
+  const area = document.getElementById('wishlist-modal-items');
+  area.innerHTML = '';
+
+  if (wishlist.length === 0) {
+    area.innerHTML = `<div style="font-family:'Space Mono'; color:var(--grey); padding: 1rem; text-align:center;">Your wishlist is empty.</div>`;
+  } else {
+    let html = '';
+    wishlist.forEach((item, idx) => {
+      html += `
+        <div style="background:#1a1a1d; border:1px solid rgba(242,240,234,0.15); padding:1rem; margin-bottom:1rem; border-radius:4px; display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; gap:10px; align-items:center;">
+            ${item.image ? `<img src="${item.image}" style="width:45px; height:45px; object-fit:contain; background:#111; border:1px solid #333;">` : ''}
+            <div>
+              <h5 style="font-family:'Archivo Black'; font-size:0.9rem; text-transform:uppercase;">${item.title}</h5>
+              <div style="font-family:'Space Mono'; font-size:0.8rem; color:var(--spray-yellow);">ரூ ${item.price}</div>
+            </div>
+          </div>
+          <button class="cart-item-remove" onclick="removeFromWishlist(${idx})">Remove</button>
+        </div>
+      `;
+    });
+    area.innerHTML = html;
+  }
+  modal.style.display = 'flex';
+}
+
+function closeWishlistModal() {
+  document.getElementById('wishlist-modal').style.display = 'none';
+}
+
+function removeFromWishlist(idx) {
+  wishlist.splice(idx, 1);
+  localStorage.setItem('rebel_wishlist', JSON.stringify(wishlist));
+  openWishlistModal();
+  showToast('Removed from wishlist');
 }
 
 function updateCartBadge() {
@@ -1843,25 +1897,6 @@ function applyCoupon() {
     msgEl.style.color = 'var(--rebel-red)';
   }
   renderCartDrawer();
-}
-
-function applyPdpCoupon() {
-  const code = document.getElementById('pdp-coupon-code-input').value.trim().toUpperCase();
-  const msgEl = document.getElementById('pdp-coupon-msg');
-  if (code === activeOfferCode) {
-    isCouponApplied = true;
-    const cartInput = document.getElementById('coupon-code-input');
-    if (cartInput) cartInput.value = code;
-    msgEl.innerText = `Code ${activeOfferCode} applied! Extra ${activeDiscountPercent}% off in bag.`;
-    msgEl.style.color = 'var(--spray-yellow)';
-    showToast(`Coupon ${activeOfferCode} applied!`);
-  } else if (code === '') {
-    isCouponApplied = false; msgEl.innerText = '';
-  } else {
-    isCouponApplied = false;
-    msgEl.innerText = 'Invalid coupon code';
-    msgEl.style.color = 'var(--rebel-red)';
-  }
 }
 
 function renderCartDrawer() {
@@ -3632,7 +3667,7 @@ async function saveUserProfileEdits() {
   closeProfileModal();
 }
 
-// My Orders Modal with full item details on click
+// My Orders Modal with full item details and fetching all history properly
 function openOrdersModal() {
   if (!loggedInUser) return;
   const area = document.getElementById('orders-content-area');
