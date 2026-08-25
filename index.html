@@ -48,14 +48,15 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--spray-yellow);outli
 .ticker__track span{padding:.5rem 1.5rem;display:inline-block}
 @keyframes scrollTicker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-header{display:flex;align-items:center;justify-content:space-between;padding:.4rem var(--gap);border-bottom:1px solid rgba(242,240,234,.12);position:sticky;top:0;z-index:90;background:rgba(11,11,12,.94);backdrop-filter:blur(12px);height:75px;gap:.3rem}
+/* --- HEADER & LOGO ALIGNMENT WITH TOP/BOTTOM FREE SPACE --- */
+header{display:flex;align-items:center;justify-content:space-between;padding:.8rem var(--gap);border-bottom:1px solid rgba(242,240,234,.12);position:sticky;top:0;z-index:90;background:rgba(11,11,12,.94);backdrop-filter:blur(12px);min-height:85px;gap:.5rem}
 .logo-wrap{display:flex;align-items:center;cursor:pointer;user-select:none;height:100%;flex-shrink:0}
-.rebel-brand-logo{display:inline-flex;align-items:center;width:130px;height:48px;overflow:visible}
-.rebel-brand-logo svg,.rebel-brand-logo img{width:100%;height:100%;object-fit:contain;display:block;transform:scale(2.2);transform-origin:left center}
+.rebel-brand-logo{display:inline-flex;align-items:center;width:140px;height:55px;overflow:visible}
+.rebel-brand-logo svg,.rebel-brand-logo img{width:100%;height:100%;object-fit:contain;display:block;transform:scale(2.0);transform-origin:left center}
 @media(min-width:768px){
-  header{height:80px;padding:.5rem var(--gap)}
-  .rebel-brand-logo{width:240px;height:70px}
-  .rebel-brand-logo svg,.rebel-brand-logo img{transform:scale(2.5)}
+  header{min-height:95px;padding:1rem var(--gap)}
+  .rebel-brand-logo{width:240px;height:75px}
+  .rebel-brand-logo svg,.rebel-brand-logo img{transform:scale(2.4)}
 }
 
 nav{display:none;gap:1.8rem;font-family:'Space Mono',monospace;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em}
@@ -64,11 +65,11 @@ nav a::after{content:'';position:absolute;left:0;bottom:-2px;width:0;height:2px;
 nav a:hover::after{width:100%}
 @media(min-width:890px){nav{display:flex}}
 
-.header-actions{display:flex;align-items:center;gap:.35rem;position:relative}
+.header-actions{display:flex;align-items:center;gap:.5rem;position:relative}
 @media(min-width:768px){.header-actions{gap:.8rem}}
 
-.user-badge{font-family:'Space Mono',monospace;font-size:.6rem;text-transform:uppercase;border:1px solid rgba(242,240,234,.3);padding:.3rem .4rem;border-radius:4px;background:#161618;color:var(--paper);cursor:pointer;display:flex;align-items:center;gap:.2rem;transition:all 0.2s;white-space:nowrap}
-@media(min-width:768px){.user-badge{font-size:.75rem;padding:.5rem .85rem;gap:.4rem}}
+.user-badge{font-family:'Space Mono',monospace;font-size:.65rem;text-transform:uppercase;border:1px solid rgba(242,240,234,.3);padding:.35rem .5rem;border-radius:4px;background:#161618;color:var(--paper);cursor:pointer;display:flex;align-items:center;gap:.3rem;transition:all 0.2s;white-space:nowrap}
+@media(min-width:768px){.user-badge{font-size:.75rem;padding:.5rem .85rem;gap:.5rem}}
 .user-badge:hover{border-color:var(--spray-yellow);color:var(--spray-yellow);transform:translateY(-1px)}
 
 .user-dropdown-menu{position:absolute;top:100%;right:0;width:220px;background:#161619;border:1.5px solid var(--spray-yellow);box-shadow:6px 6px 0 var(--paper);display:none;flex-direction:column;z-index:100;margin-top:6px;border-radius:2px}
@@ -76,10 +77,12 @@ nav a:hover::after{width:100%}
 .user-dropdown-item{font-family:'Space Mono',monospace;font-size:0.78rem;padding:0.8rem 1rem;color:var(--paper);border-bottom:1px solid rgba(242,240,234,0.1);cursor:pointer;text-transform:uppercase;transition:background 0.2s}
 .user-dropdown-item:hover{background:var(--spray-yellow);color:var(--ink);font-weight:bold}
 
-.wishlist-icon-btn{font-family:'Space Mono',monospace;font-size:.75rem;border:1.5px solid var(--paper);background:transparent;color:var(--paper);width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;flex-shrink:0}
-@media(min-width:768px){.wishlist-icon-btn{width:40px;height:40px;font-size:.9rem}}
+/* WISHLIST ICON HIDDEN ON MOBILE VIEW (AS REQUESTED) */
+.wishlist-icon-btn{display:none; font-family:'Space Mono',monospace;font-size:.9rem;border:1.5px solid var(--paper);background:transparent;color:var(--paper);width:38px;height:38px;border-radius:50%;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;flex-shrink:0}
+@media(min-width:768px){.wishlist-icon-btn{display:inline-flex}}
 .wishlist-icon-btn:hover{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow);transform:scale(1.05)}
 
+/* --- REDUCED COMPACT CART BUTTON --- */
 .cart-btn{font-family:'Space Mono',monospace;font-size:.62rem;text-transform:uppercase;letter-spacing:.02em;border:1.5px solid var(--paper);padding:.3rem .5rem;border-radius:999px;background:transparent;color:var(--paper);cursor:pointer;font-weight:700;transition:all .2s cubic-bezier(0.16,1,0.3,1);display:inline-flex;align-items:center;gap:.15rem;min-height:30px;white-space:nowrap}
 @media(min-width:768px){.cart-btn{font-size:.78rem;padding:.5rem 1.1rem;gap:.4rem;min-height:40px}}
 .cart-btn:hover{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow);transform:scale(1.03)}
@@ -332,14 +335,19 @@ footer a:hover{color:var(--paper)}
       <a onclick="handleNavContactClick()" id="nav-link-contact">Contact</a>
     </nav>
     <div class="header-actions">
-      <div class="user-badge" id="user-badge" onclick="handleAuthClick(event)">👤 <span id="user-name">Login</span></div>
-      <!-- USER DROPDOWN WITH WISHLIST FOR MOBILE -->
+      <!-- USER BADGE SHOWING AVATAR OR INITIALS ON MOBILE/DESKTOP -->
+      <div class="user-badge" id="user-badge" onclick="handleAuthClick(event)">
+        <span id="user-avatar-icon" style="display:inline-block; width:22px; height:22px; border-radius:50%; background:#222; overflow:hidden; text-align:center; line-height:22px; font-size:11px;">👤</span>
+        <span id="user-name">Login</span>
+      </div>
+      <!-- USER DROPDOWN WITH WISHLIST INCLUDED -->
       <div class="user-dropdown-menu" id="user-dropdown-menu">
         <div class="user-dropdown-item" onclick="openProfileModal()">👤 Profile</div>
         <div class="user-dropdown-item" onclick="openOrdersModal()">📦 My Orders</div>
         <div class="user-dropdown-item" onclick="openWishlistModal()">❤️ Wishlist</div>
         <div class="user-dropdown-item" onclick="logoutUser()" style="color:var(--rebel-red);">🚪 Logout</div>
       </div>
+      <!-- WISHLIST ICON HIDDEN ON MOBILE (ACCESSIBLE VIA DROPDOWN), VISIBLE ON DESKTOP -->
       <button class="wishlist-icon-btn" onclick="openWishlistModal()" title="View Wishlist">❤️</button>
       <button class="cart-btn" onclick="toggleCartDrawer(true)">Cart (<span id="cart-count">0</span>)</button>
     </div>
@@ -657,7 +665,7 @@ footer a:hover{color:var(--paper)}
     </div>
   </div>
 
-  <!-- PROFILE MODAL WITH EDIT CAPABILITY & PROFILE PICTURE UPLOAD -->
+  <!-- PROFILE MODAL WITH CLICK-TO-UPLOAD AVATAR & 1:1 SQUARE CROPPING -->
   <div class="auth-modal" id="profile-modal">
     <div class="profile-modal-box">
       <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeProfileModal()">×</button>
@@ -1171,7 +1179,6 @@ const ZOHO_CLIENT_SECRET = "918803c297b3f077ef8c53f117fd76c4a2b14b6883";
 const ZOHO_REFRESH_TOKEN = "1000.a4c324d91e73eb928f6c3c7044f48fea.29018644ed9166f209b582f5d3356672";
 const ZOHO_ORG_ID = "60083739244";
 
-// --- SUPABASE CONFIGURATION ---
 const SUPABASE_PROJECT_URL = 'https://rdqzslvgqtajhiwxwauo.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkcXpzbHZncXRhamhpd3h3YXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyMjYyMTYsImV4cCI6MjEwMjgwMjIxNn0.lSrbO0h57wBBqgu_z4D9fhffN8VawX-HcaDANOUOKok';
 
@@ -1437,6 +1444,32 @@ function applySiteContentToDOM() {
 
   if (document.getElementById('pdp-active-coupon-code')) document.getElementById('pdp-active-coupon-code').innerText = activeOfferCode;
   if (document.getElementById('pdp-active-coupon-disc')) document.getElementById('pdp-active-coupon-disc').innerText = activeDiscountPercent + '%';
+  
+  updateUserBadgeDisplay();
+}
+
+// Function to update header user badge dynamically with avatar or clean icon
+function updateUserBadgeDisplay() {
+  const nameEl = document.getElementById('user-name');
+  const iconEl = document.getElementById('user-avatar-icon');
+  if (!nameEl || !iconEl) return;
+
+  if (loggedInUser) {
+    if (loggedInUser.avatarUrl) {
+      iconEl.innerHTML = `<img src="${loggedInUser.avatarUrl}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+    } else {
+      iconEl.innerHTML = `👤`;
+    }
+    // On mobile view, show only icon (or clean style without clutter), on desktop show username
+    if (window.innerWidth < 768) {
+      nameEl.innerText = ''; // Hide text on mobile header to save space
+    } else {
+      nameEl.innerText = loggedInUser.username || loggedInUser.name || 'User';
+    }
+  } else {
+    iconEl.innerHTML = `👤`;
+    nameEl.innerText = 'Login';
+  }
 }
 
 async function saveWebsiteContentCMS() {
@@ -3191,7 +3224,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (savedSession) {
     try {
       loggedInUser = JSON.parse(savedSession);
-      document.getElementById('user-name').innerText = loggedInUser.username;
+      updateUserBadgeDisplay();
     } catch (e) {
       sessionStorage.removeItem('rebel_user_session');
     }
@@ -3212,7 +3245,7 @@ document.addEventListener('DOMContentLoaded', () => {
           avatarUrl: u.user_metadata?.avatar_url || ''
         };
         sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
-        document.getElementById('user-name').innerText = loggedInUser.username;
+        updateUserBadgeDisplay();
 
         await supabaseClient.from('profiles').upsert({
           id: u.id,
@@ -3238,7 +3271,7 @@ document.addEventListener('DOMContentLoaded', () => {
           avatarUrl: u.user_metadata?.avatar_url || ''
         };
         sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
-        document.getElementById('user-name').innerText = loggedInUser.username;
+        updateUserBadgeDisplay();
 
         await supabaseClient.from('profiles').upsert({
           id: u.id,
@@ -3485,9 +3518,7 @@ async function registerNewAccount() {
     loggedInUser = { name, phone, altPhone, email, username, avatarUrl: '' };
     sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
 
-    const userBadgeEl = document.getElementById('user-name');
-    if (userBadgeEl) userBadgeEl.innerText = username;
-
+    updateUserBadgeDisplay();
     closeAuthModal();
     showToast('Account Created Successfully!');
 
@@ -3568,7 +3599,7 @@ async function processUserLogin() {
     }
 
     sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
-    document.getElementById('user-name').innerText = loggedInUser.username;
+    updateUserBadgeDisplay();
     closeAuthModal();
     showToast('Login Successful!');
 
@@ -3629,23 +3660,26 @@ async function logoutUser() {
   }
   loggedInUser = null;
   sessionStorage.removeItem('rebel_user_session');
-  document.getElementById('user-name').innerText = 'Login';
+  updateUserBadgeDisplay();
   showToast('Logged out successfully');
   showHomeView();
 }
 
+// PROFILE MODAL WITH CLICK-TO-UPLOAD AVATAR & 1:1 SQUARE CROPPING
 function openProfileModal() {
   if (!loggedInUser) return;
   const area = document.getElementById('profile-content-area');
-  const avatarDisplay = loggedInUser.avatarUrl ? `<img src="${loggedInUser.avatarUrl}" style="width:70px; height:70px; border-radius:50%; object-fit:cover; margin:0 auto 10px; border:2px solid var(--spray-yellow);">` : `<div style="width:70px; height:70px; border-radius:50%; background:#222; display:flex; align-items:center; justify-content:center; margin:0 auto 10px; font-size:1.5rem;">👤</div>`;
+  const avatarDisplay = loggedInUser.avatarUrl ? `<img id="profile-avatar-preview" src="${loggedInUser.avatarUrl}" style="width:80px; height:80px; border-radius:50%; object-fit:cover; margin:0 auto 10px; border:2px solid var(--spray-yellow); cursor:pointer;" title="Click to change photo">` : `<div id="profile-avatar-preview" style="width:80px; height:80px; border-radius:50%; background:#222; display:flex; align-items:center; justify-content:center; margin:0 auto 10px; font-size:1.8rem; border:2px dashed var(--spray-yellow); cursor:pointer;" title="Click to upload photo">👤</div>`;
 
   area.innerHTML = `
     <div style="display:flex; flex-direction:column; gap:10px; font-family:'Space Mono'; font-size:0.85rem; text-align:center;">
-      ${avatarDisplay}
-      <div>
-        <label style="color:var(--grey); font-size:0.7rem; display:block; margin-bottom:4px;">Profile Picture (Max 1MB)</label>
-        <input type="file" id="profile-avatar-file" class="admin-input-full" accept="image/*" style="font-size:0.75rem; padding:5px;">
+      <div style="cursor:pointer;" onclick="document.getElementById('hidden-avatar-input').click()">
+        ${avatarDisplay}
+        <span style="font-size:0.7rem; color:var(--spray-yellow); text-decoration:underline;">Click picture to upload/change (Max 1MB, 1:1 Square)</span>
       </div>
+      <!-- Hidden file input triggered directly by clicking profile avatar -->
+      <input type="file" id="hidden-avatar-input" accept="image/*" style="display:none;" onchange="previewAndCropAvatar(event)">
+      
       <div style="text-align:left;">
         <label style="color:var(--grey); font-size:0.7rem; display:block;">Full Name (Editable)</label>
         <input type="text" id="edit-profile-name" class="admin-input-full" value="${loggedInUser.name || ''}" style="margin-bottom:0;">
@@ -3672,10 +3706,52 @@ function closeProfileModal() {
   document.getElementById('profile-modal').style.display = 'none';
 }
 
+let croppedAvatarBlob = null;
+
+// 1:1 Cropping preview helper when avatar image is selected
+function previewAndCropAvatar(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (file.size > 1024 * 1024) {
+    showToast('File size exceeds 1MB limit!');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.src = e.target.result;
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const size = Math.min(img.width, img.height);
+      canvas.width = 300;
+      canvas.height = 300;
+      
+      const startX = (img.width - size) / 2;
+      const startY = (img.height - size) / 2;
+
+      ctx.drawImage(img, startX, startY, size, size, 0, 0, 300, 300);
+      
+      canvas.toBlob((blob) => {
+        croppedAvatarBlob = blob;
+        const previewUrl = URL.createObjectURL(blob);
+        const prevEl = document.getElementById('profile-avatar-preview');
+        if (prevEl.tagName === 'IMG') {
+          prevEl.src = previewUrl;
+        } else {
+          prevEl.outerHTML = `<img id="profile-avatar-preview" src="${previewUrl}" style="width:80px; height:80px; border-radius:50%; object-fit:cover; margin:0 auto 10px; border:2px solid var(--spray-yellow); cursor:pointer;">`;
+        }
+        showToast('Image cropped 1:1 successfully!');
+      }, 'image/jpeg', 0.9);
+    };
+  };
+  reader.readAsDataURL(file);
+}
+
 async function saveUserProfileEdits() {
   const newName = document.getElementById('edit-profile-name').value.trim();
   const newPhone = document.getElementById('edit-profile-phone').value.trim();
-  const fileInput = document.getElementById('profile-avatar-file');
 
   if (!newName) {
     showToast('Name cannot be empty!');
@@ -3684,21 +3760,17 @@ async function saveUserProfileEdits() {
 
   let avatarUrl = loggedInUser.avatarUrl || '';
 
-  if (fileInput.files && fileInput.files[0]) {
-    const file = fileInput.files[0];
-    if (file.size > 1024 * 1024) {
-      showToast('File size exceeds 1MB limit!');
-      return;
-    }
-    const fileExt = file.name.split('.').pop();
-    const fileName = `avatar_${Date.now()}.${fileExt}`;
+  if (croppedAvatarBlob) {
+    const fileName = `avatar_${Date.now()}.jpg`;
     if (supabaseClient) {
       try {
-        showToast('Uploading profile picture...');
-        const { error: uploadErr } = await supabaseClient.storage.from('avatars').upload(fileName, file);
+        showToast('Uploading profile picture to Supabase...');
+        const { error: uploadErr } = await supabaseClient.storage.from('avatars').upload(fileName, croppedAvatarBlob, { contentType: 'image/jpeg' });
         if (!uploadErr) {
           const { data: pubData } = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
           if (pubData) avatarUrl = pubData.publicUrl;
+        } else {
+          console.error("Storage upload error:", uploadErr.message);
         }
       } catch (e) {
         console.warn('Avatar upload exception:', e);
@@ -3726,6 +3798,7 @@ async function saveUserProfileEdits() {
     }
   }
 
+  updateUserBadgeDisplay();
   showToast('Profile updated successfully!');
   closeProfileModal();
 }
