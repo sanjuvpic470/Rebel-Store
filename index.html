@@ -67,6 +67,7 @@ nav a:hover::after{width:100%}
 
 .header-actions{display:flex;align-items:center;gap:.5rem;position:relative;flex-shrink:0}
 
+/* MATCHED SIZE FOR USER AVATAR TO CART/WISHLIST BUTTON (38px) */
 .user-badge{background:transparent;border:none;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.2s}
 .user-badge:hover{transform:scale(1.08)}
 
@@ -331,8 +332,9 @@ footer a:hover{color:var(--paper)}
       <a onclick="handleNavContactClick()" id="nav-link-contact">Contact</a>
     </nav>
     <div class="header-actions">
+      <!-- USER BADGE: AVATAR EXACTLY MATCHED TO CART & WISHLIST BUTTON SIZE (38px) -->
       <div class="user-badge" id="user-badge" onclick="handleAuthClick(event)">
-        <span id="user-avatar-icon" style="display:inline-flex; width:34px; height:34px; border-radius:50%; background:#222; overflow:hidden; align-items:center; justify-content:center; font-size:14px;">👤</span>
+        <span id="user-avatar-icon" style="display:inline-flex; width:38px; height:38px; border-radius:50%; background:#222; overflow:hidden; align-items:center; justify-content:center; font-size:16px; border:1.5px solid var(--paper);">👤</span>
         <span id="user-name" style="display:none;">Login</span>
       </div>
       <div class="user-dropdown-menu" id="user-dropdown-menu">
@@ -1443,20 +1445,17 @@ function updateUserBadgeDisplay() {
   const iconEl = document.getElementById('user-avatar-icon');
   if (!nameEl || !iconEl) return;
 
-  if (loggedInUser) {
-    if (loggedInUser.avatarUrl) {
-      iconEl.innerHTML = `<img src="${loggedInUser.avatarUrl}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
-    } else {
-      iconEl.innerHTML = `👤`;
-    }
+  if (loggedInUser && loggedInUser.avatarUrl) {
+    iconEl.innerHTML = `<img src="${loggedInUser.avatarUrl}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+  } else {
+    iconEl.innerHTML = `👤`;
+  }
+  if (nameEl) {
     if (window.innerWidth < 768) {
       nameEl.innerText = '';
     } else {
-      nameEl.innerText = loggedInUser.username || loggedInUser.name || 'User';
+      nameEl.innerText = loggedInUser ? (loggedInUser.username || loggedInUser.name || 'User') : 'Login';
     }
-  } else {
-    iconEl.innerHTML = `👤`;
-    nameEl.innerText = 'Login';
   }
 }
 
@@ -1515,6 +1514,7 @@ async function loadSiteContentFromCloud() {
 function renderStorefront() {
   const container = document.getElementById('home-categories-container');
   const footerLinks = document.getElementById('footer-shop-links');
+  if (!container || !footerLinks) return;
   container.innerHTML = '';
   footerLinks.innerHTML = '<li><a onclick="showHomeView()">Riot Collection</a></li><li><a onclick="showHomeView()">Volt Collection</a></li><li><a onclick="showHomeView()">Bone Collection</a></li>';
   CATEGORIES.forEach(cat => {
@@ -1538,10 +1538,10 @@ function renderStorefront() {
     rowBlock.appendChild(scrollWrap);
     container.appendChild(rowBlock);
   });
-  document.getElementById('t-code').innerText = activeOfferCode;
-  document.getElementById('t-discount').innerText = activeDiscountPercent + '%';
-  document.getElementById('t-code-2').innerText = activeOfferCode;
-  document.getElementById('t-discount-2').innerText = activeDiscountPercent + '%';
+  if(document.getElementById('t-code')) document.getElementById('t-code').innerText = activeOfferCode;
+  if(document.getElementById('t-discount')) document.getElementById('t-discount').innerText = activeDiscountPercent + '%';
+  if(document.getElementById('t-code-2')) document.getElementById('t-code-2').innerText = activeOfferCode;
+  if(document.getElementById('t-discount-2')) document.getElementById('t-discount-2').innerText = activeDiscountPercent + '%';
   if(document.getElementById('hero-coupon-display')) document.getElementById('hero-coupon-display').innerText = activeOfferCode;
   if(document.getElementById('hero-discount-display')) document.getElementById('hero-discount-display').innerText = activeDiscountPercent + '%';
   if(document.getElementById('pdp-active-coupon-code')) document.getElementById('pdp-active-coupon-code').innerText = activeOfferCode;
@@ -1800,6 +1800,7 @@ function openProductByDetails(catName, productId) {
 
 function updateSliderPosition() {
   const track = document.getElementById('slider-track');
+  if (!track) return;
   track.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
   document.getElementById('pdp-angle-label').innerText = angleLabels[currentSlideIndex] || 'View';
   
@@ -1986,6 +1987,7 @@ function renderCartDrawer() {
   const list = document.getElementById('cart-items-list');
   const countEl = document.getElementById('cart-count');
   const totalEl = document.getElementById('cart-total-price');
+  if (!list) return;
   list.innerHTML = '';
   if (cart.length === 0) {
     list.innerHTML = `<div class="cart-empty-state">Your bag is empty.</div>`;
@@ -2177,7 +2179,7 @@ async function proceedToPayment() {
     }
 
     var options = {
-      "key": "rzp_test_TTJ0p8owj4fZZT", // Razorpay Test Key ID
+      "key": "rzp_test_TTJ0p8owj4fZZT",
       "amount": data.amount,
       "currency": data.currency,
       "order_id": data.order_id,
@@ -3779,9 +3781,9 @@ function previewAndCropAvatar(event) {
         croppedAvatarBlob = blob;
         const previewUrl = URL.createObjectURL(blob);
         const prevEl = document.getElementById('profile-avatar-preview');
-        if (prevEl.tagName === 'IMG') {
+        if (prevEl && prevEl.tagName === 'IMG') {
           prevEl.src = previewUrl;
-        } else {
+        } else if (prevEl) {
           prevEl.outerHTML = `<img id="profile-avatar-preview" src="${previewUrl}" style="width:85px; height:85px; border-radius:50%; object-fit:cover; margin:0 auto 10px; border:2px solid var(--spray-yellow); cursor:pointer;">`;
         }
         showToast('Image cropped 1:1 successfully!');
@@ -3803,11 +3805,11 @@ async function saveUserProfileEdits() {
   let avatarUrl = loggedInUser.avatarUrl || '';
 
   if (croppedAvatarBlob) {
-    const fileName = `avatar_${Date.now()}.jpg`;
+    const fileName = `avatar_${loggedInUser.email || loggedInUser.username}_${Date.now()}.jpg`;
     if (supabaseClient) {
       try {
         showToast('Uploading profile picture to Supabase...');
-        const { error: uploadErr } = await supabaseClient.storage.from('avatars').upload(fileName, croppedAvatarBlob, { contentType: 'image/jpeg' });
+        const { error: uploadErr } = await supabaseClient.storage.from('avatars').upload(fileName, croppedAvatarBlob, { contentType: 'image/jpeg', upsert: true });
         if (!uploadErr) {
           const { data: pubData } = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
           if (pubData) avatarUrl = pubData.publicUrl;
