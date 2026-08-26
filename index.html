@@ -309,7 +309,7 @@ footer a:hover{color:var(--paper)}
 </head>
 <body>
 
-  <!-- MAINTENANCE / COMING SOON OVERLAY (Temporary Live Disable as requested) -->
+  <!-- MAINTENANCE / COMING SOON OVERLAY -->
   <div id="maintenance-overlay" style="position: fixed; inset: 0; background: #0b0b0c; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem;">
       <h1 style="font-family: 'Anton', sans-serif; font-size: 3rem; color: var(--spray-yellow); text-transform: uppercase; margin-bottom: 1rem;">Coming Soon ⚡</h1>
       <p style="font-family: 'Space Mono', monospace; color: var(--paper); font-size: 0.9rem; max-width: 40ch; line-height: 1.5; margin-bottom: 2rem;">Our store is currently undergoing final testing and fine-tuning. We will be live for everyone very soon!</p>
@@ -1055,7 +1055,7 @@ footer a:hover{color:var(--paper)}
 
     <div class="admin-sub-page" id="subpage-products">
       <div class="sub-page-header">
-        <h2>⚙️ T-Shirt Product Manager & Colors/Sizes Editor</h2>
+        <h2>⚙️ T-Shirt Product Manager & Categories</h2>
         <button class="btn btn--ghost" style="padding:0.4rem 1rem; font-size:0.8rem;" onclick="closeAdminSubPages()">← Back to Dashboard</button>
       </div>
       <div style="background:#111; padding:1.2rem; border:1px solid rgba(242,240,234,.15); margin-bottom:1.5rem;">
@@ -1073,7 +1073,7 @@ footer a:hover{color:var(--paper)}
           <button class="btn btn--solid" style="padding:.4rem .8rem; font-size:.7rem;" onclick="addProdToCurrentAdminCategory()">+ Add Product</button>
         </div>
         <div id="admin-categories-container" style="display:flex; flex-direction:column; gap:1.5rem;"></div>
-        <button class="btn btn--solid" id="save-categories-btn" style="width:100%; justify-content:center; margin-top:2rem;" onclick="saveAllCategoriesAndProducts()">Save Products & Colors/Sizes 💾</button>
+        <button class="btn btn--solid" id="save-categories-btn" style="width:100%; justify-content:center; margin-top:2rem;" onclick="saveAllCategoriesAndProducts()">Save Products & Categories 💾</button>
       </div>
     </div>
   </section>
@@ -2183,10 +2183,12 @@ async function proceedToPayment() {
   localStorage.setItem('rebel_pending_order', JSON.stringify(pendingOrder));
 
   try {
+    // FIX: Included 'Authorization': Bearer ${SUPABASE_ANON_KEY} header to prevent 401 Unauthorized error
     const response = await fetch('https://rdqzslvgqtajhiwxwauo.supabase.co/functions/v1/Create_razorpay_order', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
       },
       body: JSON.stringify({
         amount: subtotal,
@@ -2201,7 +2203,7 @@ async function proceedToPayment() {
     }
 
     var options = {
-      "key": "rzp_test_TTJ0p8owj4fZZT", // டெஸ்ட் கீ (Test Key)
+      "key": "rzp_test_TTJ0p8owj4fZZT", // Razorpay Test Key ID
       "amount": data.amount,
       "currency": data.currency,
       "order_id": data.order_id,
@@ -3236,7 +3238,7 @@ async function saveAllCategoriesAndProducts() {
     }
   }
   showToast('Products saved successfully!');
-  if(saveBtn) saveBtn.innerText = 'Save Products & Colors/Sizes 💾';
+  if(saveBtn) saveBtn.innerText = 'Save Products & Categories 💾';
 }
 
 async function loadCategoriesFromCloud() {
