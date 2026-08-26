@@ -2202,8 +2202,8 @@ async function proceedToPayment() {
       throw new Error(data.error || "Failed to create order ID from backend.");
     }
 
-    var options = {
-      "key": "rzp_test_TTJ0p8owj4fZZT", // Razorpay Test Key ID
+   var options = {
+      "key": "rzp_test_TTJ0p8owj4fZZT", // உங்கள் ரேஸர்பே டேஷ்போர்டில் உள்ள சரியான Test Key ID-ஐ இங்கே உறுதிப்படுத்தவும்
       "amount": data.amount,
       "currency": data.currency,
       "order_id": data.order_id,
