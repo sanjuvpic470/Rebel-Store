@@ -2202,8 +2202,8 @@ async function proceedToPayment() {
       throw new Error(data.error || "Failed to create order ID from backend.");
     }
 
-var options = {
-      "key": "rzp_test_TUGK5CskQJU3nL", // ரேஸர்பே டேஷ்போர்டில் உள்ள சரியான கீ-யை இங்கே போடவும்
+    var options = {
+      "key": "rzp_test_TUGK5CskQJU3nL", // Razorpay Test Key ID
       "amount": data.amount,
       "currency": data.currency,
       "order_id": data.order_id,
@@ -2216,7 +2216,22 @@ var options = {
         payBtn.disabled = false;
         payBtn.innerText = 'Proceed to Payment →';
       },
-      ...
+      "prefill": {
+        "name": billingData.name,
+        "email": billingData.email,
+        "contact": billingData.phone
+      },
+      "theme": {
+        "color": "#ffd500"
+      },
+      "modal": {
+        "ondismiss": function() {
+          payBtn.disabled = false;
+          payBtn.innerText = 'Proceed to Payment →';
+          showToast('Payment window closed by user.');
+        }
+      }
+    };
 
     var rzp1 = new Razorpay(options);
     
