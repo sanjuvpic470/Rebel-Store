@@ -1890,25 +1890,23 @@ async function addToWishlist() {
 
   const wishItem = {
     id: currentProduct.id,
-    title: currentProduct.title,
+    title: `${currentProduct.title} (${selectedColor})`,
     price: currentProduct.price,
     image: productImg,
     date: new Date().toISOString()
   };
 
-  // 1. லோக்கல் விஷ்லிஸ்ட்டில் சேமித்தல்
   if (!wishlist.some(w => w.id === currentProduct.id)) {
     wishlist.push(wishItem);
     localStorage.setItem('rebel_wishlist', JSON.stringify(wishlist));
   }
 
-  // 2. Supabase கிளவுட் டேட்டாபேஸுக்கு அனுப்புதல் (அட்மின் பேஜில் காட்டுவதற்காக)
-  if (supabaseClient) {
+  if (loggedInUser && supabaseClient) {
     try {
       await supabaseClient.from('wishlist_items').insert([{
-        user_id: loggedInUser ? (loggedInUser.email || loggedInUser.username) : 'guest_user',
-        customer_name: loggedInUser ? (loggedInUser.name || loggedInUser.username) : 'Guest Customer',
-        product_name: currentProduct.title,
+        user_id: loggedInUser.email || loggedInUser.username,
+        customer_name: loggedInUser.name || loggedInUser.username,
+        product_name: `${currentProduct.title} (${selectedColor})`,
         product_price: currentProduct.price,
         product_image: productImg
       }]);
@@ -2235,7 +2233,7 @@ async function generateZohoInvoice(orderId) {
   showToast('Generating Zoho Invoice... Please wait.');
   
   try {
-    The tokenUrl = `https://accounts.zoho.in/oauth/v2/token?refresh_token=${ZOHO_REFRESH_TOKEN}&client_id=${ZOHO_CLIENT_ID}&client_secret=${ZOHO_CLIENT_SECRET}&grant_type=refresh_token`;
+    const tokenUrl = `https://accounts.zoho.in/oauth/v2/token?refresh_token=${ZOHO_REFRESH_TOKEN}&client_id=${ZOHO_CLIENT_ID}&client_secret=${ZOHO_CLIENT_SECRET}&grant_type=refresh_token`;
     console.log("Preparing to send Zoho Auth Request to: ", tokenUrl);
     
     setTimeout(() => {
@@ -3860,7 +3858,7 @@ function openOrdersModal() {
       let itemsListHtml = '';
       if (ord.items && Array.isArray(ord.items)) {
         ord.items.forEach(it => {
-          itemsListHtml += `<div style="font-size:0.75rem; color:var(--paper); padding:2px 0;">• ${ord.items.title || it.title} (Size: ${it.size}, Qty: ${it.qty}) - ரூ ${it.price * it.qty}</div>`;
+          itemsListHtml += `<div style="font-size:0.75rem; color:var(--paper); padding:2px 0;">• ${it.title} (Size: ${it.size}, Qty: ${it.qty}) - ரூ ${it.price * it.qty}</div>`;
         });
       }
       html += `
