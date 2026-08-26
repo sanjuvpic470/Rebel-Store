@@ -3805,6 +3805,7 @@ async function saveUserProfileEdits() {
   let avatarUrl = loggedInUser.avatarUrl || '';
 
   if (croppedAvatarBlob) {
+    // Correct bucket name: 'avatars' in lowercase
     const fileName = `avatar_${loggedInUser.email || loggedInUser.username}_${Date.now()}.jpg`;
     if (supabaseClient) {
       try {
@@ -3815,6 +3816,8 @@ async function saveUserProfileEdits() {
           if (pubData) avatarUrl = pubData.publicUrl;
         } else {
           console.error("Storage upload error:", uploadErr.message);
+          showToast('Upload failed: ' + uploadErr.message);
+          return;
         }
       } catch (e) {
         console.warn('Avatar upload exception:', e);
