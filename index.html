@@ -11,7 +11,7 @@
 
 <!-- Supabase JS Library -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!-- Google Maps API for Live Location Picker -->
+<!-- Google Maps API -->
 <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places"></script>
 <!-- Confetti Celebration Library -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -34,8 +34,8 @@ img{max-width:100%;height:auto;display:block;object-fit:contain}
 .ticker__track span{padding:.5rem 1.5rem;display:inline-block}
 @keyframes scrollTicker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-/* --- STICKY HEADER FIX --- */
-header{display:flex;align-items:center;justify-content:space-between;padding:.6rem var(--gap);border-bottom:1px solid rgba(242,240,234,.12);position:sticky;top:0;z-index:999;background:rgba(11,11,12,.96);backdrop-filter:blur(12px);min-height:85px;gap:.5rem;width:100%}
+/* --- STICKY HEADER FIXED Z-INDEX SO IT DOES NOT OVERLAP MODALS IMPROPERLY --- */
+header{display:flex;align-items:center;justify-content:space-between;padding:.6rem var(--gap);border-bottom:1px solid rgba(242,240,234,.12);position:sticky;top:0;z-index:50;background:rgba(11,11,12,.96);backdrop-filter:blur(12px);min-height:85px;gap:.5rem;width:100%}
 .logo-wrap{display:flex;align-items:center;justify-content:flex-start;cursor:pointer;user-select:none;height:100%;flex-shrink:0}
 .rebel-brand-logo{display:inline-flex;align-items:center;justify-content:flex-start;width:150px;height:55px;overflow:visible}
 .rebel-brand-logo svg,.rebel-brand-logo img{width:100%;height:100%;object-fit:contain;object-position:left center;display:block;transform:scale(2.2);transform-origin:left center}
@@ -94,7 +94,7 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .section__head h2{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(2rem,5vw,3rem);line-height:1}
 .section__head p{color:var(--grey);font-family:'Space Mono',monospace;font-size:.8rem;max-width:32ch}
 
-/* STOREFRONT PRODUCTS GRID (Fixed for desktop & mobile) */
+/* STOREFRONT PRODUCTS GRID */
 .home-products-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; width: 100%; }
 @media(max-width: 900px){ .home-products-grid { grid-template-columns: repeat(2, 1fr); } }
 @media(max-width: 600px){ .home-products-grid { grid-template-columns: 1fr; } }
@@ -110,6 +110,13 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .price-curr{font-family:'Space Mono',monospace;font-weight:700;font-size:1.1rem;color:var(--paper)}
 .price-cut{font-family:'Space Mono',monospace;font-size:.85rem;color:var(--grey);text-decoration:line-through}
 .badge-off{background:var(--rebel-red);color:#fff;font-size:.65rem;font-family:'Space Mono',monospace;font-weight:700;padding:2px 6px;border-radius:2px}
+
+/* PRODUCT DETAIL PAGE (PDP) */
+#product-detail-page { display:none; max-width:1100px; margin:2rem auto; padding:0 var(--gap); width:100%; }
+.pdp-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items:start; }
+@media(max-width:768px){ .pdp-grid { grid-template-columns: 1fr; } }
+.size-btn { min-width:48px; height:46px; background:#18181b; border:1.5px solid rgba(242,240,234,.2); color:var(--paper); font-family:'Space Mono',monospace; font-weight:700; font-size:.88rem; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0 .5rem; }
+.size-btn.selected { background:var(--spray-yellow); color:var(--ink); border-color:var(--spray-yellow); }
 
 /* CUSTOMER DASHBOARD LAYOUT */
 #customer-dashboard-page { display:none; max-width:1200px; margin:2rem auto; padding:0 var(--gap); width:100%; }
@@ -130,14 +137,17 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 
 .dash-title { font-family:'Anton',sans-serif; font-size:1.8rem; text-transform:uppercase; color:var(--spray-yellow); margin-bottom:1.5rem; border-bottom:1px solid rgba(242,240,234,0.1); padding-bottom:0.5rem; }
 
-/* LARGE FORM CONTROLS (As per reference image d40547.png) */
+/* LARGE FORM CONTROLS & MODAL Z-INDEX FIX */
 .form-control-large { width:100%; background:#1a1a1d; border:1.5px solid rgba(242,240,234,0.25); color:var(--paper); font-family:'Space Mono',monospace; padding:.9rem 1rem; font-size:.95rem; border-radius:2px; margin-top:0.3rem; margin-bottom:1rem; }
 .form-control-large:focus { border-color:var(--spray-yellow); outline:none; }
 
 .address-card-item { background:#1a1a1d; border:1.5px solid rgba(242,240,234,0.15); padding:1.5rem; border-radius:4px; margin-bottom:1rem; position:relative; }
 .address-card-item.selected-address { border-color:var(--spray-yellow); background:rgba(255,213,0,0.04); }
 
-.toast{position:fixed;bottom:20px;right:20px;background:var(--spray-yellow);color:var(--ink);padding:.8rem 1.2rem;border:2px solid var(--ink);box-shadow:4px 4px 0 var(--paper);font-family:'Space Mono',monospace;font-weight:700;font-size:.8rem;z-index:250;transform:translateY(150px);transition:transform .3s cubic-bezier(0.175,0.885,0.32,1.275)}
+/* PROPER MODAL Z-INDEX TO PREVENT HEADER OVERLAP BUG */
+.auth-modal { position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:9999; display:none; align-items:center; justify-content:center; padding:1rem; overflow-y:auto; }
+
+.toast{position:fixed;bottom:20px;right:20px;background:var(--spray-yellow);color:var(--ink);padding:.8rem 1.2rem;border:2px solid var(--ink);box-shadow:4px 4px 0 var(--paper);font-family:'Space Mono',monospace;font-weight:700;font-size:.8rem;z-index:10000;transform:translateY(150px);transition:transform .3s cubic-bezier(0.175,0.885,0.32,1.275)}
 .toast.show{transform:translateY(0)}
 </style>
 </head>
@@ -208,6 +218,31 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
     </section>
   </main>
 
+  <!-- PRODUCT DETAIL PAGE (PDP) -->
+  <section id="product-detail-page">
+    <button class="btn btn--ghost" style="margin-bottom:1.5rem; padding:0.4rem 1rem; font-size:0.75rem;" onclick="showHomeView()">← Back to Store</button>
+    <div class="pdp-grid">
+      <div style="background:#141416; border:2px solid var(--spray-yellow); aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; font-family:'Anton'; font-size:3rem; color:var(--spray-yellow);" id="pdp-image-box">
+        RIOT
+      </div>
+      <div>
+        <span style="font-family:'Space Mono'; color:var(--spray-yellow); font-size:0.8rem; text-transform:uppercase;" id="pdp-code">Drop 01</span>
+        <h1 style="font-family:'Anton'; font-size:2.5rem; text-transform:uppercase; margin:0.4rem 0;" id="pdp-title">The Riot Oversized Tee</h1>
+        <p style="color:var(--grey); font-size:0.9rem; margin-bottom:1rem;" id="pdp-desc">Acid Yellow & Distressed Grunge Graphic. 240 GSM.</p>
+        <div style="font-family:'Space Mono'; font-size:1.8rem; font-weight:bold; color:var(--paper); margin-bottom:1.5rem;" id="pdp-price">ரூ 713 <span style="font-size:1rem; color:var(--grey); text-decoration:line-through; margin-left:10px;">ரூ 1070</span></div>
+        
+        <div style="font-family:'Space Mono'; font-size:0.8rem; font-weight:bold; text-transform:uppercase; margin-bottom:0.5rem;">Select Size</div>
+        <div style="display:flex; gap:0.6rem; margin-bottom:1.5rem;" id="pdp-sizes">
+          <button class="size-btn selected" onclick="selectSize(this, 'S')">S</button>
+          <button class="size-btn" onclick="selectSize(this, 'M')">M</button>
+          <button class="size-btn" onclick="selectSize(this, 'L')">L</button>
+          <button class="size-btn" onclick="selectSize(this, 'XL')">XL</button>
+        </div>
+        <button class="btn btn--solid" style="width:100%; justify-content:center;" onclick="addProductToCartFromPDP()">Add to Cart 🛍️</button>
+      </div>
+    </div>
+  </section>
+
   <!-- CUSTOMER DASHBOARD -->
   <section id="customer-dashboard-page">
     <div class="dash-layout">
@@ -216,7 +251,6 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
         <div class="dash-user-card">
           <h4 id="sidebar-user-name">Sanjai V</h4>
           <p id="sidebar-user-email">sanjudau470@gmail.com</p>
-          <!-- 'Get Membership Now' removed completely -->
         </div>
         <ul class="dash-nav-list">
           <li class="dash-nav-item active" id="nav-tab-profile" onclick="switchDashTab('profile')">Profile <span>👤</span></li>
@@ -286,8 +320,8 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
   </section>
 
   <!-- CART DRAWER -->
-  <div class="cart-overlay" id="cart-overlay" onclick="toggleCartDrawer(false)" style="position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:150;display:none;"></div>
-  <aside class="cart-drawer" id="cart-drawer" style="position:fixed;top:0;right:0;width:100%;max-width:480px;height:100%;background:#121214;border-left:2px solid var(--spray-yellow);z-index:160;display:flex;flex-direction:column;padding:1.5rem;transform:translateX(100%);transition:transform .3s ease;overflow-y:auto;">
+  <div class="cart-overlay" id="cart-overlay" onclick="toggleCartDrawer(false)" style="position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:999;display:none;"></div>
+  <aside class="cart-drawer" id="cart-drawer" style="position:fixed;top:0;right:0;width:100%;max-width:480px;height:100%;background:#121214;border-left:2px solid var(--spray-yellow);z-index:1000;display:flex;flex-direction:column;padding:1.5rem;transform:translateX(100%);transition:transform .3s ease;overflow-y:auto;">
     <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:1.2rem;border-bottom:1px solid rgba(242,240,234,.15);">
       <h3 style="font-family:'Anton'; font-size:1.6rem; text-transform:uppercase;">Your Bag</h3>
       <button onclick="toggleCartDrawer(false)" style="background:none;border:none;color:var(--paper);font-size:1.6rem;cursor:pointer;">×</button>
@@ -320,8 +354,8 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
     </div>
   </section>
 
-  <!-- ADD / EDIT LARGE ADDRESS MODAL (Matching Reference Image d40547.png & d40586.png) -->
-  <div class="auth-modal" id="address-modal" style="position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem;">
+  <!-- ADD / EDIT LARGE ADDRESS MODAL -->
+  <div class="auth-modal" id="address-modal">
     <div style="width:100%;max-width:580px;background:#141416;border:2.5px solid var(--spray-yellow);box-shadow:10px 10px 0 var(--paper);padding:2.5rem;position:relative;max-height:95vh;overflow-y:auto;">
       <button onclick="closeAddressModal()" style="position:absolute;top:15px;right:20px;background:none;border:none;color:var(--paper);font-size:1.8rem;cursor:pointer;">×</button>
       <h3 style="font-family:'Anton'; font-size:1.8rem; text-transform:uppercase; color:var(--spray-yellow); margin-bottom:1.5rem;" id="address-modal-title">Edit Address</h3>
@@ -362,8 +396,8 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
     </div>
   </div>
 
-  <!-- GOOGLE MAPS LIVE LOCATION PICKER MODAL (Inspired by image d40567.png) -->
-  <div class="auth-modal" id="map-modal" style="position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:220;display:none;align-items:center;justify-content:center;padding:1rem;">
+  <!-- GOOGLE MAPS LIVE LOCATION PICKER MODAL -->
+  <div class="auth-modal" id="map-modal">
     <div style="width:100%;max-width:650px;background:#141416;border:2.5px solid var(--spray-yellow);padding:1.5rem;position:relative;">
       <button onclick="closeMapModal()" style="position:absolute;top:10px;right:15px;background:none;border:none;color:var(--paper);font-size:1.5rem;cursor:pointer;">×</button>
       <h3 style="font-family:'Anton'; font-size:1.4rem; text-transform:uppercase; color:var(--spray-yellow); margin-bottom:1rem;">Select Delivery Location</h3>
@@ -374,7 +408,7 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
   </div>
 
   <!-- LOGIN MODAL -->
-  <div class="auth-modal" id="auth-modal" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem;">
+  <div class="auth-modal" id="auth-modal">
     <div style="width:100%;max-width:400px;background:#141416;border:2px solid var(--spray-yellow);padding:2rem;position:relative;">
       <button onclick="closeAuthModal()" style="position:absolute;top:10px;right:15px;background:none;border:none;color:var(--paper);font-size:1.5rem;cursor:pointer;">×</button>
       <h3 style="font-family:'Anton'; font-size:1.8rem; text-transform:uppercase; margin-bottom:1rem;">Login / Register</h3>
@@ -401,10 +435,19 @@ let savedAddresses = JSON.parse(localStorage.getItem('rebel_saved_addresses')) |
   { id: 'addr_1', name: 'Sanjai V', phone: '7010660697', line1: 'Inland inn, Mount road', line2: 'Near Casino theater', pincode: '600002', district: 'Chennai', state: 'Tamil Nadu', isDefault: true, type: 'Other' }
 ];
 
-let cart = JSON.parse(localStorage.getItem('rebel_cart')) || [{ id: 'o1', title: 'The Riot Oversized Tee (Yellow)', size: 'L', price: 713, qty: 1 }];
+let cart = JSON.parse(localStorage.getItem('rebel_cart')) || [];
 let ordersHistory = JSON.parse(localStorage.getItem('rebel_orders_history')) || [
   { id: '3579624', date: '08 Feb, 2021', items: [{ title: 'Solids: Black', size: 'L', qty: 1 }], status: 'Cancelled', total: 713 }
 ];
+
+const productsList = [
+  { id: 'o1', code: 'RIOT', title: 'The Riot Oversized Tee', desc: 'Acid Yellow & Distressed Grunge Graphic. 240 GSM.', mrp: 1070, price: 713, colorBg: '#ffd500', colorText: '#0b0b0c' },
+  { id: 'o2', code: 'VOLT', title: 'The Volt Oversized Tee', desc: 'Stealth Black with High-Voltage Neon Typography.', mrp: 1070, price: 713, colorBg: '#1f1f22', colorText: '#ffd500' },
+  { id: 'o3', code: 'VOID', title: 'The Void Acid Tee', desc: 'Acid wash dark grey streetwear style. 240 GSM.', mrp: 1070, price: 713, colorBg: '#f2f0ea', colorText: '#0b0b0c' }
+];
+
+let currentSelectedProduct = null;
+let selectedPDPSize = 'S';
 
 document.addEventListener('DOMContentLoaded', () => {
   updateUserBadgeDisplay();
@@ -449,6 +492,7 @@ function logoutUser() {
 function openCustomerDashboard(tabName) {
   document.getElementById('user-dropdown-menu').classList.remove('open');
   document.getElementById('home-view').style.display = 'none';
+  document.getElementById('product-detail-page').style.display = 'none';
   document.getElementById('shipping-billing-page').style.display = 'none';
   document.getElementById('customer-dashboard-page').style.display = 'block';
 
@@ -475,6 +519,7 @@ function switchDashTab(tabName) { openCustomerDashboard(tabName); }
 
 function showHomeView() {
   document.getElementById('customer-dashboard-page').style.display = 'none';
+  document.getElementById('product-detail-page').style.display = 'none';
   document.getElementById('shipping-billing-page').style.display = 'none';
   document.getElementById('home-view').style.display = 'block';
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -571,7 +616,6 @@ function renderSavedAddressesList() {
 }
 
 function openAddressModal(addrId = null) {
-  // First trigger Google Maps Live Location Picker modal (Reference image d40567.png)
   openMapModal(addrId);
 }
 
@@ -585,7 +629,7 @@ function openMapModal(addrId) {
       center: { lat: 13.0827, lng: 80.2707 },
       zoom: 15
     });
-    const marker = new google.maps.Marker({
+    new google.maps.Marker({
       position: { lat: 13.0827, lng: 80.2707 },
       map: map,
       draggable: true
@@ -602,7 +646,6 @@ function closeMapModal() {
 
 function confirmMapLocation() {
   closeMapModal();
-  // Proceed to open large address form filled with auto-detected location data
   const addrId = activeEditingId;
   document.getElementById('edit-address-id').value = '';
   document.getElementById('addr-name').value = loggedInUser.name || '';
@@ -729,6 +772,7 @@ function goToCheckout() {
   if(cart.length === 0) { showToast('Cart is empty!'); return; }
   toggleCartDrawer(false);
   document.getElementById('home-view').style.display = 'none';
+  document.getElementById('product-detail-page').style.display = 'none';
   document.getElementById('customer-dashboard-page').style.display = 'none';
   document.getElementById('shipping-billing-page').style.display = 'block';
 
@@ -784,48 +828,72 @@ function executeRazorpayPayment() {
 function renderStorefront() {
   const container = document.getElementById('home-products-grid');
   if(!container) return;
-  container.innerHTML = `
-    <div class="card">
-      <span class="card__tag">Drop 01 · In Stock</span>
-      <div class="tee-swatch" style="background-color:#ffd500; color:#0b0b0c;">RIOT</div>
+  container.innerHTML = '';
+  productsList.forEach((prod, index) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.onclick = () => openProductDetail(prod.id);
+    card.innerHTML = `
+      <span class="card__tag">Drop 0${index+1} · In Stock</span>
+      <div class="tee-swatch" style="background-color:${prod.colorBg}; color:${prod.colorText};">${prod.code}</div>
       <div class="card-text-area">
-        <h3>The Riot Oversized Tee</h3>
-        <p>Acid Yellow & Distressed Grunge Graphic. 240 GSM.</p>
+        <h3>${prod.title}</h3>
+        <p>${prod.desc}</p>
       </div>
       <div class="price-box">
-        <span class="price-cut">ரூ 1070</span>
-        <span class="price-curr">ரூ 713</span>
+        <span class="price-cut">ரூ ${prod.mrp}</span>
+        <span class="price-curr">ரூ ${prod.price}</span>
         <span class="badge-off">33% OFF</span>
       </div>
-    </div>
-    <div class="card">
-      <span class="card__tag">Drop 02 · In Stock</span>
-      <div class="tee-swatch" style="background-color:#1f1f22; color:#ffd500; border:1px solid #ffd500;">VOLT</div>
-      <div class="card-text-area">
-        <h3>The Volt Oversized Tee</h3>
-        <p>Stealth Black with High-Voltage Neon Typography.</p>
-      </div>
-      <div class="price-box">
-        <span class="price-cut">ரூ 1070</span>
-        <span class="price-curr">ரூ 713</span>
-        <span class="badge-off">33% OFF</span>
-      </div>
-    </div>
-    <div class="card">
-      <span class="card__tag">Drop 03 · In Stock</span>
-      <div class="tee-swatch" style="background-color:#f2f0ea; color:#0b0b0c;">VOID</div>
-      <div class="card-text-area">
-        <h3>The Void Acid Tee</h3>
-        <p>Acid wash dark grey streetwear style. 240 GSM.</p>
-      </div>
-      <div class="price-box">
-        <span class="price-cut">ரூ 1070</span>
-        <span class="price-curr">ரூ 713</span>
-        <span class="badge-off">33% OFF</span>
-      </div>
-    </div>
-  `;
+    `;
+    container.appendChild(card);
+  });
 }
+
+function openProductDetail(productId) {
+  const prod = productsList.find(p => p.id === productId);
+  if(!prod) return;
+  currentSelectedProduct = prod;
+
+  document.getElementById('pdp-code').innerText = `Drop · ${prod.code}`;
+  document.getElementById('pdp-title').innerText = prod.title;
+  document.getElementById('pdp-desc').innerText = prod.desc;
+  document.getElementById('pdp-price').innerHTML = `ரூ ${prod.price} <span style="font-size:1rem; color:var(--grey); text-decoration:line-through; margin-left:10px;">ரூ ${prod.mrp}</span>`;
+  
+  const imgBox = document.getElementById('pdp-image-box');
+  imgBox.style.backgroundColor = prod.colorBg;
+  imgBox.style.color = prod.colorText;
+  imgBox.innerText = prod.code;
+
+  document.getElementById('home-view').style.display = 'none';
+  document.getElementById('customer-dashboard-page').style.display = 'none';
+  document.getElementById('shipping-billing-page').style.display = 'none';
+  document.getElementById('product-detail-page').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function selectSize(btn, size) {
+  selectedPDPSize = size;
+  document.querySelectorAll('#pdp-sizes .size-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function addProductToCartFromPDP() {
+  if(!currentSelectedProduct) return;
+  cart.push({
+    id: currentSelectedProduct.id,
+    title: `${currentSampleTitle(currentSelectedProduct.title)}`,
+    size: selectedPDPSize,
+    price: currentSelectedProduct.price,
+    qty: 1
+  });
+  localStorage.setItem('rebel_cart', JSON.stringify(cart));
+  updateCartBadge();
+  toggleCartDrawer(true);
+  showToast('Added to cart successfully! ✓');
+}
+
+function currentSampleTitle(t) { return t; }
 
 function showToast(msg) {
   const toast = document.getElementById('toast');
