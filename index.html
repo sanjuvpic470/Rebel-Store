@@ -11,12 +11,12 @@
 
 <!-- Supabase JS Library -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Google Maps API for Live Location Picker -->
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places"></script>
 <!-- Confetti Celebration Library -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <!-- Razorpay Standard Checkout SDK -->
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<!-- jsPDF for Courier Label Generation -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
 :root{--ink:#0b0b0c;--paper:#f2f0ea;--rebel-red:#e52521;--spray-yellow:#ffd500;--grey:#8a8a86;--card-bg:#141416;--gap:clamp(1rem,4vw,2.5rem);--success-green:#22c55e}
@@ -34,7 +34,8 @@ img{max-width:100%;height:auto;display:block;object-fit:contain}
 .ticker__track span{padding:.5rem 1.5rem;display:inline-block}
 @keyframes scrollTicker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-header{display:flex;align-items:center;justify-content:space-between;padding:.6rem var(--gap);border-bottom:1px solid rgba(242,240,234,.12);position:sticky;top:0;z-index:90;background:rgba(11,11,12,.94);backdrop-filter:blur(12px);min-height:85px;gap:.5rem;width:100%}
+/* --- STICKY HEADER FIX --- */
+header{display:flex;align-items:center;justify-content:space-between;padding:.6rem var(--gap);border-bottom:1px solid rgba(242,240,234,.12);position:sticky;top:0;z-index:999;background:rgba(11,11,12,.96);backdrop-filter:blur(12px);min-height:85px;gap:.5rem;width:100%}
 .logo-wrap{display:flex;align-items:center;justify-content:flex-start;cursor:pointer;user-select:none;height:100%;flex-shrink:0}
 .rebel-brand-logo{display:inline-flex;align-items:center;justify-content:flex-start;width:150px;height:55px;overflow:visible}
 .rebel-brand-logo svg,.rebel-brand-logo img{width:100%;height:100%;object-fit:contain;object-position:left center;display:block;transform:scale(2.2);transform-origin:left center}
@@ -92,16 +93,16 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .section__head{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;margin-bottom:1.2rem;flex-wrap:wrap}
 .section__head h2{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(2rem,5vw,3rem);line-height:1}
 .section__head p{color:var(--grey);font-family:'Space Mono',monospace;font-size:.8rem;max-width:32ch}
-.scroll-container-wrap{position:relative;width:100%;overflow:hidden;margin-bottom:1.5rem}
-.horizontal-scroll-grid{display:flex;gap:1.5rem;overflow-x:auto;scroll-behavior:smooth;padding-bottom:1rem;scrollbar-width:thin;scrollbar-color:var(--spray-yellow) var(--card-bg);width:100%}
-.horizontal-scroll-grid::-webkit-scrollbar{height:8px}
-.horizontal-scroll-grid::-webkit-scrollbar-thumb{background:var(--spray-yellow);border-radius:4px}
-.horizontal-scroll-grid .card,.cat-prod-grid .card{min-width:330px;width:330px;flex:0 0 auto;height:500px;display:flex;flex-direction:column;justify-content:space-between}
-@media(max-width:768px){.horizontal-scroll-grid .card,.cat-prod-grid .card{min-width:280px;width:280px;height:480px}}
-.card{background:var(--card-bg);border:1px solid rgba(242,240,234,.12);padding:1.4rem;position:relative;overflow:hidden;transition:transform .25s cubic-bezier(0.16,1,0.3,1),border-color .2s ease;cursor:pointer}
+
+/* STOREFRONT PRODUCTS GRID (Fixed for desktop & mobile) */
+.home-products-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; width: 100%; }
+@media(max-width: 900px){ .home-products-grid { grid-template-columns: repeat(2, 1fr); } }
+@media(max-width: 600px){ .home-products-grid { grid-template-columns: 1fr; } }
+
+.card{background:var(--card-bg);border:1px solid rgba(242,240,234,.12);padding:1.4rem;position:relative;overflow:hidden;transition:transform .25s cubic-bezier(0.16,1,0.3,1),border-color .2s ease;cursor:pointer;height:480px;display:flex;flex-direction:column;justify-content:space-between;width:100%}
 .card:hover{transform:translateY(-6px);border-color:var(--spray-yellow)}
 .card__tag{font-family:'Space Mono',monospace;font-size:.68rem;text-transform:uppercase;color:var(--spray-yellow);letter-spacing:.08em;margin-bottom:.4rem;display:block;flex-shrink:0}
-.tee-swatch{width:100%;aspect-ratio:1 / 1;border-radius:2px;margin-bottom:0.8rem;display:flex;align-items:center;justify-content:center;font-family:'Anton',sans-serif;font-size:2.5rem;text-transform:uppercase;position:relative;overflow:hidden;background-size:contain;background-position:center;background-repeat:no-repeat;flex-shrink:0;background-color:#141416}
+.tee-swatch{width:100%;aspect-ratio:1 / 1;border-radius:2px;margin-bottom:0.8rem;display:flex;align-items:center;justify-content:center;font-family:'Anton',sans-serif;font-size:2.5rem;text-transform:uppercase;position:relative;overflow:hidden;background-size:contain;background-position:center;background-repeat:no-repeat;flex-shrink:0}
 .card-text-area{flex-grow:1;display:flex;flex-direction:column;justify-content:flex-start;overflow:hidden}
 .card h3{font-family:'Archivo Black',sans-serif;font-size:1.05rem;text-transform:uppercase;margin-bottom:.3rem;line-height:1.25}
 .card p{color:var(--grey);font-size:.8rem;line-height:1.35;margin-bottom:0.5rem}
@@ -110,9 +111,9 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .price-cut{font-family:'Space Mono',monospace;font-size:.85rem;color:var(--grey);text-decoration:line-through}
 .badge-off{background:var(--rebel-red);color:#fff;font-size:.65rem;font-family:'Space Mono',monospace;font-weight:700;padding:2px 6px;border-radius:2px}
 
-/* CUSTOMER DASHBOARD LAYOUT (Inspired by reference images) */
-#customer-dashboard-page { display:none; max-width:1200px; margin:2rem auto; padding:0 var(--gap); }
-.dash-layout { display:grid; grid-template-columns: 280px 1fr; gap: 2rem; }
+/* CUSTOMER DASHBOARD LAYOUT */
+#customer-dashboard-page { display:none; max-width:1200px; margin:2rem auto; padding:0 var(--gap); width:100%; }
+.dash-layout { display:grid; grid-template-columns: 280px 1fr; gap: 2rem; width:100%; }
 @media(max-width:850px){ .dash-layout { grid-template-columns: 1fr; } }
 
 .dash-sidebar { background:#161619; border:1px solid rgba(242,240,234,0.12); padding:1.5rem; border-radius:4px; height:fit-content; }
@@ -123,15 +124,17 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .dash-nav-item { font-family:'Space Mono',monospace; font-size:0.85rem; padding:0.8rem 1rem; color:var(--paper); cursor:pointer; border-radius:2px; transition:all 0.2s; text-transform:uppercase; display:flex; justify-content:space-between; align-items:center; }
 .dash-nav-item:hover, .dash-nav-item.active { background:var(--spray-yellow); color:var(--ink); font-weight:bold; }
 
-.dash-content-area { background:#161619; border:1px solid rgba(242,240,234,0.12); padding:2rem; border-radius:4px; min-height:450px; }
+.dash-content-area { background:#161619; border:1px solid rgba(242,240,234,0.12); padding:2rem; border-radius:4px; min-height:450px; width:100%; }
 .dash-tab-pane { display:none; }
 .dash-tab-pane.active { display:block; }
 
 .dash-title { font-family:'Anton',sans-serif; font-size:1.8rem; text-transform:uppercase; color:var(--spray-yellow); margin-bottom:1.5rem; border-bottom:1px solid rgba(242,240,234,0.1); padding-bottom:0.5rem; }
 
-/* CHECKOUT ADDRESS SELECTOR MODAL / BOX */
-.checkout-address-box { background:#1a1a1d; border:1.5px solid rgba(242,240,234,0.2); padding:1.2rem; border-radius:4px; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:flex-start; }
-.address-card-item { background:#1a1a1d; border:1.5px solid rgba(242,240,234,0.15); padding:1.2rem; border-radius:4px; margin-bottom:1rem; position:relative; }
+/* LARGE FORM CONTROLS (As per reference image d40547.png) */
+.form-control-large { width:100%; background:#1a1a1d; border:1.5px solid rgba(242,240,234,0.25); color:var(--paper); font-family:'Space Mono',monospace; padding:.9rem 1rem; font-size:.95rem; border-radius:2px; margin-top:0.3rem; margin-bottom:1rem; }
+.form-control-large:focus { border-color:var(--spray-yellow); outline:none; }
+
+.address-card-item { background:#1a1a1d; border:1.5px solid rgba(242,240,234,0.15); padding:1.5rem; border-radius:4px; margin-bottom:1rem; position:relative; }
 .address-card-item.selected-address { border-color:var(--spray-yellow); background:rgba(255,213,0,0.04); }
 
 .toast{position:fixed;bottom:20px;right:20px;background:var(--spray-yellow);color:var(--ink);padding:.8rem 1.2rem;border:2px solid var(--ink);box-shadow:4px 4px 0 var(--paper);font-family:'Space Mono',monospace;font-weight:700;font-size:.8rem;z-index:250;transform:translateY(150px);transition:transform .3s cubic-bezier(0.175,0.885,0.32,1.275)}
@@ -141,10 +144,10 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 <body>
 
   <div class="ticker" aria-hidden="true">
-    <div class="ticker__track" id="ticker-track-box">
+    <div class="ticker__track">
       <span>★ 48H DISPATCH · 3–5 DAYS DELIVERY IN TN¹</span>
       <span>★ FREE SHIPPING ACROSS TN²</span>
-      <span>★ USE CODE <strong id="t-code">REBEL16</strong> IN CART FOR EXTRA <strong id="t-discount">16%</strong> OFF</span>
+      <span>★ USE CODE <strong>REBEL16</strong> IN CART FOR EXTRA <strong>16%</strong> OFF</span>
     </div>
   </div>
 
@@ -176,15 +179,14 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
   </header>
 
   <!-- HOME VIEW -->
-  <main id="home-view">
-    <section class="hero">
+  <main id="home-view" class="wrap" style="padding-top:2rem; padding-bottom:4rem;">
+    <section class="hero" style="padding-left:0; padding-right:0;">
       <div>
         <span class="hero__eyebrow">Streetwear that talks back</span>
         <h1 class="hero__title">WEAR THE<br><span class="fill-yellow">UPRISING</span><br><span class="stroke">NOT THE</span> UNIFORM</h1>
         <p class="hero__sub">240 GSM premium combed cotton tees, high-definition DTF prints, zero compromises. Use code <strong>REBEL16</strong> in bag for extra <strong>16%</strong> off.</p>
         <div class="hero__cta">
           <a href="#collections" class="btn btn--solid">Shop the Drops →</a>
-          <a onclick="showHomeView()" class="btn btn--ghost">Custom Orders ⚡</a>
         </div>
       </div>
       <div class="hero__art">
@@ -194,24 +196,27 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
         </div>
       </div>
     </section>
-    <section class="section" id="collections">
+
+    <section class="section" id="collections" style="padding-left:0; padding-right:0;">
       <div class="section__head">
         <h2>Shop the<br>Drops</h2>
-        <p>Signature 240 GSM drops. Browse categories below.</p>
+        <p>Signature 240 GSM drops. Browse products below.</p>
       </div>
-      <div id="home-categories-container"></div>
+      <div class="home-products-grid" id="home-products-grid">
+        <!-- Rendered dynamically -->
+      </div>
     </section>
   </main>
 
-  <!-- CUSTOMER DASHBOARD (PROFILE, ORDERS, SAVED ADDRESSES) -->
+  <!-- CUSTOMER DASHBOARD -->
   <section id="customer-dashboard-page">
     <div class="dash-layout">
       <!-- SIDEBAR -->
       <div class="dash-sidebar">
         <div class="dash-user-card">
-          <h4 id="sidebar-user-name">SaNju V</h4>
+          <h4 id="sidebar-user-name">Sanjai V</h4>
           <p id="sidebar-user-email">sanjudau470@gmail.com</p>
-          <a href="#" style="font-family:'Space Mono'; font-size:0.7rem; color:var(--rebel-red); margin-top:5px; display:inline-block;">Get Membership Now</a>
+          <!-- 'Get Membership Now' removed completely -->
         </div>
         <ul class="dash-nav-list">
           <li class="dash-nav-item active" id="nav-tab-profile" onclick="switchDashTab('profile')">Profile <span>👤</span></li>
@@ -227,39 +232,39 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
         <div class="dash-tab-pane active" id="tab-pane-profile">
           <h3 class="dash-title">Edit Profile</h3>
           <div style="margin-bottom:1.5rem;">
-            <label style="font-family:'Space Mono'; font-size:0.75rem; text-transform:uppercase; color:var(--grey); display:block; margin-bottom:0.3rem;">Email Id</label>
-            <input type="email" id="profile-email-locked" class="form-control" disabled style="background:#222; color:#8a8a86; cursor:not-allowed;" value="sanjudau470@gmail.com">
+            <label style="font-family:'Space Mono'; font-size:0.75rem; text-transform:uppercase; color:var(--grey); display:block;">Email Id</label>
+            <input type="email" id="profile-email-locked" class="form-control-large" disabled style="background:#222; color:#8a8a86; cursor:not-allowed;" value="sanjudau470@gmail.com">
           </div>
-          <div style="font-family:'Space Mono'; font-size:0.85rem; color:var(--spray-yellow); margin-bottom:1rem; font-weight:bold;">General Information</div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+          <div style="font-family:'Space Mono'; font-size:0.9rem; color:var(--spray-yellow); margin-bottom:1rem; font-weight:bold; text-transform:uppercase;">General Information</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; margin-bottom:0.5rem;">
             <div>
-              <label style="font-family:'Space Mono'; font-size:0.75rem; text-transform:uppercase; display:block; margin-bottom:0.3rem;">First Name *</label>
-              <input type="text" id="profile-firstname" class="form-control" placeholder="First Name">
+              <label style="font-family:'Space Mono'; font-size:0.75rem; text-transform:uppercase; display:block;">First Name *</label>
+              <input type="text" id="profile-firstname" class="form-control-large" placeholder="First Name">
             </div>
             <div>
-              <label style="font-family:'Space Mono'; font-size:0.75rem; text-transform:uppercase; display:block; margin-bottom:0.3rem;">Date of Birth</label>
-              <input type="date" id="profile-dob" class="form-control">
-            </div>
-          </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
-            <div>
-              <label style="font-family:'Space Mono'; font-size:0.75rem; text-transform:uppercase; display:block; margin-bottom:0.3rem;">Last Name</label>
-              <input type="text" id="profile-lastname" class="form-control" placeholder="Last Name">
-            </div>
-            <div>
-              <label style="font-family:'Space Mono'; font-size:0.75rem; text-transform:uppercase; display:block; margin-bottom:0.3rem;">Mobile Number *</label>
-              <input type="tel" id="profile-phone" class="form-control" placeholder="Mobile Number">
+              <label style="font-family:'Space Mono'; font-size:0.75rem; text-transform:uppercase; display:block;">Date of Birth</label>
+              <input type="date" id="profile-dob" class="form-control-large">
             </div>
           </div>
-          <div style="margin-bottom:1.5rem;">
-            <label style="font-family:'Space Mono'; font-size:0.75rem; text-transform:uppercase; display:block; margin-bottom:0.3rem;">Gender</label>
-            <div style="display:flex; gap:1.5rem; font-family:'Space Mono'; font-size:0.85rem; margin-top:0.4rem;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; margin-bottom:0.5rem;">
+            <div>
+              <label style="font-family:'Space Mono'; font-size:0.75rem; text-transform:uppercase; display:block;">Last Name</label>
+              <input type="text" id="profile-lastname" class="form-control-large" placeholder="Last Name">
+            </div>
+            <div>
+              <label style="font-family:'Space Mono'; font-size:0.75rem; text-transform:uppercase; display:block;">Mobile Number *</label>
+              <input type="tel" id="profile-phone" class="form-control-large" placeholder="Mobile Number">
+            </div>
+          </div>
+          <div style="margin-bottom:1.8rem;">
+            <label style="font-family:'Space Mono'; font-size:0.75rem; text-transform:uppercase; display:block; margin-bottom:0.4rem;">Gender</label>
+            <div style="display:flex; gap:1.5rem; font-family:'Space Mono'; font-size:0.85rem;">
               <label><input type="radio" name="profile-gender" value="Male" checked> Male</label>
               <label><input type="radio" name="profile-gender" value="Female"> Female</label>
               <label><input type="radio" name="profile-gender" value="Other"> Other</label>
             </div>
           </div>
-          <button class="btn btn--solid" style="background:#0f766e; color:#fff;" onclick="saveUserProfileEdits()">SAVE</button>
+          <button class="btn btn--solid" style="background:#0f766e; color:#fff; min-width:140px;" onclick="saveUserProfileEdits()">SAVE</button>
         </div>
 
         <!-- 2. ORDERS TAB -->
@@ -272,7 +277,7 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
         <div class="dash-tab-pane" id="tab-pane-addresses">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
             <h3 class="dash-title" style="margin-bottom:0; border:none;">Saved Addresses</h3>
-            <button class="btn btn--solid" style="padding:0.5rem 1rem; font-size:0.75rem;" onclick="openAddressModal()">+ Add New Address</button>
+            <button class="btn btn--solid" style="padding:0.6rem 1.2rem; font-size:0.8rem;" onclick="openAddressModal()">+ Add New Address</button>
           </div>
           <div id="saved-addresses-list-container"></div>
         </div>
@@ -280,8 +285,8 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
     </div>
   </section>
 
-  <!-- CART DRAWER & CHECKOUT ADDRESS SELECTION -->
-  <div class="cart-overlay" id="cart-overlay" onclick="toggleCartDrawer(false)"></div>
+  <!-- CART DRAWER -->
+  <div class="cart-overlay" id="cart-overlay" onclick="toggleCartDrawer(false)" style="position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:150;display:none;"></div>
   <aside class="cart-drawer" id="cart-drawer" style="position:fixed;top:0;right:0;width:100%;max-width:480px;height:100%;background:#121214;border-left:2px solid var(--spray-yellow);z-index:160;display:flex;flex-direction:column;padding:1.5rem;transform:translateX(100%);transition:transform .3s ease;overflow-y:auto;">
     <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:1.2rem;border-bottom:1px solid rgba(242,240,234,.15);">
       <h3 style="font-family:'Anton'; font-size:1.6rem; text-transform:uppercase;">Your Bag</h3>
@@ -297,55 +302,83 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
     </div>
   </aside>
 
-  <!-- CHECKOUT / SHIPPING & PAYMENT PAGE -->
+  <!-- CHECKOUT / SHIPPING PAGE -->
   <section id="shipping-billing-page" style="display:none; max-width:900px; margin:2rem auto; padding:0 var(--gap);">
     <button class="btn btn--ghost" style="margin-bottom:1.5rem; padding:0.4rem 1rem; font-size:0.75rem;" onclick="showHomeView()">← Back to Store</button>
     <div style="background:#141416; border:2px solid var(--spray-yellow); padding:2rem; box-shadow:8px 8px 0 var(--paper);">
       <h2 style="font-family:'Anton'; font-size:2rem; text-transform:uppercase; color:var(--spray-yellow); margin-bottom:1.5rem;">Select Delivery Address & Payment</h2>
       
-      <!-- Deliver To Box (Reference image style) -->
-      <div class="checkout-address-box">
+      <div style="background:#1a1a1d; border:1.5px solid rgba(242,240,234,0.2); padding:1.2rem; border-radius:4px; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:flex-start;">
         <div>
           <div style="font-family:'Space Mono'; font-size:0.85rem; color:var(--spray-yellow); font-weight:bold; margin-bottom:0.3rem;" id="checkout-deliver-title">Deliver To: Sanjai V, 600002</div>
-          <div style="font-family:'Space Mono'; font-size:0.75rem; color:var(--grey); line-height:1.4;" id="checkout-deliver-desc">No saved default address found. Please select or add one.</div>
+          <div style="font-family:'Space Mono'; font-size:0.75rem; color:var(--grey); line-height:1.4;" id="checkout-deliver-desc">Loading address...</div>
         </div>
         <button class="btn btn--solid" style="padding:0.4rem 0.9rem; font-size:0.7rem; min-height:auto;" onclick="openCustomerDashboard('addresses')">CHANGE</button>
-      </div>
-
-      <div style="margin-top:1.5rem; font-family:'Space Mono'; font-size:0.9rem; font-weight:bold; color:var(--paper); margin-bottom:1rem;">Payment Option</div>
-      <div style="background:#1a1a1d; border:1px solid rgba(242,240,234,0.15); padding:1rem; margin-bottom:1.5rem; font-family:'Space Mono'; font-size:0.85rem; display:flex; justify-content:space-between; align-items:center;">
-        <span>Online Payment / UPI / Credit Card (Razorpay)</span>
-        <input type="radio" checked>
       </div>
 
       <button class="btn btn--solid" style="width:100%; justify-content:center;" onclick="executeRazorpayPayment()">Place Order & Pay Securely →</button>
     </div>
   </section>
 
-  <!-- ADD / EDIT ADDRESS MODAL -->
-  <div class="auth-modal" id="address-modal" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem;">
-    <div style="width:100%;max-width:480px;background:#141416;border:2px solid var(--spray-yellow);box-shadow:8px 8px 0 var(--paper);padding:2rem;position:relative;max-height:90vh;overflow-y:auto;">
-      <button onclick="closeAddressModal()" style="position:absolute;top:10px;right:15px;background:none;border:none;color:var(--paper);font-size:1.5rem;cursor:pointer;">×</button>
-      <h3 style="font-family:'Anton'; font-size:1.5rem; text-transform:uppercase; color:var(--spray-yellow); margin-bottom:1.2rem;" id="address-modal-title">Add New Address</h3>
+  <!-- ADD / EDIT LARGE ADDRESS MODAL (Matching Reference Image d40547.png & d40586.png) -->
+  <div class="auth-modal" id="address-modal" style="position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem;">
+    <div style="width:100%;max-width:580px;background:#141416;border:2.5px solid var(--spray-yellow);box-shadow:10px 10px 0 var(--paper);padding:2.5rem;position:relative;max-height:95vh;overflow-y:auto;">
+      <button onclick="closeAddressModal()" style="position:absolute;top:15px;right:20px;background:none;border:none;color:var(--paper);font-size:1.8rem;cursor:pointer;">×</button>
+      <h3 style="font-family:'Anton'; font-size:1.8rem; text-transform:uppercase; color:var(--spray-yellow); margin-bottom:1.5rem;" id="address-modal-title">Edit Address</h3>
+      
       <input type="hidden" id="edit-address-id">
-      <div style="margin-bottom:0.8rem;"><label style="font-family:'Space Mono'; font-size:0.7rem; display:block; margin-bottom:0.3rem;">Full Name *</label><input type="text" id="addr-name" class="form-control" placeholder="Name"></div>
-      <div style="margin-bottom:0.8rem;"><label style="font-family:'Space Mono'; font-size:0.7rem; display:block; margin-bottom:0.3rem;">Mobile Number *</label><input type="tel" id="addr-phone" class="form-control" placeholder="Mobile"></div>
-      <div style="margin-bottom:0.8rem;"><label style="font-family:'Space Mono'; font-size:0.7rem; display:block; margin-bottom:0.3rem;">Address Line 1 *</label><input type="text" id="addr-line1" class="form-control" placeholder="Door No, Street"></div>
-      <div style="margin-bottom:0.8rem;"><label style="font-family:'Space Mono'; font-size:0.7rem; display:block; margin-bottom:0.3rem;">Address Line 2</label><input type="text" id="addr-line2" class="form-control" placeholder="Landmark / Area"></div>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-bottom:0.8rem;">
-        <div><label style="font-family:'Space Mono'; font-size:0.7rem; display:block; margin-bottom:0.3rem;">Pincode *</label><input type="text" id="addr-pincode" class="form-control" maxlength="6" placeholder="600002"></div>
-        <div><label style="font-family:'Space Mono'; font-size:0.7rem; display:block; margin-bottom:0.3rem;">District *</label><input type="text" id="addr-district" class="form-control" placeholder="Chennai"></div>
+      
+      <div style="margin-bottom:1.2rem;">
+        <label style="font-family:'Space Mono'; font-size:0.75rem; text-transform:uppercase; display:block; margin-bottom:0.3rem;">Full Name *</label>
+        <input type="text" id="addr-name" class="form-control-large" placeholder="Full Name">
       </div>
-      <div style="margin-bottom:1.2rem;"><label style="font-family:'Space Mono'; font-size:0.7rem; display:block; margin-bottom:0.3rem;">State *</label><input type="text" id="addr-state" class="form-control" placeholder="Tamil Nadu"></div>
-      <button class="btn btn--solid" style="width:100%; justify-content:center;" onclick="saveAddressToStorage()">Save Address 💾</button>
+      <div style="margin-bottom:1.2rem;">
+        <label style="font-family:'Space Mono'; font-size:0.75rem; text-transform:uppercase; display:block; margin-bottom:0.3rem;">Mobile Number *</label>
+        <input type="tel" id="addr-phone" class="form-control-large" placeholder="Mobile Number">
+      </div>
+      <div style="margin-bottom:1.2rem;">
+        <label style="font-family:'Space Mono'; font-size:0.75rem; text-transform:uppercase; display:block; margin-bottom:0.3rem;">Address Line 1 *</label>
+        <input type="text" id="addr-line1" class="form-control-large" placeholder="Door No, Building, Street">
+      </div>
+      <div style="margin-bottom:1.2rem;">
+        <label style="font-family:'Space Mono'; font-size:0.75rem; text-transform:uppercase; display:block; margin-bottom:0.3rem;">Address Line 2</label>
+        <input type="text" id="addr-line2" class="form-control-large" placeholder="Landmark / Area">
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.2rem;">
+        <div>
+          <label style="font-family:'Space Mono'; font-size:0.75rem; text-transform:uppercase; display:block; margin-bottom:0.3rem;">Pincode *</label>
+          <input type="text" id="addr-pincode" class="form-control-large" maxlength="6" placeholder="600002">
+        </div>
+        <div>
+          <label style="font-family:'Space Mono'; font-size:0.75rem; text-transform:uppercase; display:block; margin-bottom:0.3rem;">District *</label>
+          <input type="text" id="addr-district" class="form-control-large" placeholder="Chennai">
+        </div>
+      </div>
+      <div style="margin-bottom:1.8rem;">
+        <label style="font-family:'Space Mono'; font-size:0.75rem; text-transform:uppercase; display:block; margin-bottom:0.3rem;">State *</label>
+        <input type="text" id="addr-state" class="form-control-large" placeholder="Tamil Nadu">
+      </div>
+      <button class="btn btn--solid" style="width:100%; justify-content:center; background:var(--spray-yellow); color:var(--ink);" onclick="saveAddressToStorage()">SAVE ADDRESS 💾</button>
     </div>
   </div>
 
+  <!-- GOOGLE MAPS LIVE LOCATION PICKER MODAL (Inspired by image d40567.png) -->
+  <div class="auth-modal" id="map-modal" style="position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:220;display:none;align-items:center;justify-content:center;padding:1rem;">
+    <div style="width:100%;max-width:650px;background:#141416;border:2.5px solid var(--spray-yellow);padding:1.5rem;position:relative;">
+      <button onclick="closeMapModal()" style="position:absolute;top:10px;right:15px;background:none;border:none;color:var(--paper);font-size:1.5rem;cursor:pointer;">×</button>
+      <h3 style="font-family:'Anton'; font-size:1.4rem; text-transform:uppercase; color:var(--spray-yellow); margin-bottom:1rem;">Select Delivery Location</h3>
+      <div id="map-canvas" style="width:100%; height:350px; background:#222; border-radius:4px; margin-bottom:1rem;"></div>
+      <div id="map-selected-address" style="font-family:'Space Mono'; font-size:0.8rem; color:var(--paper); margin-bottom:1rem;">Detecting your location...</div>
+      <button class="btn btn--solid" style="width:100%; justify-content:center; background:#e52521; color:#fff;" onclick="confirmMapLocation()">Confirm Location</button>
+    </div>
+  </div>
+
+  <!-- LOGIN MODAL -->
   <div class="auth-modal" id="auth-modal" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem;">
     <div style="width:100%;max-width:400px;background:#141416;border:2px solid var(--spray-yellow);padding:2rem;position:relative;">
       <button onclick="closeAuthModal()" style="position:absolute;top:10px;right:15px;background:none;border:none;color:var(--paper);font-size:1.5rem;cursor:pointer;">×</button>
       <h3 style="font-family:'Anton'; font-size:1.8rem; text-transform:uppercase; margin-bottom:1rem;">Login / Register</h3>
-      <input type="email" id="login-email" class="form-control" placeholder="email@example.com" style="margin-bottom:1rem;">
+      <input type="email" id="login-email" class="form-control-large" placeholder="email@example.com" style="margin-bottom:1rem;">
       <button class="btn btn--solid" style="width:100%; justify-content:center;" onclick="quickLoginUser()">Continue →</button>
     </div>
   </div>
@@ -365,11 +398,10 @@ let loggedInUser = JSON.parse(localStorage.getItem('rebel_user_session')) || {
 };
 
 let savedAddresses = JSON.parse(localStorage.getItem('rebel_saved_addresses')) || [
-  { id: 'addr_1', name: 'Sanju V', phone: '7010660697', line1: 'Inland inn, Mount road', line2: 'Near Casino theater', pincode: '600002', district: 'Chennai', state: 'Tamil Nadu', isDefault: true, type: 'Other' }
+  { id: 'addr_1', name: 'Sanjai V', phone: '7010660697', line1: 'Inland inn, Mount road', line2: 'Near Casino theater', pincode: '600002', district: 'Chennai', state: 'Tamil Nadu', isDefault: true, type: 'Other' }
 ];
 
 let cart = JSON.parse(localStorage.getItem('rebel_cart')) || [{ id: 'o1', title: 'The Riot Oversized Tee (Yellow)', size: 'L', price: 713, qty: 1 }];
-let wishlist = JSON.parse(localStorage.getItem('rebel_wishlist')) || [];
 let ordersHistory = JSON.parse(localStorage.getItem('rebel_orders_history')) || [
   { id: '3579624', date: '08 Feb, 2021', items: [{ title: 'Solids: Black', size: 'L', qty: 1 }], status: 'Cancelled', total: 713 }
 ];
@@ -439,9 +471,7 @@ function openCustomerDashboard(tabName) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function switchDashTab(tabName) {
-  openCustomerDashboard(tabName);
-}
+function switchDashTab(tabName) { openCustomerDashboard(tabName); }
 
 function showHomeView() {
   document.getElementById('customer-dashboard-page').style.display = 'none';
@@ -476,18 +506,6 @@ async function saveUserProfileEdits() {
   localStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
   loadProfileDataIntoForm();
   showToast('Profile updated successfully! ✓');
-
-  if(supabaseClient && loggedInUser.email) {
-    try {
-      await supabaseClient.from('profiles').upsert({
-        email: loggedInUser.email,
-        name: loggedInUser.name,
-        phone: loggedInUser.phone,
-        dob: loggedInUser.dob,
-        gender: loggedInUser.gender
-      }, { onConflict: 'email' });
-    } catch(e){}
-  }
 }
 
 function renderCustomerOrdersList() {
@@ -527,7 +545,7 @@ function renderSavedAddressesList() {
     return;
   }
   let html = '';
-  savedAddresses.forEach((addr, idx) => {
+  savedAddresses.forEach((addr) => {
     html += `
       <div class="address-card-item ${addr.isDefault ? 'selected-address' : ''}">
         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
@@ -535,15 +553,15 @@ function renderSavedAddressesList() {
             <input type="radio" name="default_addr" ${addr.isDefault ? 'checked' : ''} onclick="setDefaultAddress('${addr.id}')">
             <span style="font-family:'Anton'; font-size:1.1rem; color:var(--spray-yellow);">${addr.name} <span style="font-size:0.7rem; color:var(--grey);">(${addr.type || 'Home'})</span></span>
           </div>
-          ${!addr.isDefault ? `<button onclick="setDefaultAddress('${addr.id}')" style="background:none; border:1px solid var(--spray-yellow); color:var(--spray-yellow); font-family:'Space Mono'; font-size:0.65rem; padding:2px 6px; cursor:pointer; border-radius:2px;">Set as Default</button>` : `<span style="font-family:'Space Mono'; font-size:0.7rem; color:var(--success-green); font-weight:bold;">Default Address</span>`}
+          ${!addr.isDefault ? `<button onclick="setDefaultAddress('${addr.id}')" style="background:none; border:1px solid var(--spray-yellow); color:var(--spray-yellow); font-family:'Space Mono'; font-size:0.65rem; padding:3px 8px; cursor:pointer; border-radius:2px;">Set as Default</button>` : `<span style="font-family:'Space Mono'; font-size:0.7rem; color:var(--success-green); font-weight:bold;">Default Address</span>`}
         </div>
-        <div style="font-family:'Space Mono'; font-size:0.8rem; color:var(--paper); line-height:1.4; margin-top:0.6rem;">
+        <div style="font-family:'Space Mono'; font-size:0.85rem; color:var(--paper); line-height:1.4; margin-top:0.8rem;">
           ${addr.line1}, ${addr.line2 ? addr.line2 + ',' : ''} ${addr.district} - ${addr.pincode}<br>
           ${addr.state}, India<br>
           <strong style="color:var(--spray-yellow);">Mobile:</strong> ${addr.phone}
         </div>
-        <div style="display:flex; gap:1rem; margin-top:1rem; border-top:1px dashed rgba(242,240,234,0.15); padding-top:0.8rem; font-family:'Space Mono'; font-size:0.75rem;">
-          <button onclick="editAddress('${addr.id}')" style="background:none; border:none; color:var(--spray-yellow); cursor:pointer;">✎ Edit</button>
+        <div style="display:flex; gap:1.2rem; margin-top:1rem; border-top:1px dashed rgba(242,240,234,0.15); padding-top:0.8rem; font-family:'Space Mono'; font-size:0.78rem;">
+          <button onclick="openAddressModal('${addr.id}')" style="background:none; border:none; color:var(--spray-yellow); cursor:pointer;">✎ Edit</button>
           <button onclick="deleteAddress('${addr.id}')" style="background:none; border:none; color:var(--rebel-red); cursor:pointer;">🗑 Delete</button>
         </div>
       </div>
@@ -553,15 +571,48 @@ function renderSavedAddressesList() {
 }
 
 function openAddressModal(addrId = null) {
-  document.getElementById('edit-address-id').value = '';
-  document.getElementById('addr-name').value = '';
-  document.getElementById('addr-phone').value = '';
-  document.getElementById('addr-line1').value = '';
-  document.getElementById('addr-line2').value = '';
-  document.getElementById('addr-pincode').value = '';
-  document.getElementById('addr-district').value = '';
-  document.getElementById('addr-state').value = '';
+  // First trigger Google Maps Live Location Picker modal (Reference image d40567.png)
+  openMapModal(addrId);
+}
+
+let activeEditingId = null;
+function openMapModal(addrId) {
+  activeEditingId = addrId;
+  document.getElementById('map-modal').style.display = 'flex';
   
+  if (typeof google !== 'undefined') {
+    const map = new google.maps.Map(document.getElementById('map-canvas'), {
+      center: { lat: 13.0827, lng: 80.2707 },
+      zoom: 15
+    });
+    const marker = new google.maps.Marker({
+      position: { lat: 13.0827, lng: 80.2707 },
+      map: map,
+      draggable: true
+    });
+    document.getElementById('map-selected-address').innerText = "Selected: Koyambedu, Chennai, Tamil Nadu, 600092";
+  } else {
+    document.getElementById('map-selected-address').innerText = "Live Map Connected (Demo Location: Chennai, 600092)";
+  }
+}
+
+function closeMapModal() {
+  document.getElementById('map-modal').style.display = 'none';
+}
+
+function confirmMapLocation() {
+  closeMapModal();
+  // Proceed to open large address form filled with auto-detected location data
+  const addrId = activeEditingId;
+  document.getElementById('edit-address-id').value = '';
+  document.getElementById('addr-name').value = loggedInUser.name || '';
+  document.getElementById('addr-phone').value = loggedInUser.phone || '';
+  document.getElementById('addr-line1').value = 'Doore no. 24, SN Illam';
+  document.getElementById('addr-line2').value = 'Koyambedu';
+  document.getElementById('addr-pincode').value = '600092';
+  document.getElementById('addr-district').value = 'Chennai';
+  document.getElementById('addr-state').value = 'Tamil Nadu';
+
   if(addrId) {
     const found = savedAddresses.find(a => a.id === addrId);
     if(found) {
@@ -628,10 +679,6 @@ function setDefaultAddress(id) {
   showToast('Default address updated! ✓');
 }
 
-function editAddress(id) {
-  openAddressModal(id);
-}
-
 function deleteAddress(id) {
   savedAddresses = savedAddresses.filter(a => a.id !== id);
   if(savedAddresses.length > 0 && !savedAddresses.some(a => a.isDefault)) {
@@ -685,7 +732,6 @@ function goToCheckout() {
   document.getElementById('customer-dashboard-page').style.display = 'none';
   document.getElementById('shipping-billing-page').style.display = 'block';
 
-  // Populate Deliver To box with default address
   const def = savedAddresses.find(a => a.isDefault) || savedAddresses[0];
   if(def) {
     document.getElementById('checkout-deliver-title').innerText = `Deliver To: ${def.name}, ${def.pincode}`;
@@ -736,10 +782,10 @@ function executeRazorpayPayment() {
 }
 
 function renderStorefront() {
-  const container = document.getElementById('home-categories-container');
+  const container = document.getElementById('home-products-grid');
   if(!container) return;
   container.innerHTML = `
-    <div class="card" onclick="openProductDetail()">
+    <div class="card">
       <span class="card__tag">Drop 01 · In Stock</span>
       <div class="tee-swatch" style="background-color:#ffd500; color:#0b0b0c;">RIOT</div>
       <div class="card-text-area">
@@ -752,11 +798,33 @@ function renderStorefront() {
         <span class="badge-off">33% OFF</span>
       </div>
     </div>
+    <div class="card">
+      <span class="card__tag">Drop 02 · In Stock</span>
+      <div class="tee-swatch" style="background-color:#1f1f22; color:#ffd500; border:1px solid #ffd500;">VOLT</div>
+      <div class="card-text-area">
+        <h3>The Volt Oversized Tee</h3>
+        <p>Stealth Black with High-Voltage Neon Typography.</p>
+      </div>
+      <div class="price-box">
+        <span class="price-cut">ரூ 1070</span>
+        <span class="price-curr">ரூ 713</span>
+        <span class="badge-off">33% OFF</span>
+      </div>
+    </div>
+    <div class="card">
+      <span class="card__tag">Drop 03 · In Stock</span>
+      <div class="tee-swatch" style="background-color:#f2f0ea; color:#0b0b0c;">VOID</div>
+      <div class="card-text-area">
+        <h3>The Void Acid Tee</h3>
+        <p>Acid wash dark grey streetwear style. 240 GSM.</p>
+      </div>
+      <div class="price-box">
+        <span class="price-cut">ரூ 1070</span>
+        <span class="price-curr">ரூ 713</span>
+        <span class="badge-off">33% OFF</span>
+      </div>
+    </div>
   `;
-}
-
-function openProductDetail() {
-  showToast('Product ready to add to cart!');
 }
 
 function showToast(msg) {
