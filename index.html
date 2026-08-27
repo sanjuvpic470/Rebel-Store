@@ -34,8 +34,7 @@ img{max-width:100%;height:auto;display:block;object-fit:contain}
 .ticker__track span{padding:.5rem 1.5rem;display:inline-block}
 @keyframes scrollTicker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-/* --- STICKY HEADER FIXED Z-INDEX SO IT DOES NOT OVERLAP MODALS IMPROPERLY --- */
-header{display:flex;align-items:center;justify-content:space-between;padding:.6rem var(--gap);border-bottom:1px solid rgba(242,240,234,.12);position:sticky;top:0;z-index:50;background:rgba(11,11,12,.96);backdrop-filter:blur(12px);min-height:85px;gap:.5rem;width:100%}
+header{display:flex;align-items:center;justify-content:space-between;padding:.6rem var(--gap);border-bottom:1px solid rgba(242,240,234,.12);position:sticky;top:0;z-index:900;background:rgba(11,11,12,.96);backdrop-filter:blur(12px);min-height:85px;gap:.5rem;width:100%}
 .logo-wrap{display:flex;align-items:center;justify-content:flex-start;cursor:pointer;user-select:none;height:100%;flex-shrink:0}
 .rebel-brand-logo{display:inline-flex;align-items:center;justify-content:flex-start;width:150px;height:55px;overflow:visible}
 .rebel-brand-logo svg,.rebel-brand-logo img{width:100%;height:100%;object-fit:contain;object-position:left center;display:block;transform:scale(2.2);transform-origin:left center}
@@ -55,7 +54,7 @@ nav a:hover::after{width:100%}
 .user-badge{background:transparent;border:none;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.2s}
 .user-badge:hover{transform:scale(1.08)}
 
-.user-dropdown-menu{position:absolute;top:100%;right:0;width:220px;background:#161619;border:1.5px solid var(--spray-yellow);box-shadow:6px 6px 0 var(--paper);display:none;flex-direction:column;z-index:100;margin-top:6px;border-radius:2px}
+.user-dropdown-menu{position:absolute;top:100%;right:0;width:220px;background:#161619;border:1.5px solid var(--spray-yellow);box-shadow:6px 6px 0 var(--paper);display:none;flex-direction:column;z-index:950;margin-top:6px;border-radius:2px}
 .user-dropdown-menu.open{display:flex}
 .user-dropdown-item{font-family:'Space Mono',monospace;font-size:0.78rem;padding:0.8rem 1rem;color:var(--paper);border-bottom:1px solid rgba(242,240,234,0.1);cursor:pointer;text-transform:uppercase;transition:background 0.2s}
 .user-dropdown-item:hover{background:var(--spray-yellow);color:var(--ink);font-weight:bold}
@@ -94,12 +93,20 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .section__head h2{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(2rem,5vw,3rem);line-height:1}
 .section__head p{color:var(--grey);font-family:'Space Mono',monospace;font-size:.8rem;max-width:32ch}
 
-/* STOREFRONT PRODUCTS GRID */
-.home-products-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; width: 100%; }
-@media(max-width: 900px){ .home-products-grid { grid-template-columns: repeat(2, 1fr); } }
-@media(max-width: 600px){ .home-products-grid { grid-template-columns: 1fr; } }
+/* CATEGORY ROWS & HORIZONTAL SCROLL */
+#home-categories-container{display:flex;flex-direction:column;gap:3rem;margin-top:1.5rem;width:100%}
+.category-row-block{border-bottom:1px solid rgba(242,240,234,0.1);padding-bottom:2rem;width:100%}
+.category-row-title{font-family:'Anton',sans-serif;font-size:1.8rem;text-transform:uppercase;color:var(--spray-yellow);margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center}
+.view-more-btn{font-family:'Space Mono',monospace;font-size:.8rem;color:var(--spray-yellow);background:none;border:none;cursor:pointer;text-transform:uppercase;font-weight:700}
+.view-more-btn:hover{text-decoration:underline}
+.scroll-container-wrap{position:relative;width:100%;overflow:hidden;margin-bottom:1.5rem}
+.horizontal-scroll-grid{display:flex;gap:1.5rem;overflow-x:auto;scroll-behavior:smooth;padding-bottom:1rem;scrollbar-width:thin;scrollbar-color:var(--spray-yellow) var(--card-bg);width:100%}
+.horizontal-scroll-grid::-webkit-scrollbar{height:8px}
+.horizontal-scroll-grid::-webkit-scrollbar-thumb{background:var(--spray-yellow);border-radius:4px}
+.horizontal-scroll-grid .card, .cat-prod-grid .card{min-width:330px;width:330px;flex:0 0 auto;height:480px;display:flex;flex-direction:column;justify-content:space-between}
+@media(max-width:768px){.horizontal-scroll-grid .card, .cat-prod-grid .card{min-width:280px;width:280px;height:460px}}
 
-.card{background:var(--card-bg);border:1px solid rgba(242,240,234,.12);padding:1.4rem;position:relative;overflow:hidden;transition:transform .25s cubic-bezier(0.16,1,0.3,1),border-color .2s ease;cursor:pointer;height:480px;display:flex;flex-direction:column;justify-content:space-between;width:100%}
+.card{background:var(--card-bg);border:1px solid rgba(242,240,234,.12);padding:1.4rem;position:relative;overflow:hidden;transition:transform .25s cubic-bezier(0.16,1,0.3,1),border-color .2s ease;cursor:pointer}
 .card:hover{transform:translateY(-6px);border-color:var(--spray-yellow)}
 .card__tag{font-family:'Space Mono',monospace;font-size:.68rem;text-transform:uppercase;color:var(--spray-yellow);letter-spacing:.08em;margin-bottom:.4rem;display:block;flex-shrink:0}
 .tee-swatch{width:100%;aspect-ratio:1 / 1;border-radius:2px;margin-bottom:0.8rem;display:flex;align-items:center;justify-content:center;font-family:'Anton',sans-serif;font-size:2.5rem;text-transform:uppercase;position:relative;overflow:hidden;background-size:contain;background-position:center;background-repeat:no-repeat;flex-shrink:0}
@@ -111,18 +118,32 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .price-cut{font-family:'Space Mono',monospace;font-size:.85rem;color:var(--grey);text-decoration:line-through}
 .badge-off{background:var(--rebel-red);color:#fff;font-size:.65rem;font-family:'Space Mono',monospace;font-weight:700;padding:2px 6px;border-radius:2px}
 
-/* PRODUCT DETAIL PAGE (PDP) */
-#product-detail-page { display:none; max-width:1100px; margin:2rem auto; padding:0 var(--gap); width:100%; }
-.pdp-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items:start; }
-@media(max-width:768px){ .pdp-grid { grid-template-columns: 1fr; } }
-.size-btn { min-width:48px; height:46px; background:#18181b; border:1.5px solid rgba(242,240,234,.2); color:var(--paper); font-family:'Space Mono',monospace; font-weight:700; font-size:.88rem; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0 .5rem; }
-.size-btn.selected { background:var(--spray-yellow); color:var(--ink); border-color:var(--spray-yellow); }
+/* DEDICATED CATEGORY VIEW */
+#category-page{display:none;max-width:1200px;margin:0 auto;padding:2rem var(--gap) 4rem;width:100%}
+.cat-prod-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:1.5rem;width:100%}
+@media(max-width:960px){.cat-prod-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.cat-prod-grid{grid-template-columns:1fr}}
+.cat-prod-grid .card{width:100%;min-width:auto;height:480px}
 
-/* CUSTOMER DASHBOARD LAYOUT */
+/* PRODUCT DETAIL PAGE (PDP) WITH QUANTITY SELECTOR */
+#product-page{display:none;max-width:1100px;margin:2rem auto;padding:0 var(--gap);width:100%}
+.pdp-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
+@media(max-width:768px){.pdp-grid{grid-template-columns:1fr}}
+.size-btn{min-width:48px;height:46px;background:#18181b;border:1.5px solid rgba(242,240,234,.2);color:var(--paper);font-family:'Space Mono',monospace;font-weight:700;font-size:.88rem;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0 .5rem}
+.size-btn.selected{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow)}
+
+.qty-selector{display:inline-flex;align-items:center;border:1.5px solid rgba(242,240,234,.25);background:#18181b;margin-bottom:1.5rem}
+.qty-btn{width:42px;height:42px;background:transparent;border:none;color:var(--paper);font-family:'Space Mono',monospace;font-size:1.2rem;font-weight:700;cursor:pointer}
+.qty-val{min-width:40px;text-align:center;font-family:'Space Mono',monospace;font-weight:700;font-size:1rem}
+
+/* ADMIN VIEW */
+#admin-view { display:none; max-width:1200px; margin:2rem auto; padding:0 var(--gap); width:100%; }
+.admin-box { background:#161619; border:2px solid var(--spray-yellow); padding:2rem; border-radius:4px; }
+
+/* CUSTOMER DASHBOARD */
 #customer-dashboard-page { display:none; max-width:1200px; margin:2rem auto; padding:0 var(--gap); width:100%; }
 .dash-layout { display:grid; grid-template-columns: 280px 1fr; gap: 2rem; width:100%; }
 @media(max-width:850px){ .dash-layout { grid-template-columns: 1fr; } }
-
 .dash-sidebar { background:#161619; border:1px solid rgba(242,240,234,0.12); padding:1.5rem; border-radius:4px; height:fit-content; }
 .dash-user-card { border-bottom:1px solid rgba(242,240,234,0.1); padding-bottom:1rem; margin-bottom:1rem; }
 .dash-user-card h4 { font-family:'Anton',sans-serif; font-size:1.2rem; text-transform:uppercase; color:var(--paper); }
@@ -130,22 +151,33 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .dash-nav-list { list-style:none; display:flex; flex-direction:column; gap:0.5rem; }
 .dash-nav-item { font-family:'Space Mono',monospace; font-size:0.85rem; padding:0.8rem 1rem; color:var(--paper); cursor:pointer; border-radius:2px; transition:all 0.2s; text-transform:uppercase; display:flex; justify-content:space-between; align-items:center; }
 .dash-nav-item:hover, .dash-nav-item.active { background:var(--spray-yellow); color:var(--ink); font-weight:bold; }
-
 .dash-content-area { background:#161619; border:1px solid rgba(242,240,234,0.12); padding:2rem; border-radius:4px; min-height:450px; width:100%; }
 .dash-tab-pane { display:none; }
 .dash-tab-pane.active { display:block; }
-
 .dash-title { font-family:'Anton',sans-serif; font-size:1.8rem; text-transform:uppercase; color:var(--spray-yellow); margin-bottom:1.5rem; border-bottom:1px solid rgba(242,240,234,0.1); padding-bottom:0.5rem; }
 
-/* LARGE FORM CONTROLS & MODAL Z-INDEX FIX */
 .form-control-large { width:100%; background:#1a1a1d; border:1.5px solid rgba(242,240,234,0.25); color:var(--paper); font-family:'Space Mono',monospace; padding:.9rem 1rem; font-size:.95rem; border-radius:2px; margin-top:0.3rem; margin-bottom:1rem; }
 .form-control-large:focus { border-color:var(--spray-yellow); outline:none; }
-
 .address-card-item { background:#1a1a1d; border:1.5px solid rgba(242,240,234,0.15); padding:1.5rem; border-radius:4px; margin-bottom:1rem; position:relative; }
 .address-card-item.selected-address { border-color:var(--spray-yellow); background:rgba(255,213,0,0.04); }
 
-/* PROPER MODAL Z-INDEX TO PREVENT HEADER OVERLAP BUG */
 .auth-modal { position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:9999; display:none; align-items:center; justify-content:center; padding:1rem; overflow-y:auto; }
+
+/* WHY REBEL STORE SECTION */
+.why-rebel-box { background:#f2f0ea; color:#0b0b0c; padding:2.5rem; margin-bottom:2.5rem; border-radius:4px; box-shadow:6px 6px 0 var(--spray-yellow); width:100%; }
+.why-rebel-box h3 { font-family:'Anton', sans-serif; font-size:2rem; text-transform:uppercase; color:#0b0b0c; margin-bottom:1.8rem; letter-spacing:0.02em; }
+.why-rebel-grid { display:grid; grid-template-columns:1fr 1fr; gap:2rem; }
+@media(max-width:768px){.why-rebel-grid{grid-template-columns:1fr}}
+
+/* FOOTER */
+footer{padding:3rem 0 1.5rem; background:#111113; border-top:1px solid rgba(242,240,234,0.1); margin-top:4px; width:100%}
+.footer-grid{display:grid;grid-template-columns:1fr;gap:2rem;max-width:1200px;margin:0 auto;padding:0 var(--gap)}
+@media(min-width:680px){.footer-grid{grid-template-columns:2fr 1fr 1fr 1fr}}
+footer h5{font-family:'Space Mono',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--spray-yellow);margin-bottom:.8rem}
+footer ul{list-style:none;display:flex;flex-direction:column;gap:.5rem}
+footer a{color:var(--grey);font-size:.85rem;cursor:pointer}
+footer a:hover{color:var(--paper)}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.8rem;padding-top:1.5rem;margin-top:2rem;border-top:1px solid rgba(242,240,234,.12);font-family:'Space Mono',monospace;font-size:.72rem;color:var(--grey);max-width:1200px;margin-left:auto;margin-right:auto;padding-left:var(--gap);padding-right:var(--gap);width:100%}
 
 .toast{position:fixed;bottom:20px;right:20px;background:var(--spray-yellow);color:var(--ink);padding:.8rem 1.2rem;border:2px solid var(--ink);box-shadow:4px 4px 0 var(--paper);font-family:'Space Mono',monospace;font-weight:700;font-size:.8rem;z-index:10000;transform:translateY(150px);transition:transform .3s cubic-bezier(0.175,0.885,0.32,1.275)}
 .toast.show{transform:translateY(0)}
@@ -162,7 +194,7 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
   </div>
 
   <header>
-    <div class="logo-wrap" onclick="showHomeView()">
+    <div class="logo-wrap" onclick="handleLogoSecretClick(event)">
       <div class="rebel-brand-logo">
         <img src="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon4.png" alt="Rebel Store Logo">
       </div>
@@ -210,16 +242,60 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
     <section class="section" id="collections" style="padding-left:0; padding-right:0;">
       <div class="section__head">
         <h2>Shop the<br>Drops</h2>
-        <p>Signature 240 GSM drops. Browse products below.</p>
+        <p>Signature 240 GSM drops. Browse categories below.</p>
       </div>
-      <div class="home-products-grid" id="home-products-grid">
-        <!-- Rendered dynamically -->
-      </div>
+      <div id="home-categories-container"></div>
     </section>
+
+    <!-- WHY REBEL STORE FEATURE SECTION -->
+    <div class="why-rebel-box">
+      <h3>Why Rebel Store?</h3>
+      <div class="why-rebel-grid">
+        <div style="padding-bottom:1.5rem; border-bottom:1px solid rgba(11,11,12,0.15);">
+          <div style="font-family:'Anton', sans-serif; font-size:1.6rem; color:var(--spray-yellow); -webkit-text-stroke: 1px #0b0b0c; margin-bottom:0.2rem;">01</div>
+          <h4 style="font-family:'Archivo Black'; font-size:1.1rem; text-transform:uppercase; margin-bottom:0.3rem; color:#0b0b0c;">240GSM Heavyweight Cotton</h4>
+          <p style="font-family:'Space Mono'; font-size:0.78rem; color:#333; line-height:1.4;">Boxy fit, no shrink, no fade after wash 50.</p>
+        </div>
+        <div style="padding-bottom:1.5rem; border-bottom:1px solid rgba(11,11,12,0.15);">
+          <div style="font-family:'Anton', sans-serif; font-size:1.6rem; color:var(--spray-yellow); -webkit-text-stroke: 1px #0b0b0c; margin-bottom:0.2rem;">02</div>
+          <h4 style="font-family:'Archivo Black'; font-size:1.1rem; text-transform:uppercase; margin-bottom:0.3rem; color:#0b0b0c;">Small-Batch Drops</h4>
+          <p style="font-family:'Space Mono'; font-size:0.78rem; color:#333; line-height:1.4;">Every design is limited — once it's gone, it's archived, not restocked.</p>
+        </div>
+        <div>
+          <div style="font-family:'Anton', sans-serif; font-size:1.6rem; color:var(--spray-yellow); -webkit-text-stroke: 1px #0b0b0c; margin-bottom:0.2rem;">03</div>
+          <h4 style="font-family:'Archivo Black'; font-size:1.1rem; text-transform:uppercase; margin-bottom:0.3rem; color:#0b0b0c;">Screen-Printed, Not Cheap Vinyl</h4>
+          <p style="font-family:'Space Mono'; font-size:0.78rem; color:#333; line-height:1.4;">Hand-pulled prints that crack-resist and age like denim.</p>
+        </div>
+        <div>
+          <div style="font-family:'Anton', sans-serif; font-size:1.6rem; color:var(--spray-yellow); -webkit-text-stroke: 1px #0b0b0c; margin-bottom:0.2rem;">04</div>
+          <h4 style="font-family:'Archivo Black'; font-size:1.1rem; text-transform:uppercase; margin-bottom:0.3rem; color:#0b0b0c;">Shipped in 48 Hours</h4>
+          <p style="font-family:'Space Mono'; font-size:0.78rem; color:#333; line-height:1.4;">Ordered today, on your doorstep before the weekend.</p>
+        </div>
+      </div>
+    </div>
   </main>
 
-  <!-- PRODUCT DETAIL PAGE (PDP) -->
-  <section id="product-detail-page">
+  <!-- ADMIN VIEW -->
+  <section id="admin-view">
+    <button class="btn btn--ghost" style="margin-bottom:1.5rem;" onclick="showHomeView()">← Back to Store</button>
+    <div class="admin-box">
+      <h2 style="font-family:'Anton'; font-size:2rem; text-transform:uppercase; color:var(--spray-yellow); margin-bottom:1rem;">Admin Control Center</h2>
+      <p style="font-family:'Space Mono'; font-size:0.85rem; color:var(--grey);">Welcome to the admin management dashboard.</p>
+    </div>
+  </section>
+
+  <!-- CATEGORY DEDICATED VIEW (VIEW MORE) -->
+  <section id="category-page">
+    <button class="btn btn--ghost" style="margin-bottom:1.5rem; padding:0.4rem 1rem; font-size:0.75rem;" onclick="showHomeView()">← Back to Store</button>
+    <div class="section__head">
+      <h2 id="category-page-title">Category Drops</h2>
+      <p id="category-page-desc">Filtered collection.</p>
+    </div>
+    <div class="cat-prod-grid" id="category-page-grid"></div>
+  </section>
+
+  <!-- PRODUCT DETAIL PAGE (PDP) WITH QUANTITY SELECTOR (+ / -) & ADD TO CART -->
+  <section id="product-page">
     <button class="btn btn--ghost" style="margin-bottom:1.5rem; padding:0.4rem 1rem; font-size:0.75rem;" onclick="showHomeView()">← Back to Store</button>
     <div class="pdp-grid">
       <div style="background:#141416; border:2px solid var(--spray-yellow); aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; font-family:'Anton'; font-size:3rem; color:var(--spray-yellow);" id="pdp-image-box">
@@ -229,15 +305,28 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
         <span style="font-family:'Space Mono'; color:var(--spray-yellow); font-size:0.8rem; text-transform:uppercase;" id="pdp-code">Drop 01</span>
         <h1 style="font-family:'Anton'; font-size:2.5rem; text-transform:uppercase; margin:0.4rem 0;" id="pdp-title">The Riot Oversized Tee</h1>
         <p style="color:var(--grey); font-size:0.9rem; margin-bottom:1rem;" id="pdp-desc">Acid Yellow & Distressed Grunge Graphic. 240 GSM.</p>
-        <div style="font-family:'Space Mono'; font-size:1.8rem; font-weight:bold; color:var(--paper); margin-bottom:1.5rem;" id="pdp-price">ரூ 713 <span style="font-size:1rem; color:var(--grey); text-decoration:line-through; margin-left:10px;">ரூ 1070</span></div>
         
+        <div style="font-family:'Space Mono'; font-size:1.8rem; font-weight:bold; color:var(--paper); margin-bottom:1rem;" id="pdp-price">ரூ 713 <span style="font-size:1rem; color:var(--grey); text-decoration:line-through; margin-left:10px;">ரூ 1070</span> <span style="background:var(--rebel-red); color:#fff; font-size:0.75rem; padding:2px 6px; border-radius:2px; margin-left:10px;">33% OFF</span></div>
+        
+        <div style="font-family:'Space Mono'; font-size:0.75rem; background:rgba(255,213,0,0.15); border:1px dashed var(--spray-yellow); padding:0.6rem 0.9rem; margin-bottom:1.2rem; border-radius:2px; color:var(--spray-yellow);">
+          🔥 Use code <strong style="color:#fff;">REBEL16</strong> in bag for extra <strong style="color:#fff;">16%</strong> off!
+        </div>
+
         <div style="font-family:'Space Mono'; font-size:0.8rem; font-weight:bold; text-transform:uppercase; margin-bottom:0.5rem;">Select Size</div>
-        <div style="display:flex; gap:0.6rem; margin-bottom:1.5rem;" id="pdp-sizes">
+        <div style="display:flex; gap:0.6rem; margin-bottom:1.2rem;" id="pdp-sizes">
           <button class="size-btn selected" onclick="selectSize(this, 'S')">S</button>
           <button class="size-btn" onclick="selectSize(this, 'M')">M</button>
           <button class="size-btn" onclick="selectSize(this, 'L')">L</button>
           <button class="size-btn" onclick="selectSize(this, 'XL')">XL</button>
         </div>
+
+        <div style="font-family:'Space Mono'; font-size:0.8rem; font-weight:bold; text-transform:uppercase; margin-bottom:0.5rem;">Quantity</div>
+        <div class="qty-selector">
+          <button class="qty-btn" onclick="changePDPQty(-1)">−</button>
+          <span class="qty-val" id="pdp-qty-val">1</span>
+          <button class="qty-btn" onclick="changePDPQty(1)">+</button>
+        </div>
+
         <button class="btn btn--solid" style="width:100%; justify-content:center;" onclick="addProductToCartFromPDP()">Add to Cart 🛍️</button>
       </div>
     </div>
@@ -400,7 +489,7 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
   <div class="auth-modal" id="map-modal">
     <div style="width:100%;max-width:650px;background:#141416;border:2.5px solid var(--spray-yellow);padding:1.5rem;position:relative;">
       <button onclick="closeMapModal()" style="position:absolute;top:10px;right:15px;background:none;border:none;color:var(--paper);font-size:1.5rem;cursor:pointer;">×</button>
-      <h3 style="font-family:'Anton'; font-size:1.4rem; text-transform:uppercase; color:var(--spray-yellow); margin-bottom:1rem;">Select Delivery Location</h3>
+      <h3 style="font-family:'Anton'; font-size:1.4rem; text-transform:uppercase; color:var(--spray-yellow); margin-bottom:1.0rem;">Select Delivery Location</h3>
       <div id="map-canvas" style="width:100%; height:350px; background:#222; border-radius:4px; margin-bottom:1rem;"></div>
       <div id="map-selected-address" style="font-family:'Space Mono'; font-size:0.8rem; color:var(--paper); margin-bottom:1rem;">Detecting your location...</div>
       <button class="btn btn--solid" style="width:100%; justify-content:center; background:#e52521; color:#fff;" onclick="confirmMapLocation()">Confirm Location</button>
@@ -416,6 +505,45 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
       <button class="btn btn--solid" style="width:100%; justify-content:center;" onclick="quickLoginUser()">Continue →</button>
     </div>
   </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <div class="rebel-brand-logo" style="width:180px; height:60px; margin-bottom:1rem;">
+          <img src="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon4.png" alt="Rebel Store Logo" style="width:100%; height:100%; object-fit:contain; transform:scale(2.2); transform-origin:left center;">
+        </div>
+        <p style="color:var(--grey); font-size:.85rem; margin-top:1.2rem;">Independent streetwear label. Heavyweight tees for people who don't wait for permission.</p>
+      </div>
+      <div>
+        <h5>Shop</h5>
+        <ul>
+          <li><a onclick="showHomeView()">Oversized Tees</a></li>
+          <li><a onclick="showHomeView()">Hoodies</a></li>
+          <li><a onclick="showHomeView()">Sweatshirts</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Support</h5>
+        <ul>
+          <li><a onclick="showToast('Shipping information & FAQs')">Shipping</a></li>
+          <li><a onclick="showToast('Easy returns and exchange policy')">Returns</a></li>
+          <li><a onclick="showToast('Size guide reference')">Size Guide</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Follow</h5>
+        <ul>
+          <li><a href="#" target="_blank">Instagram</a></li>
+          <li><a href="#" target="_blank">TikTok</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Rebel Store. All rights reserved.</span>
+      <span>Built different.</span>
+    </div>
+  </footer>
 
   <div class="toast" id="toast">✓ Success!</div>
 
@@ -440,14 +568,59 @@ let ordersHistory = JSON.parse(localStorage.getItem('rebel_orders_history')) || 
   { id: '3579624', date: '08 Feb, 2021', items: [{ title: 'Solids: Black', size: 'L', qty: 1 }], status: 'Cancelled', total: 713 }
 ];
 
-const productsList = [
-  { id: 'o1', code: 'RIOT', title: 'The Riot Oversized Tee', desc: 'Acid Yellow & Distressed Grunge Graphic. 240 GSM.', mrp: 1070, price: 713, colorBg: '#ffd500', colorText: '#0b0b0c' },
-  { id: 'o2', code: 'VOLT', title: 'The Volt Oversized Tee', desc: 'Stealth Black with High-Voltage Neon Typography.', mrp: 1070, price: 713, colorBg: '#1f1f22', colorText: '#ffd500' },
-  { id: 'o3', code: 'VOID', title: 'The Void Acid Tee', desc: 'Acid wash dark grey streetwear style. 240 GSM.', mrp: 1070, price: 713, colorBg: '#f2f0ea', colorText: '#0b0b0c' }
+const categoriesData = [
+  {
+    name: 'Oversized Tees',
+    products: [
+      { id: 'o1', code: 'RIOT', title: 'The Riot Oversized Tee', desc: 'Acid Yellow & Distressed Grunge Graphic. 240 GSM.', mrp: 1070, price: 713, colorBg: '#ffd500', colorText: '#0b0b0c' },
+      { id: 'o2', code: 'VOLT', title: 'The Volt Oversized Tee', desc: 'Stealth Black with High-Voltage Neon Typography.', mrp: 1070, price: 713, colorBg: '#1f1f22', colorText: '#ffd500' },
+      { id: 'o3', code: 'VOID', title: 'The Void Acid Tee', desc: 'Acid wash dark grey streetwear style. 240 GSM.', mrp: 1070, price: 713, colorBg: '#f2f0ea', colorText: '#0b0b0c' }
+    ]
+  },
+  {
+    name: 'Hoodies',
+    products: [
+      { id: 'h1', code: 'HOD1', title: 'The Bone Neutral Hoodie', desc: 'Vintage Washed Off-White heavyweight hoodie.', mrp: 1899, price: 1299, colorBg: '#f2f0ea', colorText: '#0b0b0c' },
+      { id: 'h2', code: 'HOD2', title: 'Dark Cyber Hoodie', desc: 'Heavy fleece cotton dark wear.', mrp: 1899, price: 1299, colorBg: '#1f1f22', colorText: '#ffd500' }
+    ]
+  }
 ];
 
 let currentSelectedProduct = null;
 let selectedPDPSize = 'S';
+let currentPDPQty = 1;
+
+let logoClickCount = 0;
+let logoClickTimer = null;
+function handleLogoSecretClick(event) {
+  event.preventDefault();
+  logoClickCount++;
+  if (logoClickTimer) clearTimeout(logoClickTimer);
+  if (logoClickCount === 5) {
+    logoClickCount = 0;
+    grantAdminAccess();
+    return;
+  }
+  logoClickTimer = setTimeout(() => { logoClickCount = 0; }, 1000);
+  if (logoClickCount === 1) {
+    setTimeout(() => {
+      if (logoClickCount > 0 && logoClickCount < 5) {
+        showHomeView();
+      }
+    }, 3500);
+  }
+}
+
+function grantAdminAccess() {
+  document.getElementById('home-view').style.display = 'none';
+  document.getElementById('category-page').style.display = 'none';
+  document.getElementById('product-page').style.display = 'none';
+  document.getElementById('shipping-billing-page').style.display = 'none';
+  document.getElementById('customer-dashboard-page').style.display = 'none';
+  document.getElementById('admin-view').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  showToast('Welcome to Admin Control Center! ⚡');
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   updateUserBadgeDisplay();
@@ -492,8 +665,10 @@ function logoutUser() {
 function openCustomerDashboard(tabName) {
   document.getElementById('user-dropdown-menu').classList.remove('open');
   document.getElementById('home-view').style.display = 'none';
-  document.getElementById('product-detail-page').style.display = 'none';
+  document.getElementById('category-page').style.display = 'none';
+  document.getElementById('product-page').style.display = 'none';
   document.getElementById('shipping-billing-page').style.display = 'none';
+  document.getElementById('admin-view').style.display = 'none';
   document.getElementById('customer-dashboard-page').style.display = 'block';
 
   document.querySelectorAll('.dash-nav-item').forEach(el => el.classList.remove('active'));
@@ -519,8 +694,10 @@ function switchDashTab(tabName) { openCustomerDashboard(tabName); }
 
 function showHomeView() {
   document.getElementById('customer-dashboard-page').style.display = 'none';
-  document.getElementById('product-detail-page').style.display = 'none';
+  document.getElementById('category-page').style.display = 'none';
+  document.getElementById('product-page').style.display = 'none';
   document.getElementById('shipping-billing-page').style.display = 'none';
+  document.getElementById('admin-view').style.display = 'none';
   document.getElementById('home-view').style.display = 'block';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -772,8 +949,10 @@ function goToCheckout() {
   if(cart.length === 0) { showToast('Cart is empty!'); return; }
   toggleCartDrawer(false);
   document.getElementById('home-view').style.display = 'none';
-  document.getElementById('product-detail-page').style.display = 'none';
+  document.getElementById('category-page').style.display = 'none';
+  document.getElementById('product-page').style.display = 'none';
   document.getElementById('customer-dashboard-page').style.display = 'none';
+  document.getElementById('admin-view').style.display = 'none';
   document.getElementById('shipping-billing-page').style.display = 'block';
 
   const def = savedAddresses.find(a => a.isDefault) || savedAddresses[0];
@@ -826,10 +1005,64 @@ function executeRazorpayPayment() {
 }
 
 function renderStorefront() {
-  const container = document.getElementById('home-products-grid');
+  const container = document.getElementById('home-categories-container');
   if(!container) return;
   container.innerHTML = '';
-  productsList.forEach((prod, index) => {
+  
+  categoriesData.forEach(cat => {
+    const block = document.createElement('div');
+    block.className = 'category-row-block';
+    
+    const titleBar = document.createElement('div');
+    titleBar.className = 'category-row-title';
+    titleBar.innerHTML = `
+      <span>${cat.name}</span>
+      <button class="view-more-btn" onclick="openCategoryDedicatedPage('${cat.name}')">View More →</button>
+    `;
+    block.appendChild(titleBar);
+
+    const scrollWrap = document.createElement('div');
+    scrollWrap.className = 'scroll-container-wrap';
+    
+    const grid = document.createElement('div');
+    grid.className = 'horizontal-scroll-grid';
+
+    cat.products.forEach((prod, index) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.onclick = () => openProductDetail(prod.id);
+      card.innerHTML = `
+        <span class="card__tag">Drop 0${index+1} · In Stock</span>
+        <div class="tee-swatch" style="background-color:${prod.colorBg}; color:${prod.colorText};">${prod.code}</div>
+        <div class="card-text-area">
+          <h3>${prod.title}</h3>
+          <p>${prod.desc}</p>
+        </div>
+        <div class="price-box">
+          <span class="price-cut">ரூ ${prod.mrp}</span>
+          <span class="price-curr">ரூ ${prod.price}</span>
+          <span class="badge-off">33% OFF</span>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+
+    scrollWrap.appendChild(grid);
+    block.appendChild(scrollWrap);
+    container.appendChild(block);
+  });
+}
+
+function openCategoryDedicatedPage(catName) {
+  const found = categoriesData.find(c => c.name === catName);
+  if(!found) return;
+  
+  document.getElementById('category-page-title').innerText = found.name;
+  document.getElementById('category-page-desc').innerText = `Explore our exclusive ${found.name} collection drops.`;
+  
+  const grid = document.getElementById('category-page-grid');
+  grid.innerHTML = '';
+  found.products.forEach((prod, index) => {
     const card = document.createElement('div');
     card.className = 'card';
     card.onclick = () => openProductDetail(prod.id);
@@ -846,19 +1079,34 @@ function renderStorefront() {
         <span class="badge-off">33% OFF</span>
       </div>
     `;
-    container.appendChild(card);
+    grid.appendChild(card);
   });
+
+  document.getElementById('home-view').style.display = 'none';
+  document.getElementById('product-page').style.display = 'none';
+  document.getElementById('customer-dashboard-page').style.display = 'none';
+  document.getElementById('shipping-billing-page').style.display = 'none';
+  document.getElementById('admin-view').style.display = 'none';
+  document.getElementById('category-page').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function openProductDetail(productId) {
-  const prod = productsList.find(p => p.id === productId);
+  let prod = null;
+  categoriesData.forEach(c => {
+    let found = c.products.find(p => p.id === productId);
+    if(found) prod = found;
+  });
   if(!prod) return;
   currentSelectedProduct = prod;
+
+  currentPDPQty = 1;
+  document.getElementById('pdp-qty-val').innerText = currentPDPQty;
 
   document.getElementById('pdp-code').innerText = `Drop · ${prod.code}`;
   document.getElementById('pdp-title').innerText = prod.title;
   document.getElementById('pdp-desc').innerText = prod.desc;
-  document.getElementById('pdp-price').innerHTML = `ரூ ${prod.price} <span style="font-size:1rem; color:var(--grey); text-decoration:line-through; margin-left:10px;">ரூ ${prod.mrp}</span>`;
+  document.getElementById('pdp-price').innerHTML = `ரூ ${prod.price} <span style="font-size:1rem; color:var(--grey); text-decoration:line-through; margin-left:10px;">ரூ ${prod.mrp}</span> <span style="background:var(--rebel-red); color:#fff; font-size:0.75rem; padding:2px 6px; border-radius:2px; margin-left:10px;">33% OFF</span>`;
   
   const imgBox = document.getElementById('pdp-image-box');
   imgBox.style.backgroundColor = prod.colorBg;
@@ -866,9 +1114,11 @@ function openProductDetail(productId) {
   imgBox.innerText = prod.code;
 
   document.getElementById('home-view').style.display = 'none';
+  document.getElementById('category-page').style.display = 'none';
   document.getElementById('customer-dashboard-page').style.display = 'none';
   document.getElementById('shipping-billing-page').style.display = 'none';
-  document.getElementById('product-detail-page').style.display = 'block';
+  document.getElementById('admin-view').style.display = 'none';
+  document.getElementById('product-page').style.display = 'block';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -878,22 +1128,26 @@ function selectSize(btn, size) {
   btn.classList.add('selected');
 }
 
+function changePDPQty(amount) {
+  currentPDPQty += amount;
+  if (currentPDPQty < 1) currentPDPQty = 1;
+  document.getElementById('pdp-qty-val').innerText = currentPDPQty;
+}
+
 function addProductToCartFromPDP() {
   if(!currentSelectedProduct) return;
   cart.push({
     id: currentSelectedProduct.id,
-    title: `${currentSampleTitle(currentSelectedProduct.title)}`,
+    title: `${currentSelectedProduct.title}`,
     size: selectedPDPSize,
     price: currentSelectedProduct.price,
-    qty: 1
+    qty: currentPDPQty
   });
   localStorage.setItem('rebel_cart', JSON.stringify(cart));
   updateCartBadge();
   toggleCartDrawer(true);
   showToast('Added to cart successfully! ✓');
 }
-
-function currentSampleTitle(t) { return t; }
 
 function showToast(msg) {
   const toast = document.getElementById('toast');
