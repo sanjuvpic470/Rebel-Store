@@ -150,7 +150,6 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .form-control:focus{border-color:var(--spray-yellow);outline:none}
 .file-hint{font-size:.7rem;color:var(--grey);font-family:'Space Mono',monospace;margin-top:.3rem}
 
-/* --- FIXED PRODUCT DETAIL PAGE MOBILE SIZING & IMAGE OVERFLOW FIX --- */
 #product-page{display:none;max-width:1100px;margin:0 auto;padding:2rem var(--gap) 4rem;width:100%;box-sizing:border-box;overflow-x:hidden;}
 .back-btn{display:inline-flex;align-items:center;gap:.5rem;font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;color:var(--spray-yellow);cursor:pointer;margin-bottom:1.5rem;background:none;border:none;text-transform:uppercase;padding:.5rem 0}
 .pdp-grid{display:grid;grid-template-columns:1fr;gap:2.5rem;width:100%;box-sizing:border-box;}
@@ -1099,7 +1098,8 @@ footer a:hover{color:var(--paper)}
       </div>
     </div>
     <div class="wrap" style="padding-bottom: 2rem;">
-      <div class="footer-grid" style="display:grid; grid-template-columns:1fr; gap:2.5rem; align-items:start;">
+      <!-- FIXED FOOTER GRID: REMOVED INLINE grid-template-columns:1fr SO THAT DESKTOP MEDIA QUERY WORKS PROPERLY -->
+      <div class="footer-grid" style="display:grid; gap:2.5rem; align-items:start;">
         <div style="width:100%;">
           <div class="logo-wrap" style="margin-bottom:1.2rem; display:block;" onclick="showHomeView()">
             <div class="rebel-brand-logo footer-logo-container" style="width:180px; height:60px; overflow:visible;">
