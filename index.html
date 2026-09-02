@@ -386,7 +386,7 @@ footer a:hover{color:var(--paper)}
     </section>
     <section class="custom-order-compact-section">
       <h2 id="compact-custom-title">Create Your Custom Order ⚡</h2>
-      <p id="compact-custom-desc">Have your own design? Upload your custom center chest, left chest or back print artwork at just ரூ 699 (Min Qty: 2).</p>
+      <p id="compact-custom-desc">Have your own design? Upload your custom front or back print artwork at just ரூ 699 (Min Qty: 2).</p>
       <button class="btn btn--solid" onclick="openCustomOrderPage()" id="compact-custom-btn">Start Custom Order Now →</button>
     </section>
   </main>
@@ -407,28 +407,25 @@ footer a:hover{color:var(--paper)}
       <div class="form-group">
         <label>Select Garment Type</label>
         <select id="cust-garment" class="form-control">
-          <option value="Oversized Tee">Oversized Tee</option>
-          <option value="Polo Tee">Polo Tee</option>
-          <option value="Hoodie">Hoodie</option>
-          <option value="Sweatshirt">Sweatshirt</option>
-          <option value="Crop Top">Crop Top</option>
-          <option value="Womens Regular Fit">Womens Regular Fit</option>
+          <!-- Dynamically populated from active storefront categories -->
         </select>
       </div>
       <div class="form-group">
-        <label>1. Front Print — Center Chest Print (Square Size)</label>
-        <input type="file" id="cust-file-center" class="form-control" accept="image/*">
-        <div class="file-hint">Upload high-res PNG/JPG for Center Chest (Square ratio recommended)</div>
+        <label>1. Front Print</label>
+        <input type="file" id="cust-file-front" class="form-control" accept=".jpg,.jpeg,.png,.svg,.ai">
+        <div class="file-hint">Upload JPG, PNG, SVG, AI (Max 5MB)</div>
       </div>
       <div class="form-group">
-        <label>2. Front Print — Left Side Chest Print (Square Size)</label>
-        <input type="file" id="cust-file-left" class="form-control" accept="image/*">
-        <div class="file-hint">Upload high-res PNG/JPG for Left Chest (Square ratio recommended)</div>
+        <label>2. Back Print</label>
+        <input type="file" id="cust-file-back" class="form-control" accept=".jpg,.jpeg,.png,.svg,.ai">
+        <div class="file-hint">Upload JPG, PNG, SVG, AI (Max 5MB)</div>
       </div>
       <div class="form-group">
-        <label>3. Back Print — Back Side (A3 Size)</label>
-        <input type="file" id="cust-file-back" class="form-control" accept="image/*">
-        <div class="file-hint">Upload high-res file for full Back Print (A3 size proportion)</div>
+        <label>Select Color</label>
+        <div class="size-selector" id="cust-color-selector">
+          <button type="button" class="size-btn selected" onclick="selectCustColor(this, 'Black')">Black</button>
+          <button type="button" class="size-btn" onclick="selectCustColor(this, 'White')">White</button>
+        </div>
       </div>
       <div class="form-group">
         <label>Select Size</label>
@@ -899,6 +896,7 @@ footer a:hover{color:var(--paper)}
       </div>
     </div>
 
+    <!-- CUSTOM PRINT ORDERS SUBPAGE -->
     <div class="admin-sub-page" id="subpage-custom-orders">
       <div class="sub-page-header">
         <h2>⚡ Custom Print Orders</h2>
@@ -909,9 +907,9 @@ footer a:hover{color:var(--paper)}
           <thead>
             <tr>
               <th>Order Date & ID</th>
-              <th>Customer & Address</th>
-              <th>Garment & Size</th>
-              <th>Print Files</th>
+              <th>Customer & Phone</th>
+              <th>Garment, Color & Size</th>
+              <th>Uploaded Print Files</th>
             </tr>
           </thead>
           <tbody id="admin-custom-orders-tbody">
@@ -1098,7 +1096,6 @@ footer a:hover{color:var(--paper)}
       </div>
     </div>
     <div class="wrap" style="padding-bottom: 2rem;">
-      <!-- FIXED FOOTER GRID: REMOVED INLINE grid-template-columns:1fr SO THAT DESKTOP MEDIA QUERY WORKS PROPERLY -->
       <div class="footer-grid" style="display:grid; gap:2.5rem; align-items:start;">
         <div style="width:100%;">
           <div class="logo-wrap" style="margin-bottom:1.2rem; display:block;" onclick="showHomeView()">
@@ -1171,7 +1168,7 @@ const ZOHO_REFRESH_TOKEN = "1000.a4c324d91e73eb928f6c3c7044f48fea.29018644ed9166
 const ZOHO_ORG_ID = "60083739244";
 
 const SUPABASE_PROJECT_URL = 'https://rdqzslvgqtajhiwxwauo.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkcXpzbHZncXRhamhpd3h3YXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyMjYyMTYsImV4cCI6MjEwMjgwMjIxNn0.lSrbO0h57wBBqgu_z4D9fhffN8VawX-HcaDANOUOKok';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkcXpzbHZncXRhamhpd3h3YXVvIiwicm9sZSI6InJub24iLCJpYXQiOjE3ODcyMjYyMTYsImV4cCI6MjEwMjgwMjIxNn0.lSrbO0h57wBBqgu_z4D9fhffN8VawX-HcaDANOUOKok';
 
 let supabaseClient = null;
 
@@ -1354,6 +1351,7 @@ let activeOfferCode = 'REBEL16';
 let activeDiscountPercent = 16;
 let isCouponApplied = false;
 let custSize = 'M';
+let custColor = 'Black';
 let custQty = 2;
 let custUnitPrice = 699;
 let selectedSize = 'M';
@@ -1538,6 +1536,7 @@ function renderStorefront() {
     rowBlock.appendChild(scrollWrap);
     container.appendChild(rowBlock);
   });
+  updateCustomOrderGarmentDropdown();
   if(document.getElementById('t-code')) document.getElementById('t-code').innerText = activeOfferCode;
   if(document.getElementById('t-discount')) document.getElementById('t-discount').innerText = activeDiscountPercent + '%';
   if(document.getElementById('t-code-2')) document.getElementById('t-code-2').innerText = activeOfferCode;
@@ -1546,6 +1545,20 @@ function renderStorefront() {
   if(document.getElementById('hero-discount-display')) document.getElementById('hero-discount-display').innerText = activeDiscountPercent + '%';
   if(document.getElementById('pdp-active-coupon-code')) document.getElementById('pdp-active-coupon-code').innerText = activeOfferCode;
   if(document.getElementById('pdp-active-coupon-disc')) document.getElementById('pdp-active-coupon-disc').innerText = activeDiscountPercent + '%';
+}
+
+function updateCustomOrderGarmentDropdown() {
+  const select = document.getElementById('cust-garment');
+  if (!select) return;
+  const currentVal = select.value;
+  select.innerHTML = '';
+  CATEGORIES.forEach(cat => {
+    const opt = document.createElement('option');
+    opt.value = cat.name;
+    opt.textContent = cat.name;
+    if (cat.name === currentVal) opt.selected = true;
+    select.appendChild(opt);
+  });
 }
 
 function createProductCard(catName, prod, index) {
@@ -1608,6 +1621,7 @@ function showHomeView() {
 }
 
 function openCustomOrderPage() {
+  updateCustomOrderGarmentDropdown();
   document.getElementById('home-view').style.display = 'none';
   document.getElementById('product-page').style.display = 'none';
   document.getElementById('shipping-billing-page').style.display = 'none';
@@ -1624,6 +1638,12 @@ function selectCustSize(btn, size) {
   btn.classList.add('selected');
 }
 
+function selectCustColor(btn, color) {
+  custColor = color;
+  document.querySelectorAll('#cust-color-selector .size-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
 function changeCustQty(amount) {
   custQty += amount;
   if (custQty < 2) custQty = 2;
@@ -1635,6 +1655,10 @@ async function uploadFileToSupabaseStorage(fileInputId, bucketName = 'custom-pri
   const fileInput = document.getElementById(fileInputId);
   if (!fileInput || !fileInput.files || !fileInput.files[0]) return null;
   const file = fileInput.files[0];
+  if (file.size > 5 * 1024 * 1024) {
+    showToast(`File ${file.name} exceeds 5MB limit!`);
+    throw new Error("File exceeds 5MB limit");
+  }
   const fileExt = file.name.split('.').pop();
   const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
   const filePath = `${fileName}`;
@@ -1659,29 +1683,73 @@ async function addCustomOrderToCart() {
   }
   const garment = document.getElementById('cust-garment').value;
   showToast('Uploading custom print files to cloud...');
-  const centerPrint = await uploadFileToSupabaseStorage('cust-file-center');
-  const leftPrint = await uploadFileToSupabaseStorage('cust-file-left');
-  const backPrint = await uploadFileToSupabaseStorage('cust-file-back');
-  
-  if (!centerPrint && !leftPrint && !backPrint) {
-    showToast('Please upload at least one print file!');
-    return;
+  try {
+    const frontPrint = await uploadFileToSupabaseStorage('cust-file-front');
+    const backPrint = await uploadFileToSupabaseStorage('cust-file-back');
+    
+    if (!frontPrint && !backPrint) {
+      showToast('Please upload at least one print file (Front or Back)!');
+      return;
+    }
+    const customItem = {
+      isCustom: true,
+      title: `Custom ${garment} (${custColor})`,
+      size: custSize,
+      color: custColor,
+      price: custUnitPrice,
+      qty: custQty,
+      prints: { front: frontPrint, back: backPrint },
+      image: frontPrint ? frontPrint.path : (backPrint ? backPrint.path : ''),
+      stockStatus: { available: true, notes: '' }
+    };
+    cart.push(customItem);
+    localStorage.setItem('rebel_cart', JSON.stringify(cart));
+
+    // Save to Custom Orders History for Admin View
+    const todayStr = new Date().toISOString().split('T')[0];
+    const customRecordId = 'CUST-' + Math.floor(100000 + Math.random() * 900000);
+    const customOrderRecord = {
+      orderId: customRecordId,
+      date: todayStr,
+      customer: {
+        name: loggedInUser ? (loggedInUser.name || loggedInUser.username) : 'Guest Customer',
+        phone: loggedInUser ? (loggedInUser.phone || 'N/A') : 'N/A',
+        address: loggedInUser ? (loggedInUser.address || 'Online Custom Order') : 'Online Custom Order'
+      },
+      title: `Custom ${garment} (${custColor})`,
+      size: custSize,
+      color: custColor,
+      qty: custQty,
+      totalAmount: custUnitPrice * custQty,
+      prints: { front: frontPrint, back: backPrint }
+    };
+    customOrdersHistory.unshift(customOrderRecord);
+    localStorage.setItem('rebel_custom_orders_history', JSON.stringify(customOrdersHistory));
+
+    if (supabaseClient) {
+      try {
+        await supabaseClient.from('custom_orders').insert([{
+          order_id: customRecordId,
+          customer_name: customOrderRecord.customer.name,
+          customer_phone: customOrderRecord.customer.phone,
+          garment: garment,
+          color: custColor,
+          size: custSize,
+          quantity: custQty,
+          total_amount: customOrderRecord.totalAmount,
+          prints: { front: frontPrint, back: backPrint }
+        }]);
+      } catch (err) {
+        console.warn("Supabase custom orders sync warning:", err);
+      }
+    }
+
+    updateCartBadge();
+    renderCartDrawer();
+    showToast('Custom order added to cart successfully!');
+  } catch (err) {
+    // Error handled in upload method
   }
-  const customItem = {
-    isCustom: true,
-    title: `Custom ${garment}`,
-    size: custSize,
-    price: custUnitPrice,
-    qty: custQty,
-    prints: { center: centerPrint, left: leftPrint, back: backPrint },
-    image: centerPrint ? centerPrint.path : '',
-    stockStatus: { available: true, notes: '' }
-  };
-  cart.push(customItem);
-  localStorage.setItem('rebel_cart', JSON.stringify(cart));
-  updateCartBadge();
-  renderCartDrawer();
-  showToast('Custom order added to cart successfully!');
 }
 
 function openProductByDetails(catName, productId) {
@@ -2445,6 +2513,9 @@ function openAdminSubPage(subPageId) {
     if (subPageId === 'subpage-wishlist') {
       loadAdminWishlistFromSupabase();
     }
+    if (subPageId === 'subpage-custom-orders') {
+      renderAdminCustomOrdersTable();
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
@@ -2453,6 +2524,31 @@ function closeAdminSubPages() {
   document.querySelectorAll('.admin-sub-page').forEach(p => p.classList.remove('active'));
   document.getElementById('admin-nav-grid').style.display = 'grid';
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderAdminCustomOrdersTable() {
+  const customTbody = document.getElementById('admin-custom-orders-tbody');
+  if (!customTbody) return;
+  customTbody.innerHTML = '';
+  if (customOrdersHistory.length === 0) {
+    customTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--grey);">No custom orders received yet.</td></tr>`;
+  } else {
+    customOrdersHistory.forEach(co => {
+      let printLinks = '';
+      if (co.prints && co.prints.front) printLinks += `<a href="${co.prints.front.path}" target="_blank" download="${co.prints.front.name}" class="preview-link-btn" style="margin:2px; display:inline-block;">📥 Front Print</a>`;
+      if (co.prints && co.prints.back) printLinks += `<a href="${co.prints.back.path}" target="_blank" download="${co.prints.back.name}" class="preview-link-btn" style="margin:2px; display:inline-block;">📥 Back Print</a>`;
+      if (!co.prints || (!co.prints.front && !co.prints.back)) printLinks = 'No files';
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${co.orderId}</strong><br><span style="font-size:0.7rem; color:var(--grey);">${co.date}</span></td>
+        <td><strong>${co.customer.name}</strong><br>${co.customer.phone}<br><span style="font-size:0.7rem; color:var(--grey);">${co.customer.address}</span></td>
+        <td>${co.title}<br>Color: <strong style="color:var(--spray-yellow);">${co.color || 'Black'}</strong> | Size: <strong>${co.size}</strong> (Qty: ${co.qty})<br><span style="color:var(--spray-yellow);">Amt: ரூ ${co.totalAmount}</span></td>
+        <td>${printLinks}</td>
+      `;
+      customTbody.appendChild(tr);
+    });
+  }
 }
 
 async function loadAdminWishlistFromSupabase() {
@@ -2619,6 +2715,30 @@ async function loadAdminDataFromSupabase() {
       localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
     }
 
+    const { data: customData } = await supabaseClient
+      .from('custom_orders')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (customData && customData.length > 0) {
+      customOrdersHistory = customData.map(co => ({
+        orderId: co.order_id,
+        date: co.created_at ? co.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
+        customer: {
+          name: co.customer_name,
+          phone: co.customer_phone,
+          address: 'Online Custom Order'
+        },
+        title: `Custom ${co.garment} (${co.color || 'Black'})`,
+        size: co.size,
+        color: co.color || 'Black',
+        qty: co.quantity,
+        totalAmount: Number(co.total_amount),
+        prints: co.prints
+      }));
+      localStorage.setItem('rebel_custom_orders_history', JSON.stringify(customOrdersHistory));
+    }
+
     const { data: usersData, error: usersError } = await supabaseClient
       .from('profiles')
       .select('*')
@@ -2757,27 +2877,7 @@ function renderAdminPanels(filterDate = '') {
   document.getElementById('cnt-completed').innerText = baseOrdersForCounts.filter(o => o.orderStatus === 'Completed').length;
   document.getElementById('cnt-returned').innerText = baseOrdersForCounts.filter(o => o.orderStatus === 'Returned').length;
 
-  const customTbody = document.getElementById('admin-custom-orders-tbody');
-  customTbody.innerHTML = '';
-  if (customOrdersHistory.length === 0) {
-    customTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--grey);">No custom orders received yet.</td></tr>`;
-  } else {
-    customOrdersHistory.forEach(co => {
-      if (filterDate && co.date !== filterDate) return;
-      let printLinks = '';
-      if (co.prints.center) printLinks += `<a href="${co.prints.center.path}" target="_blank" download="${co.prints.center.name}" class="preview-link-btn" style="margin:2px; display:inline-block;">📥 Center Print</a>`;
-      if (co.prints.left) printLinks += `<a href="${co.prints.left.path}" target="_blank" download="${co.prints.left.name}" class="preview-link-btn" style="margin:2px; display:inline-block;">📥 Left Print</a>`;
-      if (co.prints.back) printLinks += `<a href="${co.prints.back.path}" target="_blank" download="${co.prints.back.name}" class="preview-link-btn" style="margin:2px; display:inline-block;">📥 Back Print</a>`;
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><strong>${co.orderId}</strong><br><span style="font-size:0.7rem; color:var(--grey);">${co.date}</span></td>
-        <td>${co.customer.name}<br>${co.customer.phone}<br><span style="font-size:0.75rem; color:var(--grey);">${co.customer.address}</span></td>
-        <td>${co.title}<br>Size: <strong>${co.size}</strong> (Qty: ${co.qty})</td>
-        <td>${printLinks}</td>
-      `;
-      customTbody.appendChild(tr);
-    });
-  }
+  renderAdminCustomOrdersTable();
 
   const chartTbody = document.getElementById('date-chart-tbody');
   chartTbody.innerHTML = '';
