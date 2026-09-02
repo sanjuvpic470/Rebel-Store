@@ -48,7 +48,6 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--spray-yellow);outli
 .ticker__track span{padding:.5rem 1.5rem;display:inline-block}
 @keyframes scrollTicker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-/* --- HEADER FIX: LEFT LOGO, CENTERED NAV LINKS --- */
 header{display:flex;align-items:center;justify-content:space-between;padding:.6rem var(--gap);border-bottom:1px solid rgba(242,240,234,.12);position:sticky;top:0;z-index:90;background:rgba(11,11,12,.94);backdrop-filter:blur(12px);min-height:85px;gap:.5rem}
 .logo-wrap{display:flex;align-items:center;justify-content:flex-start;cursor:pointer;user-select:none;height:100%;flex-shrink:0}
 .rebel-brand-logo{display:inline-flex;align-items:center;justify-content:flex-start;width:150px;height:55px;overflow:visible}
@@ -67,7 +66,6 @@ nav a:hover::after{width:100%}
 
 .header-actions{display:flex;align-items:center;gap:.5rem;position:relative;flex-shrink:0}
 
-/* MATCHED SIZE FOR USER AVATAR TO CART/WISHLIST BUTTON (38px) */
 .user-badge{background:transparent;border:none;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.2s}
 .user-badge:hover{transform:scale(1.08)}
 
@@ -151,27 +149,30 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .form-control{width:100%;background:#1a1a1d;border:1.5px solid rgba(242,240,234,.2);color:var(--paper);font-family:'Space Mono',monospace;padding:.7rem;font-size:.85rem}
 .form-control:focus{border-color:var(--spray-yellow);outline:none}
 .file-hint{font-size:.7rem;color:var(--grey);font-family:'Space Mono',monospace;margin-top:.3rem}
-#product-page{display:none;max-width:1100px;margin:0 auto;padding:2rem var(--gap) 4rem}
+
+/* --- FIXED PRODUCT DETAIL PAGE MOBILE SIZING & IMAGE OVERFLOW FIX --- */
+#product-page{display:none;max-width:1100px;margin:0 auto;padding:2rem var(--gap) 4rem;width:100%;box-sizing:border-box;overflow-x:hidden;}
 .back-btn{display:inline-flex;align-items:center;gap:.5rem;font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;color:var(--spray-yellow);cursor:pointer;margin-bottom:1.5rem;background:none;border:none;text-transform:uppercase;padding:.5rem 0}
-.pdp-grid{display:grid;grid-template-columns:1fr;gap:2.5rem}
+.pdp-grid{display:grid;grid-template-columns:1fr;gap:2.5rem;width:100%;box-sizing:border-box;}
 @media(min-width:850px){.pdp-grid{grid-template-columns:480px 1fr;align-items:start;gap:3rem}}
-.gallery-container{display:flex;flex-direction:column;gap:1rem;width:100%;max-width:480px;margin:0 auto}
-.slider-wrapper{position:relative;width:100%;aspect-ratio:1/1;height:auto;overflow:hidden;background:#141416;border:2px solid rgba(242,240,234,.2);box-shadow:6px 6px 0 var(--spray-yellow);border-radius:2px}
+.gallery-container{display:flex;flex-direction:column;gap:1rem;width:100%;max-width:100%;box-sizing:border-box;margin:0 auto}
+.slider-wrapper{position:relative;width:100%;max-width:100%;aspect-ratio:1/1;height:auto;overflow:hidden;background:#141416;border:2px solid rgba(242,240,234,.2);box-shadow:6px 6px 0 var(--spray-yellow);border-radius:2px;box-sizing:border-box;}
 .slider-track{display:flex;width:100%;height:100%;transition:transform .3s ease-out}
-.slide-item{min-width:100%;width:100%;height:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;background:#141416;padding:0;overflow:hidden;flex-shrink:0}
-.slide-item img{width:100%;height:100%;object-fit:contain;display:block}
+.slide-item{min-width:100%;width:100%;height:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;background:#141416;padding:10px;overflow:hidden;flex-shrink:0;box-sizing:border-box;}
+.slide-item img{width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;display:block}
 .slide-item .big-preview-text{font-family:'Anton',sans-serif;font-size:clamp(3.2rem,10vw,4.8rem);text-transform:uppercase;color:var(--spray-yellow);line-height:1}
 .slide-nav-btn{position:absolute;top:50%;transform:translateY(-50%);background:var(--ink);color:var(--paper);border:1px solid var(--paper);width:36px;height:36px;font-size:1.1rem;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center}
 .slide-prev{left:8px}
 .slide-next{right:8px}
 .angle-badge{position:absolute;bottom:12px;left:12px;background:var(--ink);border:1px solid var(--paper);font-family:'Space Mono',monospace;font-size:.65rem;padding:4px 8px;text-transform:uppercase;z-index:5}
-.thumb-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;width:100%}
-.thumb-card{aspect-ratio:1/1;width:100%;background:#141416;border:1.5px solid rgba(242,240,234,.15);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:4px;overflow:hidden;transition:border-color 0.2s, box-shadow 0.2s;border-radius:2px}
+.thumb-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;width:100%;box-sizing:border-box;}
+.thumb-card{aspect-ratio:1/1;width:100%;background:#141416;border:1.5px solid rgba(242,240,234,.15);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:4px;overflow:hidden;transition:border-color 0.2s, box-shadow 0.2s;border-radius:2px;box-sizing:border-box;}
 .thumb-card.active{border-color:var(--spray-yellow);background:#222226;box-shadow:0 0 8px rgba(255,213,0,0.4)}
 .thumb-card img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none}
 .thumb-card span.thumb-title{font-family:'Space Mono',monospace;font-size:.6rem;color:var(--paper);font-weight:700;background:rgba(0,0,0,0.6);padding:2px 4px}
 
-.pdp-info h1{font-family:'Anton',sans-serif;font-size:clamp(2rem,5vw,3rem);text-transform:uppercase;line-height:1;margin-bottom:.4rem}
+.pdp-info{width:100%;box-sizing:border-box;overflow:hidden;}
+.pdp-info h1{font-family:'Anton',sans-serif;font-size:clamp(2rem,5vw,3rem);text-transform:uppercase;line-height:1;margin-bottom:.4rem;word-break:break-word;}
 .pdp-tag{font-family:'Space Mono',monospace;color:var(--spray-yellow);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.8rem;display:block}
 .pdp-price-wrap{display:flex;align-items:center;gap:1rem;margin:1rem 0;padding:.8rem 0;border-top:1px solid rgba(242,240,234,.12);border-bottom:1px solid rgba(242,240,234,.12)}
 .pdp-price{font-family:'Space Mono',monospace;font-size:1.8rem;font-weight:700;color:var(--paper)}
@@ -332,7 +333,6 @@ footer a:hover{color:var(--paper)}
       <a onclick="handleNavContactClick()" id="nav-link-contact">Contact</a>
     </nav>
     <div class="header-actions">
-      <!-- USER BADGE: AVATAR EXACTLY MATCHED TO CART & WISHLIST BUTTON SIZE (38px) -->
       <div class="user-badge" id="user-badge" onclick="handleAuthClick(event)">
         <span id="user-avatar-icon" style="display:inline-flex; width:38px; height:38px; border-radius:50%; background:#222; overflow:hidden; align-items:center; justify-content:center; font-size:16px; border:1.5px solid var(--paper);">👤</span>
         <span id="user-name" style="display:none;">Login</span>
@@ -1316,7 +1316,7 @@ let DEFAULT_CATEGORIES = [
       { id: 'h2', code: 'HOD2', title: 'Dark Cyber Hoodie 01', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
       { id: 'h3', code: 'HOD3', title: 'Dark Cyber Hoodie 02', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
       { id: 'h4', code: 'HOD4', title: 'Street Riot Hoodie 01', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
-      { id: 'h5', code: 'HOD5', title: 'Street Riot Hoodie 02', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['M', 'L', 'XL'] },
+      { id: 'h5', code: 'HOD5', title: 'Street Riot Hoodie 02', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
       { id: 'h6', code: 'HOD6', title: 'Urban Dissent Hoodie', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] }
     ]
   }
@@ -3805,7 +3805,6 @@ async function saveUserProfileEdits() {
   let avatarUrl = loggedInUser.avatarUrl || '';
 
   if (croppedAvatarBlob) {
-    // Correct bucket name: 'avatars' in lowercase
     const fileName = `avatar_${loggedInUser.email || loggedInUser.username}_${Date.now()}.jpg`;
     if (supabaseClient) {
       try {
