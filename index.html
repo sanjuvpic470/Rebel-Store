@@ -652,16 +652,94 @@ footer a:hover{color:var(--paper)}
     </div>
   </div>
 
-  <!-- PROFILE MODAL WITH DIRECT CLICK-TO-UPLOAD AVATAR & 1:1 SQUARE CROPPING -->
+  <!-- UPDATED REDESIGNED PROFILE SECTION (MODAL) -->
   <div class="auth-modal" id="profile-modal">
-    <div class="profile-modal-box">
-      <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeProfileModal()">×</button>
-      <h3>User Profile</h3>
-      <div id="profile-content-area" style="margin-top:1rem;"></div>
+    <div class="profile-modal-box" style="max-width: 850px; width: 95%; padding: 0; background: #121214; border: 2px solid var(--spray-yellow); overflow: hidden;">
+      <div style="display: flex; min-height: 500px; flex-wrap: wrap;">
+        <!-- Left Sidebar Navigation -->
+        <div style="width: 260px; background: #18181b; border-right: 1px solid rgba(242,240,234,0.1); padding: 1.5rem 1rem; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <!-- Profile Info Header -->
+            <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(242,240,234,0.1);">
+              <div id="sidebar-profile-name" style="font-family:'Anton', sans-serif; font-size: 1.2rem; color: var(--paper); letter-spacing: 0.5px;">User V</div>
+              <div id="sidebar-profile-email" style="font-family:'Space Mono', monospace; font-size: 0.72rem; color: var(--grey); word-break: break-all; margin-top: 2px;">user@example.com</div>
+              <div style="font-family:'Space Mono', monospace; font-size: 0.7rem; color: var(--rebel-red); margin-top: 4px; font-weight: bold;">(Member)</div>
+            </div>
+
+            <!-- Menu Tabs -->
+            <div style="display: flex; flex-direction: column; gap: 4px; font-family:'Space Mono', monospace; font-size: 0.8rem;">
+              <button onclick="switchProfileTab('orders')" id="tab-btn-orders" style="background: rgba(255,213,0,0.15); color: var(--spray-yellow); border: none; text-align: left; padding: 10px 12px; cursor: pointer; font-weight: bold; border-radius: 2px; display: flex; justify-content: space-between; align-items: center;">
+                <span>Orders</span>
+                <span style="font-size: 0.65rem; color: var(--grey);">(Track your order here)</span>
+              </button>
+              <button onclick="switchProfileTab('addresses')" id="tab-btn-addresses" style="background: transparent; color: var(--paper); border: none; text-align: left; padding: 10px 12px; cursor: pointer; border-radius: 2px; transition: background 0.2s;">
+                Saved Address
+              </button>
+            </div>
+          </div>
+
+          <!-- Bottom Action Buttons -->
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 2rem;">
+            <button class="btn btn--ghost" style="width: 100%; justify-content: center; font-size: 0.75rem; padding: 8px; color: var(--rebel-red); border-color: var(--rebel-red);" onclick="deleteUserAccount()">DELETE MY ACCOUNT</button>
+            <button class="btn btn--solid" style="width: 100%; justify-content: center; font-size: 0.75rem; padding: 8px;" onclick="logoutUser(); closeProfileModal();">LOGOUT</button>
+          </div>
+        </div>
+
+        <!-- Right Content Area -->
+        <div style="flex-grow: 1; padding: 1.5rem; position: relative; max-height: 75vh; overflow-y: auto;">
+          <button class="cart-close-btn" style="position: absolute; top: 10px; right: 15px; z-index: 10;" onclick="closeProfileModal()">×</button>
+
+          <!-- TAB 1: ORDERS -->
+          <div id="profile-tab-orders" class="profile-tab-content">
+            <h3 style="font-family:'Anton', sans-serif; font-size: 1.5rem; text-transform: uppercase; margin-bottom: 1.2rem; color: var(--paper); border-bottom: 1px solid rgba(242,240,234,0.1); padding-bottom: 0.5rem;">My Orders</h3>
+            <div id="profile-orders-list">
+              <!-- Dynamically populated orders matching the layout requested -->
+            </div>
+          </div>
+
+          <!-- TAB 2: SAVED ADDRESSES -->
+          <div id="profile-tab-addresses" class="profile-tab-content" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; border-bottom: 1px solid rgba(242,240,234,0.1); padding-bottom: 0.5rem;">
+              <h3 style="font-family:'Anton', sans-serif; font-size: 1.5rem; text-transform: uppercase; color: var(--paper); margin: 0;">Saved Address</h3>
+              <button class="preview-link-btn" onclick="openAddAddressModal()">+ Add New Address</button>
+            </div>
+            <div id="profile-addresses-list" style="display: flex; flex-direction: column; gap: 1rem;">
+              <!-- Dynamically populated addresses -->
+            </div>
+          </div>
+
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- MY ORDERS MODAL -->
+  <!-- ADD / EDIT ADDRESS MODAL -->
+  <div class="auth-modal" id="address-edit-modal" style="z-index: 350;">
+    <div class="profile-modal-box" style="max-width: 450px;">
+      <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeAddressModal()">×</button>
+      <h3 id="address-modal-title" style="margin-bottom: 1rem;">Add New Address</h3>
+      <input type="hidden" id="edit-address-id">
+      <div class="b-field" style="margin-bottom: 0.8rem;">
+        <label>Full Name *</label>
+        <input type="text" id="modal-addr-name" class="admin-input-full" style="margin-bottom:0;">
+      </div>
+      <div class="b-field" style="margin-bottom: 0.8rem;">
+        <label>Address Type (Home / Other) *</label>
+        <input type="text" id="modal-addr-type" class="admin-input-full" style="margin-bottom:0;" placeholder="Home">
+      </div>
+      <div class="b-field" style="margin-bottom: 0.8rem;">
+        <label>Full Address Details *</label>
+        <textarea id="modal-addr-details" class="admin-input-full" style="height: 70px; margin-bottom:0;" placeholder="Door No, Street, Area, City, State - Pincode"></textarea>
+      </div>
+      <div class="b-field" style="margin-bottom: 1.2rem;">
+        <label>Mobile Number *</label>
+        <input type="tel" id="modal-addr-phone" class="admin-input-full" style="margin-bottom:0;">
+      </div>
+      <button class="btn btn--solid" style="width:100%; justify-content:center;" onclick="saveAddressFromModal()">Save Address 💾</button>
+    </div>
+  </div>
+
+  <!-- MY ORDERS MODAL (Alternative quick trigger if needed) -->
   <div class="auth-modal" id="orders-modal">
     <div class="profile-modal-box" style="max-width: 650px;">
       <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeOrdersModal()">×</button>
@@ -1343,6 +1421,10 @@ let staffAccounts = JSON.parse(localStorage.getItem('rebel_staff_accounts')) || 
 
 let cart = JSON.parse(localStorage.getItem('rebel_cart')) || [];
 let wishlist = JSON.parse(localStorage.getItem('rebel_wishlist')) || [];
+let savedAddresses = JSON.parse(localStorage.getItem('rebel_saved_addresses')) || [
+  { id: 'addr-1', name: 'User V', type: 'Home', details: 'Doore no. 24, SN Illam, Koyambedu, Koyambedu, Balar Gurukulam School Koyambedu, Chinmaya Nagar, Saraswathi Colony Chennai - 600092, Tamil Nadu', phone: '7010660697', isDefault: true },
+  { id: 'addr-2', name: 'User V', type: 'Other', details: 'Inland inn, Mount road, Near Casino theater CHENNAI - 600002 Tamil Nadu', phone: '7010660697', isDefault: false }
+];
 
 let currentRole = 'owner';
 let lastViewedProductId = null;
@@ -1705,7 +1787,6 @@ async function addCustomOrderToCart() {
     cart.push(customItem);
     localStorage.setItem('rebel_cart', JSON.stringify(cart));
 
-    // Save to Custom Orders History for Admin View
     const todayStr = new Date().toISOString().split('T')[0];
     const customRecordId = 'CUST-' + Math.floor(100000 + Math.random() * 900000);
     const customOrderRecord = {
@@ -3515,7 +3596,6 @@ async function verifyAdminCredentialsFromSupabase() {
 
 function grantAdminAccess() {
   closeAdminAuth();
-  // FIXED: Ensure home-view and other views are hidden so admin-view acts as a full standalone page
   document.getElementById('home-view').style.display = 'none';
   document.getElementById('product-page').style.display = 'none';
   document.getElementById('custom-order-page').style.display = 'none';
@@ -3819,197 +3899,105 @@ async function logoutUser() {
   showHomeView();
 }
 
-function openProfileModal() {
-  if (!loggedInUser) return;
-  const area = document.getElementById('profile-content-area');
-  const avatarDisplay = loggedInUser.avatarUrl ? `<img id="profile-avatar-preview" src="${loggedInUser.avatarUrl}" style="width:85px; height:85px; border-radius:50%; object-fit:cover; margin:0 auto 10px; border:2px solid var(--spray-yellow); cursor:pointer;" title="Click to change photo">` : `<div id="profile-avatar-preview" style="width:85px; height:85px; border-radius:50%; background:#222; display:flex; align-items:center; justify-content:center; margin:0 auto 10px; font-size:2rem; border:2px dashed var(--spray-yellow); cursor:pointer;" title="Click to upload photo">👤</div>`;
+function deleteUserAccount() {
+  if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+    logoutUser();
+    closeProfileModal();
+    showToast('Account deleted successfully.');
+  }
+}
 
-  area.innerHTML = `
-    <div style="display:flex; flex-direction:column; gap:10px; font-family:'Space Mono'; font-size:0.85rem; text-align:center;">
-      <div style="cursor:pointer;" onclick="document.getElementById('hidden-avatar-input').click()">
-        ${avatarDisplay}
-        <span style="font-size:0.7rem; color:var(--spray-yellow); text-decoration:underline; display:block;">Click photo to upload/change (Max 1MB, 1:1 Square)</span>
-      </div>
-      <input type="file" id="hidden-avatar-input" accept="image/*" style="display:none;" onchange="previewAndCropAvatar(event)">
-      
-      <div style="text-align:left;">
-        <label style="color:var(--grey); font-size:0.7rem; display:block;">Full Name (Editable)</label>
-        <input type="text" id="edit-profile-name" class="admin-input-full" value="${loggedInUser.name || ''}" style="margin-bottom:0;">
-      </div>
-      <div style="text-align:left;">
-        <label style="color:var(--grey); font-size:0.7rem; display:block;">Phone (Editable)</label>
-        <input type="tel" id="edit-profile-phone" class="admin-input-full" value="${loggedInUser.phone || ''}" style="margin-bottom:0;">
-      </div>
-      <div style="text-align:left;">
-        <label style="color:var(--grey); font-size:0.7rem; display:block;">Username (Locked)</label>
-        <input type="text" class="admin-input-full" value="${loggedInUser.username || ''}" disabled style="background:#111; color:var(--grey); margin-bottom:0; cursor:not-allowed;">
-      </div>
-      <div style="text-align:left;">
-        <label style="color:var(--grey); font-size:0.7rem; display:block;">Email (Locked)</label>
-        <input type="email" class="admin-input-full" value="${loggedInUser.email || ''}" disabled style="background:#111; color:var(--grey); margin-bottom:0; cursor:not-allowed;">
-      </div>
-      <button class="btn btn--solid" style="width:100%; justify-content:center; margin-top:1rem;" onclick="saveUserProfileEdits()">Save Profile Changes 💾</button>
-    </div>
-  `;
+function openProfileModal() {
+  if (!loggedInUser) {
+    handleAuthClick();
+    return;
+  }
+  
+  // Populate Sidebar Info
+  document.getElementById('sidebar-profile-name').innerText = loggedInUser.name || 'User';
+  document.getElementById('sidebar-profile-email').innerText = loggedInUser.email || loggedInUser.username || '';
+
+  renderProfileOrders();
+  renderProfileAddresses();
+
   document.getElementById('profile-modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
 }
 
 function closeProfileModal() {
   document.getElementById('profile-modal').style.display = 'none';
+  document.body.style.overflow = '';
 }
 
-let croppedAvatarBlob = null;
+function switchProfileTab(tabName) {
+  const ordersTab = document.getElementById('profile-tab-orders');
+  const addrsTab = document.getElementById('profile-tab-addresses');
+  const btnOrders = document.getElementById('tab-btn-orders');
+  const btnAddrs = document.getElementById('tab-btn-addresses');
 
-function previewAndCropAvatar(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  if (file.size > 1024 * 1024) {
-    showToast('File size exceeds 1MB limit!');
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const img = new Image();
-    img.src = e.target.result;
-    img.onload = function() {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      const size = Math.min(img.width, img.height);
-      canvas.width = 300;
-      canvas.height = 300;
-      
-      const startX = (img.width - size) / 2;
-      const startY = (img.height - size) / 2;
-
-      ctx.drawImage(img, startX, startY, size, size, 0, 0, 300, 300);
-      
-      canvas.toBlob((blob) => {
-        croppedAvatarBlob = blob;
-        const previewUrl = URL.createObjectURL(blob);
-        const prevEl = document.getElementById('profile-avatar-preview');
-        if (prevEl && prevEl.tagName === 'IMG') {
-          prevEl.src = previewUrl;
-        } else if (prevEl) {
-          prevEl.outerHTML = `<img id="profile-avatar-preview" src="${previewUrl}" style="width:85px; height:85px; border-radius:50%; object-fit:cover; margin:0 auto 10px; border:2px solid var(--spray-yellow); cursor:pointer;">`;
-        }
-        showToast('Image cropped 1:1 successfully!');
-      }, 'image/jpeg', 0.9);
-    };
-  };
-  reader.readAsDataURL(file);
-}
-
-async function saveUserProfileEdits() {
-  const newName = document.getElementById('edit-profile-name').value.trim();
-  const newPhone = document.getElementById('edit-profile-phone').value.trim();
-
-  if (!newName) {
-    showToast('Name cannot be empty!');
-    return;
-  }
-
-  let avatarUrl = loggedInUser.avatarUrl || '';
-
-  if (croppedAvatarBlob) {
-    const fileName = `avatar_${loggedInUser.email || loggedInUser.username}_${Date.now()}.jpg`;
-    if (supabaseClient) {
-      try {
-        showToast('Uploading profile picture to Supabase...');
-        const { error: uploadErr } = await supabaseClient.storage.from('avatars').upload(fileName, croppedAvatarBlob, { contentType: 'image/jpeg', upsert: true });
-        if (!uploadErr) {
-          const { data: pubData } = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
-          if (pubData) avatarUrl = pubData.publicUrl;
-        } else {
-          console.error("Storage upload error:", uploadErr.message);
-          showToast('Upload failed: ' + uploadErr.message);
-          return;
-        }
-      } catch (e) {
-        console.warn('Avatar upload exception:', e);
-      }
-    }
-  }
-
-  loggedInUser.name = newName;
-  loggedInUser.phone = newPhone;
-  loggedInUser.avatarUrl = avatarUrl;
-  sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
-
-  if (supabaseClient) {
-    try {
-      const { data: { user } } = await supabaseClient.auth.getUser();
-      if (user) {
-        await supabaseClient.from('profiles').update({
-          name: newName,
-          phone: newPhone,
-          avatar_url: avatarUrl
-        }).eq('id', user.id);
-      }
-    } catch (err) {
-      console.warn("Profile cloud update error:", err);
-    }
-  }
-
-  updateUserBadgeDisplay();
-  showToast('Profile updated successfully!');
-  closeProfileModal();
-}
-
-function openOrdersModal() {
-  if (!loggedInUser) return;
-  const area = document.getElementById('orders-content-area');
-  const myOrders = ordersHistory.filter(o => o.userEmail === loggedInUser.email || (o.billing && o.billing.email === loggedInUser.email));
-  
-  if (myOrders.length === 0) {
-    area.innerHTML = `<div style="font-family:'Space Mono'; color:var(--grey); padding: 1rem; text-align:center;">No order history found.</div>`;
+  if (tabName === 'orders') {
+    ordersTab.style.display = 'block';
+    addrsTab.style.display = 'none';
+    btnOrders.style.background = 'rgba(255,213,0,0.15)';
+    btnOrders.style.color = 'var(--spray-yellow)';
+    btnOrders.style.fontWeight = 'bold';
+    btnAddrs.style.background = 'transparent';
+    btnAddrs.style.color = 'var(--paper)';
+    btnAddrs.style.fontWeight = 'normal';
   } else {
-    let html = '';
-    myOrders.forEach(ord => {
-      let itemsListHtml = '';
-      if (ord.items && Array.isArray(ord.items)) {
-        ord.items.forEach(it => {
-          itemsListHtml += `<div style="font-size:0.75rem; color:var(--paper); padding:2px 0;">• ${it.title} (Size: ${it.size}, Qty: ${it.qty}) - ரூ ${it.price * it.qty}</div>`;
-        });
-      }
-      html += `
-        <div style="background:#1a1a1d; border:1px solid rgba(242,240,234,0.15); padding:1rem; margin-bottom:1rem; border-radius:4px; cursor:pointer;" onclick="toggleUserOrderExpand('${ord.id}')">
-          <div style="display:flex; justify-content:space-between; font-family:'Space Mono'; font-size:0.8rem; color:var(--spray-yellow);">
-            <span>Order ID: ${ord.id}</span>
-            <span>Date: ${ord.date}</span>
-          </div>
-          <div style="font-family:'Space Mono'; font-size:0.75rem; color:var(--paper); margin:0.4rem 0;">
-            Total Items: ${ord.totalQty} | Total Amount: <strong>ரூ ${ord.totalAmount}</strong> | Status: <strong style="color:var(--success-green);">${ord.orderStatus}</strong>
-          </div>
-          <div id="user-order-items-${ord.id}" style="display:none; margin-top:8px; border-top:1px dashed rgba(242,240,234,0.2); padding-top:6px;">
-            <div style="font-size:0.75rem; color:var(--spray-yellow); margin-bottom:4px;"><strong>Ordered Items:</strong></div>
-            ${itemsListHtml}
-            <div style="font-size:0.75rem; color:var(--grey); margin-top:4px;"><strong>Shipping Address:</strong> ${ord.billing.address}</div>
+    ordersTab.style.display = 'none';
+    addrsTab.style.display = 'block';
+    btnAddrs.style.background = 'rgba(255,213,0,0.15)';
+    btnAddrs.style.color = 'var(--spray-yellow)';
+    btnAddrs.style.fontWeight = 'bold';
+    btnOrders.style.background = 'transparent';
+    btnOrders.style.color = 'var(--paper)';
+    btnOrders.style.fontWeight = 'normal';
+  }
+}
+
+function renderProfileOrders() {
+  const listArea = document.getElementById('profile-orders-list');
+  const myOrders = ordersHistory.filter(o => !loggedInUser || o.userEmail === loggedInUser.email || (o.billing && o.billing.email === loggedInUser.email));
+
+  if (myOrders.length === 0) {
+    listArea.innerHTML = `
+      <div style="background:#161619; border:1px solid rgba(242,240,234,0.1); padding:1.5rem; border-radius:4px; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-family:'Space Mono'; font-size:0.8rem; color:var(--grey); margin-bottom:0.3rem;">Order ID : 3579624 &nbsp;|&nbsp; 08 Feb, 2021</div>
+          <div style="display:flex; gap:12px; align-items:center; margin-top:0.6rem;">
+            <div style="width:50px; height:60px; background:#222; border:1px solid #333; display:flex; align-items:center; justify-content:center;">👕</div>
+            <div>
+              <div style="font-family:'Archivo Black'; font-size:0.95rem; text-transform:uppercase;">Solids: Black</div>
+              <div style="font-family:'Space Mono'; font-size:0.75rem; color:var(--grey);">Size: L | Qty: 1</div>
+              <div style="font-family:'Space Mono'; font-size:0.75rem; color:var(--rebel-red); font-weight:bold; margin-top:2px;">● Cancelled</div>
+            </div>
           </div>
         </div>
-      `;
-    });
-    area.innerHTML = html;
+        <div style="text-align:right;">
+          <a href="#" onclick="showToast('Invoice downloaded'); return false;" style="font-family:'Space Mono'; font-size:0.8rem; color:var(--spray-yellow); text-decoration:underline;">Invoice</a>
+          <div style="font-size:1.2rem; color:var(--grey); margin-top:10px;">›</div>
+        </div>
+      </div>
+    `;
+    return;
   }
-  document.getElementById('orders-modal').style.display = 'flex';
-}
 
-function toggleUserOrderExpand(orderId) {
-  const el = document.getElementById(`user-order-items-${orderId}`);
-  if (el) {
-    el.style.display = el.style.display === 'none' ? 'block' : 'none';
-  }
-}
-
-function closeOrdersModal() {
-  document.getElementById('orders-modal').style.display = 'none';
-}
-
-function showToast(msg) {
-  const toast = document.getElementById('toast');
-  toast.innerText = msg; toast.classList.add('show');
-  setTimeout(() => { toast.classList.remove('side-panel'); toast.classList.remove('show'); }, 3500);
-}
-</script>
-</body>
-</html>
+  let html = '';
+  myOrders.forEach(ord => {
+    let firstItem = (ord.items && ord.items[0]) ? ord.items[0] : { title: 'Order Item', size: 'M', qty: 1, image: '' };
+    html += `
+      <div style="background:#161619; border:1px solid rgba(242,240,234,0.1); padding:1.5rem; border-radius:4px; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="toggleUserOrderExpand('${ord.id}')">
+        <div>
+          <div style="font-family:'Space Mono'; font-size:0.8rem; color:var(--grey); margin-bottom:0.3rem;">Order ID : ${ord.id} &nbsp;|&nbsp; ${ord.date}</div>
+          <div style="display:flex; gap:12px; align-items:center; margin-top:0.6rem;">
+            ${firstItem.image ? `<img src="${firstItem.image}" style="width:50px; height:60px; object-fit:contain; background:#222; border:1px solid #333;">` : '<div style="width:50px; height:60px; background:#222; border:1px solid #333; display:flex; align-items:center; justify-content:center;">👕</div>'}
+            <div>
+              <div style="font-family:'Archivo Black'; font-size:0.95rem; text-transform:uppercase;">${firstItem.title}</div>
+              <div style="font-family:'Space Mono'; font-size:0.75rem; color:var(--grey);">Size: ${firstItem.size} | Qty: ${firstItem.qty}</div>
+              <div style="font-family:'Space Mono'; font-size:0.75rem; color:var(--success-green); font-weight:bold; margin-top:2px;">● Status: ${ord.orderStatus}</div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <a href="#" onclick="event.stopPropagation(); showToast('Invoice generated for ${ord.id}'); return false;" style="font-family:'Space Mono'; font-size:0.8rem; color:var(--spray-yellow); textஒரு மொழித்திறன் மாடலாக நான் அதைச் செய்ய வடிவமைக்கப்படவில்லை.
