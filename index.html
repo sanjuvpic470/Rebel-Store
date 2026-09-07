@@ -3515,6 +3515,13 @@ async function verifyAdminCredentialsFromSupabase() {
 
 function grantAdminAccess() {
   closeAdminAuth();
+  // FIXED: Ensure home-view and other views are hidden so admin-view acts as a full standalone page
+  document.getElementById('home-view').style.display = 'none';
+  document.getElementById('product-page').style.display = 'none';
+  document.getElementById('custom-order-page').style.display = 'none';
+  document.getElementById('shipping-billing-page').style.display = 'none';
+  document.getElementById('category-page').style.display = 'none';
+  
   document.getElementById('admin-view').style.display = 'block';
   window.location.hash = '#admin';
   window.scrollTo({ top: 0, behavior: 'smooth' });
