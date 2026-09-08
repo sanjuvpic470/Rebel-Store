@@ -2409,11 +2409,43 @@ async function handleOrderSuccessDirect(paymentData) {
     return false;
   }
 
-  showToast('Payment received. Verifying securely...');
+  if (!Array.isArray(savedOrder.items) || savedOrder.items.length === 0) {
+    console.error('Pending order contains no items.');
+    showToast('Payment received, but order items were not found. Please contact support.');
+    return false;
+  }
+
+  showToast('Payment received. Verifying payment and creating invoice securely...');
 
   try {
-    // IMPORTANT: do not mark the order as paid until the backend verifies
-    // the Razorpay signature and payment state.
+    const lineItems = savedOrder.items.map((item, index) => {
+      const quantity = Number(item?.qty || 0);
+      const rate = Number(item?.price || 0);
+
+      if (!Number.isFinite(quantity) || quantity <= 0) {
+        throw new Error(`Invalid quantity for cart item ${index + 1}.`);
+      }
+
+      if (!Number.isFinite(rate) || rate < 0) {
+        throw new Error(`Invalid price for cart item ${index + 1}.`);
+      }
+
+      return {
+        // Optional Zoho Item ID. The backend will resolve/create the Zoho item
+        // by name when this is not present.
+        item_id: String(item?.zoho_item_id || item?.zohoItemId || '').trim(),
+        name: String(item?.title || item?.name || 'Product').trim().slice(0, 100),
+        description: [
+          item?.color ? `Color: ${item.color}` : '',
+          item?.size ? `Size: ${item.size}` : ''
+        ].filter(Boolean).join(' | '),
+        quantity,
+        rate
+      };
+    });
+
+    const billing = savedOrder.billing || {};
+
     const verifyResponse = await fetch(EDGE_FUNCTION_VERIFY_PAYMENT_URL, {
       method: 'POST',
       headers: {
@@ -2424,7 +2456,18 @@ async function handleOrderSuccessDirect(paymentData) {
       body: JSON.stringify({
         razorpay_order_id: razorpayOrderId,
         razorpay_payment_id: razorpayPaymentId,
-        razorpay_signature: razorpaySignature
+        razorpay_signature: razorpaySignature,
+        order_id: razorpayOrderId,
+        customer: {
+          name: String(billing.name || '').trim(),
+          email: String(billing.email || '').trim(),
+          phone: String(billing.phone || '').trim(),
+          address: String(billing.address || '').trim(),
+          pincode: String(billing.pincode || '').trim(),
+          state: String(billing.state || '').trim(),
+          district: String(billing.district || '').trim()
+        },
+        line_items: lineItems
       })
     });
 
@@ -2436,30 +2479,33 @@ async function handleOrderSuccessDirect(paymentData) {
     }
 
     if (!verifyResponse.ok || !verifyData.success || verifyData.verified !== true) {
-      console.error('Razorpay verification failed:', verifyData);
-      showToast('Payment received, but verification failed. Please contact support before placing another order.');
+      console.error('Razorpay/Zoho backend processing failed:', verifyData);
+      showToast(
+        verifyData?.error
+          ? `Payment received, but order processing failed: ${verifyData.error}`
+          : 'Payment received, but verification failed. Please contact support.'
+      );
       return false;
     }
 
     const todayStr = savedOrder.date || new Date().toISOString().split('T')[0];
     const finalOrderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
-    const totalQuantity = Array.isArray(savedOrder.items)
-      ? savedOrder.items.reduce((s, i) => s + Number(i.qty || 1), 0)
-      : 0;
+    const totalQuantity = savedOrder.items.reduce(
+      (sum, item) => sum + Number(item?.qty || 1),
+      0
+    );
 
-    const formattedItems = Array.isArray(savedOrder.items)
-      ? savedOrder.items.map(it => ({
-          ...it,
-          stockStatus: it.stockStatus || { available: true, notes: '' }
-        }))
-      : [];
+    const formattedItems = savedOrder.items.map(item => ({
+      ...item,
+      stockStatus: item.stockStatus || { available: true, notes: '' }
+    }));
 
     const orderRecord = {
       order_id: finalOrderId,
-      customer_name: savedOrder.billing?.name || '',
-      customer_email: savedOrder.billing?.email || '',
-      customer_phone: savedOrder.billing?.phone || '',
-      customer_address: savedOrder.billing?.address || '',
+      customer_name: billing.name || '',
+      customer_email: billing.email || '',
+      customer_phone: billing.phone || '',
+      customer_address: billing.address || '',
       items: formattedItems,
       total_qty: totalQuantity,
       total_amount: Number(savedOrder.totalAmount || 0),
@@ -2468,40 +2514,36 @@ async function handleOrderSuccessDirect(paymentData) {
       order_status: 'New'
     };
 
-    let orderSavedToSupabase = false;
-
-    if (supabaseClient) {
-      const { error } = await supabaseClient
-        .from('orders')
-        .insert([orderRecord]);
-
-      if (error) {
-        console.error('Order save failed:', error);
-        showToast('Payment verified, but order could not be saved. Please contact support.');
-        return false;
-      }
-
-      orderSavedToSupabase = true;
+    if (!supabaseClient) {
+      showToast('Payment verified, but Supabase storage is unavailable. Please contact support.');
+      return false;
     }
 
-    if (!orderSavedToSupabase) {
-      console.warn('Supabase client unavailable; order was not persisted.');
-      showToast('Payment verified, but order storage is unavailable. Please contact support.');
+    const { error: orderSaveError } = await supabaseClient
+      .from('orders')
+      .insert([orderRecord]);
+
+    if (orderSaveError) {
+      console.error('Order save failed:', orderSaveError);
+      showToast('Payment verified, but order could not be saved. Please contact support.');
       return false;
     }
 
     ordersHistory.unshift({
       id: finalOrderId,
       date: todayStr,
-      userEmail: savedOrder.billing?.email || '',
-      billing: savedOrder.billing,
+      userEmail: billing.email || '',
+      billing,
       totalQty: totalQuantity,
       totalAmount: Number(savedOrder.totalAmount || 0),
       items: formattedItems,
       paymentStatus: 'paid',
       paymentId: razorpayPaymentId,
       orderStatus: 'New',
-      razorpayOrderId: razorpayOrderId
+      razorpayOrderId,
+      zohoInvoiceId: verifyData?.zoho?.invoice_id || null,
+      zohoInvoiceNumber: verifyData?.zoho?.invoice_number || null,
+      zohoEmailSent: verifyData?.zoho?.email_sent === true
     });
 
     localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
@@ -2510,12 +2552,25 @@ async function handleOrderSuccessDirect(paymentData) {
     localStorage.removeItem('rebel_cart');
     updateCartBadge();
 
+    if (verifyData?.zoho?.email_sent === true) {
+      showToast(
+        verifyData?.zoho?.invoice_number
+          ? `Order confirmed. Zoho Invoice ${verifyData.zoho.invoice_number} sent to ${billing.email}.`
+          : 'Order confirmed. Zoho Invoice created and emailed to the customer.'
+      );
+    } else if (verifyData?.zoho?.invoice_created === true) {
+      showToast('Order confirmed. Zoho Invoice was created, but the email could not be sent.');
+    }
+
     showOrderSuccessCelebration(finalOrderId, razorpayPaymentId);
     return true;
-
   } catch (error) {
-    console.error('Secure payment verification error:', error);
-    showToast('Payment received, but verification could not be completed. Please contact support.');
+    console.error('Secure payment verification / Zoho automation error:', error);
+    showToast(
+      error?.message
+        ? `Payment received, but order processing failed: ${error.message}`
+        : 'Payment received, but order processing failed. Please contact support.'
+    );
     return false;
   }
 }
