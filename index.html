@@ -306,6 +306,26 @@ footer a:hover{color:var(--paper)}
 .tick-circle{width:80px;height:80px;border-radius:50%;background:rgba(34,197,94,0.15);border:3px solid var(--success-green);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem}
 .tick-mark{width:22px;height:42px;border-right:5px solid var(--success-green);border-bottom:5px solid var(--success-green);transform:rotate(45deg) translate(-4px, -4px);animation:tickAnim 0.5s ease forwards}
 @keyframes tickAnim{0%{opacity:0;transform:scale(0) rotate(45deg)}100%{opacity:1;transform:scale(1) rotate(45deg)}}
+
+/* Account center / saved address improvements */
+.account-tabs{display:flex;gap:.45rem;flex-wrap:wrap;border-bottom:1px solid rgba(242,240,234,.14);padding-bottom:.7rem;margin-bottom:1rem}
+.account-tab{background:#18181b;color:var(--paper);border:1px solid rgba(242,240,234,.18);padding:.55rem .8rem;font-family:'Space Mono',monospace;font-size:.7rem;cursor:pointer}
+.account-tab.active{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow)}
+.account-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.account-field{margin-bottom:.8rem}
+.account-field label{font-family:'Space Mono',monospace;font-size:.68rem;color:var(--grey);display:block;margin-bottom:.35rem;text-transform:uppercase}
+.account-field input,.account-field select{width:100%;box-sizing:border-box;background:#1a1a1d;border:1px solid rgba(242,240,234,.18);color:var(--paper);font-family:'Space Mono',monospace;padding:.68rem;font-size:.78rem;border-radius:2px}
+.account-field input:disabled{background:#111;color:#8b8b8f;cursor:not-allowed}
+.address-card{background:#18181b;border:1px solid rgba(242,240,234,.16);padding:1rem;margin-bottom:.8rem}
+.address-card.default{border-color:var(--spray-yellow);box-shadow:4px 4px 0 var(--paper)}
+.address-card-head{display:flex;justify-content:space-between;gap:.8rem;align-items:flex-start}
+.address-label{font-family:'Anton',sans-serif;color:var(--spray-yellow);font-size:1rem;text-transform:uppercase}
+.address-meta{font-family:'Space Mono',monospace;color:var(--paper);font-size:.74rem;line-height:1.65;margin-top:.5rem}
+.address-actions{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.8rem}
+.address-actions button{font-family:'Space Mono',monospace;font-size:.66rem;padding:.45rem .65rem;cursor:pointer;border:1px solid rgba(242,240,234,.22);background:#111;color:var(--paper)}
+.address-actions button.primary{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow)}
+.address-actions button.danger{color:var(--rebel-red);border-color:var(--rebel-red)}
+@media(max-width:600px){.account-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -339,6 +359,7 @@ footer a:hover{color:var(--paper)}
       <div class="user-dropdown-menu" id="user-dropdown-menu">
         <div class="user-dropdown-item" onclick="openProfileModal()">👤 Profile</div>
         <div class="user-dropdown-item" onclick="openOrdersModal()">📦 My Orders</div>
+        <div class="user-dropdown-item" onclick="openSavedAddressesModal()">📍 Saved Address</div>
         <div class="user-dropdown-item" onclick="openWishlistModal()">❤️ Wishlist</div>
         <div class="user-dropdown-item" onclick="logoutUser()" style="color:var(--rebel-red);">🚪 Logout</div>
       </div>
@@ -667,6 +688,38 @@ footer a:hover{color:var(--paper)}
       <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeOrdersModal()">×</button>
       <h3>My Order History</h3>
       <div id="orders-content-area" style="max-height: 65vh; overflow-y: auto; margin-top:1rem;"></div>
+    </div>
+  </div>
+
+
+
+  <!-- SAVED ADDRESS MODAL -->
+  <div class="auth-modal" id="saved-address-modal">
+    <div class="profile-modal-box" style="max-width:700px; max-height:90vh; overflow-y:auto;">
+      <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeSavedAddressesModal()">×</button>
+      <h3>Saved Addresses</h3>
+      <div id="saved-address-list" style="margin-top:1rem;"></div>
+      <div style="border-top:1px solid rgba(242,240,234,.14); margin-top:1rem; padding-top:1rem;">
+        <h4 id="address-form-title" style="font-family:'Anton',sans-serif;color:var(--spray-yellow);text-transform:uppercase;margin-bottom:.8rem;">Add New Address</h4>
+        <input type="hidden" id="address-edit-id">
+        <div class="account-grid">
+          <div class="account-field"><label>Save Address As</label><select id="address-label"><option>Home</option><option>Work</option><option>Other</option></select></div>
+          <div class="account-field"><label>Recipient Name *</label><input id="address-recipient-name" type="text" autocomplete="name"></div>
+          <div class="account-field"><label>Mobile Number</label><input id="address-phone" type="tel" autocomplete="tel"></div>
+          <div class="account-field"><label>Pincode *</label><input id="address-pincode" type="text" maxlength="6" autocomplete="postal-code"></div>
+          <div class="account-field"><label>Address Line 1 *</label><input id="address-line1" type="text" autocomplete="address-line1"></div>
+          <div class="account-field"><label>Address Line 2</label><input id="address-line2" type="text" autocomplete="address-line2"></div>
+          <div class="account-field"><label>State</label><select id="address-state"></select></div>
+          <div class="account-field"><label>District</label><select id="address-district"></select></div>
+        </div>
+        <label style="display:flex;align-items:center;gap:.5rem;font-family:'Space Mono';font-size:.72rem;color:var(--paper);margin:.5rem 0 1rem;">
+          <input type="checkbox" id="address-is-default"> Set as Default Address
+        </label>
+        <div style="display:flex;gap:.6rem;justify-content:flex-end;flex-wrap:wrap;">
+          <button class="btn btn--ghost" id="address-cancel-btn" style="display:none;" onclick="resetAddressForm()">Cancel</button>
+          <button class="btn btn--solid" onclick="saveSavedAddress()">Save Address</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2117,14 +2170,14 @@ function goToShippingPage() {
   showShippingFormView();
 }
 
-function showShippingFormView() {
+async function showShippingFormView() {
   document.getElementById('home-view').style.display = 'none';
   document.getElementById('product-page').style.display = 'none';
   document.getElementById('custom-order-page').style.display = 'none';
   document.getElementById('category-page').style.display = 'none';
   document.getElementById('admin-view').style.display = 'none';
   document.getElementById('shipping-billing-page').style.display = 'block';
-  
+
   initStatesDropdown();
 
   if (loggedInUser) {
@@ -2132,23 +2185,44 @@ function showShippingFormView() {
     if (loggedInUser.phone) document.getElementById('b-phone').value = loggedInUser.phone;
     if (loggedInUser.altPhone) document.getElementById('b-alt-phone').value = loggedInUser.altPhone;
     if (loggedInUser.email) document.getElementById('b-email').value = loggedInUser.email;
-    if (loggedInUser.address1) document.getElementById('b-address1').value = loggedInUser.address1;
-    if (loggedInUser.address2) document.getElementById('b-address2').value = loggedInUser.address2;
-    if (loggedInUser.pincode) {
-      document.getElementById('b-pincode').value = loggedInUser.pincode;
-      handlePincodeLookup(loggedInUser.pincode).then(() => {
+  }
+
+  // Always load the cloud default address for the signed-in customer.
+  try {
+    const defaultAddress = await getDefaultSavedAddress();
+    if (defaultAddress) {
+      fillBillingFromAddress(defaultAddress);
+    } else {
+      if (loggedInUser?.address1) document.getElementById('b-address1').value = loggedInUser.address1;
+      if (loggedInUser?.address2) document.getElementById('b-address2').value = loggedInUser.address2;
+      if (loggedInUser?.pincode) {
+        document.getElementById('b-pincode').value = loggedInUser.pincode;
+        await handlePincodeLookup(loggedInUser.pincode);
         if (loggedInUser.state) {
           document.getElementById('b-state').value = loggedInUser.state;
           onStateSelectChange(loggedInUser.district || '');
-          if (loggedInUser.district) {
-            document.getElementById('b-district').value = loggedInUser.district;
-          }
+          if (loggedInUser.district) document.getElementById('b-district').value = loggedInUser.district;
         }
-      });
+      }
     }
+  } catch (err) {
+    console.warn('Default address load skipped:', err);
   }
+
   window.location.hash = '#shipping';
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function fillBillingFromAddress(address) {
+  if (!address) return;
+  const set = (id, value) => { const el = document.getElementById(id); if (el && value != null) el.value = value; };
+  set('b-name', address.recipient_name || loggedInUser?.name || '');
+  set('b-phone', address.phone || loggedInUser?.phone || '');
+  set('b-address1', address.address1 || '');
+  set('b-address2', address.address2 || '');
+  set('b-pincode', address.pincode || '');
+  if (address.state) { set('b-state', address.state); onStateSelectChange(address.district || ''); }
+  if (address.district) set('b-district', address.district);
 }
 
 function goBackFromShipping() {
@@ -2576,28 +2650,12 @@ async function handleOrderSuccessDirect(paymentData) {
 }
 
 function checkRazorpayReturnStatus() {
+  // Do not mark an order paid from query-string values. Payment confirmation
+  // must come through the server-side Razorpay verification flow.
   const urlParams = new URLSearchParams(window.location.search);
-  const paymentStatus = urlParams.get('payment');
-
-  if (paymentStatus !== 'success') return;
-
-  const razorpayPaymentId = urlParams.get('razorpay_payment_id') || '';
-  const razorpayOrderId = urlParams.get('razorpay_order_id') || '';
-  const razorpaySignature = urlParams.get('razorpay_signature') || '';
-
-  if (!razorpayPaymentId || !razorpayOrderId || !razorpaySignature) {
-    console.error('Razorpay success URL is missing verification fields.');
-    showToast('Payment received, but verification details are missing. Please contact support.');
-    return;
+  if (urlParams.has('payment') || urlParams.has('razorpay_payment_id')) {
+    window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
   }
-
-  handleOrderSuccessDirect({
-    razorpay_payment_id: razorpayPaymentId,
-    razorpay_order_id: razorpayOrderId,
-    razorpay_signature: razorpaySignature
-  }).finally(() => {
-    window.history.replaceState({}, document.title, window.location.pathname);
-  });
 }
 
 function showOrderSuccessCelebration(orderId, paymentId) {
@@ -3520,63 +3578,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Supabase Auth is the source of truth. Google name/email/avatar are copied
+  // into the profile only when the cloud profile is missing those values.
   if (supabaseClient) {
-    supabaseClient.auth.getSession().then(async ({ data: { session } }) => {
-      if (session && session.user) {
-        const u = session.user;
-        const gName = u.user_metadata?.full_name || u.user_metadata?.name || u.email.split('@')[0];
-        
-        const { data: dbProf } = await supabaseClient.from('profiles').select('*').eq('id', u.id).maybeSingle();
-
-        loggedInUser = {
-          name: dbProf?.name || gName,
-          username: dbProf?.username || u.user_metadata?.username || gName,
-          email: u.email,
-          phone: dbProf?.phone || u.user_metadata?.phone || '',
-          altPhone: '',
-          avatarUrl: dbProf?.avatar_url || u.user_metadata?.avatar_url || ''
-        };
-        sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
-        updateUserBadgeDisplay();
-
-        await supabaseClient.from('profiles').upsert({
-          id: u.id,
-          name: loggedInUser.name,
-          email: loggedInUser.email,
-          phone: loggedInUser.phone,
-          username: loggedInUser.username,
-          avatar_url: loggedInUser.avatarUrl
-        }, { onConflict: 'id' });
-      }
+    supabaseClient.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) hydrateLoggedInUserFromSupabase(session.user, false);
     });
 
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session && session.user) {
-        const u = session.user;
-        const gName = u.user_metadata?.full_name || u.user_metadata?.name || u.email.split('@')[0];
-        const { data: dbProf } = await supabaseClient.from('profiles').select('*').eq('id', u.id).maybeSingle();
-
-        loggedInUser = {
-          name: dbProf?.name || gName,
-          username: dbProf?.username || u.user_metadata?.username || gName,
-          email: u.email,
-          phone: dbProf?.phone || u.user_metadata?.phone || '',
-          altPhone: '',
-          avatarUrl: dbProf?.avatar_url || u.user_metadata?.avatar_url || ''
-        };
-        sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
+      if (session?.user && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED')) {
+        await hydrateLoggedInUserFromSupabase(session.user, true);
+        if (event === 'SIGNED_IN') closeAuthModal();
+      }
+      if (event === 'SIGNED_OUT') {
+        loggedInUser = null;
+        sessionStorage.removeItem('rebel_user_session');
         updateUserBadgeDisplay();
-
-        await supabaseClient.from('profiles').upsert({
-          id: u.id,
-          name: loggedInUser.name,
-          email: loggedInUser.email,
-          phone: loggedInUser.phone,
-          username: loggedInUser.username,
-          avatar_url: loggedInUser.avatarUrl
-        }, { onConflict: 'id' });
-
-        closeAuthModal();
       }
     });
   }
@@ -3591,6 +3608,61 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('hashchange', handleRouteFromHash);
   handleRouteFromHash();
 });
+
+async function hydrateLoggedInUserFromSupabase(authUser, closeModal = false) {
+  if (!supabaseClient || !authUser) return;
+
+  const metadata = authUser.user_metadata || {};
+  const googleName = metadata.full_name || metadata.name || authUser.email?.split('@')[0] || 'Customer';
+  const googleAvatar = metadata.avatar_url || metadata.picture || '';
+  const googlePhone = metadata.phone || '';
+  const googleUsername = metadata.username || googleName;
+
+  let { data: dbProf, error: profileReadError } = await supabaseClient
+    .from('profiles')
+    .select('*')
+    .eq('id', authUser.id)
+    .maybeSingle();
+
+  if (profileReadError) console.warn('Profile read:', profileReadError.message);
+
+  const merged = {
+    ...loggedInUser,
+    name: dbProf?.name || googleName,
+    username: dbProf?.username || googleUsername,
+    email: authUser.email || dbProf?.email || '',
+    phone: dbProf?.phone || googlePhone || '',
+    altPhone: dbProf?.alt_phone || '',
+    avatarUrl: dbProf?.avatar_url || googleAvatar || '',
+    dateOfBirth: dbProf?.date_of_birth || '',
+    gender: dbProf?.gender || ''
+  };
+
+  // Persist Google-provided fields only when the profile does not have them.
+  const profilePayload = {
+    id: authUser.id,
+    email: authUser.email || '',
+    name: dbProf?.name || googleName,
+    username: dbProf?.username || googleUsername,
+    phone: dbProf?.phone || googlePhone || null,
+    avatar_url: dbProf?.avatar_url || googleAvatar || null
+  };
+  if (!dbProf?.alt_phone && googlePhone) profilePayload.alt_phone = googlePhone;
+
+  const { error: upsertError } = await supabaseClient
+    .from('profiles')
+    .upsert(profilePayload, { onConflict: 'id' });
+  if (upsertError) console.warn('Profile sync:', upsertError.message);
+
+  loggedInUser = merged;
+  sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
+  updateUserBadgeDisplay();
+
+  if (closeModal) {
+    closeAuthModal();
+    showToast('Google account signed in successfully!');
+  }
+}
 
 function handleRouteFromHash() {
   const hash = window.location.hash;
@@ -3835,7 +3907,7 @@ async function registerNewAccount() {
 
 async function processUserLogin() {
   const inputVal = document.getElementById('login-user').value.trim();
-  const passVal = document.getElementById('login-pass').value.trim();
+  const passVal = document.getElementById('login-pass').value;
 
   if (!inputVal || !passVal) {
     showToast('Enter username/email and password');
@@ -3843,61 +3915,29 @@ async function processUserLogin() {
   }
 
   const submitBtn = document.getElementById('login-submit-btn');
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.innerText = 'Logging in...';
-  }
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.innerText = 'Logging in...'; }
 
   try {
-    let emailToUse = inputVal;
+    if (!supabaseClient) throw new Error('Supabase is not connected.');
 
-    if (!inputVal.includes('@') && supabaseClient) {
+    let emailToUse = inputVal;
+    if (!inputVal.includes('@')) {
       const { data: profileData } = await supabaseClient
         .from('profiles')
-        .select('email, avatar_url, name, phone')
+        .select('email')
         .eq('username', inputVal)
         .maybeSingle();
-
-      if (profileData && profileData.email) {
-        emailToUse = profileData.email;
-      }
+      if (profileData?.email) emailToUse = profileData.email;
     }
 
-    if (supabaseClient) {
-      const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
-        email: emailToUse,
-        password: passVal
-      });
+    const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
+      email: emailToUse,
+      password: passVal
+    });
+    if (authError) throw authError;
+    if (!authData?.user) throw new Error('Login failed.');
 
-      if (authError) throw authError;
-
-      if (authData && authData.user) {
-        const u = authData.user;
-        const { data: dbProf } = await supabaseClient.from('profiles').select('*').eq('id', u.id).maybeSingle();
-        const gName = dbProf?.name || u.user_metadata?.full_name || u.user_metadata?.name || inputVal;
-        
-        loggedInUser = {
-          name: gName,
-          username: dbProf?.username || u.user_metadata?.username || inputVal,
-          email: u.email,
-          phone: dbProf?.phone || u.user_metadata?.phone || '',
-          altPhone: '',
-          avatarUrl: dbProf?.avatar_url || u.user_metadata?.avatar_url || ''
-        };
-      }
-    } else {
-      loggedInUser = {
-        name: inputVal,
-        username: inputVal,
-        email: inputVal.includes('@') ? inputVal : `${inputVal}@rebelstore.in`,
-        phone: '',
-        altPhone: '',
-        avatarUrl: ''
-      };
-    }
-
-    sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
-    updateUserBadgeDisplay();
+    await hydrateLoggedInUserFromSupabase(authData.user, false);
     closeAuthModal();
     showToast('Login Successful!');
 
@@ -3906,29 +3946,20 @@ async function processUserLogin() {
       showShippingFormView();
     }
   } catch (err) {
-    console.error("Login error:", err);
+    console.error('Login error:', err);
     showToast(err.message || 'Invalid login credentials.');
   } finally {
-    if (submitBtn) {
-      submitBtn.disabled = false;
-      submitBtn.innerText = 'Login →';
-    }
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = 'Login →'; }
   }
 }
 
 async function loginWithGoogleSocial() {
   const googleBtn = document.getElementById('google-login-btn');
-  if (googleBtn) {
-    googleBtn.style.opacity = '0.7';
-    googleBtn.innerText = 'Connecting to Google...';
-  }
+  if (googleBtn) { googleBtn.style.opacity = '0.7'; googleBtn.innerText = 'Connecting to Google...'; }
 
   if (!supabaseClient) {
     showToast('Supabase client not initialized');
-    if (googleBtn) {
-      googleBtn.style.opacity = '1';
-      googleBtn.innerHTML = `Continue with Google`;
-    }
+    if (googleBtn) { googleBtn.style.opacity = '1'; googleBtn.innerText = 'Continue with Google'; }
     return;
   }
 
@@ -3941,14 +3972,10 @@ async function loginWithGoogleSocial() {
         queryParams: { access_type: 'offline', prompt: 'consent' }
       }
     });
-
     if (error) throw error;
   } catch (err) {
     showToast('Failed to connect with Google: ' + err.message);
-    if (googleBtn) {
-      googleBtn.style.opacity = '1';
-      googleBtn.innerHTML = `Continue with Google`;
-    }
+    if (googleBtn) { googleBtn.style.opacity = '1'; googleBtn.innerText = 'Continue with Google'; }
   }
 }
 
@@ -3963,55 +3990,80 @@ async function logoutUser() {
   showHomeView();
 }
 
-function openProfileModal() {
-  if (!loggedInUser) return;
+function openAccountTab(tab) {
+  const profile = document.getElementById('profile-tab-content');
+  const orders = document.getElementById('profile-orders-tab-content');
+  const saved = document.getElementById('profile-address-tab-content');
+  const tabs = document.querySelectorAll('#profile-account-tabs .account-tab');
+  [profile, orders, saved].forEach(el => { if (el) el.style.display = 'none'; });
+  tabs.forEach(el => el.classList.remove('active'));
+  const map = { profile: profile, orders: orders, addresses: saved };
+  const target = map[tab];
+  if (target) target.style.display = 'block';
+  tabs.forEach(el => { if (el.dataset.tab === tab) el.classList.add('active'); });
+  if (tab === 'orders') renderOrdersInsideProfile();
+  if (tab === 'addresses') renderAddressesInsideProfile();
+}
+
+async function openProfileModal() {
+  if (!loggedInUser || !supabaseClient) return;
+  await refreshCurrentProfile();
   const area = document.getElementById('profile-content-area');
-  const avatarDisplay = loggedInUser.avatarUrl ? `<img id="profile-avatar-preview" src="${loggedInUser.avatarUrl}" style="width:85px; height:85px; border-radius:50%; object-fit:cover; margin:0 auto 10px; border:2px solid var(--spray-yellow); cursor:pointer;" title="Click to change photo">` : `<div id="profile-avatar-preview" style="width:85px; height:85px; border-radius:50%; background:#222; display:flex; align-items:center; justify-content:center; margin:0 auto 10px; font-size:2rem; border:2px dashed var(--spray-yellow); cursor:pointer;" title="Click to upload photo">👤</div>`;
+  croppedAvatarBlob = null;
+
+  const avatarDisplay = loggedInUser.avatarUrl
+    ? `<img id="profile-avatar-preview" src="${escapeHtml(loggedInUser.avatarUrl)}" style="width:85px;height:85px;border-radius:50%;object-fit:cover;margin:0 auto 10px;border:2px solid var(--spray-yellow);cursor:pointer;">`
+    : `<div id="profile-avatar-preview" style="width:85px;height:85px;border-radius:50%;background:#222;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:2rem;border:2px dashed var(--spray-yellow);cursor:pointer;">👤</div>`;
 
   area.innerHTML = `
-    <div style="display:flex; flex-direction:column; gap:10px; font-family:'Space Mono'; font-size:0.85rem; text-align:center;">
-      <div style="cursor:pointer;" onclick="document.getElementById('hidden-avatar-input').click()">
-        ${avatarDisplay}
-        <span style="font-size:0.7rem; color:var(--spray-yellow); text-decoration:underline; display:block;">Click photo to upload/change (Max 1MB, 1:1 Square)</span>
-      </div>
-      <input type="file" id="hidden-avatar-input" accept="image/*" style="display:none;" onchange="previewAndCropAvatar(event)">
-      
-      <div style="text-align:left;">
-        <label style="color:var(--grey); font-size:0.7rem; display:block;">Full Name (Editable)</label>
-        <input type="text" id="edit-profile-name" class="admin-input-full" value="${loggedInUser.name || ''}" style="margin-bottom:0;">
-      </div>
-      <div style="text-align:left;">
-        <label style="color:var(--grey); font-size:0.7rem; display:block;">Phone (Editable)</label>
-        <input type="tel" id="edit-profile-phone" class="admin-input-full" value="${loggedInUser.phone || ''}" style="margin-bottom:0;">
-      </div>
-      <div style="text-align:left;">
-        <label style="color:var(--grey); font-size:0.7rem; display:block;">Username (Locked)</label>
-        <input type="text" class="admin-input-full" value="${loggedInUser.username || ''}" disabled style="background:#111; color:var(--grey); margin-bottom:0; cursor:not-allowed;">
-      </div>
-      <div style="text-align:left;">
-        <label style="color:var(--grey); font-size:0.7rem; display:block;">Email (Locked)</label>
-        <input type="email" class="admin-input-full" value="${loggedInUser.email || ''}" disabled style="background:#111; color:var(--grey); margin-bottom:0; cursor:not-allowed;">
-      </div>
-      <button class="btn btn--solid" style="width:100%; justify-content:center; margin-top:1rem;" onclick="saveUserProfileEdits()">Save Profile Changes 💾</button>
+    <div id="profile-account-tabs" class="account-tabs">
+      <button class="account-tab active" data-tab="profile" onclick="openAccountTab('profile')">Profile</button>
+      <button class="account-tab" data-tab="orders" onclick="openAccountTab('orders')">My Orders</button>
+      <button class="account-tab" data-tab="addresses" onclick="openAccountTab('addresses')">Saved Address</button>
     </div>
+
+    <div id="profile-tab-content">
+      <div style="text-align:center;margin-bottom:1rem;">
+        <div style="cursor:pointer;" onclick="document.getElementById('hidden-avatar-input').click()">${avatarDisplay}</div>
+        <input type="file" id="hidden-avatar-input" accept="image/*" style="display:none;" onchange="previewAndCropAvatar(event)">
+        <span style="font-family:'Space Mono';font-size:.68rem;color:var(--spray-yellow);">Click photo to change · Max 1MB</span>
+      </div>
+      <div class="account-grid">
+        <div class="account-field"><label>Email ID · Locked</label><input type="email" value="${escapeHtml(loggedInUser.email || '')}" disabled></div>
+        <div class="account-field"><label>Username · Locked</label><input type="text" value="${escapeHtml(loggedInUser.username || '')}" disabled></div>
+        <div class="account-field"><label>First Name / Full Name *</label><input id="edit-profile-name" type="text" value="${escapeHtml(loggedInUser.name || '')}"></div>
+        <div class="account-field"><label>Mobile Number</label><input id="edit-profile-phone" type="tel" value="${escapeHtml(loggedInUser.phone || '')}"></div>
+        <div class="account-field"><label>Date of Birth</label><input id="edit-profile-dob" type="date" value="${escapeHtml(loggedInUser.dateOfBirth || '')}"></div>
+        <div class="account-field"><label>Gender</label><select id="edit-profile-gender"><option value="">Select</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select></div>
+      </div>
+      <div style="font-family:'Space Mono';font-size:.68rem;color:var(--grey);margin:.3rem 0 1rem;">Google login automatically supplies your Google name, email and profile photo. Phone, date of birth and gender stay editable here.</div>
+      <button class="btn btn--solid" style="width:100%;justify-content:center;" onclick="saveUserProfileEdits()">Save Profile Changes</button>
+    </div>
+
+    <div id="profile-orders-tab-content" style="display:none;"></div>
+    <div id="profile-address-tab-content" style="display:none;"></div>
   `;
+
+  const gender = document.getElementById('edit-profile-gender');
+  if (gender) gender.value = loggedInUser.gender || '';
   document.getElementById('profile-modal').style.display = 'flex';
 }
 
-function closeProfileModal() {
-  document.getElementById('profile-modal').style.display = 'none';
+async function refreshCurrentProfile() {
+  if (!supabaseClient) return;
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) return;
+  await hydrateLoggedInUserFromSupabase(user, false);
 }
+
+function closeProfileModal() { document.getElementById('profile-modal').style.display = 'none'; }
 
 let croppedAvatarBlob = null;
 
 function previewAndCropAvatar(event) {
   const file = event.target.files[0];
   if (!file) return;
-  if (file.size > 1024 * 1024) {
-    showToast('File size exceeds 1MB limit!');
-    return;
-  }
-
+  if (file.size > 1024 * 1024) { showToast('File size exceeds 1MB limit!'); return; }
   const reader = new FileReader();
   reader.onload = function(e) {
     const img = new Image();
@@ -4020,23 +4072,14 @@ function previewAndCropAvatar(event) {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       const size = Math.min(img.width, img.height);
-      canvas.width = 300;
-      canvas.height = 300;
-      
-      const startX = (img.width - size) / 2;
-      const startY = (img.height - size) / 2;
-
-      ctx.drawImage(img, startX, startY, size, size, 0, 0, 300, 300);
-      
+      canvas.width = 300; canvas.height = 300;
+      ctx.drawImage(img, (img.width-size)/2, (img.height-size)/2, size, size, 0, 0, 300, 300);
       canvas.toBlob((blob) => {
         croppedAvatarBlob = blob;
         const previewUrl = URL.createObjectURL(blob);
         const prevEl = document.getElementById('profile-avatar-preview');
-        if (prevEl && prevEl.tagName === 'IMG') {
-          prevEl.src = previewUrl;
-        } else if (prevEl) {
-          prevEl.outerHTML = `<img id="profile-avatar-preview" src="${previewUrl}" style="width:85px; height:85px; border-radius:50%; object-fit:cover; margin:0 auto 10px; border:2px solid var(--spray-yellow); cursor:pointer;">`;
-        }
+        if (prevEl?.tagName === 'IMG') prevEl.src = previewUrl;
+        else if (prevEl) prevEl.outerHTML = `<img id="profile-avatar-preview" src="${previewUrl}" style="width:85px;height:85px;border-radius:50%;object-fit:cover;margin:0 auto 10px;border:2px solid var(--spray-yellow);cursor:pointer;">`;
         showToast('Image cropped 1:1 successfully!');
       }, 'image/jpeg', 0.9);
     };
@@ -4045,60 +4088,205 @@ function previewAndCropAvatar(event) {
 }
 
 async function saveUserProfileEdits() {
-  const newName = document.getElementById('edit-profile-name').value.trim();
-  const newPhone = document.getElementById('edit-profile-phone').value.trim();
-
-  if (!newName) {
-    showToast('Name cannot be empty!');
-    return;
-  }
+  if (!supabaseClient) return;
+  const newName = document.getElementById('edit-profile-name')?.value.trim();
+  const newPhone = document.getElementById('edit-profile-phone')?.value.trim() || '';
+  const newDob = document.getElementById('edit-profile-dob')?.value || '';
+  const newGender = document.getElementById('edit-profile-gender')?.value || '';
+  if (!newName) { showToast('Name cannot be empty!'); return; }
 
   let avatarUrl = loggedInUser.avatarUrl || '';
-
   if (croppedAvatarBlob) {
-    const fileName = `avatar_${loggedInUser.email || loggedInUser.username}_${Date.now()}.jpg`;
-    if (supabaseClient) {
-      try {
-        showToast('Uploading profile picture to Supabase...');
-        const { error: uploadErr } = await supabaseClient.storage.from('avatars').upload(fileName, croppedAvatarBlob, { contentType: 'image/jpeg', upsert: true });
-        if (!uploadErr) {
-          const { data: pubData } = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
-          if (pubData) avatarUrl = pubData.publicUrl;
-        } else {
-          console.error("Storage upload error:", uploadErr.message);
-          showToast('Upload failed: ' + uploadErr.message);
-          return;
-        }
-      } catch (e) {
-        console.warn('Avatar upload exception:', e);
-      }
-    }
+    const userId = (await supabaseClient.auth.getUser()).data.user?.id;
+    if (!userId) { showToast('Session expired. Please login again.'); return; }
+    const fileName = `${userId}/avatar_${Date.now()}.jpg`;
+    const { error: uploadErr } = await supabaseClient.storage.from('avatars').upload(fileName, croppedAvatarBlob, { contentType: 'image/jpeg', upsert: false });
+    if (uploadErr) { showToast('Profile photo upload failed: ' + uploadErr.message); return; }
+    const { data: pubData } = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
+    avatarUrl = pubData?.publicUrl || avatarUrl;
   }
 
-  loggedInUser.name = newName;
-  loggedInUser.phone = newPhone;
-  loggedInUser.avatarUrl = avatarUrl;
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) { showToast('Session expired. Please login again.'); return; }
+
+  const payload = { name: newName, phone: newPhone || null, avatar_url: avatarUrl || null, alt_phone: loggedInUser.altPhone || null, date_of_birth: newDob || null, gender: newGender || null };
+  const { error } = await supabaseClient.from('profiles').update(payload).eq('id', user.id);
+  if (error) {
+    // Graceful fallback for an older profiles table that does not yet have DOB/gender columns.
+    console.warn('Full profile update failed:', error.message);
+    const fallback = await supabaseClient.from('profiles').update({ name: newName, phone: newPhone || null, avatar_url: avatarUrl || null }).eq('id', user.id);
+    if (fallback.error) { showToast('Profile update failed: ' + fallback.error.message); return; }
+    showToast('Profile core details saved. Add date_of_birth/gender columns in Supabase to save those fields too.');
+  } else {
+    showToast('Profile updated successfully!');
+  }
+
+  loggedInUser = { ...loggedInUser, name: newName, phone: newPhone, avatarUrl, dateOfBirth: newDob, gender: newGender };
   sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
-
-  if (supabaseClient) {
-    try {
-      const { data: { user } } = await supabaseClient.auth.getUser();
-      if (user) {
-        await supabaseClient.from('profiles').update({
-          name: newName,
-          phone: newPhone,
-          avatar_url: avatarUrl
-        }).eq('id', user.id);
-      }
-    } catch (err) {
-      console.warn("Profile cloud update error:", err);
-    }
-  }
-
   updateUserBadgeDisplay();
-  showToast('Profile updated successfully!');
-  closeProfileModal();
+  croppedAvatarBlob = null;
 }
+
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderOrdersInsideProfile() {
+  const area = document.getElementById('profile-orders-tab-content');
+  if (!area) return;
+  const myOrders = ordersHistory.filter(o => o.userEmail === loggedInUser?.email || (o.billing && o.billing.email === loggedInUser?.email));
+  if (!myOrders.length) { area.innerHTML = `<div style="font-family:'Space Mono';color:var(--grey);padding:1rem;text-align:center;">No order history found.</div>`; return; }
+  area.innerHTML = myOrders.map(ord => {
+    const items = Array.isArray(ord.items) ? ord.items.map(it => `<div style="font-family:'Space Mono';font-size:.72rem;color:var(--paper);padding:.2rem 0;">• ${escapeHtml(it.title || it.name || 'Product')} · Size: ${escapeHtml(it.size || '-')} · Color: ${escapeHtml(it.color || '-')} · Qty: ${escapeHtml(it.qty || it.quantity || 1)} · ₹${Number((it.price || it.rate || 0) * (it.qty || it.quantity || 1)).toFixed(0)}</div>`).join('') : '';
+    return `<div class="address-card" onclick="toggleUserOrderExpand('${escapeHtml(ord.id)}')" style="cursor:pointer;">
+      <div class="address-card-head"><strong class="address-label">${escapeHtml(ord.id)}</strong><span style="font-family:'Space Mono';font-size:.68rem;color:var(--grey);">${escapeHtml(ord.date || '')}</span></div>
+      <div class="address-meta">Total: ₹${Number(ord.totalAmount || 0).toFixed(0)} · Payment: ${escapeHtml(ord.paymentStatus || 'paid')} · Status: ${escapeHtml(ord.orderStatus || 'New')}</div>
+      <div id="user-order-items-${escapeHtml(ord.id)}" style="display:none;margin-top:.7rem;border-top:1px dashed rgba(242,240,234,.18);padding-top:.6rem;">${items}<div style="font-family:'Space Mono';font-size:.7rem;color:var(--grey);margin-top:.4rem;">Shipping: ${escapeHtml(ord.billing?.address || '')}</div></div>
+    </div>`;
+  }).join('');
+}
+
+async function renderAddressesInsideProfile() {
+  const area = document.getElementById('profile-address-tab-content');
+  if (!area) return;
+  if (!supabaseClient) { area.innerHTML = '<div style="color:var(--grey);">Supabase not connected.</div>'; return; }
+  area.innerHTML = `<div style="font-family:'Space Mono';color:var(--grey);padding:1rem;text-align:center;">Loading saved addresses...</div>`;
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) return;
+  const { data, error } = await supabaseClient.from('user_addresses').select('*').eq('user_id', user.id).order('is_default', { ascending:false }).order('created_at', { ascending:false });
+  if (error) { area.innerHTML = `<div style="font-family:'Space Mono';color:var(--rebel-red);font-size:.72rem;">Saved addresses table is not ready: ${escapeHtml(error.message)}</div>`; return; }
+  area.innerHTML = `<button class="btn btn--solid" style="width:100%;justify-content:center;margin-bottom:1rem;" onclick="openSavedAddressesModal()">Manage Saved Addresses</button>` + ((data||[]).map(a => `<div class="address-card ${a.is_default?'default':''}"><div class="address-card-head"><strong class="address-label">${escapeHtml(a.label || 'Other')}</strong>${a.is_default?`<span style="font-family:'Space Mono';font-size:.64rem;color:var(--success-green);">DEFAULT</span>`:''}</div><div class="address-meta"><strong>${escapeHtml(a.recipient_name || '')}</strong><br>${escapeHtml(a.address1 || '')}${a.address2 ? ', '+escapeHtml(a.address2):''}<br>${escapeHtml(a.district || '')}${a.state ? ', '+escapeHtml(a.state):''} - ${escapeHtml(a.pincode || '')}<br>${escapeHtml(a.phone || '')}</div></div>`).join('') || `<div style="font-family:'Space Mono';color:var(--grey);text-align:center;padding:1rem;">No saved addresses yet.</div>`);
+}
+
+async function openSavedAddressesModal() {
+  if (!loggedInUser || !supabaseClient) { showToast('Please login first.'); return; }
+  document.getElementById('saved-address-modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  populateAddressStateSelect();
+  resetAddressForm();
+  await loadSavedAddresses();
+}
+
+function closeSavedAddressesModal() {
+  document.getElementById('saved-address-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function populateAddressStateSelect() {
+  const stateEl = document.getElementById('address-state');
+  if (!stateEl) return;
+  stateEl.innerHTML = '<option value="">Select State</option>' + Object.keys(INDIA_LOCATIONS).map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+  stateEl.onchange = () => {
+    const districtEl = document.getElementById('address-district');
+    const state = stateEl.value;
+    districtEl.innerHTML = '<option value="">Select District</option>' + (INDIA_LOCATIONS[state] || []).map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
+  };
+}
+
+function resetAddressForm() {
+  const ids=['address-edit-id','address-recipient-name','address-phone','address-pincode','address-line1','address-line2'];
+  ids.forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  const label=document.getElementById('address-label'); if(label) label.value='Home';
+  const def=document.getElementById('address-is-default'); if(def) def.checked=false;
+  const title=document.getElementById('address-form-title'); if(title) title.innerText='Add New Address';
+  const cancel=document.getElementById('address-cancel-btn'); if(cancel) cancel.style.display='none';
+  const state=document.getElementById('address-state'); if(state) state.value='';
+  const district=document.getElementById('address-district'); if(district) district.innerHTML='<option value="">Select District</option>';
+}
+
+async function loadSavedAddresses() {
+  const list=document.getElementById('saved-address-list');
+  if(!list || !supabaseClient) return;
+  const {data:{user}}=await supabaseClient.auth.getUser();
+  if(!user) return;
+  const {data,error}=await supabaseClient.from('user_addresses').select('*').eq('user_id',user.id).order('is_default',{ascending:false}).order('created_at',{ascending:false});
+  if(error){ list.innerHTML=`<div style="font-family:'Space Mono';color:var(--rebel-red);font-size:.72rem;">${escapeHtml(error.message)}<br><br>Create the <strong>user_addresses</strong> table in Supabase using the SQL provided with this update.</div>`; return; }
+  if(!data?.length){ list.innerHTML=`<div style="font-family:'Space Mono';color:var(--grey);font-size:.75rem;text-align:center;padding:1rem;">No saved addresses. Add your first address below.</div>`; return; }
+  list.innerHTML=data.map(a=>`<div class="address-card ${a.is_default?'default':''}">
+    <div class="address-card-head"><strong class="address-label">${escapeHtml(a.label||'Other')}</strong>${a.is_default?`<span style="font-family:'Space Mono';font-size:.64rem;color:var(--success-green);">DEFAULT</span>`:''}</div>
+    <div class="address-meta"><strong>${escapeHtml(a.recipient_name||'')}</strong><br>${escapeHtml(a.address1||'')}${a.address2?', '+escapeHtml(a.address2):''}<br>${escapeHtml(a.district||'')}${a.state?', '+escapeHtml(a.state):''} - ${escapeHtml(a.pincode||'')}<br>${escapeHtml(a.phone||'')}</div>
+    <div class="address-actions"><button onclick="editSavedAddress('${escapeHtml(a.id)}')">Edit</button>${!a.is_default?`<button class="primary" onclick="setDefaultSavedAddress('${escapeHtml(a.id)}')">Set as Default</button>`:'<button class="primary" disabled style="opacity:.6;cursor:default;">Default Address</button>'}<button class="danger" onclick="deleteSavedAddress('${escapeHtml(a.id)}')">Delete</button></div>
+  </div>`).join('');
+}
+
+async function saveSavedAddress() {
+  if(!supabaseClient) return;
+  const {data:{user}}=await supabaseClient.auth.getUser();
+  if(!user){showToast('Please login again.');return;}
+  const editId=document.getElementById('address-edit-id').value;
+  const payload={
+    user_id:user.id,
+    label:document.getElementById('address-label').value,
+    recipient_name:document.getElementById('address-recipient-name').value.trim(),
+    phone:document.getElementById('address-phone').value.trim(),
+    address1:document.getElementById('address-line1').value.trim(),
+    address2:document.getElementById('address-line2').value.trim(),
+    district:document.getElementById('address-district').value,
+    state:document.getElementById('address-state').value,
+    pincode:document.getElementById('address-pincode').value.trim(),
+    is_default:document.getElementById('address-is-default').checked
+  };
+  if(!payload.recipient_name||!payload.address1||!/^\d{6}$/.test(payload.pincode)){showToast('Enter recipient name, address line 1 and a valid 6-digit pincode.');return;}
+  if(payload.is_default) await supabaseClient.from('user_addresses').update({is_default:false}).eq('user_id',user.id);
+  if(editId){
+    const {error}=await supabaseClient.from('user_addresses').update({...payload,updated_at:new Date().toISOString()}).eq('id',editId).eq('user_id',user.id);
+    if(error){showToast('Address update failed: '+error.message);return;}
+  }else{
+    const {error}=await supabaseClient.from('user_addresses').insert(payload);
+    if(error){showToast('Address save failed: '+error.message);return;}
+  }
+  resetAddressForm();
+  await loadSavedAddresses();
+  showToast('Address saved successfully!');
+}
+
+async function editSavedAddress(id) {
+  const {data:{user}}=await supabaseClient.auth.getUser(); if(!user)return;
+  const {data,error}=await supabaseClient.from('user_addresses').select('*').eq('id',id).eq('user_id',user.id).maybeSingle();
+  if(error||!data){showToast('Address not found.');return;}
+  document.getElementById('address-edit-id').value=data.id;
+  document.getElementById('address-label').value=data.label||'Other';
+  document.getElementById('address-recipient-name').value=data.recipient_name||'';
+  document.getElementById('address-phone').value=data.phone||'';
+  document.getElementById('address-pincode').value=data.pincode||'';
+  document.getElementById('address-line1').value=data.address1||'';
+  document.getElementById('address-line2').value=data.address2||'';
+  document.getElementById('address-state').value=data.state||'';
+  document.getElementById('address-state').dispatchEvent(new Event('change'));
+  document.getElementById('address-district').value=data.district||'';
+  document.getElementById('address-is-default').checked=!!data.is_default;
+  document.getElementById('address-form-title').innerText='Edit Address';
+  document.getElementById('address-cancel-btn').style.display='inline-flex';
+}
+
+async function setDefaultSavedAddress(id) {
+  const {data:{user}}=await supabaseClient.auth.getUser(); if(!user)return;
+  const {error}=await supabaseClient.from('user_addresses').update({is_default:false}).eq('user_id',user.id);
+  if(error){showToast('Could not update default address.');return;}
+  const {error:second}=await supabaseClient.from('user_addresses').update({is_default:true,updated_at:new Date().toISOString()}).eq('id',id).eq('user_id',user.id);
+  if(second){showToast('Could not set default address.');return;}
+  await loadSavedAddresses();
+  showToast('Default address updated!');
+}
+
+async function deleteSavedAddress(id) {
+  if(!confirm('Delete this saved address?')) return;
+  const {data:{user}}=await supabaseClient.auth.getUser(); if(!user)return;
+  const {error}=await supabaseClient.from('user_addresses').delete().eq('id',id).eq('user_id',user.id);
+  if(error){showToast('Delete failed: '+error.message);return;}
+  resetAddressForm();
+  await loadSavedAddresses();
+  showToast('Address deleted.');
+}
+
+async function getDefaultSavedAddress(){
+  if(!supabaseClient)return null;
+  const {data:{user}}=await supabaseClient.auth.getUser(); if(!user)return null;
+  const {data,error}=await supabaseClient.from('user_addresses').select('*').eq('user_id',user.id).eq('is_default',true).maybeSingle();
+  if(error){console.warn('Default address query:',error.message);return null;}
+  return data||null;
+}
+
 
 function openOrdersModal() {
   if (!loggedInUser) return;
