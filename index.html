@@ -6,6 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
+<!-- REBEL_PROFILE_UI_VERSION: 2026-09-08-DARK-FINAL -->
 <title>REBEL STORE — Wear the Uprising</title>
 
 <meta name="google-site-verification" content="820c37cc797b4dc9" />
@@ -317,10 +318,10 @@ footer a:hover{color:var(--paper)}
 .profile-modal-box.address-editor-box{
   max-width:980px;
   width:100%;
-  background:#f8f8f6;
-  color:#17171a;
-  border:1px solid #d9d9d4;
-  box-shadow:10px 10px 0 rgba(255,213,0,.45);
+  background:#141416 !important;
+  color:var(--paper) !important;
+  border:2px solid var(--spray-yellow) !important;
+  box-shadow:8px 8px 0 var(--paper) !important;
   padding:0;
   border-radius:4px;
   overflow:hidden;
@@ -423,9 +424,22 @@ footer a:hover{color:var(--paper)}
 }
 
 </style>
-<!-- REBEL_STORE_BUILD: PROFILE_ORDERS_ADDRESSES_DARK_2026-09-08 -->
+
+<style id="rebel-profile-dark-force">
+/* Host-safe Rebel Store profile/order/address theme */
+#profile-modal .profile-modal-box.profile-hub-box,
+#orders-modal .profile-modal-box.orders-hub-box,
+#saved-addresses-modal .profile-modal-box.addresses-hub-box,
+#address-editor-modal .profile-modal-box.address-editor-box{background:#141416 !important;color:var(--paper) !important;border:2px solid var(--spray-yellow) !important;box-shadow:8px 8px 0 var(--paper) !important;}
+#profile-modal .profile-main,#orders-modal .orders-main,#saved-addresses-modal .addresses-main{background:#141416 !important;color:var(--paper) !important;}
+#profile-modal .profile-email-row,#profile-modal .profile-field input,#profile-modal .profile-field select,#address-editor-modal .address-editor-body{background:#111113 !important;color:var(--paper) !important;}
+#orders-modal .order-card-ref,#saved-addresses-modal .saved-address-card{background:#111113 !important;color:var(--paper) !important;border-color:rgba(242,240,234,.12) !important;}
+#orders-modal .order-card-top,#orders-modal .order-card-body,#orders-modal .order-details,#saved-addresses-modal .addresses-main,#address-editor-modal .address-editor-body,#address-editor-modal .address-editor-footer,#address-editor-modal .address-editor-head{background:#111113 !important;color:var(--paper) !important;}
+#profile-modal h3,#orders-modal h3,#saved-addresses-modal h3,#address-editor-modal #address-editor-title{color:var(--paper) !important;}
+</style>
+<meta name="rebel-security-version" content="2026-09-08-supabase-hardened-v1">
 </head>
-<body>
+<body data-rebel-profile-ui-version="2026-09-08-DARK-FINAL">
 
   <div class="ticker" aria-hidden="true">
     <div class="ticker__track" id="ticker-track-box">
@@ -461,7 +475,7 @@ footer a:hover{color:var(--paper)}
         <div class="user-dropdown-item" onclick="logoutUser()" style="color:var(--rebel-red);">🚪 Logout</div>
       </div>
       <button class="wishlist-icon-btn" onclick="openWishlistModal()" title="View Wishlist">❤️</button>
-      <button class="cart-btn" onclick="toggleCartDrawer(true)">Cart (<span id="header-cart-count">0</span>)</button>
+      <button class="cart-btn" onclick="toggleCartDrawer(true)">Cart (<span id="cart-count">0</span>)</button>
     </div>
   </header>
 
@@ -626,7 +640,7 @@ footer a:hover{color:var(--paper)}
   <div class="cart-overlay" id="cart-overlay" onclick="toggleCartDrawer(false)"></div>
   <aside class="cart-drawer" id="cart-drawer">
     <div class="cart-header">
-      <h3>Your Bag (<span id="drawer-cart-count">0</span>)</h3>
+      <h3>Your Bag (<span id="cart-count">0</span>)</h3>
       <button class="cart-close-btn" onclick="toggleCartDrawer(false)">×</button>
     </div>
     <div class="cart-items-list" id="cart-items-list"></div>
@@ -817,7 +831,7 @@ footer a:hover{color:var(--paper)}
           </div>
         </aside>
         <main class="orders-main">
-          <h3 style="font-family:'Work Sans'; color:#666; text-transform:uppercase; margin-bottom:1.2rem;">MY ORDERS</h3>
+          <h3 style="font-family:'Work Sans'; color:var(--paper); text-transform:uppercase; margin-bottom:1.2rem;">MY ORDERS</h3>
           <div id="orders-content-area" class="orders-list"></div>
         </main>
       </div>
@@ -844,7 +858,7 @@ footer a:hover{color:var(--paper)}
           </div>
         </aside>
         <main class="addresses-main">
-          <h3 style="font-family:'Work Sans'; color:#666; text-transform:uppercase; margin-bottom:1rem;">SAVED ADDRESS</h3>
+          <h3 style="font-family:'Work Sans'; color:var(--paper); text-transform:uppercase; margin-bottom:1rem;">SAVED ADDRESS</h3>
           <div class="addresses-toolbar">
             <button class="address-add-btn" onclick="openAddressEditor()">＋ Add New Address</button>
           </div>
@@ -878,8 +892,8 @@ footer a:hover{color:var(--paper)}
           <div class="profile-field"><label>Country</label><select id="addr-country"><option value="India">India</option></select></div>
         </div>
         <div class="profile-field" style="margin-top:.8rem;"><label>Mobile Number *</label><input type="tel" id="addr-mobile" placeholder="7010660697" required></div>
-        <div id="addr-pincode-status" style="font-family:'Space Mono';font-size:.65rem;color:#178c90;margin-top:.35rem;"></div>
-        <label style="display:flex;align-items:center;gap:.5rem;font-size:.76rem;color:#444;margin-top:1rem;"><input type="checkbox" id="addr-default"> Save This As Default Address</label>
+        <div id="addr-pincode-status" style="font-family:'Space Mono';font-size:.65rem;color:var(--spray-yellow);margin-top:.35rem;"></div>
+        <label style="display:flex;align-items:center;gap:.5rem;font-size:.76rem;color:var(--paper);margin-top:1rem;"><input type="checkbox" id="addr-default"> Save This As Default Address</label>
       </div>
       <div class="address-editor-footer">
         <button class="address-cancel-btn" onclick="closeAddressEditor()">Cancel</button>
@@ -1380,11 +1394,6 @@ if(localStorage.getItem('rebel_site_content')) {
   localStorage.setItem('rebel_site_content', JSON.stringify(sc));
 }
 
-const ZOHO_CLIENT_ID = "1000.48QVXYWE9JBL8LYH7J165IMT0U8NRA";
-const ZOHO_CLIENT_SECRET = "918803c297b3f077ef8c53f117fd76c4a2b14b6883";
-const ZOHO_REFRESH_TOKEN = "1000.a4c324d91e73eb928f6c3c7044f48fea.29018644ed9166f209b582f5d3356672";
-const ZOHO_ORG_ID = "60083739244";
-
 const SUPABASE_PROJECT_URL = 'https://rdqzslvgqtajhiwxwauo.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkcXpzbHZncXRhamhpd3h3YXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyMjYyMTYsImV4cCI6MjEwMjgwMjIxNn0.lSrbO0h57wBBqgu_z4D9fhffN8VawX-HcaDANOUOKok';
 
@@ -1402,6 +1411,36 @@ try {
   }
 } catch (e) {
   console.warn("Supabase init fallback:", e);
+}
+
+const FUNCTIONS_BASE_URL = SUPABASE_PROJECT_URL + '/functions/v1';
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+async function getAuthenticatedUser() {
+  if (!supabaseClient) return null;
+  try {
+    const { data, error } = await supabaseClient.auth.getUser();
+    if (error) throw error;
+    return data?.user || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function invokeSecureFunction(name, body = {}) {
+  if (!supabaseClient) throw new Error('Supabase is not connected.');
+  const { data, error } = await supabaseClient.functions.invoke(name, { body });
+  if (error) throw error;
+  if (data?.error) throw new Error(data.error);
+  return data;
 }
 
 const INDIA_LOCATIONS = {
@@ -1498,7 +1537,6 @@ async function handlePincodeLookup(pincode) {
       if (loggedInUser) {
         loggedInUser.state = matchedState;
         loggedInUser.district = apiDistrict;
-        sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
       }
 
       statusHint.innerText = `✓ Detected: ${apiDistrict}, ${apiState}`;
@@ -1557,7 +1595,7 @@ let SITE_CONTENT = JSON.parse(localStorage.getItem('rebel_site_content')) || DEF
 let ordersHistory = JSON.parse(localStorage.getItem('rebel_orders_history')) || [];
 let trashOrdersHistory = JSON.parse(localStorage.getItem('rebel_trash_orders_history')) || [];
 let customOrdersHistory = JSON.parse(localStorage.getItem('rebel_custom_orders_history')) || [];
-let staffAccounts = JSON.parse(localStorage.getItem('rebel_staff_accounts')) || [];
+let staffAccounts = [];
 
 let cart = JSON.parse(localStorage.getItem('rebel_cart')) || [];
 let wishlist = JSON.parse(localStorage.getItem('rebel_wishlist')) || [];
@@ -1872,29 +1910,45 @@ function changeCustQty(amount) {
 async function uploadFileToSupabaseStorage(fileInputId, bucketName = 'custom-prints') {
   const fileInput = document.getElementById(fileInputId);
   if (!fileInput || !fileInput.files || !fileInput.files[0]) return null;
+
+  const user = await getAuthenticatedUser();
+  if (!user) {
+    throw new Error('Please sign in before uploading custom artwork.');
+  }
+
   const file = fileInput.files[0];
+  const allowedTypes = ['image/png', 'image/jpeg', 'image/webp'];
+  if (!allowedTypes.includes(file.type)) {
+    throw new Error('Only PNG, JPG/JPEG or WebP files are allowed.');
+  }
   if (file.size > 5 * 1024 * 1024) {
     showToast(`File ${file.name} exceeds 5MB limit!`);
-    throw new Error("File exceeds 5MB limit");
+    throw new Error('File exceeds 5MB limit');
   }
-  const fileExt = file.name.split('.').pop();
-  const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
-  const filePath = `${fileName}`;
 
-  if (supabaseClient) {
-    try {
-      const { data, error } = await supabaseClient.storage.from(bucketName).upload(filePath, file);
-      if (error) throw error;
-      const { data: publicUrlData } = supabaseClient.storage.from(bucketName).getPublicUrl(filePath);
-      return { name: file.name, path: publicUrlData.publicUrl };
-    } catch (err) {
-      console.warn("Storage upload fallback to local URL:", err);
-    }
-  }
-  return { name: file.name, path: URL.createObjectURL(file) };
+  const ext = file.name.split('.').pop()?.toLowerCase() || 'bin';
+  const safeBase = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 80);
+  const filePath = `${user.id}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
+
+  const { error } = await supabaseClient.storage
+    .from(bucketName)
+    .upload(filePath, file, { contentType: file.type, upsert: false });
+
+  if (error) throw error;
+
+  return {
+    name: safeBase,
+    path: filePath
+  };
 }
 
 async function addCustomOrderToCart() {
+  if (!loggedInUser) {
+    window.pendingActionAfterLogin = 'custom-order';
+    handleAuthClick();
+    return;
+  }
+
   if (custQty < 2) {
     showToast('Minimum quantity for custom order is 2!');
     return;
@@ -1922,46 +1976,6 @@ async function addCustomOrderToCart() {
     };
     cart.push(customItem);
     localStorage.setItem('rebel_cart', JSON.stringify(cart));
-
-    // Save to Custom Orders History for Admin View
-    const todayStr = new Date().toISOString().split('T')[0];
-    const customRecordId = 'CUST-' + Math.floor(100000 + Math.random() * 900000);
-    const customOrderRecord = {
-      orderId: customRecordId,
-      date: todayStr,
-      customer: {
-        name: loggedInUser ? (loggedInUser.name || loggedInUser.username) : 'Guest Customer',
-        phone: loggedInUser ? (loggedInUser.phone || 'N/A') : 'N/A',
-        address: loggedInUser ? (loggedInUser.address || 'Online Custom Order') : 'Online Custom Order'
-      },
-      title: `Custom ${garment} (${custColor})`,
-      size: custSize,
-      color: custColor,
-      qty: custQty,
-      totalAmount: custUnitPrice * custQty,
-      prints: { front: frontPrint, back: backPrint }
-    };
-    customOrdersHistory.unshift(customOrderRecord);
-    localStorage.setItem('rebel_custom_orders_history', JSON.stringify(customOrdersHistory));
-
-    if (supabaseClient) {
-      try {
-        await supabaseClient.from('custom_orders').insert([{
-          order_id: customRecordId,
-          customer_name: customOrderRecord.customer.name,
-          customer_phone: customOrderRecord.customer.phone,
-          garment: garment,
-          color: custColor,
-          size: custSize,
-          quantity: custQty,
-          total_amount: customOrderRecord.totalAmount,
-          prints: { front: frontPrint, back: backPrint }
-        }]);
-      } catch (err) {
-        console.warn("Supabase custom orders sync warning:", err);
-      }
-    }
-
     updateCartBadge();
     renderCartDrawer();
     showToast('Custom order added to cart successfully!');
@@ -2144,13 +2158,19 @@ function addToCart() {
   localStorage.setItem('rebel_cart', JSON.stringify(cart));
   
   if (loggedInUser && supabaseClient) {
-    supabaseClient.from('cart_items').insert([{
-      user_id: loggedInUser.email || loggedInUser.username,
-      product_name: `${currentProduct.title} (${selectedColor})`,
-      product_price: currentProduct.price,
-      product_image: productImg,
-      quantity: selectedQty
-    }]).then(({ error }) => {
+    getAuthenticatedUser().then(user => {
+      if (!user) return null;
+      return supabaseClient.from('cart_items').insert([{
+        user_id: user.id,
+        product_id: currentProduct.id,
+        product_name: `${currentProduct.title} (${selectedColor})`,
+        product_price: currentProduct.price,
+        product_image: productImg,
+        quantity: selectedQty,
+        size: selectedSize,
+        color: selectedColor
+      }]);
+    }).then(({ error } = {}) => {
       if (error) console.error("Cloud cart sync error:", error.message);
     });
   }
@@ -2190,9 +2210,11 @@ async function addToWishlist() {
 
   if (loggedInUser && supabaseClient) {
     try {
+      const user = await getAuthenticatedUser();
+      if (!user) throw new Error('Session expired.');
       await supabaseClient.from('wishlist_items').insert([{
-        user_id: loggedInUser.email || loggedInUser.username,
-        customer_name: loggedInUser.name || loggedInUser.username,
+        user_id: user.id,
+        product_id: currentProduct.id,
         product_name: `${currentProduct.title} (${selectedColor})`,
         product_price: currentProduct.price,
         product_image: productImg
@@ -2248,12 +2270,8 @@ function removeFromWishlist(e, idx) {
 function updateCartBadge() {
   const currentCart = Array.isArray(cart) ? cart : [];
   const totalItems = currentCart.reduce((sum, item) => sum + Number(item.qty || 0), 0);
-
-  const headerCartCount = document.getElementById('header-cart-count');
-  if (headerCartCount) headerCartCount.innerText = totalItems;
-
-  const drawerCartCount = document.getElementById('drawer-cart-count');
-  if (drawerCartCount) drawerCartCount.innerText = totalItems;
+  const cartCountEl = document.getElementById('cart-count');
+  if (cartCountEl) cartCountEl.innerText = totalItems;
 }
 
 function applyCoupon() {
@@ -2275,16 +2293,14 @@ function applyCoupon() {
 
 function renderCartDrawer() {
   const list = document.getElementById('cart-items-list');
-  const headerCountEl = document.getElementById('header-cart-count');
-  const drawerCountEl = document.getElementById('drawer-cart-count');
+  const countEl = document.getElementById('cart-count');
   const totalEl = document.getElementById('cart-total-price');
   if (!list) return;
   list.innerHTML = '';
   if (cart.length === 0) {
     list.innerHTML = `<div class="cart-empty-state">Your bag is empty.</div>`;
     totalEl.innerText = 'ரூ 0';
-    if (headerCountEl) headerCountEl.innerText = '0';
-    if (drawerCountEl) drawerCountEl.innerText = '0';
+    countEl.innerText = '0';
     return;
   }
   let total = 0;
@@ -2344,7 +2360,7 @@ function goToShippingPage() {
   showShippingFormView();
 }
 
-function showShippingFormView() {
+async function showShippingFormView() {
   document.getElementById('home-view').style.display = 'none';
   document.getElementById('product-page').style.display = 'none';
   document.getElementById('custom-order-page').style.display = 'none';
@@ -2374,6 +2390,7 @@ function showShippingFormView() {
       });
     }
   }
+  try { await loadSavedAddressesFromSupabase(); } catch (e) { console.warn("Saved address preload skipped:", e); }
   prefillShippingFromSavedAddress();
   window.location.hash = '#shipping';
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2408,7 +2425,6 @@ function validateBillingForm() {
   loggedInUser.pincode = pincode;
   loggedInUser.state = state;
   loggedInUser.district = district;
-  sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
 
   return {
     name, 
@@ -2453,23 +2469,27 @@ async function proceedToPayment() {
   localStorage.setItem('rebel_pending_order', JSON.stringify(pendingOrder));
 
   try {
-    const response = await fetch('https://rdqzslvgqtajhiwxwauo.supabase.co/functions/v1/Create_razorpay_order', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-      },
-      body: JSON.stringify({
-        amount: subtotal,
-        receipt: 'rebel_receipt_' + Date.now()
-      })
-    });
-
-    const data = await response.json();
-
-    if (!response.ok || data.error) {
-      throw new Error(data.error || "Failed to create order ID from backend.");
+    const { data: sessionData } = await supabaseClient.auth.getSession();
+    if (!sessionData?.session?.access_token) {
+      throw new Error('Please sign in again before payment.');
     }
+
+    // Frontend total is for display only. The Edge Function recalculates
+    // the authoritative amount from products/coupon rules.
+    const data = await invokeSecureFunction('Create_razorpay_order', {
+      items: cart.map(item => ({
+        id: item.id || null,
+        title: item.title || '',
+        size: item.size || '',
+        color: item.color || '',
+        qty: Number(item.qty || 0),
+        isCustom: !!item.isCustom,
+        customUnitPrice: item.isCustom ? Number(custUnitPrice || 699) : null
+      })),
+      couponCode: isCouponApplied ? activeOfferCode : '',
+      billing: billingData,
+      receipt: 'rebel_receipt_' + Date.now()
+    });
 
     var options = {
       "key": "rzp_test_TTJ0p8owj4fZZT",
@@ -2480,10 +2500,19 @@ async function proceedToPayment() {
       "description": "Heavyweight Streetwear Order",
       "image": "https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20LOGO.png",
       "handler": async function (response) {
-        const paymentId = response.razorpay_payment_id;
-        await handleOrderSuccessDirect(paymentId);
-        payBtn.disabled = false;
-        payBtn.innerText = 'Proceed to Payment →';
+        try {
+          await handleOrderSuccessDirect(
+            response.razorpay_payment_id,
+            response.razorpay_order_id,
+            response.razorpay_signature
+          );
+        } catch (verifyError) {
+          console.error('Payment verification error:', verifyError);
+          alert('Payment received, but verification failed. Please contact support before placing another order.');
+        } finally {
+          payBtn.disabled = false;
+          payBtn.innerText = 'Proceed to Payment →';
+        }
       },
       "prefill": {
         "name": billingData.name,
@@ -2506,7 +2535,7 @@ async function proceedToPayment() {
     
     rzp1.on('payment.failed', function (response){
         console.error("Razorpay Error Object:", response.error);
-        alert("Payment Failed!\nReason: " + response.error.description);
+        alert("Payment failed. Please try again or contact support if your account was charged.");
         payBtn.disabled = false;
         payBtn.innerText = 'Proceed to Payment →';
     });
@@ -2522,22 +2551,14 @@ async function proceedToPayment() {
 }
 
 async function generateZohoInvoice(orderId) {
-  const foundOrder = ordersHistory.find(o => o.id === orderId);
-  if (!foundOrder) return;
-
-  showToast('Generating Zoho Invoice... Please wait.');
-  
+  if (!orderId) return;
   try {
-    const tokenUrl = `https://accounts.zoho.in/oauth/v2/token?refresh_token=${ZOHO_REFRESH_TOKEN}&client_id=${ZOHO_CLIENT_ID}&client_secret=${ZOHO_CLIENT_SECRET}&grant_type=refresh_token`;
-    console.log("Preparing to send Zoho Auth Request to: ", tokenUrl);
-    
-    setTimeout(() => {
-      showToast(`Invoice successfully generated in Zoho for Order ${orderId}!`);
-    }, 1500);
-
+    showToast('Sending invoice request securely...');
+    const data = await invokeSecureFunction('zoho_invoice', { orderId });
+    showToast(data?.message || `Zoho invoice created for ${orderId}.`);
   } catch (error) {
-    console.error("Zoho Invoice Generation Error:", error);
-    showToast("Failed to generate Zoho Invoice. Check console.");
+    console.error('Zoho invoice request failed:', error);
+    showToast('Zoho invoice could not be created.');
   }
 }
 
@@ -2611,74 +2632,37 @@ function downloadCourierLabelPDF(orderId) {
   doc.save(`RebelStore_ShippingLabel_${ord.id}.pdf`);
 }
 
-async function handleOrderSuccessDirect(paymentId) {
-  const savedOrder = JSON.parse(localStorage.getItem('rebel_pending_order'));
-  if (!savedOrder) {
-    console.warn("No pending order found in localStorage.");
-    return;
+async function handleOrderSuccessDirect(paymentId, razorpayOrderId, razorpaySignature) {
+  const savedOrder = JSON.parse(localStorage.getItem('rebel_pending_order') || 'null');
+  if (!savedOrder || !paymentId || !razorpayOrderId || !razorpaySignature) {
+    throw new Error('Incomplete payment verification data.');
   }
 
-  const todayStr = savedOrder.date || new Date().toISOString().split('T')[0];
-  const finalOrderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
-  const totalQuantity = savedOrder.items.reduce((s, i) => s + Number(i.qty || 1), 0);
-
-  const formattedItems = savedOrder.items.map(it => ({
-    ...it,
-    stockStatus: it.stockStatus || { available: true, notes: '' }
-  }));
-
-  const orderRecord = {
-    order_id: finalOrderId,
-    customer_name: savedOrder.billing.name,
-    customer_email: savedOrder.billing.email,
-    customer_phone: savedOrder.billing.phone,
-    customer_address: savedOrder.billing.address,
-    items: formattedItems,
-    total_qty: totalQuantity,
-    total_amount: savedOrder.totalAmount,
-    payment_status: 'paid',
-    razorpay_payment_id: paymentId,
-    order_status: 'New'
-  };
-
-  if (supabaseClient) {
-    try {
-      await supabaseClient.from('orders').insert([orderRecord]);
-    } catch (e) {
-      console.error("Order save exception:", e);
-    }
-  }
-
-  ordersHistory.unshift({
-    id: finalOrderId,
-    date: todayStr,
-    userEmail: savedOrder.billing.email,
-    billing: savedOrder.billing,
-    totalQty: totalQuantity,
-    totalAmount: savedOrder.totalAmount,
-    items: formattedItems,
-    paymentStatus: 'paid',
-    paymentId: paymentId,
-    orderStatus: 'New'
+  const verified = await invokeSecureFunction('verify_razorpay_payment', {
+    paymentId,
+    razorpayOrderId,
+    razorpaySignature
   });
-  localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
+
+  if (!verified?.success) {
+    throw new Error(verified?.error || 'Payment could not be verified.');
+  }
 
   localStorage.removeItem('rebel_pending_order');
   cart = [];
   localStorage.removeItem('rebel_cart');
   updateCartBadge();
-  showOrderSuccessCelebration(finalOrderId, paymentId);
+  renderCartDrawer();
+
+  showOrderSuccessCelebration(
+    verified.order?.order_id || razorpayOrderId,
+    paymentId
+  );
 }
 
 function checkRazorpayReturnStatus() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const paymentStatus = urlParams.get('payment');
-  const paymentId = urlParams.get('razorpay_payment_id') || urlParams.get('razorpay_payment_link_id') || 'RZP_' + Date.now();
-
-  if (paymentStatus === 'success') {
-    handleOrderSuccessDirect(paymentId);
-    window.history.replaceState({}, document.title, window.location.pathname);
-  }
+  // Deliberately no-op: payment success is accepted only after
+  // server-side Razorpay signature/status verification.
 }
 
 function showOrderSuccessCelebration(orderId, paymentId) {
@@ -2828,7 +2812,6 @@ function deleteOrderToTrash(orderId) {
     const deletedOrd = ordersHistory.splice(index, 1)[0];
     deletedOrd.deletedAt = new Date().toISOString();
     trashOrdersHistory.unshift(deletedOrd);
-    localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
     localStorage.setItem('rebel_trash_orders_history', JSON.stringify(trashOrdersHistory));
     showToast(`Order ${orderId} moved to Trash Bin!`);
     renderAdminPanels(currentSelectedDateFilter);
@@ -2842,7 +2825,6 @@ function restoreOrderFromTrash(orderId) {
     const restoredOrd = trashOrdersHistory.splice(index, 1)[0];
     delete restoredOrd.deletedAt;
     ordersHistory.unshift(restoredOrd);
-    localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
     localStorage.setItem('rebel_trash_orders_history', JSON.stringify(trashOrdersHistory));
     showToast(`Order ${orderId} restored successfully!`);
     renderAdminPanels(currentSelectedDateFilter);
@@ -2937,7 +2919,6 @@ async function loadAdminDataFromSupabase() {
         paymentId: o.razorpay_payment_id || 'N/A',
         orderStatus: o.order_status || 'New'
       }));
-      localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
     }
 
     const { data: customData } = await supabaseClient
@@ -2961,7 +2942,6 @@ async function loadAdminDataFromSupabase() {
         totalAmount: Number(co.total_amount),
         prints: co.prints
       }));
-      localStorage.setItem('rebel_custom_orders_history', JSON.stringify(customOrdersHistory));
     }
 
     const { data: usersData, error: usersError } = await supabaseClient
@@ -3591,16 +3571,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   checkRazorpayReturnStatus();
 
-  const savedSession = sessionStorage.getItem('rebel_user_session');
-  if (savedSession) {
-    try {
-      loggedInUser = JSON.parse(savedSession);
-      updateUserBadgeDisplay();
-    } catch (e) {
-      sessionStorage.removeItem('rebel_user_session');
-    }
-  }
-
   if (supabaseClient) {
     supabaseClient.auth.getSession().then(async ({ data: { session } }) => {
       if (session && session.user) {
@@ -3617,7 +3587,6 @@ document.addEventListener('DOMContentLoaded', () => {
           altPhone: '',
           avatarUrl: dbProf?.avatar_url || u.user_metadata?.avatar_url || ''
         };
-        sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
         updateUserBadgeDisplay();
 
         await supabaseClient.from('profiles').upsert({
@@ -3645,7 +3614,6 @@ document.addEventListener('DOMContentLoaded', () => {
           altPhone: '',
           avatarUrl: dbProf?.avatar_url || u.user_metadata?.avatar_url || ''
         };
-        sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
         updateUserBadgeDisplay();
 
         await supabaseClient.from('profiles').upsert({
@@ -3738,7 +3706,29 @@ async function verifyAdminCredentialsFromSupabase() {
   }
 }
 
-function grantAdminAccess() {
+async function grantAdminAccess() {
+  const user = await getAuthenticatedUser();
+  if (!user) {
+    closeAdminAuth();
+    showToast('Admin login required.');
+    showHomeView();
+    return;
+  }
+
+  const { data: profile, error } = await supabaseClient
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  if (error || !profile || !['owner', 'staff'].includes(String(profile.role || '').toLowerCase())) {
+    closeAdminAuth();
+    showToast('You are not authorized to access the management portal.');
+    showHomeView();
+    return;
+  }
+
+  currentRole = String(profile.role).toLowerCase();
   closeAdminAuth();
   // FIXED: Ensure home-view and other views are hidden so admin-view acts as a full standalone page
   document.getElementById('home-view').style.display = 'none';
@@ -3765,34 +3755,70 @@ function grantAdminAccess() {
   loadAdminDataFromSupabase();
 }
 
-function createStaffAccount() {
+async function createStaffAccount() {
   const u = document.getElementById('new-staff-user').value.trim();
-  const p = document.getElementById('new-staff-pass').value.trim();
-  if (!u || !p) { showToast('Enter username and password'); return; }
-  staffAccounts.push({ user: u, pass: p });
-  localStorage.setItem('rebel_staff_accounts', JSON.stringify(staffAccounts));
-  document.getElementById('new-staff-user').value = '';
-  document.getElementById('new-staff-pass').value = '';
-  renderStaffListDisplay();
-  showToast(`Staff account '${u}' created!`);
+  const p = document.getElementById('new-staff-pass').value;
+
+  if (!u || !p) {
+    showToast('Enter username and password');
+    return;
+  }
+
+  try {
+    const data = await invokeSecureFunction('admin_staff', {
+      username: u,
+      password: p
+    });
+
+    document.getElementById('new-staff-user').value = '';
+    document.getElementById('new-staff-pass').value = '';
+    showToast(data?.message || 'Staff account created securely.');
+    await loadAdminDataFromSupabase();
+  } catch (err) {
+    console.error('Staff creation error:', err);
+    showToast(err.message || 'Could not create staff account.');
+  }
 }
 
 function renderStaffListDisplay() {
   const disp = document.getElementById('staff-list-display');
-  if (staffAccounts.length === 0) { disp.innerHTML = 'No staff accounts created yet.'; return; }
+  if (!disp) return;
+  if (staffAccounts.length === 0) { disp.innerHTML = 'Staff accounts are managed in Supabase Auth.'; return; }
   let html = 'Active Staff Accounts: ';
   staffAccounts.forEach(s => { html += `[User: ${s.user}] `; });
   disp.innerHTML = html;
 }
 
-function saveOfferSettings() {
+async function saveOfferSettings() {
   const codeInput = document.getElementById('adm-offer-code-input').value.trim().toUpperCase();
-  const discInput = parseInt(document.getElementById('adm-offer-disc-input').value) || 16;
-  if (!codeInput) { showToast('Enter valid offer code'); return; }
+  const discInput = Math.max(0, Math.min(100, parseInt(document.getElementById('adm-offer-disc-input').value) || 0));
+
+  if (!codeInput) {
+    showToast('Enter valid offer code');
+    return;
+  }
+
   activeOfferCode = codeInput;
   activeDiscountPercent = discInput;
-  renderStorefront();
-  showToast(`Offer updated: '${activeOfferCode}' (${activeDiscountPercent}%)`);
+
+  try {
+    await supabaseClient
+      .from('store_settings')
+      .upsert({
+        key: 'offer_settings',
+        value: {
+          code: activeOfferCode,
+          percent: activeDiscountPercent,
+          active: true
+        }
+      }, { onConflict: 'key' });
+
+    renderStorefront();
+    showToast(`Offer updated: '${activeOfferCode}' (${activeDiscountPercent}%)`);
+  } catch (error) {
+    console.error('Offer save error:', error);
+    showToast('Offer could not be saved.');
+  }
 }
 
 function handleAuthClick(e) {
@@ -3893,7 +3919,6 @@ async function registerNewAccount() {
     }
 
     loggedInUser = { name, phone, altPhone, email, username, avatarUrl: '' };
-    sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
 
     updateUserBadgeDisplay();
     closeAuthModal();
@@ -3902,6 +3927,12 @@ async function registerNewAccount() {
     if (window.pendingActionAfterLogin === 'shipping') {
       window.pendingActionAfterLogin = null;
       showShippingFormView();
+    } else if (window.pendingActionAfterLogin === 'custom-order') {
+      window.pendingActionAfterLogin = null;
+      openCustomOrderPage();
+    } else if (window.pendingActionAfterLogin === 'custom-order') {
+      window.pendingActionAfterLogin = null;
+      openCustomOrderPage();
     }
   } catch (err) {
     console.error("Signup error:", err);
@@ -3976,8 +4007,6 @@ async function processUserLogin() {
         avatarUrl: ''
       };
     }
-
-    sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
     updateUserBadgeDisplay();
     closeAuthModal();
     showToast('Login Successful!');
@@ -4038,37 +4067,29 @@ async function logoutUser() {
     try { await supabaseClient.auth.signOut(); } catch (e) {}
   }
   loggedInUser = null;
-  sessionStorage.removeItem('rebel_user_session');
   updateUserBadgeDisplay();
   showToast('Logged out successfully');
   showHomeView();
 }
 
-function getLocalProfileStorageKey() {
-  const email = loggedInUser?.email || loggedInUser?.username || 'guest';
-  return 'rebel_profile_' + String(email).toLowerCase().replace(/[^a-z0-9@._-]/g, '_');
-}
-
 function normalizeProfileData() {
   if (!loggedInUser) return {};
-  let stored = {};
-  try { stored = JSON.parse(localStorage.getItem(getLocalProfileStorageKey()) || '{}') || {}; } catch (e) {}
-  const fullName = loggedInUser.name || stored.name || '';
-  const parts = fullName.trim().split(/\s+/);
+  const fullName = loggedInUser.name || '';
+  const parts = fullName.trim().split(/\s+/).filter(Boolean);
   return {
-    firstName: stored.firstName || loggedInUser.firstName || parts[0] || '',
-    lastName: stored.lastName || loggedInUser.lastName || parts.slice(1).join(' ') || '',
-    dob: stored.dob || loggedInUser.dob || '',
-    phone: stored.phone || loggedInUser.phone || '',
-    gender: stored.gender || loggedInUser.gender || 'Male',
+    firstName: loggedInUser.firstName || parts[0] || '',
+    lastName: loggedInUser.lastName || parts.slice(1).join(' ') || '',
+    dob: loggedInUser.dob || '',
+    phone: loggedInUser.phone || '',
+    gender: loggedInUser.gender || 'Male',
     name: fullName,
     email: loggedInUser.email || '',
     username: loggedInUser.username || ''
   };
 }
 
-function saveProfileLocalCache(profile) {
-  try { localStorage.setItem(getLocalProfileStorageKey(), JSON.stringify(profile)); } catch (e) {}
+function saveProfileLocalCache() {
+  // Profile data is stored in Supabase only; intentionally no local PII cache.
 }
 
 function fillProfileSidebar() {
@@ -4142,8 +4163,6 @@ async function saveUserProfileEdits() {
     name: fullName
   };
   loggedInUser = updated;
-  sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
-  saveProfileLocalCache({ firstName, lastName, dob, gender, phone, name: fullName, email: loggedInUser.email });
 
   if (supabaseClient) {
     try {
@@ -4173,7 +4192,7 @@ function getOrderStatusStyle(status) {
   const s = String(status || 'New').toLowerCase();
   if (s.includes('cancel')) return { color: '#e52521', dot: '#e52521' };
   if (s.includes('return')) return { color: '#d97706', dot: '#d97706' };
-  if (s.includes('deliver') || s.includes('complete')) return { color: '#168a5b', dot: '#168a5b' };
+  if (s.includes('deliver') || s.includes('complete')) return { color: 'var(--spray-yellow)', dot: 'var(--spray-yellow)' };
   if (s.includes('print') || s.includes('ready')) return { color: '#7c5cff', dot: '#7c5cff' };
   return { color: '#222', dot: '#22c55e' };
 }
@@ -4205,72 +4224,140 @@ function toggleUserOrderExpand(orderId) {
   if (card) card.classList.toggle('expanded');
 }
 
-function openOrdersModal() {
+async function openOrdersModal() {
   if (!loggedInUser) { handleAuthClick(); return; }
+
   const area = document.getElementById('orders-content-area');
   if (!area) return;
+
   fillProfileSidebar();
-  const email = String(loggedInUser.email || '').toLowerCase();
-  const myOrders = ordersHistory.filter(o => {
-    const orderEmail = String(o.userEmail || o.customer_email || (o.billing && o.billing.email) || '').toLowerCase();
-    return orderEmail === email;
-  });
+  area.innerHTML = '<div style="font-family:\'Space Mono\';color:var(--grey);padding:3rem 1rem;text-align:center;">Loading your orders...</div>';
+
+  let myOrders = [];
+  try {
+    const user = await getAuthenticatedUser();
+    if (!user) throw new Error('Session expired. Please login again.');
+
+    const { data, error } = await supabaseClient
+      .from('orders')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    myOrders = (data || []).map(ord => ({
+      id: ord.order_id,
+      date: ord.created_at ? ord.created_at.split('T')[0] : '',
+      userEmail: loggedInUser.email,
+      billing: {
+        name: ord.customer_name,
+        phone: ord.customer_phone,
+        address: ord.customer_address
+      },
+      totalQty: ord.total_qty,
+      totalAmount: Number(ord.total_amount || 0),
+      items: Array.isArray(ord.items) ? ord.items : [],
+      paymentStatus: ord.payment_status || 'paid',
+      paymentId: ord.razorpay_payment_id || 'N/A',
+      orderStatus: ord.order_status || 'New'
+    }));
+
+    ordersHistory = myOrders;
+  } catch (error) {
+    console.error('Order history load error:', error);
+    area.innerHTML = '<div style="font-family:\'Space Mono\';color:var(--rebel-red);padding:3rem 1rem;text-align:center;">Unable to load order history right now.</div>';
+    document.getElementById('orders-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    return;
+  }
 
   area.innerHTML = '';
+
   if (myOrders.length === 0) {
-    area.innerHTML = `<div style="font-family:'Space Mono';color:#777;padding:3rem 1rem;text-align:center;background:#111113;border:1px solid rgba(242,240,234,.12);">No order history found.</div>`;
+    area.innerHTML = '<div style="font-family:\'Space Mono\';color:var(--grey);padding:3rem 1rem;text-align:center;background:#111113;border:1px solid rgba(242,240,234,.12);">No order history found.</div>';
   } else {
     myOrders.forEach(ord => {
       const statusStyle = getOrderStatusStyle(ord.orderStatus);
       const card = document.createElement('div');
       card.className = 'order-card-ref';
-      card.id = `user-order-card-${ord.id}`;
+      card.id = `user-order-card-${escapeHtml(ord.id)}`;
       card.onclick = () => toggleUserOrderExpand(ord.id);
 
       const top = document.createElement('div');
       top.className = 'order-card-top';
       top.innerHTML = `
-        <span class="order-id">Order ID : ${ord.id}</span>
-        <span class="order-date">${ord.date || ''}</span>
-        <span class="order-status-chip" style="color:${statusStyle.color};"><span class="order-status-dot" style="background:${statusStyle.dot};"></span>${ord.orderStatus || 'New'}</span>
+        <span class="order-id">Order ID : ${escapeHtml(ord.id)}</span>
+        <span class="order-date">${escapeHtml(ord.date || '')}</span>
+        <span class="order-status-chip" style="color:${statusStyle.color};"><span class="order-status-dot" style="background:${statusStyle.dot};"></span>${escapeHtml(ord.orderStatus || 'New')}</span>
       `;
 
       const body = document.createElement('div');
       body.className = 'order-card-body';
       body.innerHTML = `
-        <div class="order-summary">Total Items: <strong>${ord.totalQty || 0}</strong><br>Payment: <strong>${ord.paymentStatus || 'Paid'}</strong></div>
+        <div class="order-summary">Total Items: <strong>${Number(ord.totalQty || 0)}</strong><br>Payment: <strong>${escapeHtml(ord.paymentStatus || 'Paid')}</strong></div>
         <div class="order-total">ரூ ${Number(ord.totalAmount || 0).toLocaleString('en-IN')}</div>
       `;
 
       const details = document.createElement('div');
       details.className = 'order-details';
       const items = Array.isArray(ord.items) ? ord.items : [];
-      if (items.length) {
-        items.forEach((it, idx) => {
-          const product = getProductFromOrderItem(it);
-          const itemRow = document.createElement('div');
-          itemRow.className = 'order-item-detail';
-          const thumb = it.image || (product && product.images && product.images[0]) || '';
-          itemRow.innerHTML = `
-            <div class="order-item-thumb" ${product ? `onclick="event.stopPropagation(); openOrderProduct('${String(ord.id).replace(/'/g,"\\'")}', ${idx})"` : ''}>
-              ${thumb ? `<img src="${thumb}" alt="${(it.title || 'Product').replace(/"/g,'&quot;')}">` : `<span style="font-size:.62rem;color:#888;">NO IMAGE</span>`}
-            </div>
-            <div>
-              <div class="order-item-title" ${product ? `onclick="event.stopPropagation(); openOrderProduct('${String(ord.id).replace(/'/g,"\\'")}', ${idx})"` : ''}>${it.title || 'Product'}${product ? ' ↗' : ''}</div>
-              <div class="order-item-meta">Size: ${it.size || '-'} &nbsp; | &nbsp; Color: ${it.color || '-'} &nbsp; | &nbsp; Qty: ${it.qty || 0}</div>
-            </div>
-            <div class="order-item-price">ரூ ${Number(it.price || 0).toLocaleString('en-IN')}</div>
-          `;
-          details.appendChild(itemRow);
+
+      items.forEach((it, idx) => {
+        const product = getProductFromOrderItem(it);
+        const itemRow = document.createElement('div');
+        itemRow.className = 'order-item-detail';
+        const thumb = String(it.image || (product && product.images && product.images[0]) || '');
+        const safeTitle = escapeHtml(it.title || 'Product');
+
+        const thumbWrap = document.createElement('div');
+        thumbWrap.className = 'order-item-thumb';
+        if (product) thumbWrap.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          openOrderProduct(ord.id, idx);
         });
-      } else {
-        details.innerHTML = `<div style="font-size:.78rem;color:#777;">No item details available.</div>`;
+        if (thumb) {
+          const img = document.createElement('img');
+          img.src = thumb;
+          img.alt = it.title || 'Product';
+          img.referrerPolicy = 'no-referrer';
+          thumbWrap.appendChild(img);
+        } else {
+          thumbWrap.innerHTML = '<span style="font-size:.62rem;color:#888;">NO IMAGE</span>';
+        }
+
+        const info = document.createElement('div');
+        const titleDiv = document.createElement('div');
+        titleDiv.className = 'order-item-title';
+        titleDiv.innerHTML = `${safeTitle}${product ? ' ↗' : ''}`;
+        if (product) titleDiv.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          openOrderProduct(ord.id, idx);
+        });
+        const metaDiv = document.createElement('div');
+        metaDiv.className = 'order-item-meta';
+        metaDiv.textContent = `Size: ${it.size || '-'} | Color: ${it.color || '-'} | Qty: ${it.qty || 0}`;
+        info.appendChild(titleDiv);
+        info.appendChild(metaDiv);
+
+        const priceDiv = document.createElement('div');
+        priceDiv.className = 'order-item-price';
+        priceDiv.textContent = `ரூ ${Number(it.price || 0).toLocaleString('en-IN')}`;
+
+        itemRow.appendChild(thumbWrap);
+        itemRow.appendChild(info);
+        itemRow.appendChild(priceDiv);
+        details.appendChild(itemRow);
+      });
+
+      if (!items.length) {
+        details.innerHTML = '<div style="font-size:.78rem;color:#777;">No item details available.</div>';
       }
+
       const bill = ord.billing || {};
-      const addr = bill.address || [bill.address1, bill.address2, bill.district, bill.state, bill.pincode].filter(Boolean).join(', ');
       const addrEl = document.createElement('div');
       addrEl.className = 'order-address';
-      addrEl.innerHTML = `<strong>Shipping Address</strong><br>${bill.name || loggedInUser.name || ''}<br>${addr || 'Address not available'}<br>${bill.phone || ''}`;
+      addrEl.innerHTML = `<strong>Shipping Address</strong><br>${escapeHtml(bill.name || loggedInUser.name || '')}<br>${escapeHtml(bill.address || 'Address not available')}<br>${escapeHtml(bill.phone || '')}`;
       details.appendChild(addrEl);
 
       card.appendChild(top);
@@ -4279,6 +4366,7 @@ function openOrdersModal() {
       area.appendChild(card);
     });
   }
+
   document.getElementById('orders-modal').style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
@@ -4288,49 +4376,97 @@ function closeOrdersModal() {
   document.body.style.overflow = '';
 }
 
+let savedAddressesCache = [];
+
 function getAddressStorageKey() {
-  const email = loggedInUser?.email || loggedInUser?.username || 'guest';
-  return 'rebel_saved_addresses_' + String(email).toLowerCase().replace(/[^a-z0-9@._-]/g, '_');
+  return '';
 }
 
 function loadSavedAddressesLocal() {
-  try {
-    const data = JSON.parse(localStorage.getItem(getAddressStorageKey()) || '[]');
-    return Array.isArray(data) ? data : [];
-  } catch (e) { return []; }
+  return Array.isArray(savedAddressesCache) ? savedAddressesCache : [];
 }
 
 function saveSavedAddressesLocal(list) {
-  localStorage.setItem(getAddressStorageKey(), JSON.stringify(list));
+  savedAddressesCache = Array.isArray(list) ? list : [];
+}
+
+async function loadSavedAddressesFromSupabase() {
+  const user = await getAuthenticatedUser();
+  if (!user) return [];
+
+  const { data, error } = await supabaseClient
+    .from('customer_addresses')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('is_default', { ascending: false })
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+
+  savedAddressesCache = (data || []).map(a => ({
+    id: a.id,
+    cloudId: a.id,
+    label: a.label || 'Other',
+    name: a.full_name || '',
+    door: a.door || '',
+    street: a.street || '',
+    locality: a.locality || '',
+    pincode: a.pincode || '',
+    district: a.district || '',
+    state: a.state || '',
+    country: a.country || 'India',
+    mobile: a.mobile || '',
+    isDefault: !!a.is_default
+  }));
+
+  return savedAddressesCache;
 }
 
 async function syncSavedAddressToSupabase(address) {
-  if (!supabaseClient) return;
-  try {
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    if (!user) return;
-    const record = {
-      user_id: user.id,
-      label: address.label,
-      full_name: address.name,
-      door: address.door,
-      street: address.street,
-      locality: address.locality,
-      pincode: address.pincode,
-      district: address.district,
-      state: address.state,
-      country: address.country,
-      mobile: address.mobile,
-      is_default: !!address.isDefault
-    };
-    const { error } = await supabaseClient.from('customer_addresses').upsert({ ...record, id: address.cloudId || undefined }, { onConflict: 'id' });
-    if (error) console.warn('Address cloud sync note:', error.message);
-  } catch (e) { console.warn('Address cloud sync note:', e); }
+  const user = await getAuthenticatedUser();
+  if (!user) throw new Error('Please login again.');
+
+  const record = {
+    ...(address.cloudId ? { id: address.cloudId } : {}),
+    user_id: user.id,
+    label: address.label,
+    full_name: address.name,
+    door: address.door,
+    street: address.street,
+    locality: address.locality,
+    pincode: address.pincode,
+    district: address.district,
+    state: address.state,
+    country: address.country,
+    mobile: address.mobile,
+    is_default: !!address.isDefault
+  };
+
+  const { data, error } = await supabaseClient
+    .from('customer_addresses')
+    .upsert(record, { onConflict: 'id' })
+    .select('*')
+    .single();
+
+  if (error) throw error;
+  address.cloudId = data.id;
+  address.id = data.id;
+  return data;
 }
 
 async function deleteSavedAddressFromSupabase(address) {
-  if (!supabaseClient || !address?.cloudId) return;
-  try { await supabaseClient.from('customer_addresses').delete().eq('id', address.cloudId); } catch (e) { console.warn('Address cloud delete note:', e); }
+  if (!address?.cloudId) return;
+
+  const user = await getAuthenticatedUser();
+  if (!user) throw new Error('Please login again.');
+
+  const { error } = await supabaseClient
+    .from('customer_addresses')
+    .delete()
+    .eq('id', address.cloudId)
+    .eq('user_id', user.id);
+
+  if (error) throw error;
 }
 
 function fillAddressSidebar() { fillProfileSidebar(); }
@@ -4380,11 +4516,11 @@ async function lookupSavedAddressPincode(pin) {
 
 let editingSavedAddressId = null;
 
-function openAddressEditor(addressId = null) {
+async function openAddressEditor(addressId = null) {
   if (!loggedInUser) { handleAuthClick(); return; }
   editingSavedAddressId = addressId;
-  const list = loadSavedAddressesLocal();
-  const address = addressId ? list.find(a => a.id === addressId) : null;
+  const list = await loadSavedAddressesFromSupabase();
+  const address = addressId ? list.find(a => String(a.id) === String(addressId)) : null;
   document.getElementById('address-editor-title').innerText = address ? 'Edit Address' : 'Add New Address';
   populateSavedAddressStateOptions(address?.state || 'Tamil Nadu');
   populateAddressDistricts(document.getElementById('addr-state').value, address?.district || '');
@@ -4410,10 +4546,12 @@ function closeAddressEditor() {
 
 async function saveAddressFromEditor() {
   if (!loggedInUser) return;
-  const list = loadSavedAddressesLocal();
+
+  const list = await loadSavedAddressesFromSupabase();
   const address = {
-    id: editingSavedAddressId || ('ADDR-' + Date.now() + '-' + Math.floor(Math.random()*1000)),
-    label: document.getElementById('addr-label').value,
+    id: editingSavedAddressId || null,
+    cloudId: editingSavedAddressId || null,
+    label: document.getElementById('addr-label').value.trim(),
     name: document.getElementById('addr-name').value.trim(),
     door: document.getElementById('addr-door').value.trim(),
     street: document.getElementById('addr-street').value.trim(),
@@ -4425,67 +4563,112 @@ async function saveAddressFromEditor() {
     mobile: document.getElementById('addr-mobile').value.trim(),
     isDefault: document.getElementById('addr-default').checked
   };
+
   if (!address.name || !address.door || !address.street || !/^\d{6}$/.test(address.pincode) || !address.state || !address.district || !address.mobile) {
     showToast('Please complete all required address fields.');
     return;
   }
-  if (address.isDefault) list.forEach(a => a.isDefault = false);
-  if (!address.isDefault && list.length === 0) address.isDefault = true;
-  const idx = list.findIndex(a => a.id === address.id);
-  if (idx >= 0) list[idx] = address; else list.unshift(address);
-  saveSavedAddressesLocal(list);
-  closeAddressEditor();
-  await syncSavedAddressToSupabase(address);
-  renderSavedAddresses();
-  showToast(editingSavedAddressId ? 'Address updated!' : 'Address saved!');
+
+  try {
+    if (address.isDefault) {
+      await supabaseClient
+        .from('customer_addresses')
+        .update({ is_default: false })
+        .eq('user_id', (await getAuthenticatedUser()).id);
+    } else if (list.length === 0) {
+      address.isDefault = true;
+    }
+
+    await syncSavedAddressToSupabase(address);
+    await loadSavedAddressesFromSupabase();
+    closeAddressEditor();
+    await renderSavedAddresses();
+    showToast(editingSavedAddressId ? 'Address updated!' : 'Address saved!');
+  } catch (error) {
+    console.error('Address save error:', error);
+    showToast('Unable to save address.');
+  }
 }
 
 async function setDefaultSavedAddress(addressId) {
-  const list = loadSavedAddressesLocal();
-  let changed = null;
-  list.forEach(a => {
-    a.isDefault = a.id === addressId;
-    if (a.isDefault) changed = a;
-  });
-  saveSavedAddressesLocal(list);
-  if (changed) await syncSavedAddressToSupabase(changed);
-  renderSavedAddresses();
-  showToast('Default address updated!');
+  const user = await getAuthenticatedUser();
+  if (!user) { showToast('Please login again.'); return; }
+
+  try {
+    await supabaseClient
+      .from('customer_addresses')
+      .update({ is_default: false })
+      .eq('user_id', user.id);
+
+    const { error } = await supabaseClient
+      .from('customer_addresses')
+      .update({ is_default: true })
+      .eq('id', addressId)
+      .eq('user_id', user.id);
+
+    if (error) throw error;
+
+    await loadSavedAddressesFromSupabase();
+    await renderSavedAddresses();
+    showToast('Default address updated!');
+  } catch (error) {
+    console.error('Default address error:', error);
+    showToast('Unable to update default address.');
+  }
 }
 
 async function deleteSavedAddress(addressId) {
-  let list = loadSavedAddressesLocal();
-  const target = list.find(a => a.id === addressId);
-  list = list.filter(a => a.id !== addressId);
-  if (target?.isDefault && list.length) list[0].isDefault = true;
-  saveSavedAddressesLocal(list);
-  await deleteSavedAddressFromSupabase(target);
-  if (list[0]?.isDefault) await syncSavedAddressToSupabase(list[0]);
-  renderSavedAddresses();
-  showToast('Address deleted.');
+  const list = await loadSavedAddressesFromSupabase();
+  const target = list.find(a => String(a.id) === String(addressId));
+  if (!target) return;
+
+  try {
+    await deleteSavedAddressFromSupabase(target);
+
+    if (target.isDefault) {
+      const remaining = await loadSavedAddressesFromSupabase();
+      if (remaining.length) {
+        await setDefaultSavedAddress(remaining[0].id);
+      }
+    }
+
+    await loadSavedAddressesFromSupabase();
+    await renderSavedAddresses();
+    showToast('Address deleted.');
+  } catch (error) {
+    console.error('Delete address error:', error);
+    showToast('Unable to delete address.');
+  }
 }
 
-function renderSavedAddresses() {
+async function renderSavedAddresses() {
   const area = document.getElementById('saved-address-list');
   if (!area) return;
   fillAddressSidebar();
-  const list = loadSavedAddressesLocal();
+  let list = [];
+  try {
+    list = await loadSavedAddressesFromSupabase();
+  } catch (error) {
+    console.error('Saved address load error:', error);
+    area.innerHTML = '<div style="background:#111113;border:1px solid rgba(242,240,234,.12);padding:2.5rem 1rem;text-align:center;color:var(--rebel-red);font-family:\'Space Mono\';font-size:.72rem;">Unable to load saved addresses.</div>';
+    return;
+  }
   area.innerHTML = '';
   if (!list.length) {
-    area.innerHTML = `<div style="background:#111113;border:1px solid rgba(242,240,234,.12);padding:2.5rem 1rem;text-align:center;color:#777;font-family:'Space Mono';font-size:.72rem;">No saved addresses yet.<br><br><button class="address-add-btn" onclick="openAddressEditor()">＋ Add New Address</button></div>`;
+    area.innerHTML = `<div style="background:#111113;border:1px solid rgba(242,240,234,.12);padding:2.5rem 1rem;text-align:center;color:var(--grey);font-family:'Space Mono';font-size:.72rem;">No saved addresses yet.<br><br><button class="address-add-btn" onclick="openAddressEditor()">＋ Add New Address</button></div>`;
     return;
   }
   list.forEach(address => {
     const card = document.createElement('div');
     card.className = 'saved-address-card' + (address.isDefault ? ' default' : '');
-    const lines = [address.door, address.street, address.locality, `${address.district} - ${address.pincode}`, address.state, address.country].filter(Boolean);
+    const lines = [address.door, address.street, address.locality, `${address.district} - ${address.pincode}`, address.state, address.country].filter(Boolean).map(escapeHtml);
     card.innerHTML = `
       <div class="saved-address-head">
-        <div class="saved-address-name">${address.name || 'User'}</div>
-        <div class="saved-address-type">${address.label || 'Other'}</div>
+        <div class="saved-address-name">${escapeHtml(address.name || 'User')}</div>
+        <div class="saved-address-type">${escapeHtml(address.label || 'Other')}</div>
       </div>
       <div class="saved-address-text">${lines.join('<br>')}</div>
-      <div class="saved-address-mobile">Mobile: <strong>${address.mobile || '-'}</strong></div>
+      <div class="saved-address-mobile">Mobile: <strong>${escapeHtml(address.mobile || '-')}</strong></div>
       ${address.isDefault ? `<div class="default-badge">✓ Default Address</div>` : ''}
       <div class="saved-address-actions">
         <button onclick="openAddressEditor('${String(address.id).replace(/'/g,"\\'")}')">✎ Edit</button>
@@ -4499,7 +4682,7 @@ function renderSavedAddresses() {
 
 async function openSavedAddressesModal() {
   if (!loggedInUser) { handleAuthClick(); return; }
-  renderSavedAddresses();
+  await renderSavedAddresses();
   document.getElementById('saved-addresses-modal').style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
