@@ -2628,47 +2628,61 @@ async function handleOrderSuccessDirect(paymentData) {
   const razorpaySignature = String(paymentData?.razorpay_signature || '').trim();
 
   if (!razorpayPaymentId || !razorpayOrderId || !razorpaySignature) {
-    console.error('Incomplete Razorpay success response:', {
-      hasPaymentId: !!razorpayPaymentId,
-      hasOrderId: !!razorpayOrderId,
-      hasSignature: !!razorpaySignature
-    });
     showToast('Payment received, but verification details were incomplete. Please contact support.');
     return false;
   }
 
   if (!Array.isArray(savedOrder.items) || savedOrder.items.length === 0) {
-    console.error('Pending order contains no items.');
     showToast('Payment received, but order items were not found. Please contact support.');
     return false;
   }
 
-  showToast('Payment received. Verifying payment and creating invoice securely...');
+  showToast('Payment received. Verifying payment securely...');
 
   try {
+    // IMPORTANT:
+    // Do not send browser-calculated price/rate to the verification backend.
+    // The backend resolves regular prices from Supabase products and custom
+    // pricing from its server-side ₹699 constant.
     const lineItems = savedOrder.items.map((item, index) => {
-      const quantity = Number(item?.qty || 0);
-      const rate = Number(item?.price || 0);
+      const qty = Number(item?.qty || 0);
 
-      if (!Number.isFinite(quantity) || quantity <= 0) {
+      if (!Number.isInteger(qty) || qty <= 0 || qty > 20) {
         throw new Error(`Invalid quantity for cart item ${index + 1}.`);
       }
 
-      if (!Number.isFinite(rate) || rate < 0) {
-        throw new Error(`Invalid price for cart item ${index + 1}.`);
+      if (isCustomCartItem(item)) {
+        if (qty < 2) {
+          throw new Error('Minimum quantity for custom order is 2.');
+        }
+
+        return {
+          isCustom: true,
+          garment: String(item?.garment || '').trim(),
+          color: String(item?.color || '').trim(),
+          size: String(item?.size || '').trim(),
+          quantity: qty,
+          qty,
+          prints: item?.prints || null
+        };
+      }
+
+      const resolved = resolveRegularProductFromCatalog(item);
+
+      if (!resolved.code && !resolved.productId) {
+        throw new Error(
+          `Regular product ${index + 1} could not be matched to the store catalogue.`
+        );
       }
 
       return {
-        // Optional Zoho Item ID. The backend will resolve/create the Zoho item
-        // by name when this is not present.
-        item_id: String(item?.zoho_item_id || item?.zohoItemId || '').trim(),
-        name: String(item?.title || item?.name || 'Product').trim().slice(0, 100),
-        description: [
-          item?.color ? `Color: ${item.color}` : '',
-          item?.size ? `Size: ${item.size}` : ''
-        ].filter(Boolean).join(' | '),
-        quantity,
-        rate
+        isCustom: false,
+        product_code: resolved.code || '',
+        product_id: resolved.productId || null,
+        quantity: qty,
+        qty,
+        size: String(item?.size || '').trim(),
+        color: String(item?.color || '').trim()
       };
     });
 
@@ -2702,12 +2716,12 @@ async function handleOrderSuccessDirect(paymentData) {
     let verifyData = {};
     try {
       verifyData = await verifyResponse.json();
-    } catch (parseError) {
+    } catch {
       verifyData = {};
     }
 
     if (!verifyResponse.ok || !verifyData.success || verifyData.verified !== true) {
-      console.error('Razorpay/Zoho backend processing failed:', verifyData);
+      console.error('Razorpay backend verification failed:', verifyData);
       showToast(
         verifyData?.error
           ? `Payment received, but order processing failed: ${verifyData.error}`
@@ -2716,65 +2730,70 @@ async function handleOrderSuccessDirect(paymentData) {
       return false;
     }
 
-    const todayStr = savedOrder.date || new Date().toISOString().split('T')[0];
-    const finalOrderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
-    const totalQuantity = savedOrder.items.reduce(
-      (sum, item) => sum + Number(item?.qty || 1),
+    const serverOrder = verifyData.order || {};
+    const finalOrderId =
+      String(serverOrder.order_id || verifyData.order_id || '').trim();
+
+    const authoritativeTotal = Number(
+      serverOrder.total_amount ??
+      verifyData.total_amount ??
       0
     );
 
-    const formattedItems = savedOrder.items.map(item => ({
-      ...item,
-      stockStatus: item.stockStatus || { available: true, notes: '' }
-    }));
+    const todayStr =
+      savedOrder.date ||
+      new Date().toISOString().split('T')[0];
 
-    const orderRecord = {
-      order_id: finalOrderId,
-      customer_name: billing.name || '',
-      customer_email: billing.email || '',
-      customer_phone: billing.phone || '',
-      customer_address: billing.address || '',
-      items: formattedItems,
-      total_qty: totalQuantity,
-      total_amount: Number(savedOrder.totalAmount || 0),
-      payment_status: 'paid',
-      razorpay_payment_id: razorpayPaymentId,
-      order_status: 'New'
-    };
+    const formattedItems = Array.isArray(savedOrder.items)
+      ? savedOrder.items.map(item => ({
+          ...item,
+          stockStatus: item.stockStatus || {
+            available: true,
+            notes: ''
+          }
+        }))
+      : [];
 
-    if (!supabaseClient) {
-      showToast('Payment verified, but Supabase storage is unavailable. Please contact support.');
-      return false;
-    }
-
-    const { error: orderSaveError } = await supabaseClient
-      .from('orders')
-      .insert([orderRecord]);
-
-    if (orderSaveError) {
-      console.error('Order save failed:', orderSaveError);
-      showToast('Payment verified, but order could not be saved. Please contact support.');
-      return false;
-    }
-
-    ordersHistory.unshift({
-      id: finalOrderId,
+    // This local copy is for the customer's UI only.
+    // The authoritative order has already been saved by the backend.
+    const displayOrder = {
+      ...savedOrder,
+      id: finalOrderId || savedOrder.id,
+      orderId: finalOrderId || savedOrder.orderId,
       date: todayStr,
       userEmail: billing.email || '',
       billing,
-      totalQty: totalQuantity,
-      totalAmount: Number(savedOrder.totalAmount || 0),
+      totalQty: Number(
+        serverOrder.total_qty ||
+        formattedItems.reduce(
+          (sum, item) => sum + Number(item?.qty || 0),
+          0
+        )
+      ),
+      totalAmount: authoritativeTotal,
       items: formattedItems,
       paymentStatus: 'paid',
       paymentId: razorpayPaymentId,
-      orderStatus: 'New',
+      orderStatus: serverOrder.order_status || 'Processing',
       razorpayOrderId,
       zohoInvoiceId: verifyData?.zoho?.invoice_id || null,
       zohoInvoiceNumber: verifyData?.zoho?.invoice_number || null,
       zohoEmailSent: verifyData?.zoho?.email_sent === true
-    });
+    };
 
-    localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
+    if (finalOrderId) {
+      ordersHistory = ordersHistory.filter(
+        o => String(o.id || o.orderId || '') !== finalOrderId
+      );
+    }
+
+    ordersHistory.unshift(displayOrder);
+    localStorage.setItem(
+      'rebel_orders_history',
+      JSON.stringify(ordersHistory)
+    );
+
+    // Only clear the pending checkout after the server confirmed success.
     localStorage.removeItem('rebel_pending_order');
     cart = [];
     localStorage.removeItem('rebel_cart');
@@ -2787,18 +2806,33 @@ async function handleOrderSuccessDirect(paymentData) {
           : 'Order confirmed. Zoho Invoice created and emailed to the customer.'
       );
     } else if (verifyData?.zoho?.invoice_created === true) {
-      showToast('Order confirmed. Zoho Invoice was created, but the email could not be sent.');
+      showToast(
+        'Order confirmed. Zoho Invoice was created, but the email could not be sent.'
+      );
+    } else {
+      showToast(
+        'Order confirmed. Payment verified and order saved. Zoho automation needs attention.'
+      );
     }
 
-    showOrderSuccessCelebration(finalOrderId, razorpayPaymentId);
+    showOrderSuccessCelebration(
+      finalOrderId || savedOrder.id,
+      razorpayPaymentId
+    );
+
     return true;
   } catch (error) {
-    console.error('Secure payment verification / Zoho automation error:', error);
+    console.error(
+      'Secure payment verification / order processing error:',
+      error
+    );
+
     showToast(
       error?.message
         ? `Payment received, but order processing failed: ${error.message}`
         : 'Payment received, but order processing failed. Please contact support.'
     );
+
     return false;
   }
 }
