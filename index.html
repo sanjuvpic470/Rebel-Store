@@ -2589,7 +2589,17 @@ async function handleOrderSuccessDirect(paymentData) {
     }
 
     const todayStr = savedOrder.date || new Date().toISOString().split('T')[0];
-    const finalOrderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+
+    // The secure verification backend now creates the paid order server-side.
+    // Never insert a paid order directly from the browser.
+    const finalOrderId = String(verifyData?.order_id || '').trim();
+
+    if (!finalOrderId) {
+      console.error('Verification succeeded but no server-side order ID was returned:', verifyData);
+      showToast('Payment verified, but the order ID was not returned. Please contact support.');
+      return false;
+    }
+
     const totalQuantity = savedOrder.items.reduce(
       (sum, item) => sum + Number(item?.qty || 1),
       0
@@ -2599,35 +2609,6 @@ async function handleOrderSuccessDirect(paymentData) {
       ...item,
       stockStatus: item.stockStatus || { available: true, notes: '' }
     }));
-
-    const orderRecord = {
-      order_id: finalOrderId,
-      customer_name: billing.name || '',
-      customer_email: billing.email || '',
-      customer_phone: billing.phone || '',
-      customer_address: billing.address || '',
-      items: formattedItems,
-      total_qty: totalQuantity,
-      total_amount: Number((verifyData?.total_amount ?? verifyData?.amount_rupees ?? savedOrder.totalAmount) || 0),
-      payment_status: 'paid',
-      razorpay_payment_id: razorpayPaymentId,
-      order_status: 'New'
-    };
-
-    if (!supabaseClient) {
-      showToast('Payment verified, but Supabase storage is unavailable. Please contact support.');
-      return false;
-    }
-
-    const { error: orderSaveError } = await supabaseClient
-      .from('orders')
-      .insert([orderRecord]);
-
-    if (orderSaveError) {
-      console.error('Order save failed:', orderSaveError);
-      showToast('Payment verified, but order could not be saved. Please contact support.');
-      return false;
-    }
 
     ordersHistory.unshift({
       id: finalOrderId,
