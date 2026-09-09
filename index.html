@@ -629,9 +629,9 @@ footer a:hover{color:var(--paper)}
       <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeAuthModal()">×</button>
       <div id="auth-login-view">
         <h3>Rebel Store Login</h3>
-        <p>Enter your username/email and password to sign in.</p>
-        <label class="admin-field-label">Username / Email</label>
-        <input type="text" id="login-user" placeholder="Username or Email" class="admin-input-full" autocomplete="username">
+        <p>Enter your username and password to sign in.</p>
+        <label class="admin-field-label">Username</label>
+        <input type="text" id="login-user" placeholder="Username" class="admin-input-full" autocomplete="username">
         <label class="admin-field-label">Password</label>
         <input type="password" id="login-pass" placeholder="••••••••" class="admin-input-full" autocomplete="current-password">
         <button class="btn btn--solid" style="width:100%; justify-content:center; margin-bottom:1rem;" id="login-submit-btn" onclick="processUserLogin()">Login →</button>
@@ -3961,69 +3961,73 @@ async function processUserLogin() {
   const passVal = document.getElementById('login-pass').value;
 
   if (!inputVal || !passVal) {
-    showToast('Enter username/email and password');
+    showToast('Enter your username and password');
+    return;
+  }
+
+  // Customer username/password login must ALWAYS use a username.
+  // Email/password login is intentionally not accepted here.
+  // Customers who want to use Google must use "Continue with Google".
+  if (inputVal.includes('@')) {
+    showToast('Please enter your username. For Gmail, use Continue with Google.');
     return;
   }
 
   const submitBtn = document.getElementById('login-submit-btn');
-  if (submitBtn) { submitBtn.disabled = true; submitBtn.innerText = 'Logging in...'; }
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerText = 'Checking...';
+  }
 
   try {
     if (!supabaseClient) throw new Error('Supabase is not connected.');
 
-    let authData = null;
-
-    if (inputVal.includes('@')) {
-      // Email login continues to use Supabase Auth directly.
-      const { data, error } = await supabaseClient.auth.signInWithPassword({
-        email: inputVal,
-        password: passVal
-      });
-
-      if (error) throw error;
-      authData = data;
-    } else {
-      // Username login is handled by the server-side Edge Function.
-      // The browser no longer reads profiles.email to discover the login email.
-      const { data, error } = await supabaseClient.functions.invoke('login-by-username', {
+    // Username lookup + password verification happens in the secure
+    // server-side login-by-username Edge Function.
+    const { data, error } = await supabaseClient.functions.invoke(
+      'login-by-username',
+      {
         body: {
           username: inputVal,
           password: passVal
         }
-      });
-
-      if (error) {
-        let detail = error.message || 'Username login failed.';
-        try {
-          if (error.context && typeof error.context.json === 'function') {
-            const payload = await error.context.json();
-            if (payload?.error) detail = payload.error;
-          }
-        } catch (_) {}
-        throw new Error(detail);
       }
+    );
 
-      if (!data?.success || !data?.session || !data?.user) {
-        throw new Error(data?.error || 'Invalid username or password.');
-      }
+    if (error) {
+      let detail = error.message || 'Invalid username or password.';
 
-      const { data: sessionData, error: sessionError } =
-        await supabaseClient.auth.setSession({
-          access_token: data.session.access_token,
-          refresh_token: data.session.refresh_token
-        });
+      try {
+        if (error.context && typeof error.context.json === 'function') {
+          const payload = await error.context.json();
+          if (payload?.error) detail = payload.error;
+        }
+      } catch (_) {}
 
-      if (sessionError) throw sessionError;
-
-      authData = {
-        user: sessionData?.user || data.user,
-        session: sessionData?.session || data.session
-      };
+      throw new Error(detail);
     }
 
-    if (!authData?.user) throw new Error('Login failed.');
+    if (!data?.success || !data?.session || !data?.user) {
+      throw new Error(data?.error || 'Invalid username or password.');
+    }
 
-    await hydrateLoggedInUserFromSupabase(authData.user, false);
+    // Store the authenticated Supabase session in the browser.
+    const { data: sessionData, error: sessionError } =
+      await supabaseClient.auth.setSession({
+        access_token: data.session.access_token,
+        refresh_token: data.session.refresh_token
+      });
+
+    if (sessionError) throw sessionError;
+
+    const authenticatedUser = sessionData?.user || data.user;
+
+    if (!authenticatedUser) {
+      throw new Error('Login failed.');
+    }
+
+    await hydrateLoggedInUserFromSupabase(authenticatedUser, false);
+
     closeAuthModal();
     showToast('Login Successful!');
 
@@ -4032,10 +4036,13 @@ async function processUserLogin() {
       showShippingFormView();
     }
   } catch (err) {
-    console.error('Login error:', err);
-    showToast(err.message || 'Invalid login credentials.');
+    console.error('Username login error:', err);
+    showToast(err.message || 'Invalid username or password.');
   } finally {
-    if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = 'Login →'; }
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerText = 'Login →';
+    }
   }
 }
 
