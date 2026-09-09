@@ -2012,9 +2012,20 @@ function addToCart() {
     productImg = currentProduct.images[0].trim();
   }
 
+  const regularProductCode = String(
+    currentProduct?.product_code || currentProduct?.code || ''
+  ).trim().toUpperCase();
+
+  if (!regularProductCode) {
+    showToast('This product is missing its product code. Please refresh the store and try again.');
+    return;
+  }
+
   cart.push({
     isCustom: false,
     id: currentProduct.id,
+    product_code: regularProductCode,
+    code: regularProductCode,
     title: `${currentProduct.title} (${selectedColor})`,
     size: selectedSize,
     price: currentProduct.price,
@@ -2320,6 +2331,35 @@ function validateBillingForm() {
   };
 }
 
+function resolveRegularProductCode(item) {
+  const directCode = String(
+    item?.product_code || item?.code || ''
+  ).trim().toUpperCase();
+
+  if (directCode) return directCode;
+
+  const productId = item?.id != null ? String(item.id).trim() : '';
+  if (!productId || !Array.isArray(CATEGORIES)) return '';
+
+  for (const category of CATEGORIES) {
+    const products = Array.isArray(category?.products)
+      ? category.products
+      : [];
+
+    const match = products.find(
+      product => String(product?.id ?? '').trim() === productId
+    );
+
+    if (match) {
+      return String(
+        match?.product_code || match?.code || ''
+      ).trim().toUpperCase();
+    }
+  }
+
+  return '';
+}
+
 async function proceedToPayment() {
   const billingData = validateBillingForm();
   if (!billingData) return;
@@ -2381,7 +2421,7 @@ async function proceedToPayment() {
         // IMPORTANT: never send the client-calculated amount as the source of truth.
         // Regular products are resolved by product_code in the Edge Function.
         // Custom orders are resolved by server-side custom pricing in the Edge Function.
-        items: cart.map(item => {
+        items: cart.map((item, index) => {
           if (item?.isCustom) {
             return {
               isCustom: true,
@@ -2392,11 +2432,17 @@ async function proceedToPayment() {
             };
           }
 
+          const productCode = resolveRegularProductCode(item);
+
+          if (!productCode) {
+            throw new Error(
+              `Regular product ${index + 1} is missing a valid product code. Please remove it from the cart and add it again.`
+            );
+          }
+
           return {
             isCustom: false,
-            product_code: String(
-              item?.product_code || item?.code || ''
-            ).trim().toUpperCase(),
+            product_code: productCode,
             qty: Number(item?.qty || 0)
           };
         }),
