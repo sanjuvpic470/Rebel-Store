@@ -2012,20 +2012,11 @@ function addToCart() {
     productImg = currentProduct.images[0].trim();
   }
 
-  const regularProductCode = String(
-    currentProduct?.product_code || currentProduct?.code || ''
-  ).trim().toUpperCase();
-
-  if (!regularProductCode) {
-    showToast('This product is missing its product code. Please refresh the store and try again.');
-    return;
-  }
-
   cart.push({
     isCustom: false,
     id: currentProduct.id,
-    product_code: regularProductCode,
-    code: regularProductCode,
+    product_code: String(currentProduct.product_code || currentProduct.code || '').trim().toUpperCase(),
+    code: String(currentProduct.code || currentProduct.product_code || '').trim().toUpperCase(),
     title: `${currentProduct.title} (${selectedColor})`,
     size: selectedSize,
     price: currentProduct.price,
@@ -2331,33 +2322,53 @@ function validateBillingForm() {
   };
 }
 
-function resolveRegularProductCode(item) {
-  const directCode = String(
-    item?.product_code || item?.code || ''
-  ).trim().toUpperCase();
+function isCustomCartItem(item) {
+  if (!item) return false;
+  if (item.isCustom === true) return true;
+  if (String(item.isCustom || '').toLowerCase() === 'true') return true;
 
-  if (directCode) return directCode;
+  // Backward compatibility for custom items created by an older frontend.
+  // A custom cart item has garment + print metadata and must never be
+  // forced through regular-product product_code validation.
+  if (
+    String(item.garment || '').trim() &&
+    item.prints &&
+    typeof item.prints === 'object'
+  ) {
+    return true;
+  }
 
-  const productId = item?.id != null ? String(item.id).trim() : '';
-  if (!productId || !Array.isArray(CATEGORIES)) return '';
+  return false;
+}
 
-  for (const category of CATEGORIES) {
-    const products = Array.isArray(category?.products)
-      ? category.products
-      : [];
+function resolveRegularProductFromCatalog(item) {
+  let code = String(item?.product_code || item?.code || '').trim().toUpperCase();
+  let productId = item?.id != null ? String(item.id).trim() : '';
 
-    const match = products.find(
-      product => String(product?.id ?? '').trim() === productId
-    );
+  if (code) return { code, productId };
 
-    if (match) {
-      return String(
-        match?.product_code || match?.code || ''
-      ).trim().toUpperCase();
+  if (productId && Array.isArray(CATEGORIES)) {
+    for (const category of CATEGORIES) {
+      const match = (category?.products || []).find(
+        p => String(p?.id) === productId
+      );
+
+      if (match) {
+        code = String(match?.product_code || match?.code || '')
+          .trim()
+          .toUpperCase();
+
+        if (code) {
+          return {
+            code,
+            productId: String(match?.id || productId).trim()
+          };
+        }
+      }
     }
   }
 
-  return '';
+  return { code: '', productId };
 }
 
 async function proceedToPayment() {
@@ -2389,40 +2400,49 @@ async function proceedToPayment() {
   localStorage.setItem('rebel_pending_order', JSON.stringify(pendingOrder));
 
   try {
-    // The Create_razorpay_order backend requires the CURRENT signed-in
-    // Supabase user's access token. The public anon key is NOT a user session
-    // token and must never be used as the Authorization bearer token here.
-    if (!supabaseClient) {
-      throw new Error('Supabase authentication is unavailable. Please refresh the page and sign in again.');
-    }
+    const checkoutItems = cart.map(item => {
+      if (isCustomCartItem(item)) {
+        return {
+          isCustom: true,
+          garment: String(item?.garment || '').trim(),
+          color: String(item?.color || '').trim(),
+          size: String(item?.size || '').trim(),
+          qty: Number(item?.qty || 0)
+        };
+      }
 
-    let { data: { session } } = await supabaseClient.auth.getSession();
+      const resolved = resolveRegularProductFromCatalog(item);
 
-    // If the stored access token has expired, let Supabase refresh it before
-    // calling the protected Edge Function.
-    if (!session?.access_token) {
-      const refreshResult = await supabaseClient.auth.refreshSession();
-      session = refreshResult?.data?.session || null;
-    }
+      return {
+        isCustom: false,
+        product_code: resolved.code,
+        product_id: resolved.productId || null,
+        qty: Number(item?.qty || 0)
+      };
+    });
 
-    const accessToken = String(session?.access_token || '').trim();
-    if (!accessToken) {
-      throw new Error('Your login session has expired. Please sign in again and retry payment.');
+    const invalidRegularItem = checkoutItems.find(
+      item => !item.isCustom && !item.product_code && !item.product_id
+    );
+
+    if (invalidRegularItem) {
+      throw new Error(
+        'A regular product in your cart could not be matched to the store catalogue. Please remove that product and add it again.'
+      );
     }
 
     const response = await fetch('https://rdqzslvgqtajhiwxwauo.supabase.co/functions/v1/Create_razorpay_order', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`,
-        'apikey': SUPABASE_ANON_KEY
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
       },
       body: JSON.stringify({
         // IMPORTANT: never send the client-calculated amount as the source of truth.
         // Regular products are resolved by product_code in the Edge Function.
         // Custom orders are resolved by server-side custom pricing in the Edge Function.
-        items: cart.map((item, index) => {
-          if (item?.isCustom) {
+        items: cart.map(item => {
+          if (isCustomCartItem(item)) {
             return {
               isCustom: true,
               garment: String(item?.garment || '').trim(),
@@ -2432,17 +2452,12 @@ async function proceedToPayment() {
             };
           }
 
-          const productCode = resolveRegularProductCode(item);
-
-          if (!productCode) {
-            throw new Error(
-              `Regular product ${index + 1} is missing a valid product code. Please remove it from the cart and add it again.`
-            );
-          }
+          const resolved = resolveRegularProductFromCatalog(item);
 
           return {
             isCustom: false,
-            product_code: productCode,
+            product_code: resolved.code,
+            product_id: resolved.productId || null,
             qty: Number(item?.qty || 0)
           };
         }),
@@ -2633,27 +2648,57 @@ async function handleOrderSuccessDirect(paymentData) {
   try {
     const lineItems = savedOrder.items.map((item, index) => {
       const quantity = Number(item?.qty || 0);
-      const rate = Number(item?.price || 0);
+      const isCustom = isCustomCartItem(item);
 
-      if (!Number.isFinite(quantity) || quantity <= 0) {
+      if (!Number.isInteger(quantity) || quantity <= 0 || quantity > 20) {
         throw new Error(`Invalid quantity for cart item ${index + 1}.`);
       }
 
-      if (!Number.isFinite(rate) || rate < 0) {
-        throw new Error(`Invalid price for cart item ${index + 1}.`);
+      if (isCustom) {
+        if (quantity < 2) {
+          throw new Error(`Custom cart item ${index + 1} must have a minimum quantity of 2.`);
+        }
+
+        const garment = String(item?.garment || '').trim();
+        const color = String(item?.color || '').trim();
+        const size = String(item?.size || '').trim();
+
+        if (!garment || !color || !size) {
+          throw new Error(`Custom cart item ${index + 1} is missing garment, color or size.`);
+        }
+
+        return {
+          isCustom: true,
+          garment: garment.slice(0, 60),
+          color: color.slice(0, 40),
+          size: size.slice(0, 20),
+          quantity,
+          prints: item?.prints || null,
+          item_id: String(item?.zoho_item_id || item?.zohoItemId || '').trim(),
+          name: String(item?.title || `Custom ${garment}`).trim().slice(0, 100),
+          description: `Custom ${garment} | Color: ${color} | Size: ${size}`
+        };
+      }
+
+      const resolved = resolveRegularProductFromCatalog(item);
+
+      if (!resolved.code && !resolved.productId) {
+        throw new Error(
+          `Regular cart item ${index + 1} is missing product_code/product_id.`
+        );
       }
 
       return {
-        // Optional Zoho Item ID. The backend will resolve/create the Zoho item
-        // by name when this is not present.
+        isCustom: false,
+        product_code: resolved.code || '',
+        product_id: resolved.productId || null,
         item_id: String(item?.zoho_item_id || item?.zohoItemId || '').trim(),
         name: String(item?.title || item?.name || 'Product').trim().slice(0, 100),
         description: [
           item?.color ? `Color: ${item.color}` : '',
           item?.size ? `Size: ${item.size}` : ''
         ].filter(Boolean).join(' | '),
-        quantity,
-        rate
+        quantity
       };
     });
 
