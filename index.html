@@ -326,45 +326,7 @@ footer a:hover{color:var(--paper)}
 .address-actions button.primary{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow)}
 .address-actions button.danger{color:var(--rebel-red);border-color:var(--rebel-red)}
 @media(max-width:600px){.account-grid{grid-template-columns:1fr}}
-
-
-/* ===== FINAL SAFE RESPONSIVE / SCALING FIX ===== */
-*,*::before,*::after{box-sizing:border-box}
-html,body{width:100%;max-width:100%;margin:0;padding:0;overflow-x:hidden}
-body{min-width:320px}
-img,svg{max-width:100%}
-header,.ticker,main,section,footer,.section,.wrap,#collections,#category-page,#custom-order-page,#shipping-billing-page,#admin-view{max-width:100%;width:100%}
-.section{box-sizing:border-box}
-.scroll-container-wrap{width:100%;max-width:100%;overflow:hidden}
-.horizontal-scroll-grid{width:100%;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-gutter:stable;padding-left:0;padding-right:0}
-/* Keep the previous horizontal-card layout, but make three cards fit cleanly on desktop. */
-.horizontal-scroll-grid .card{min-width:calc((100% - 3rem)/3);width:calc((100% - 3rem)/3);flex:0 0 calc((100% - 3rem)/3)}
-@media(max-width:960px){
-  .horizontal-scroll-grid .card{min-width:calc((100% - 1.5rem)/2);width:calc((100% - 1.5rem)/2);flex-basis:calc((100% - 1.5rem)/2)}
-}
-@media(max-width:600px){
-  .horizontal-scroll-grid{gap:1rem}
-  .horizontal-scroll-grid .card{min-width:88vw;width:88vw;flex-basis:88vw}
-}
-/* Do not let transformed branding or header controls enlarge/crop the viewport. */
-.logo-wrap,.header-actions,header nav{max-width:100%;min-width:0}
-.rebel-brand-logo{overflow:visible;flex-shrink:0}
-@media(max-width:520px){
-  header{padding:.55rem .75rem;min-height:72px}
-  .rebel-brand-logo{width:130px;height:48px}
-  .rebel-brand-logo svg,.rebel-brand-logo img{transform:scale(1.9);transform-origin:left center}
-  nav{display:none!important}
-  .header-actions{gap:.35rem}
-}
-/* Avoid accidental horizontal overflow from long order/product text. */
-.card,.profile-modal-box,.custom-form-box,.shipping-form-box,.admin-panel,.orders-table-wrap{max-width:100%;min-width:0}
-.card__title,.card__desc,.profile-info-row,.saved-address-text,.order-summary{overflow-wrap:anywhere}
-/* Ensure modal pages remain usable inside any viewport. */
-.profile-modal-box{max-height:calc(100vh - 2rem);overflow:auto}
-.profile-modal-box .account-tabs{position:sticky;top:0;z-index:2}
-
 </style>
-<meta name="rebel-build" content="2026-09-08-responsive-final-v2">
 </head>
 <body>
 
