@@ -629,9 +629,9 @@ footer a:hover{color:var(--paper)}
       <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeAuthModal()">×</button>
       <div id="auth-login-view">
         <h3>Rebel Store Login</h3>
-        <p>Enter your username and password to sign in.</p>
-        <label class="admin-field-label">Username</label>
-        <input type="text" id="login-user" placeholder="Username" class="admin-input-full" autocomplete="username">
+        <p>Enter your username/email and password to sign in.</p>
+        <label class="admin-field-label">Username / Email</label>
+        <input type="text" id="login-user" placeholder="Username or Email" class="admin-input-full" autocomplete="username">
         <label class="admin-field-label">Password</label>
         <input type="password" id="login-pass" placeholder="••••••••" class="admin-input-full" autocomplete="current-password">
         <button class="btn btn--solid" style="width:100%; justify-content:center; margin-bottom:1rem;" id="login-submit-btn" onclick="processUserLogin()">Login →</button>
@@ -1219,7 +1219,6 @@ const SUPABASE_PROJECT_URL = 'https://rdqzslvgqtajhiwxwauo.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkcXpzbHZncXRhamhpd3h3YXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyMjYyMTYsImV4cCI6MjEwMjgwMjIxNn0.lSrbO0h57wBBqgu_z4D9fhffN8VawX-HcaDANOUOKok';
 const RAZORPAY_TEST_KEY_ID = 'rzp_test_TZPUNAP5rWwiSt';
 const EDGE_FUNCTION_VERIFY_PAYMENT_URL = SUPABASE_PROJECT_URL + '/functions/v1/verify-razorpay-payment';
-const EDGE_FUNCTION_USERNAME_LOGIN_URL = SUPABASE_PROJECT_URL + '/functions/v1/login-by-username';
 
 let supabaseClient = null;
 
@@ -1705,26 +1704,73 @@ function changeCustQty(amount) {
 async function uploadFileToSupabaseStorage(fileInputId, bucketName = 'custom-prints') {
   const fileInput = document.getElementById(fileInputId);
   if (!fileInput || !fileInput.files || !fileInput.files[0]) return null;
+
   const file = fileInput.files[0];
+  const allowedTypes = ['image/png', 'image/jpeg', 'image/webp'];
+  const allowedExts = ['png', 'jpg', 'jpeg', 'webp'];
+  const originalExt = String(file.name.split('.').pop() || '').toLowerCase();
+
   if (file.size > 5 * 1024 * 1024) {
     showToast(`File ${file.name} exceeds 5MB limit!`);
-    throw new Error("File exceeds 5MB limit");
+    throw new Error('File exceeds 5MB limit');
   }
-  const fileExt = file.name.split('.').pop();
-  const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
-  const filePath = `${fileName}`;
 
-  if (supabaseClient) {
-    try {
-      const { data, error } = await supabaseClient.storage.from(bucketName).upload(filePath, file);
-      if (error) throw error;
-      const { data: publicUrlData } = supabaseClient.storage.from(bucketName).getPublicUrl(filePath);
-      return { name: file.name, path: publicUrlData.publicUrl };
-    } catch (err) {
-      console.warn("Storage upload fallback to local URL:", err);
-    }
+  if (!allowedTypes.includes(file.type) || !allowedExts.includes(originalExt)) {
+    showToast('Only PNG, JPG/JPEG or WEBP image files are allowed.');
+    throw new Error('Unsupported file type');
   }
-  return { name: file.name, path: URL.createObjectURL(file) };
+
+  if (!supabaseClient) {
+    throw new Error('Supabase is not connected. Please refresh and try again.');
+  }
+
+  const { data: authData, error: authError } = await supabaseClient.auth.getUser();
+  const userId = authData?.user?.id;
+  if (authError || !userId) {
+    showToast('Please login before uploading custom print files.');
+    throw new Error('Authenticated user required for secure file upload');
+  }
+
+  const ext = originalExt === 'jpeg' ? 'jpg' : originalExt;
+  const uniqueName = (window.crypto && typeof window.crypto.randomUUID === 'function')
+    ? window.crypto.randomUUID()
+    : `${Date.now()}_${Math.random().toString(36).substring(2, 12)}`;
+  const filePath = `${userId}/${uniqueName}.${ext}`;
+
+  try {
+    const { error } = await supabaseClient.storage
+      .from(bucketName)
+      .upload(filePath, file, {
+        contentType: file.type,
+        upsert: false
+      });
+
+    if (error) throw error;
+
+    // IMPORTANT: custom-prints is private. Store the object path, not a public URL.
+    // A short-lived signed URL is used only for the current browser preview.
+    let previewUrl = '';
+    try {
+      const { data: signedData } = await supabaseClient.storage
+        .from(bucketName)
+        .createSignedUrl(filePath, 3600);
+      previewUrl = signedData?.signedUrl || '';
+    } catch (previewErr) {
+      console.warn('Signed preview unavailable:', previewErr);
+    }
+
+    return {
+      name: file.name,
+      path: previewUrl,
+      storagePath: filePath,
+      bucket: bucketName,
+      mimeType: file.type
+    };
+  } catch (err) {
+    console.error('Secure storage upload failed:', err);
+    showToast(`Upload failed: ${err.message || 'Unable to upload file'}`);
+    throw err;
+  }
 }
 
 async function addCustomOrderToCart() {
@@ -1966,7 +2012,6 @@ function addToCart() {
   cart.push({
     isCustom: false,
     id: currentProduct.id,
-    product_code: currentProduct.code,
     title: `${currentProduct.title} (${selectedColor})`,
     size: selectedSize,
     price: currentProduct.price,
@@ -2281,18 +2326,12 @@ async function proceedToPayment() {
     return;
   }
 
-  // The browser price is display-only.
-  // The secure Create_razorpay_order Edge Function calculates the real amount
-  // from the products table using product_code + qty.
-  const displaySubtotal = cart.reduce((sum, item) => {
-    const price = Number(item?.price || 0);
-    const qty = Number(item?.qty || 0);
-    let itemTotal = price * qty;
-    if (isCouponApplied && !item.isCustom) {
-      itemTotal = Math.round(itemTotal * (1 - activeDiscountPercent / 100));
-    }
-    return sum + itemTotal;
-  }, 0);
+  let subtotal = 0;
+  cart.forEach(item => {
+    let itot = item.price * item.qty;
+    if (isCouponApplied && !item.isCustom) itot = Math.round(itot * (1 - activeDiscountPercent / 100));
+    subtotal += itot;
+  });
 
   const payBtn = document.getElementById('pay-submit-btn');
   payBtn.disabled = true;
@@ -2300,22 +2339,8 @@ async function proceedToPayment() {
 
   const pendingOrder = {
     billing: billingData,
-    // Keep product_code + qty as the checkout source of truth.
-    // Any price stored in localStorage can be changed by the browser and
-    // must never be trusted by the payment backend.
-    items: cart.map(item => ({
-      isCustom: !!item.isCustom,
-      id: item.id || '',
-      product_code: item.product_code || item.code || '',
-      title: item.title || '',
-      size: item.size || '',
-      color: item.color || selectedColor || '',
-      price: Number(item.price || 0), // display/history only; never trusted for payment
-      qty: Number(item.qty || 0),
-      image: item.image || '',
-      stockStatus: item.stockStatus || { available: true, notes: '' }
-    })),
-    totalAmount: displaySubtotal,
+    items: [...cart],
+    totalAmount: subtotal,
     date: new Date().toISOString().split('T')[0]
   };
   localStorage.setItem('rebel_pending_order', JSON.stringify(pendingOrder));
@@ -2328,12 +2353,7 @@ async function proceedToPayment() {
         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
       },
       body: JSON.stringify({
-        items: cart
-          .filter(item => !item.isCustom)
-          .map(item => ({
-            product_code: String(item.product_code || item.code || '').trim().toUpperCase(),
-            qty: Number(item.qty || 0)
-          })),
+        amount: subtotal,
         receipt: 'rebel_receipt_' + Date.now()
       })
     });
@@ -2519,29 +2539,29 @@ async function handleOrderSuccessDirect(paymentData) {
   showToast('Payment received. Verifying payment and creating invoice securely...');
 
   try {
-    // Do not send browser-controlled prices to the verification backend.
-    // The backend must resolve the real price from public.products.
     const lineItems = savedOrder.items.map((item, index) => {
       const quantity = Number(item?.qty || 0);
-      const productCode = String(item?.product_code || item?.code || '').trim().toUpperCase();
+      const rate = Number(item?.price || 0);
 
       if (!Number.isFinite(quantity) || quantity <= 0) {
         throw new Error(`Invalid quantity for cart item ${index + 1}.`);
       }
 
-      if (!productCode && !item?.isCustom) {
-        throw new Error(`Missing product code for cart item ${index + 1}.`);
+      if (!Number.isFinite(rate) || rate < 0) {
+        throw new Error(`Invalid price for cart item ${index + 1}.`);
       }
 
       return {
+        // Optional Zoho Item ID. The backend will resolve/create the Zoho item
+        // by name when this is not present.
         item_id: String(item?.zoho_item_id || item?.zohoItemId || '').trim(),
-        product_code: productCode,
         name: String(item?.title || item?.name || 'Product').trim().slice(0, 100),
         description: [
           item?.color ? `Color: ${item.color}` : '',
           item?.size ? `Size: ${item.size}` : ''
         ].filter(Boolean).join(' | '),
-        quantity
+        quantity,
+        rate
       };
     });
 
@@ -2590,17 +2610,7 @@ async function handleOrderSuccessDirect(paymentData) {
     }
 
     const todayStr = savedOrder.date || new Date().toISOString().split('T')[0];
-
-    // The secure verification backend now creates the paid order server-side.
-    // Never insert a paid order directly from the browser.
-    const finalOrderId = String(verifyData?.order_id || '').trim();
-
-    if (!finalOrderId) {
-      console.error('Verification succeeded but no server-side order ID was returned:', verifyData);
-      showToast('Payment verified, but the order ID was not returned. Please contact support.');
-      return false;
-    }
-
+    const finalOrderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
     const totalQuantity = savedOrder.items.reduce(
       (sum, item) => sum + Number(item?.qty || 1),
       0
@@ -2611,13 +2621,42 @@ async function handleOrderSuccessDirect(paymentData) {
       stockStatus: item.stockStatus || { available: true, notes: '' }
     }));
 
+    const orderRecord = {
+      order_id: finalOrderId,
+      customer_name: billing.name || '',
+      customer_email: billing.email || '',
+      customer_phone: billing.phone || '',
+      customer_address: billing.address || '',
+      items: formattedItems,
+      total_qty: totalQuantity,
+      total_amount: Number(savedOrder.totalAmount || 0),
+      payment_status: 'paid',
+      razorpay_payment_id: razorpayPaymentId,
+      order_status: 'New'
+    };
+
+    if (!supabaseClient) {
+      showToast('Payment verified, but Supabase storage is unavailable. Please contact support.');
+      return false;
+    }
+
+    const { error: orderSaveError } = await supabaseClient
+      .from('orders')
+      .insert([orderRecord]);
+
+    if (orderSaveError) {
+      console.error('Order save failed:', orderSaveError);
+      showToast('Payment verified, but order could not be saved. Please contact support.');
+      return false;
+    }
+
     ordersHistory.unshift({
       id: finalOrderId,
       date: todayStr,
       userEmail: billing.email || '',
       billing,
       totalQty: totalQuantity,
-      totalAmount: Number((verifyData?.total_amount ?? verifyData?.amount_rupees ?? savedOrder.totalAmount) || 0),
+      totalAmount: Number(savedOrder.totalAmount || 0),
       items: formattedItems,
       paymentStatus: 'paid',
       paymentId: razorpayPaymentId,
@@ -2736,28 +2775,46 @@ function closeAdminSubPages() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function renderAdminCustomOrdersTable() {
+async function renderAdminCustomOrdersTable() {
   const customTbody = document.getElementById('admin-custom-orders-tbody');
   if (!customTbody) return;
   customTbody.innerHTML = '';
   if (customOrdersHistory.length === 0) {
     customTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--grey);">No custom orders received yet.</td></tr>`;
-  } else {
-    customOrdersHistory.forEach(co => {
-      let printLinks = '';
-      if (co.prints && co.prints.front) printLinks += `<a href="${co.prints.front.path}" target="_blank" download="${co.prints.front.name}" class="preview-link-btn" style="margin:2px; display:inline-block;">📥 Front Print</a>`;
-      if (co.prints && co.prints.back) printLinks += `<a href="${co.prints.back.path}" target="_blank" download="${co.prints.back.name}" class="preview-link-btn" style="margin:2px; display:inline-block;">📥 Back Print</a>`;
-      if (!co.prints || (!co.prints.front && !co.prints.back)) printLinks = 'No files';
+    return;
+  }
 
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><strong>${co.orderId}</strong><br><span style="font-size:0.7rem; color:var(--grey);">${co.date}</span></td>
-        <td><strong>${co.customer.name}</strong><br>${co.customer.phone}<br><span style="font-size:0.7rem; color:var(--grey);">${co.customer.address}</span></td>
-        <td>${co.title}<br>Color: <strong style="color:var(--spray-yellow);">${co.color || 'Black'}</strong> | Size: <strong>${co.size}</strong> (Qty: ${co.qty})<br><span style="color:var(--spray-yellow);">Amt: ரூ ${co.totalAmount}</span></td>
-        <td>${printLinks}</td>
-      `;
-      customTbody.appendChild(tr);
-    });
+  for (const co of customOrdersHistory) {
+    let printLinks = '';
+    const makePrintLink = async (print, label) => {
+      if (!print) return '';
+      let href = print.path || '';
+      if (print.storagePath && supabaseClient) {
+        try {
+          const { data } = await supabaseClient.storage
+            .from(print.bucket || 'custom-prints')
+            .createSignedUrl(print.storagePath, 3600);
+          href = data?.signedUrl || href;
+        } catch (err) {
+          console.warn(`Unable to create signed URL for ${label}:`, err);
+        }
+      }
+      if (!href) return `<span style="color:var(--grey);">${label}: Secure file (access not available)</span>`;
+      return `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer" download="${escapeHtml(print.name || label)}" class="preview-link-btn" style="margin:2px; display:inline-block;">📥 ${label}</a>`;
+    };
+
+    printLinks += await makePrintLink(co.prints?.front, 'Front Print');
+    printLinks += await makePrintLink(co.prints?.back, 'Back Print');
+    if (!printLinks) printLinks = 'No files';
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${escapeHtml(co.orderId)}</strong><br><span style="font-size:0.7rem; color:var(--grey);">${escapeHtml(co.date)}</span></td>
+      <td><strong>${escapeHtml(co.customer?.name || '')}</strong><br>${escapeHtml(co.customer?.phone || '')}<br><span style="font-size:0.7rem; color:var(--grey);">${escapeHtml(co.customer?.address || '')}</span></td>
+      <td>${escapeHtml(co.title || '')}<br>Color: <strong style="color:var(--spray-yellow);">${escapeHtml(co.color || 'Black')}</strong> | Size: <strong>${escapeHtml(co.size || '')}</strong> (Qty: ${Number(co.qty || 0)})<br><span style="color:var(--spray-yellow);">Amt: ரூ ${Number(co.totalAmount || 0)}</span></td>
+      <td>${printLinks}</td>
+    `;
+    customTbody.appendChild(tr);
   }
 }
 
@@ -3530,49 +3587,6 @@ async function saveAllCategoriesAndProducts() {
   if(saveBtn) saveBtn.innerText = 'Save Products & Categories 💾';
 }
 
-async function loadAuthoritativeProductPrices() {
-  if (!supabaseClient) return;
-
-  try {
-    const { data, error } = await supabaseClient
-      .from('products')
-      .select('product_code, title, price, mrp, active')
-      .eq('active', true);
-
-    if (error) throw error;
-    if (!Array.isArray(data) || data.length === 0) return;
-
-    const priceMap = new Map(
-      data.map(row => [
-        String(row.product_code || '').trim().toUpperCase(),
-        {
-          price: Number(row.price),
-          mrp: Number(row.mrp),
-          title: row.title
-        }
-      ])
-    );
-
-    CATEGORIES.forEach(category => {
-      (category.products || []).forEach(product => {
-        const key = String(product.code || '').trim().toUpperCase();
-        const dbProduct = priceMap.get(key);
-        if (!dbProduct) return;
-
-        if (Number.isFinite(dbProduct.price)) product.price = dbProduct.price;
-        if (Number.isFinite(dbProduct.mrp)) product.mrp = dbProduct.mrp;
-        if (dbProduct.title) product.title = dbProduct.title;
-      });
-    });
-
-    localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
-    renderStorefront();
-    renderAdminCategoriesMainGrid();
-  } catch (err) {
-    console.warn('Authoritative product price load skipped:', err?.message || err);
-  }
-}
-
 async function loadCategoriesFromCloud() {
   if (!supabaseClient) return;
   try {
@@ -3654,7 +3668,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderAdminCategoriesMainGrid();
   renderStorefront();
   renderAdminPanels();
-  loadCategoriesFromCloud().then(() => loadAuthoritativeProductPrices());
+  loadCategoriesFromCloud();
   loadSiteContentFromCloud();
   window.addEventListener('hashchange', handleRouteFromHash);
   handleRouteFromHash();
@@ -3961,73 +3975,34 @@ async function processUserLogin() {
   const passVal = document.getElementById('login-pass').value;
 
   if (!inputVal || !passVal) {
-    showToast('Enter your username and password');
-    return;
-  }
-
-  // Customer username/password login must ALWAYS use a username.
-  // Email/password login is intentionally not accepted here.
-  // Customers who want to use Google must use "Continue with Google".
-  if (inputVal.includes('@')) {
-    showToast('Please enter your username. For Gmail, use Continue with Google.');
+    showToast('Enter username/email and password');
     return;
   }
 
   const submitBtn = document.getElementById('login-submit-btn');
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.innerText = 'Checking...';
-  }
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.innerText = 'Logging in...'; }
 
   try {
     if (!supabaseClient) throw new Error('Supabase is not connected.');
 
-    // Username lookup + password verification happens in the secure
-    // server-side login-by-username Edge Function.
-    const { data, error } = await supabaseClient.functions.invoke(
-      'login-by-username',
-      {
-        body: {
-          username: inputVal,
-          password: passVal
-        }
-      }
-    );
-
-    if (error) {
-      let detail = error.message || 'Invalid username or password.';
-
-      try {
-        if (error.context && typeof error.context.json === 'function') {
-          const payload = await error.context.json();
-          if (payload?.error) detail = payload.error;
-        }
-      } catch (_) {}
-
-      throw new Error(detail);
+    let emailToUse = inputVal;
+    if (!inputVal.includes('@')) {
+      const { data: profileData } = await supabaseClient
+        .from('profiles')
+        .select('email')
+        .eq('username', inputVal)
+        .maybeSingle();
+      if (profileData?.email) emailToUse = profileData.email;
     }
 
-    if (!data?.success || !data?.session || !data?.user) {
-      throw new Error(data?.error || 'Invalid username or password.');
-    }
+    const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
+      email: emailToUse,
+      password: passVal
+    });
+    if (authError) throw authError;
+    if (!authData?.user) throw new Error('Login failed.');
 
-    // Store the authenticated Supabase session in the browser.
-    const { data: sessionData, error: sessionError } =
-      await supabaseClient.auth.setSession({
-        access_token: data.session.access_token,
-        refresh_token: data.session.refresh_token
-      });
-
-    if (sessionError) throw sessionError;
-
-    const authenticatedUser = sessionData?.user || data.user;
-
-    if (!authenticatedUser) {
-      throw new Error('Login failed.');
-    }
-
-    await hydrateLoggedInUserFromSupabase(authenticatedUser, false);
-
+    await hydrateLoggedInUserFromSupabase(authData.user, false);
     closeAuthModal();
     showToast('Login Successful!');
 
@@ -4036,13 +4011,10 @@ async function processUserLogin() {
       showShippingFormView();
     }
   } catch (err) {
-    console.error('Username login error:', err);
-    showToast(err.message || 'Invalid username or password.');
+    console.error('Login error:', err);
+    showToast(err.message || 'Invalid login credentials.');
   } finally {
-    if (submitBtn) {
-      submitBtn.disabled = false;
-      submitBtn.innerText = 'Login →';
-    }
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = 'Login →'; }
   }
 }
 
