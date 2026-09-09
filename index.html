@@ -216,7 +216,8 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .b-field input:focus,.b-field select:focus{border-color:var(--spray-yellow);outline:none}
 .b-hint{font-family:'Space Mono',monospace;font-size:.65rem;color:var(--spray-yellow);margin-top:3px;display:block}
 
-.auth-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem}
+.auth-modal,.admin-auth-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem}
+.admin-auth-modal{background:rgba(0,0,0,0.92);z-index:220}
 .auth-box,.admin-auth-box{width:100%;max-width:440px;background:#141416;border:2px solid var(--spray-yellow);box-shadow:8px 8px 0 var(--paper);padding:2rem;position:relative;max-height:90vh;overflow-y:auto}
 .admin-auth-box{max-width:420px}
 .auth-box h3,.admin-auth-box h3{font-family:'Anton',sans-serif;font-size:1.8rem;text-transform:uppercase;margin-bottom:.3rem}
@@ -340,7 +341,7 @@ footer a:hover{color:var(--paper)}
     </div>
   </div>
   <header>
-    <div class="logo-wrap" id="brand-logo-trigger">
+    <div class="logo-wrap" id="brand-logo-trigger" onclick="handleLogoClick(event)">
       <div class="rebel-brand-logo" id="header-logo-container">
         <img id="site-header-logo-img" src="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon4.png" alt="Rebel Store Logo">
       </div>
@@ -349,7 +350,6 @@ footer a:hover{color:var(--paper)}
       <a onclick="handleNavShopClick()" id="nav-link-shop">Shop</a>
       <a onclick="openCustomOrderPage()" id="nav-link-manifesto">Manifesto</a>
       <a onclick="handleNavContactClick()" id="nav-link-contact">Contact</a>
-      <a onclick="openAdminPage()" id="nav-link-admin" style="display:none;">Admin</a>
     </nav>
     <div class="header-actions">
       <div class="user-badge" id="user-badge" onclick="handleAuthClick(event)">
@@ -720,6 +720,20 @@ footer a:hover{color:var(--paper)}
           <button class="btn btn--solid" onclick="saveSavedAddress()">Save Address</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ADMIN AUTH MODAL -->
+  <div class="admin-auth-modal" id="admin-auth-modal">
+    <div class="admin-auth-box">
+      <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeAdminAuth()">×</button>
+      <h3>Staff / Owner Access</h3>
+      <p>Enter Supabase Admin Email & Password.</p>
+      <label class="admin-field-label">Admin Email</label>
+      <input type="email" id="admin-user-input" class="admin-input-full" placeholder="admin@rebelstore.in" autocomplete="username">
+      <label class="admin-field-label">Password</label>
+      <input type="password" id="admin-pass-input" class="admin-input-full" placeholder="••••••••••" autocomplete="current-password">
+      <button class="btn btn--solid" style="width:100%; justify-content:center; margin-top:.5rem;" onclick="verifyAdminCredentialsFromSupabase()">Authenticate via Supabase</button>
     </div>
   </div>
 
@@ -1222,6 +1236,17 @@ try {
   console.warn("Supabase init fallback:", e);
 }
 
+async function getAuthenticatedAccessToken() {
+  if (!supabaseClient) return null;
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    return session?.access_token || null;
+  } catch (e) {
+    console.warn("Could not read Supabase session:", e);
+    return null;
+  }
+}
+
 const INDIA_LOCATIONS = {
   "Tamil Nadu": ["Ariyalur", "Chengalpattu", "Chennai", "Coimbatore", "Cuddalore", "Dharmapuri", "Dindigul", "Erode", "Kallakurichi", "Kanchipuram", "Kanyakumari", "Karur", "Krishnagiri", "Madurai", "Mayiladuthurai", "Nagapattinam", "Namakkal", "Nilgiris", "Perambalur", "Pudukkottai", "Ramanathapuram", "Ranipet", "Salem", "Sivagangai", "Tenkasi", "Thanjavur", "Theni", "Thoothukudi", "Tiruchirappalli", "Tirunelveli", "Tirupattur", "Tiruppur", "Tiruvallur", "Tiruvannamalai", "Tiruvarur", "Vellore", "Viluppuram", "Virudhunagar"],
   "Andhra Pradesh": ["Ananthapuramu", "Chittoor", "East Godavari", "Guntur", "Kadapa", "Krishna", "Kurnool", "Nellore", "Prakasam", "Srikakulam", "Visakhapatnam", "Vizianagaram", "West Godavari"],
@@ -1380,7 +1405,7 @@ let staffAccounts = JSON.parse(localStorage.getItem('rebel_staff_accounts')) || 
 let cart = JSON.parse(localStorage.getItem('rebel_cart')) || [];
 let wishlist = JSON.parse(localStorage.getItem('rebel_wishlist')) || [];
 
-let currentRole = 'customer';
+let currentRole = 'owner';
 let lastViewedProductId = null;
 let activeAdminEditingCategoryName = 'Oversized Tee';
 let activeOfferCode = 'REBEL16';
@@ -1404,6 +1429,28 @@ let currentSelectedDateFilter = '';
 let currentStatusFilter = 'New';
 let currentSearchQuery = '';
 
+let logoClickCount = 0;
+let logoClickTimer = null;
+function handleLogoClick(event) {
+  event.preventDefault();
+  logoClickCount++;
+  if (logoClickTimer) clearTimeout(logoClickTimer);
+  if (logoClickCount === 5) {
+    logoClickCount = 0;
+    openAdminPinModal();
+    return;
+  }
+  logoClickTimer = setTimeout(() => {
+    logoClickCount = 0;
+  }, 1000);
+  if (logoClickCount === 1) {
+    setTimeout(() => {
+      if (logoClickCount > 0 && logoClickCount < 5) {
+        showHomeView();
+      }
+    }, 300);
+  }
+}
 
 function renameCardTitle(elementId, defaultName) {
   const el = document.getElementById(elementId);
@@ -2483,14 +2530,20 @@ async function handleOrderSuccessDirect(paymentData) {
     });
 
     const billing = savedOrder.billing || {};
+    const authenticatedAccessToken = await getAuthenticatedAccessToken();
 
     const verifyResponse = await fetch(EDGE_FUNCTION_VERIFY_PAYMENT_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        'apikey': SUPABASE_ANON_KEY
-      },
+      headers: (() => {
+        const headers = {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_ANON_KEY
+        };
+        if (authenticatedAccessToken) {
+          headers['Authorization'] = `Bearer ${authenticatedAccessToken}`;
+        }
+        return headers;
+      })(),
       body: JSON.stringify({
         razorpay_order_id: razorpayOrderId,
         razorpay_payment_id: razorpayPaymentId,
@@ -2527,7 +2580,12 @@ async function handleOrderSuccessDirect(paymentData) {
     }
 
     const todayStr = savedOrder.date || new Date().toISOString().split('T')[0];
-    const finalOrderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+    const finalOrderId = String(verifyData?.order_id || '').trim();
+    if (!finalOrderId) {
+      console.error('Backend verification succeeded without an order_id:', verifyData);
+      showToast('Payment verified, but order ID was not returned. Please contact support.');
+      return false;
+    }
     const totalQuantity = savedOrder.items.reduce(
       (sum, item) => sum + Number(item?.qty || 1),
       0
@@ -2538,53 +2596,13 @@ async function handleOrderSuccessDirect(paymentData) {
       stockStatus: item.stockStatus || { available: true, notes: '' }
     }));
 
-    // Attach the authenticated Supabase user ID when an account is logged in.
-    // Keep it nullable so guest orders and all existing historical orders remain valid.
-    let authenticatedUserId = null;
-    try {
-      const { data: { user: currentAuthUser } } = await supabaseClient.auth.getUser();
-      authenticatedUserId = currentAuthUser?.id || null;
-    } catch (authLookupError) {
-      console.warn('Could not resolve authenticated user for order ownership:', authLookupError);
-    }
-
-    const orderRecord = {
-      order_id: finalOrderId,
-      user_id: authenticatedUserId,
-      customer_name: billing.name || '',
-      customer_email: billing.email || '',
-      customer_phone: billing.phone || '',
-      customer_address: billing.address || '',
-      items: formattedItems,
-      total_qty: totalQuantity,
-      total_amount: Number(savedOrder.totalAmount || 0),
-      payment_status: 'paid',
-      razorpay_payment_id: razorpayPaymentId,
-      order_status: 'New'
-    };
-
-    if (!supabaseClient) {
-      showToast('Payment verified, but Supabase storage is unavailable. Please contact support.');
-      return false;
-    }
-
-    const { error: orderSaveError } = await supabaseClient
-      .from('orders')
-      .insert([orderRecord]);
-
-    if (orderSaveError) {
-      console.error('Order save failed:', orderSaveError);
-      showToast('Payment verified, but order could not be saved. Please contact support.');
-      return false;
-    }
-
     ordersHistory.unshift({
       id: finalOrderId,
       date: todayStr,
       userEmail: billing.email || '',
       billing,
       totalQty: totalQuantity,
-      totalAmount: Number(savedOrder.totalAmount || 0),
+      totalAmount: Number(verifyData?.total_amount ?? savedOrder.totalAmount ?? 0),
       items: formattedItems,
       paymentStatus: 'paid',
       paymentId: razorpayPaymentId,
@@ -3517,16 +3535,37 @@ async function loadCategoriesFromCloud() {
   }
 }
 
+function openAdminPinModal() {
+  document.getElementById('admin-auth-modal').style.display = 'flex';
+  document.getElementById('admin-user-input').value = '';
+  document.getElementById('admin-pass-input').value = '';
+  document.body.style.overflow = 'hidden';
+  document.getElementById('admin-user-input').focus();
+}
+
+function closeAdminAuth() {
+  document.getElementById('admin-auth-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  const passInput = document.getElementById('admin-pass-input');
+  const userInput = document.getElementById('admin-user-input');
+  if (passInput && userInput) {
+    const handleEnter = (e) => {
+      if (e.key === 'Enter') verifyAdminCredentialsFromSupabase();
+    };
+    passInput.addEventListener('keydown', handleEnter);
+    userInput.addEventListener('keydown', handleEnter);
+  }
+
   checkRazorpayReturnStatus();
 
   const savedSession = sessionStorage.getItem('rebel_user_session');
   if (savedSession) {
     try {
       loggedInUser = JSON.parse(savedSession);
-      currentRole = loggedInUser?.role === 'owner' ? 'owner' : 'customer';
       updateUserBadgeDisplay();
-      updateAdminNavVisibility();
     } catch (e) {
       sessionStorage.removeItem('rebel_user_session');
     }
@@ -3546,16 +3585,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       if (event === 'SIGNED_OUT') {
         loggedInUser = null;
-        currentRole = 'customer';
         sessionStorage.removeItem('rebel_user_session');
         updateUserBadgeDisplay();
-        updateAdminNavVisibility();
       }
     });
   }
 
   updateCartBadge();
-  updateAdminNavVisibility();
   applySiteContentToDOM();
   renderAdminCategoriesMainGrid();
   renderStorefront();
@@ -3592,8 +3628,7 @@ async function hydrateLoggedInUserFromSupabase(authUser, closeModal = false) {
     altPhone: dbProf?.alt_phone || '',
     avatarUrl: dbProf?.avatar_url || googleAvatar || '',
     dateOfBirth: dbProf?.date_of_birth || '',
-    gender: dbProf?.gender || '',
-    role: dbProf?.role || 'customer'
+    gender: dbProf?.gender || ''
   };
 
   // Persist Google-provided fields only when the profile does not have them.
@@ -3613,29 +3648,13 @@ async function hydrateLoggedInUserFromSupabase(authUser, closeModal = false) {
   if (upsertError) console.warn('Profile sync:', upsertError.message);
 
   loggedInUser = merged;
-  currentRole = merged.role === 'owner' ? 'owner' : 'customer';
   sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
   updateUserBadgeDisplay();
-  updateAdminNavVisibility();
 
   if (closeModal) {
     closeAuthModal();
     showToast('Google account signed in successfully!');
   }
-}
-
-function updateAdminNavVisibility() {
-  const adminLink = document.getElementById('nav-link-admin');
-  if (!adminLink) return;
-  adminLink.style.display = (loggedInUser && currentRole === 'owner') ? 'inline-block' : 'none';
-}
-
-function openAdminPage() {
-  if (!loggedInUser || currentRole !== 'owner') {
-    showToast('Admin access is restricted.');
-    return;
-  }
-  grantAdminAccess();
 }
 
 function handleRouteFromHash() {
@@ -3647,13 +3666,7 @@ function handleRouteFromHash() {
   } else if (hash === '#shipping') {
     goToShippingPage();
   } else if (hash === '#admin') {
-    if (loggedInUser && currentRole === 'owner') {
-      grantAdminAccess();
-    } else {
-      window.location.hash = '#home';
-      showHomeView();
-      showToast('Admin access is restricted.');
-    }
+    grantAdminAccess();
   } else if (hash.startsWith('#shop/')) {
     const parts = hash.replace('#shop/', '').split('/');
     const catSlug = parts[0];
@@ -3674,13 +3687,43 @@ function handleRouteFromHash() {
   }
 }
 
-function grantAdminAccess() {
-  if (!loggedInUser || currentRole !== 'owner') {
-    window.location.hash = '#home';
-    showHomeView();
-    showToast('Admin access is restricted.');
+async function verifyAdminCredentialsFromSupabase() {
+  const emailInput = document.getElementById('admin-user-input').value.trim();
+  const passInput = document.getElementById('admin-pass-input').value.trim();
+
+  if (!emailInput || !passInput) {
+    showToast('Please enter admin email and password');
     return;
   }
+
+  if (!supabaseClient) {
+    showToast('Supabase client not initialized');
+    return;
+  }
+
+  try {
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email: emailInput,
+      password: passInput
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    if (data && data.user) {
+      currentRole = 'owner';
+      grantAdminAccess();
+      showToast('Admin authenticated securely via Supabase!');
+    }
+  } catch (err) {
+    console.error("Admin Authentication Error:", err);
+    alert("Admin Login Failed: " + err.message);
+  }
+}
+
+function grantAdminAccess() {
+  closeAdminAuth();
   // FIXED: Ensure home-view and other views are hidden so admin-view acts as a full standalone page
   document.getElementById('home-view').style.display = 'none';
   document.getElementById('product-page').style.display = 'none';
@@ -3828,18 +3871,15 @@ async function registerNewAccount() {
           name: name,
           email: email,
           phone: phone,
-          username: username,
-          role: 'customer'
+          username: username
         }, { onConflict: 'id' });
       }
     }
 
-    loggedInUser = { name, phone, altPhone, email, username, avatarUrl: '', role: 'customer' };
-    currentRole = 'customer';
+    loggedInUser = { name, phone, altPhone, email, username, avatarUrl: '' };
     sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
 
     updateUserBadgeDisplay();
-    updateAdminNavVisibility();
     closeAuthModal();
     showToast('Account Created Successfully!');
 
@@ -3875,19 +3915,12 @@ async function processUserLogin() {
 
     let emailToUse = inputVal;
     if (!inputVal.includes('@')) {
-      const { data: loginLookupEmail, error: lookupError } = await supabaseClient
-        .rpc('get_login_email_by_username', { p_username: inputVal });
-
-      if (lookupError) {
-        console.error('Username lookup error:', lookupError);
-        throw new Error('Unable to verify username. Please try again.');
-      }
-
-      if (!loginLookupEmail) {
-        throw new Error('Invalid username or password.');
-      }
-
-      emailToUse = loginLookupEmail;
+      const { data: profileData } = await supabaseClient
+        .from('profiles')
+        .select('email')
+        .eq('username', inputVal)
+        .maybeSingle();
+      if (profileData?.email) emailToUse = profileData.email;
     }
 
     const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
@@ -3944,10 +3977,8 @@ async function logoutUser() {
     try { await supabaseClient.auth.signOut(); } catch (e) {}
   }
   loggedInUser = null;
-  currentRole = 'customer';
   sessionStorage.removeItem('rebel_user_session');
   updateUserBadgeDisplay();
-  updateAdminNavVisibility();
   showToast('Logged out successfully');
   showHomeView();
 }
