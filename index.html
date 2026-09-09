@@ -3864,12 +3864,19 @@ async function processUserLogin() {
 
     let emailToUse = inputVal;
     if (!inputVal.includes('@')) {
-      const { data: profileData } = await supabaseClient
-        .from('profiles')
-        .select('email')
-        .eq('username', inputVal)
-        .maybeSingle();
-      if (profileData?.email) emailToUse = profileData.email;
+      const { data: loginLookupEmail, error: lookupError } = await supabaseClient
+        .rpc('get_login_email_by_username', { p_username: inputVal });
+
+      if (lookupError) {
+        console.error('Username lookup error:', lookupError);
+        throw new Error('Unable to verify username. Please try again.');
+      }
+
+      if (!loginLookupEmail) {
+        throw new Error('Invalid username or password.');
+      }
+
+      emailToUse = loginLookupEmail;
     }
 
     const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
