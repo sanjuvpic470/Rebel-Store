@@ -2322,6 +2322,55 @@ function validateBillingForm() {
   };
 }
 
+function isCustomCartItem(item) {
+  if (!item) return false;
+  if (item.isCustom === true) return true;
+  if (String(item.isCustom || '').toLowerCase() === 'true') return true;
+
+  // Backward compatibility for custom items created by an older frontend.
+  // A custom cart item has garment + print metadata and must never be
+  // forced through regular-product product_code validation.
+  if (
+    String(item.garment || '').trim() &&
+    item.prints &&
+    typeof item.prints === 'object'
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+function resolveRegularProductFromCatalog(item) {
+  let code = String(item?.product_code || item?.code || '').trim().toUpperCase();
+  let productId = item?.id != null ? String(item.id).trim() : '';
+
+  if (code) return { code, productId };
+
+  if (productId && Array.isArray(CATEGORIES)) {
+    for (const category of CATEGORIES) {
+      const match = (category?.products || []).find(
+        p => String(p?.id) === productId
+      );
+
+      if (match) {
+        code = String(match?.product_code || match?.code || '')
+          .trim()
+          .toUpperCase();
+
+        if (code) {
+          return {
+            code,
+            productId: String(match?.id || productId).trim()
+          };
+        }
+      }
+    }
+  }
+
+  return { code: '', productId };
+}
+
 async function proceedToPayment() {
   const billingData = validateBillingForm();
   if (!billingData) return;
@@ -2352,23 +2401,34 @@ async function proceedToPayment() {
 
   try {
     const checkoutItems = cart.map(item => {
-      if (item?.isCustom) return { isCustom: true, qty: Number(item?.qty || 0) };
-      let code = String(item?.product_code || item?.code || '').trim().toUpperCase();
-      if (!code && item?.id != null && Array.isArray(CATEGORIES)) {
-        for (const category of CATEGORIES) {
-          const match = (category?.products || []).find(p => String(p?.id) === String(item.id));
-          if (match) {
-            code = String(match?.product_code || match?.code || '').trim().toUpperCase();
-            if (code) break;
-          }
-        }
+      if (isCustomCartItem(item)) {
+        return {
+          isCustom: true,
+          garment: String(item?.garment || '').trim(),
+          color: String(item?.color || '').trim(),
+          size: String(item?.size || '').trim(),
+          qty: Number(item?.qty || 0)
+        };
       }
-      return { isCustom: false, product_code: code, qty: Number(item?.qty || 0) };
+
+      const resolved = resolveRegularProductFromCatalog(item);
+
+      return {
+        isCustom: false,
+        product_code: resolved.code,
+        product_id: resolved.productId || null,
+        qty: Number(item?.qty || 0)
+      };
     });
 
-    const invalidRegularItem = checkoutItems.find(item => !item.isCustom && !item.product_code);
+    const invalidRegularItem = checkoutItems.find(
+      item => !item.isCustom && !item.product_code && !item.product_id
+    );
+
     if (invalidRegularItem) {
-      throw new Error('A product in your cart is missing its product code. Please remove that item and add it to the cart again.');
+      throw new Error(
+        'A regular product in your cart could not be matched to the store catalogue. Please remove that product and add it again.'
+      );
     }
 
     const response = await fetch('https://rdqzslvgqtajhiwxwauo.supabase.co/functions/v1/Create_razorpay_order', {
@@ -2382,7 +2442,7 @@ async function proceedToPayment() {
         // Regular products are resolved by product_code in the Edge Function.
         // Custom orders are resolved by server-side custom pricing in the Edge Function.
         items: cart.map(item => {
-          if (item?.isCustom) {
+          if (isCustomCartItem(item)) {
             return {
               isCustom: true,
               garment: String(item?.garment || '').trim(),
@@ -2392,25 +2452,12 @@ async function proceedToPayment() {
             };
           }
 
-          // Resolve the product code from the catalog too, so older cart
-          // entries created before this security update still work.
-          let resolvedCode = String(
-            item?.product_code || item?.code || ''
-          ).trim().toUpperCase();
-
-          if (!resolvedCode && item?.id != null && Array.isArray(CATEGORIES)) {
-            for (const category of CATEGORIES) {
-              const match = (category?.products || []).find(p => String(p?.id) === String(item.id));
-              if (match) {
-                resolvedCode = String(match?.product_code || match?.code || '').trim().toUpperCase();
-                if (resolvedCode) break;
-              }
-            }
-          }
+          const resolved = resolveRegularProductFromCatalog(item);
 
           return {
             isCustom: false,
-            product_code: resolvedCode,
+            product_code: resolved.code,
+            product_id: resolved.productId || null,
             qty: Number(item?.qty || 0)
           };
         }),
