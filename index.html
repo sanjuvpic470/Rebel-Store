@@ -2538,8 +2538,19 @@ async function handleOrderSuccessDirect(paymentData) {
       stockStatus: item.stockStatus || { available: true, notes: '' }
     }));
 
+    // Attach the authenticated Supabase user ID when an account is logged in.
+    // Keep it nullable so guest orders and all existing historical orders remain valid.
+    let authenticatedUserId = null;
+    try {
+      const { data: { user: currentAuthUser } } = await supabaseClient.auth.getUser();
+      authenticatedUserId = currentAuthUser?.id || null;
+    } catch (authLookupError) {
+      console.warn('Could not resolve authenticated user for order ownership:', authLookupError);
+    }
+
     const orderRecord = {
       order_id: finalOrderId,
+      user_id: authenticatedUserId,
       customer_name: billing.name || '',
       customer_email: billing.email || '',
       customer_phone: billing.phone || '',
