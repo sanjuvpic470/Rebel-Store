@@ -955,13 +955,16 @@ footer a:hover{color:var(--paper)}
         <h2>⚡ Custom Print Orders</h2>
         <button class="btn btn--ghost" style="padding:0.4rem 1rem; font-size:0.8rem;" onclick="closeAdminSubPages()">← Back to Dashboard</button>
       </div>
+      <div style="margin-bottom:12px; padding:10px 12px; border:1px solid rgba(242,240,234,0.12); background:#111113; color:var(--grey); font-family:'Space Mono'; font-size:0.72rem;">
+        Paid custom orders are linked to the main Orders tracker. Use the Order ID to manage status, address, shipping PDF and Zoho invoice from the normal order workflow.
+      </div>
       <div class="admin-table-wrap">
         <table class="date-chart-table">
           <thead>
             <tr>
               <th>Order Date & ID</th>
-              <th>Customer & Phone</th>
-              <th>Garment, Color & Size</th>
+              <th>Customer, Phone & Email</th>
+              <th>Garment, Address, Status & Amount</th>
               <th>Uploaded Print Files</th>
             </tr>
           </thead>
@@ -1825,44 +1828,10 @@ async function addCustomOrderToCart() {
     cart.push(customItem);
     localStorage.setItem('rebel_cart', JSON.stringify(cart));
 
-    // Save to Custom Orders History for Admin View
-    const todayStr = new Date().toISOString().split('T')[0];
-    const customRecordId = 'CUST-' + Math.floor(100000 + Math.random() * 900000);
-    const customOrderRecord = {
-      orderId: customRecordId,
-      date: todayStr,
-      customer: {
-        name: loggedInUser ? (loggedInUser.name || loggedInUser.username) : 'Guest Customer',
-        phone: loggedInUser ? (loggedInUser.phone || 'N/A') : 'N/A',
-        address: loggedInUser ? (loggedInUser.address || 'Online Custom Order') : 'Online Custom Order'
-      },
-      title: `Custom ${garment} (${custColor})`,
-      size: custSize,
-      color: custColor,
-      qty: custQty,
-      totalAmount: custUnitPrice * custQty,
-      prints: { front: frontPrint, back: backPrint }
-    };
-    customOrdersHistory.unshift(customOrderRecord);
-    localStorage.setItem('rebel_custom_orders_history', JSON.stringify(customOrdersHistory));
-
-    if (supabaseClient) {
-      try {
-        await supabaseClient.from('custom_orders').insert([{
-          order_id: customRecordId,
-          customer_name: customOrderRecord.customer.name,
-          customer_phone: customOrderRecord.customer.phone,
-          garment: garment,
-          color: custColor,
-          size: custSize,
-          quantity: custQty,
-          total_amount: customOrderRecord.totalAmount,
-          prints: { front: frontPrint, back: backPrint }
-        }]);
-      } catch (err) {
-        console.warn("Supabase custom orders sync warning:", err);
-      }
-    }
+    // Do NOT create a separate admin order at cart stage.
+    // Custom orders are now shown in the main Orders tracker only after
+    // the payment is successfully verified and the order is saved.
+    // This prevents unpaid/double custom orders from appearing in Admin.
 
     updateCartBadge();
     renderCartDrawer();
@@ -2811,46 +2780,192 @@ function closeAdminSubPages() {
 async function renderAdminCustomOrdersTable() {
   const customTbody = document.getElementById('admin-custom-orders-tbody');
   if (!customTbody) return;
-  customTbody.innerHTML = '';
-  if (customOrdersHistory.length === 0) {
-    customTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--grey);">No custom orders received yet.</td></tr>`;
+
+  customTbody.innerHTML = `
+    <tr>
+      <td colspan="4" style="text-align:center; color:var(--grey);">
+        Loading paid custom orders...
+      </td>
+    </tr>
+  `;
+
+  // IMPORTANT:
+  // The source of truth is now the normal paid orders table.
+  // A custom order is simply an order containing one or more isCustom items.
+  // This means the same order appears in the normal tracker, with the same
+  // Order ID, address, payment status, status filters and invoice actions.
+  let paidCustomOrders = (ordersHistory || []).filter(order =>
+    Array.isArray(order?.items) &&
+    order.items.some(item => item?.isCustom === true)
+  );
+
+  if (paidCustomOrders.length === 0) {
+    customTbody.innerHTML = `
+      <tr>
+        <td colspan="4" style="text-align:center; color:var(--grey);">
+          No paid custom orders received yet.
+        </td>
+      </tr>
+    `;
     return;
   }
 
-  for (const co of customOrdersHistory) {
-    let printLinks = '';
-    const makePrintLink = async (print, label) => {
-      if (!print) return '';
-      let href = print.path || '';
-      if (print.storagePath && supabaseClient) {
-        try {
-          const { data } = await supabaseClient.storage
-            .from(print.bucket || 'custom-prints')
-            .createSignedUrl(print.storagePath, 3600);
-          href = data?.signedUrl || href;
-        } catch (err) {
-          console.warn(`Unable to create signed URL for ${label}:`, err);
-        }
-      }
-      if (!href) return `<span style="color:var(--grey);">${label}: Secure file (access not available)</span>`;
-      return `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer" download="${escapeHtml(print.name || label)}" class="preview-link-btn" style="margin:2px; display:inline-block;">📥 ${label}</a>`;
-    };
+  // Show newest first and prevent accidental duplicate rendering of the same
+  // order ID.
+  const seenOrderIds = new Set();
+  paidCustomOrders = paidCustomOrders.filter(order => {
+    const id = String(order?.id || '').trim();
+    if (!id || seenOrderIds.has(id)) return false;
+    seenOrderIds.add(id);
+    return true;
+  });
 
-    printLinks += await makePrintLink(co.prints?.front, 'Front Print');
-    printLinks += await makePrintLink(co.prints?.back, 'Back Print');
-    if (!printLinks) printLinks = 'No files';
+  for (const order of paidCustomOrders) {
+    const customItems = order.items.filter(item => item?.isCustom === true);
+
+    let garmentHtml = '';
+    let printLinks = '';
+
+    customItems.forEach((item, itemIndex) => {
+      const garmentTitle = String(item?.title || 'Custom Print Order');
+      const color = String(item?.color || 'Black');
+      const size = String(item?.size || '');
+      const qty = Number(item?.qty || 0);
+
+      garmentHtml += `
+        <div style="margin-bottom:10px; padding-bottom:8px; border-bottom:1px dashed rgba(242,240,234,0.15);">
+          <strong>${escapeHtml(garmentTitle)}</strong><br>
+          Color:
+          <strong style="color:var(--spray-yellow);">${escapeHtml(color)}</strong>
+          |
+          Size:
+          <strong>${escapeHtml(size)}</strong>
+          |
+          Qty: ${qty}
+        </div>
+      `;
+
+      const front = item?.prints?.front;
+      const back = item?.prints?.back;
+
+      const addPrintButton = async (print, label) => {
+        if (!print) return '';
+
+        let href = String(print?.path || '');
+        const storagePath = String(print?.storagePath || '').trim();
+        const bucket = String(print?.bucket || 'custom-prints').trim();
+
+        // Private bucket: generate a short-lived signed URL for admin only.
+        if (storagePath && supabaseClient) {
+          try {
+            const { data, error } = await supabaseClient.storage
+              .from(bucket)
+              .createSignedUrl(storagePath, 3600);
+
+            if (!error && data?.signedUrl) {
+              href = data.signedUrl;
+            }
+          } catch (err) {
+            console.warn(`Unable to create signed URL for ${label}:`, err);
+          }
+        }
+
+        if (!href) {
+          return `
+            <span style="color:var(--grey); display:inline-block; margin:2px;">
+              ${label}: File unavailable
+            </span>
+          `;
+        }
+
+        const safeHref = escapeHtml(href);
+        const safeName = escapeHtml(print?.name || label);
+
+        return `
+          <a
+            href="${safeHref}"
+            target="_blank"
+            rel="noopener noreferrer"
+            download="${safeName}"
+            class="preview-link-btn"
+            style="margin:2px; display:inline-block;"
+          >📥 ${escapeHtml(label)}</a>
+        `;
+      };
+
+      // These promises are collected below so both buttons are available.
+      item.__adminPrintPromises = [
+        addPrintButton(front, `Front Print ${customItems.length > 1 ? itemIndex + 1 : ''}`),
+        addPrintButton(back, `Back Print ${customItems.length > 1 ? itemIndex + 1 : ''}`)
+      ];
+    });
+
+    for (const item of customItems) {
+      if (Array.isArray(item.__adminPrintPromises)) {
+        const buttons = await Promise.all(item.__adminPrintPromises);
+        printLinks += buttons.join('');
+        delete item.__adminPrintPromises;
+      }
+    }
+
+    if (!printLinks) {
+      printLinks = `<span style="color:var(--grey);">No print files</span>`;
+    }
+
+    const address = String(order?.billing?.address || 'Address not available');
+    const email = String(order?.userEmail || order?.billing?.email || '');
 
     const tr = document.createElement('tr');
+    tr.style.cursor = 'pointer';
+
     tr.innerHTML = `
-      <td><strong>${escapeHtml(co.orderId)}</strong><br><span style="font-size:0.7rem; color:var(--grey);">${escapeHtml(co.date)}</span></td>
-      <td><strong>${escapeHtml(co.customer?.name || '')}</strong><br>${escapeHtml(co.customer?.phone || '')}<br><span style="font-size:0.7rem; color:var(--grey);">${escapeHtml(co.customer?.address || '')}</span></td>
-      <td>${escapeHtml(co.title || '')}<br>Color: <strong style="color:var(--spray-yellow);">${escapeHtml(co.color || 'Black')}</strong> | Size: <strong>${escapeHtml(co.size || '')}</strong> (Qty: ${Number(co.qty || 0)})<br><span style="color:var(--spray-yellow);">Amt: ரூ ${Number(co.totalAmount || 0)}</span></td>
-      <td>${printLinks}</td>
+      <td>
+        <strong>${escapeHtml(order.id || '')}</strong><br>
+        <span style="font-size:0.7rem; color:var(--grey);">
+          ${escapeHtml(order.date || '')}
+        </span>
+      </td>
+
+      <td>
+        <strong>${escapeHtml(order?.billing?.name || 'Customer')}</strong><br>
+        ${escapeHtml(order?.billing?.phone || 'N/A')}<br>
+        <span style="font-size:0.68rem; color:var(--grey);">
+          ${escapeHtml(email)}
+        </span>
+      </td>
+
+      <td>
+        ${garmentHtml}
+        <div style="color:var(--spray-yellow); font-weight:700;">
+          Total: ரூ ${Number(order?.totalAmount || 0)}
+        </div>
+        <div style="font-size:0.72rem; color:var(--grey); margin-top:5px;">
+          Payment: ${escapeHtml(order?.paymentStatus || 'paid')}
+          &nbsp; | &nbsp;
+          Status: ${escapeHtml(order?.orderStatus || 'New')}
+        </div>
+        <div style="font-size:0.72rem; color:var(--grey); margin-top:5px;">
+          📍 ${escapeHtml(address)}
+        </div>
+      </td>
+
+      <td>
+        ${printLinks}
+        <div style="margin-top:6px;">
+          <button
+            class="btn btn--ghost"
+            style="padding:4px 8px; font-size:0.65rem; min-height:auto;"
+            onclick="event.stopPropagation(); currentSelectedDateFilter='${escapeHtml(order.date || '')}'; openAdminSubPage('subpage-date-chart'); renderAdminPanels('${escapeHtml(order.date || '')}');"
+          >
+            📋 View in Order Tracker
+          </button>
+        </div>
+      </td>
     `;
+
     customTbody.appendChild(tr);
   }
 }
-
 async function loadAdminWishlistFromSupabase() {
   const tbody = document.getElementById('admin-wishlist-tbody');
   if (!tbody) return;
