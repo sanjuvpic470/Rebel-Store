@@ -1219,6 +1219,7 @@ const SUPABASE_PROJECT_URL = 'https://rdqzslvgqtajhiwxwauo.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkcXpzbHZncXRhamhpd3h3YXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyMjYyMTYsImV4cCI6MjEwMjgwMjIxNn0.lSrbO0h57wBBqgu_z4D9fhffN8VawX-HcaDANOUOKok';
 const RAZORPAY_TEST_KEY_ID = 'rzp_test_TZPUNAP5rWwiSt';
 const EDGE_FUNCTION_VERIFY_PAYMENT_URL = SUPABASE_PROJECT_URL + '/functions/v1/verify-razorpay-payment';
+const EDGE_FUNCTION_USERNAME_LOGIN_URL = SUPABASE_PROJECT_URL + '/functions/v1/login-by-username';
 
 let supabaseClient = null;
 
@@ -3970,21 +3971,56 @@ async function processUserLogin() {
   try {
     if (!supabaseClient) throw new Error('Supabase is not connected.');
 
-    let emailToUse = inputVal;
-    if (!inputVal.includes('@')) {
-      const { data: profileData } = await supabaseClient
-        .from('profiles')
-        .select('email')
-        .eq('username', inputVal)
-        .maybeSingle();
-      if (profileData?.email) emailToUse = profileData.email;
+    let authData = null;
+
+    if (inputVal.includes('@')) {
+      // Email login continues to use Supabase Auth directly.
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: inputVal,
+        password: passVal
+      });
+
+      if (error) throw error;
+      authData = data;
+    } else {
+      // Username login is handled by the server-side Edge Function.
+      // The browser no longer reads profiles.email to discover the login email.
+      const { data, error } = await supabaseClient.functions.invoke('login-by-username', {
+        body: {
+          username: inputVal,
+          password: passVal
+        }
+      });
+
+      if (error) {
+        let detail = error.message || 'Username login failed.';
+        try {
+          if (error.context && typeof error.context.json === 'function') {
+            const payload = await error.context.json();
+            if (payload?.error) detail = payload.error;
+          }
+        } catch (_) {}
+        throw new Error(detail);
+      }
+
+      if (!data?.success || !data?.session || !data?.user) {
+        throw new Error(data?.error || 'Invalid username or password.');
+      }
+
+      const { data: sessionData, error: sessionError } =
+        await supabaseClient.auth.setSession({
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token
+        });
+
+      if (sessionError) throw sessionError;
+
+      authData = {
+        user: sessionData?.user || data.user,
+        session: sessionData?.session || data.session
+      };
     }
 
-    const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
-      email: emailToUse,
-      password: passVal
-    });
-    if (authError) throw authError;
     if (!authData?.user) throw new Error('Login failed.');
 
     await hydrateLoggedInUserFromSupabase(authData.user, false);
