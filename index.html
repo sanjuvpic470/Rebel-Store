@@ -1773,13 +1773,36 @@ async function uploadFileToSupabaseStorage(fileInputId, bucketName = 'custom-pri
   }
 }
 
+let customOrderSubmitInProgress = false;
+
 async function addCustomOrderToCart() {
+  if (customOrderSubmitInProgress) {
+    showToast('Custom order is already being added. Please wait...');
+    return;
+  }
+
   if (custQty < 2) {
     showToast('Minimum quantity for custom order is 2!');
     return;
   }
+
   const garment = document.getElementById('cust-garment').value;
+
+  // Prevent double-clicks / repeated submissions while files are uploading
+  // and the custom order is being saved.
+  customOrderSubmitInProgress = true;
+
+  const addCustomBtn = document.querySelector('button[onclick="addCustomOrderToCart()"]');
+  const originalAddCustomBtnText = addCustomBtn ? addCustomBtn.innerText : '';
+  if (addCustomBtn) {
+    addCustomBtn.disabled = true;
+    addCustomBtn.style.pointerEvents = 'none';
+    addCustomBtn.style.opacity = '0.65';
+    addCustomBtn.innerText = 'ADDING CUSTOM ORDER...';
+  }
+
   showToast('Uploading custom print files to cloud...');
+
   try {
     const frontPrint = await uploadFileToSupabaseStorage('cust-file-front');
     const backPrint = await uploadFileToSupabaseStorage('cust-file-back');
@@ -1845,7 +1868,17 @@ async function addCustomOrderToCart() {
     renderCartDrawer();
     showToast('Custom order added to cart successfully!');
   } catch (err) {
-    // Error handled in upload method
+    console.error('Custom order add error:', err);
+    showToast(err?.message || 'Unable to add custom order. Please try again.');
+  } finally {
+    customOrderSubmitInProgress = false;
+
+    if (addCustomBtn) {
+      addCustomBtn.disabled = false;
+      addCustomBtn.style.pointerEvents = '';
+      addCustomBtn.style.opacity = '';
+      addCustomBtn.innerText = originalAddCustomBtnText || 'Add Custom Order to Cart →';
+    }
   }
 }
 
