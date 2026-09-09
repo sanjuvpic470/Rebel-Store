@@ -2782,54 +2782,41 @@ async function handleOrderSuccessDirect(paymentData) {
       return false;
     }
 
+    // IMPORTANT: The backend is now the ONLY authority that saves paid orders.
+    // Do NOT insert into the orders table from the browser.
+    // The verify function has already verified Razorpay and saved the paid order.
     const todayStr = savedOrder.date || new Date().toISOString().split('T')[0];
-    const finalOrderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+    const finalOrderId = String(verifyData?.order_id || '').trim();
+    const authoritativeTotal = Number(
+      verifyData?.total_amount ?? savedOrder.totalAmount ?? 0
+    );
     const totalQuantity = savedOrder.items.reduce(
-      (sum, item) => sum + Number(item?.qty || 1),
+      (sum, item) => sum + Number(item?.qty || 0),
       0
     );
+
+    if (!finalOrderId) {
+      throw new Error(
+        'Payment was verified, but the server did not return the saved order ID.'
+      );
+    }
 
     const formattedItems = savedOrder.items.map(item => ({
       ...item,
       stockStatus: item.stockStatus || { available: true, notes: '' }
     }));
 
-    const orderRecord = {
-      order_id: finalOrderId,
-      customer_name: billing.name || '',
-      customer_email: billing.email || '',
-      customer_phone: billing.phone || '',
-      customer_address: billing.address || '',
-      items: formattedItems,
-      total_qty: totalQuantity,
-      total_amount: Number(savedOrder.totalAmount || 0),
-      payment_status: 'paid',
-      razorpay_payment_id: razorpayPaymentId,
-      order_status: 'New'
-    };
-
-    if (!supabaseClient) {
-      showToast('Payment verified, but Supabase storage is unavailable. Please contact support.');
-      return false;
-    }
-
-    const { error: orderSaveError } = await supabaseClient
-      .from('orders')
-      .insert([orderRecord]);
-
-    if (orderSaveError) {
-      console.error('Order save failed:', orderSaveError);
-      showToast('Payment verified, but order could not be saved. Please contact support.');
-      return false;
-    }
-
-    ordersHistory.unshift({
+    // This local copy is ONLY for the customer's immediate UI.
+    // The authoritative paid order is already stored server-side.
+    const displayOrder = {
+      ...savedOrder,
       id: finalOrderId,
+      orderId: finalOrderId,
       date: todayStr,
       userEmail: billing.email || '',
       billing,
       totalQty: totalQuantity,
-      totalAmount: Number(savedOrder.totalAmount || 0),
+      totalAmount: authoritativeTotal,
       items: formattedItems,
       paymentStatus: 'paid',
       paymentId: razorpayPaymentId,
@@ -2838,9 +2825,18 @@ async function handleOrderSuccessDirect(paymentData) {
       zohoInvoiceId: verifyData?.zoho?.invoice_id || null,
       zohoInvoiceNumber: verifyData?.zoho?.invoice_number || null,
       zohoEmailSent: verifyData?.zoho?.email_sent === true
-    });
+    };
 
-    localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
+    ordersHistory = ordersHistory.filter(
+      o => String(o.id || o.orderId || '') !== finalOrderId
+    );
+    ordersHistory.unshift(displayOrder);
+    localStorage.setItem(
+      'rebel_orders_history',
+      JSON.stringify(ordersHistory)
+    );
+
+    // Only clear the pending checkout after the backend confirmed success.
     localStorage.removeItem('rebel_pending_order');
     cart = [];
     localStorage.removeItem('rebel_cart');
