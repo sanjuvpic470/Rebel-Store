@@ -2328,6 +2328,12 @@ async function proceedToPayment() {
     return;
   }
 
+  const regularCartItems = cart.filter(item => !item?.isCustom);
+  if (regularCartItems.length === 0) {
+    showToast('Custom-only checkout needs the custom pricing backend enabled. Please add a regular product or contact support.');
+    return;
+  }
+
   let subtotal = 0;
   cart.forEach(item => {
     let itot = item.price * item.qty;
@@ -2355,7 +2361,16 @@ async function proceedToPayment() {
         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
       },
       body: JSON.stringify({
-        amount: subtotal,
+        // IMPORTANT: never send the client-calculated amount as the source of truth.
+        // The Edge Function must resolve each product_code from the Supabase
+        // products table and calculate the Razorpay amount server-side.
+        products: cart
+          .filter(item => !item.isCustom)
+          .map(item => ({
+            product_code: String(item?.product_code || item?.code || '').trim().toUpperCase(),
+            qty: Number(item?.qty || 0)
+          }))
+          .filter(item => item.product_code && Number.isInteger(item.qty) && item.qty > 0),
         receipt: 'rebel_receipt_' + Date.now()
       })
     });
