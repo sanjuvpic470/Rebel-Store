@@ -1816,6 +1816,7 @@ async function addCustomOrderToCart() {
     }
     const customItem = {
       isCustom: true,
+      garment: garment,
       title: `Custom ${garment} (${custColor})`,
       size: custSize,
       color: custColor,
@@ -2328,12 +2329,6 @@ async function proceedToPayment() {
     return;
   }
 
-  const regularCartItems = cart.filter(item => !item?.isCustom);
-  if (regularCartItems.length === 0) {
-    showToast('Custom-only checkout needs the custom pricing backend enabled. Please add a regular product or contact support.');
-    return;
-  }
-
   let subtotal = 0;
   cart.forEach(item => {
     let itot = item.price * item.qty;
@@ -2362,15 +2357,27 @@ async function proceedToPayment() {
       },
       body: JSON.stringify({
         // IMPORTANT: never send the client-calculated amount as the source of truth.
-        // The Edge Function must resolve each product_code from the Supabase
-        // products table and calculate the Razorpay amount server-side.
-        products: cart
-          .filter(item => !item.isCustom)
-          .map(item => ({
-            product_code: String(item?.product_code || item?.code || '').trim().toUpperCase(),
+        // Regular products are resolved by product_code in the Edge Function.
+        // Custom orders are resolved by server-side custom pricing in the Edge Function.
+        items: cart.map(item => {
+          if (item?.isCustom) {
+            return {
+              isCustom: true,
+              garment: String(item?.garment || '').trim(),
+              color: String(item?.color || '').trim(),
+              size: String(item?.size || '').trim(),
+              qty: Number(item?.qty || 0)
+            };
+          }
+
+          return {
+            isCustom: false,
+            product_code: String(
+              item?.product_code || item?.code || ''
+            ).trim().toUpperCase(),
             qty: Number(item?.qty || 0)
-          }))
-          .filter(item => item.product_code && Number.isInteger(item.qty) && item.qty > 0),
+          };
+        }),
         receipt: 'rebel_receipt_' + Date.now()
       })
     });
