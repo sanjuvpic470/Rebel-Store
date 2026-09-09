@@ -816,8 +816,121 @@ header.rebel-header-fixed + main {
 })();
 </script>
 
+
+<style id="rebel-final-layout-scale-clean-v4">
+/* ===== FINAL LAYOUT / SCALE PASS ===== */
+:root{--rebel-content-max:1390px;}
+
+/* Full-width page safety, with a centered content canvas matching the reference box. */
+html,body{width:100%;max-width:100%;overflow-x:hidden!important;}
+.hero,
+.section,
+#category-page,
+#custom-order-page,
+#product-page,
+#shipping-billing-page,
+#admin-view,
+.account-page-shell,
+.account-layout,
+.account-shell,
+main{box-sizing:border-box;}
+.hero,
+.section,
+#category-page,
+#custom-order-page{width:100%;max-width:var(--rebel-content-max);margin-left:auto;margin-right:auto;}
+
+/* Remove the yellow hero poster/stamp completely; keep only the hero copy/CTAs. */
+.hero{grid-template-columns:1fr!important;gap:0!important;padding-left:var(--gap)!important;padding-right:var(--gap)!important;}
+.hero__art{display:none!important;}
+.hero > div:first-child{max-width:100%!important;width:100%!important;}
+.hero__sub{max-width:58ch!important;}
+
+/* Make the content canvas feel dominant without creating a narrow centered site. */
+.section{padding-left:0!important;padding-right:0!important;}
+.section__head{padding-left:0!important;padding-right:0!important;}
+#home-categories-container{width:100%!important;max-width:100%!important;}
+.category-row-block{width:100%!important;max-width:100%!important;}
+
+/* Exactly 3 desktop cards in the viewport; cards 4+ stay to the right. */
+.scroll-container-wrap{width:100%!important;max-width:100%!important;overflow:hidden!important;position:relative!important;}
+.horizontal-scroll-grid{
+  display:flex!important;
+  width:100%!important;
+  max-width:100%!important;
+  gap:1.5rem!important;
+  padding:0 0 1rem!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  scroll-behavior:smooth!important;
+  scroll-snap-type:x mandatory!important;
+  scrollbar-width:none!important;
+  -ms-overflow-style:none!important;
+}
+.horizontal-scroll-grid::-webkit-scrollbar{display:none!important;}
+.horizontal-scroll-grid .card{
+  box-sizing:border-box!important;
+  min-width:calc((100% - 3rem)/3)!important;
+  width:calc((100% - 3rem)/3)!important;
+  flex:0 0 calc((100% - 3rem)/3)!important;
+  max-width:calc((100% - 3rem)/3)!important;
+  height:auto!important;
+  min-height:0!important;
+  scroll-snap-align:start!important;
+}
+
+/* Arrows sit over the edges of the 3-card viewport and page by 3 cards. */
+.category-scroll-arrow{z-index:30!important;}
+.category-scroll-arrow.left{left:.35rem!important;}
+.category-scroll-arrow.right{right:.35rem!important;}
+
+/* Keep the header visible while scrolling. Never switch it to position:fixed. */
+header,
+header.rebel-header-fixed{
+  position:sticky!important;
+  top:0!important;
+  left:auto!important;
+  right:auto!important;
+  width:100%!important;
+  max-width:none!important;
+  z-index:5000!important;
+}
+header.rebel-header-fixed{transform:none!important;}
+
+/* Larger logo artwork, while keeping the header box height stable. */
+@media (min-width:768px){
+  header #site-header-logo-img,
+  header #header-logo-container img,
+  header #header-logo-container svg{
+    transform:scale(2.9)!important;
+    transform-origin:left center!important;
+  }
+  footer #site-footer-logo-img,
+  footer .footer-logo-container img,
+  footer .footer-logo-container svg{
+    transform:scale(2.9)!important;
+    transform-origin:left center!important;
+  }
+}
+
+@media (max-width:900px){
+  .hero,.section,#category-page,#custom-order-page{max-width:none!important;}
+  .horizontal-scroll-grid .card{
+    min-width:calc((100% - 1.5rem)/2)!important;
+    width:calc((100% - 1.5rem)/2)!important;
+    flex-basis:calc((100% - 1.5rem)/2)!important;
+    max-width:calc((100% - 1.5rem)/2)!important;
+  }
+}
+@media (max-width:520px){
+  .horizontal-scroll-grid .card{
+    min-width:82%!important;width:82%!important;flex-basis:82%!important;max-width:82%!important;
+  }
+  header{min-height:74px!important;}
+}
+</style>
+
 </head>
-<body data-rebel-profile-ui-version="2026-09-08-DARK-FINAL">
+<body data-rebel-profile-ui-version="2026-09-09-FINAL-HERO-CLEAN-3CARD">
 
   <div class="ticker" aria-hidden="true">
     <div class="ticker__track" id="ticker-track-box">
