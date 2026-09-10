@@ -3565,7 +3565,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       if (session?.user && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED')) {
-        await hydrateLoggedInUserFromSupabase(session.user, true);
+        // Do not await Supabase calls inside onAuthStateChange. Waiting here can
+        // deadlock auth.updateUser() during password recovery.
+        setTimeout(() => hydrateLoggedInUserFromSupabase(session.user, true), 0);
         if (event === 'SIGNED_IN') closeAuthModal();
       }
       if (event === 'SIGNED_OUT') {
