@@ -2382,7 +2382,10 @@ async function proceedToPayment() {
         // real payable amount from the authoritative product records.
         amount: subtotal,
         receipt: 'rebel_receipt_' + Date.now(),
-        items: paymentItems
+        // Send both keys so this frontend works with either the current
+        // Create_razorpay_order function or an older deployed version.
+        items: paymentItems,
+        products: paymentItems
       })
     });
 
