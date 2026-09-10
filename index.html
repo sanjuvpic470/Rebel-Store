@@ -1994,6 +1994,7 @@ function addToCart() {
   cart.push({
     isCustom: false,
     id: currentProduct.id,
+    product_code: currentProduct.code,
     title: `${currentProduct.title} (${selectedColor})`,
     size: selectedSize,
     price: currentProduct.price,
@@ -2328,6 +2329,48 @@ async function proceedToPayment() {
   localStorage.setItem('rebel_pending_order', JSON.stringify(pendingOrder));
 
   try {
+    // Send cart line items to the secure backend. The backend resolves
+    // authoritative prices from Supabase and does not trust the browser amount.
+    const paymentItems = cart.map((item) => {
+      let productCode = String(item?.product_code || '').trim().toUpperCase();
+
+      // Keep existing carts working even if they were created before
+      // product_code was stored on each cart item.
+      if (!productCode && !item?.isCustom) {
+        for (const category of CATEGORIES) {
+          const matchedProduct = (category.products || []).find(
+            (product) => String(product?.id || '') === String(item?.id || '')
+          );
+          if (matchedProduct) {
+            productCode = String(matchedProduct.code || '').trim().toUpperCase();
+            break;
+          }
+        }
+      }
+
+      if (item?.isCustom) {
+        return {
+          isCustom: true,
+          garment: String(item?.garment || '').trim(),
+          color: String(item?.color || '').trim(),
+          size: String(item?.size || '').trim(),
+          qty: Number(item?.qty || 0),
+          prints: item?.prints || null
+        };
+      }
+
+      return {
+        isCustom: false,
+        product_code: productCode,
+        product_id: String(item?.id || '').trim(),
+        qty: Number(item?.qty || 0)
+      };
+    });
+
+    if (!paymentItems.length) {
+      throw new Error('Your cart is empty.');
+    }
+
     const response = await fetch('https://rdqzslvgqtajhiwxwauo.supabase.co/functions/v1/Create_razorpay_order', {
       method: 'POST',
       headers: {
@@ -2335,8 +2378,11 @@ async function proceedToPayment() {
         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
       },
       body: JSON.stringify({
+        // Retained only for backward compatibility. The backend calculates the
+        // real payable amount from the authoritative product records.
         amount: subtotal,
-        receipt: 'rebel_receipt_' + Date.now()
+        receipt: 'rebel_receipt_' + Date.now(),
+        items: paymentItems
       })
     });
 
@@ -2395,7 +2441,7 @@ async function proceedToPayment() {
 
   } catch (err) {
     console.error("Payment Initialization Error:", err);
-    alert("Oops! Payment Initialization Error: " + err.message);
+    alert("Sorry, we couldn't start the payment. Please try again.");
     payBtn.disabled = false;
     payBtn.innerText = 'Proceed to Payment →';
   }
