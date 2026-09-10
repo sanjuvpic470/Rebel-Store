@@ -1770,17 +1770,18 @@ async function addCustomOrderToCart() {
       showToast('Please upload at least one print file (Front or Back)!');
       return;
     }
-    const customItem = {
-      isCustom: true,
-      title: `Custom ${garment} (${custColor})`,
-      size: custSize,
-      color: custColor,
-      price: custUnitPrice,
-      qty: custQty,
-      prints: { front: frontPrint, back: backPrint },
-      image: frontPrint ? frontPrint.path : (backPrint ? backPrint.path : ''),
-      stockStatus: { available: true, notes: '' }
-    };
+   const customItem = {
+  isCustom: true,
+  garment: garment,
+  title: `Custom ${garment} (${custColor})`,
+  size: custSize,
+  color: custColor,
+  price: custUnitPrice,
+  qty: custQty,
+  prints: { front: frontPrint, back: backPrint },
+  image: frontPrint ? frontPrint.path : (backPrint ? backPrint.path : ''),
+  stockStatus: { available: true, notes: '' }
+};
     cart.push(customItem);
     localStorage.setItem('rebel_cart', JSON.stringify(cart));
 
