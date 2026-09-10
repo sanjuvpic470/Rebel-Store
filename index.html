@@ -1400,7 +1400,10 @@ let SITE_CONTENT = JSON.parse(localStorage.getItem('rebel_site_content')) || DEF
 let ordersHistory = JSON.parse(localStorage.getItem('rebel_orders_history')) || [];
 let trashOrdersHistory = JSON.parse(localStorage.getItem('rebel_trash_orders_history')) || [];
 let customOrdersHistory = JSON.parse(localStorage.getItem('rebel_custom_orders_history')) || [];
-let staffAccounts = JSON.parse(localStorage.getItem('rebel_staff_accounts')) || [];
+let staffAccounts = [];
+try {
+  localStorage.removeItem('rebel_staff_accounts');
+} catch (e) {}
 
 let cart = JSON.parse(localStorage.getItem('rebel_cart')) || [];
 let wishlist = JSON.parse(localStorage.getItem('rebel_wishlist')) || [];
@@ -3585,7 +3588,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       if (event === 'SIGNED_OUT') {
         loggedInUser = null;
-        currentRole = 'customer';
         sessionStorage.removeItem('rebel_user_session');
         updateUserBadgeDisplay();
       }
@@ -3649,6 +3651,7 @@ async function hydrateLoggedInUserFromSupabase(authUser, closeModal = false) {
   if (upsertError) console.warn('Profile sync:', upsertError.message);
 
   loggedInUser = merged;
+  currentRole = dbProf?.role === 'owner' ? 'owner' : 'customer';
   sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
   updateUserBadgeDisplay();
 
@@ -3667,7 +3670,13 @@ function handleRouteFromHash() {
   } else if (hash === '#shipping') {
     goToShippingPage();
   } else if (hash === '#admin') {
-    grantAdminAccess();
+    if (currentRole === 'owner' && loggedInUser) {
+      grantAdminAccess();
+    } else {
+      window.location.hash = '#home';
+      showHomeView();
+      showToast('Admin access restricted.');
+    }
   } else if (hash.startsWith('#shop/')) {
     const parts = hash.replace('#shop/', '').split('/');
     const catSlug = parts[0];
@@ -3708,73 +3717,44 @@ async function verifyAdminCredentialsFromSupabase() {
       password: passInput
     });
 
-    if (error) throw error;
-    if (!data?.user) throw new Error('Authentication failed.');
-
-    // Supabase Auth proves the identity; the profiles.role column decides admin access.
-    const { data: profile, error: profileError } = await supabaseClient
-      .from('profiles')
-      .select('role')
-      .eq('id', data.user.id)
-      .maybeSingle();
-
-    if (profileError) throw profileError;
-
-    if (profile?.role !== 'owner') {
-      currentRole = 'customer';
-      await supabaseClient.auth.signOut();
-      showToast('Admin access denied for this account.');
-      return;
+    if (error) {
+      throw error;
     }
 
-    currentRole = 'owner';
-    await grantAdminAccess();
-    showToast('Admin authenticated securely via Supabase!');
+    if (data && data.user) {
+      const { data: profile, error: roleError } = await supabaseClient
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .maybeSingle();
+
+      if (roleError) throw roleError;
+
+      if (profile?.role !== 'owner') {
+        await supabaseClient.auth.signOut();
+        currentRole = 'customer';
+        showToast('Admin access restricted.');
+        return;
+      }
+
+      currentRole = 'owner';
+      await hydrateLoggedInUserFromSupabase(data.user);
+      grantAdminAccess();
+      showToast('Admin authenticated securely via Supabase!');
+    }
   } catch (err) {
-    currentRole = 'customer';
-    console.error('Admin Authentication Error:', err);
-    alert('Admin Login Failed: ' + err.message);
+    console.error("Admin Authentication Error:", err);
+    alert("Admin Login Failed: " + err.message);
   }
 }
 
-async function grantAdminAccess() {
-  // Never trust the URL/hash or a client-side role value as authorization.
-  if (!supabaseClient) {
-    currentRole = 'customer';
+function grantAdminAccess() {
+  if (!loggedInUser || currentRole !== 'owner') {
+    window.location.hash = '#home';
     showHomeView();
+    showToast('Admin access restricted.');
     return;
   }
-
-  try {
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
-    if (authError || !user) throw new Error('Please sign in first.');
-
-    const { data: profile, error: profileError } = await supabaseClient
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .maybeSingle();
-
-    if (profileError) throw profileError;
-    if (profile?.role !== 'owner') {
-      currentRole = 'customer';
-      if (window.location.hash === '#admin') window.location.hash = '#home';
-      showHomeView();
-      showToast('Admin access denied.');
-      return;
-    }
-
-    currentRole = 'owner';
-  } catch (err) {
-    currentRole = 'customer';
-    console.warn('Admin access check failed:', err.message);
-    if (window.location.hash === '#admin') window.location.hash = '#home';
-    showHomeView();
-    return;
-  }
-
-  closeAdminAuth();
-  // FIXED: Ensure home-view and other views are hidden so admin-view acts as a full standalone page
   closeAdminAuth();
   // FIXED: Ensure home-view and other views are hidden so admin-view acts as a full standalone page
   document.getElementById('home-view').style.display = 'none';
@@ -3802,15 +3782,7 @@ async function grantAdminAccess() {
 }
 
 function createStaffAccount() {
-  const u = document.getElementById('new-staff-user').value.trim();
-  const p = document.getElementById('new-staff-pass').value.trim();
-  if (!u || !p) { showToast('Enter username and password'); return; }
-  staffAccounts.push({ user: u, pass: p });
-  localStorage.setItem('rebel_staff_accounts', JSON.stringify(staffAccounts));
-  document.getElementById('new-staff-user').value = '';
-  document.getElementById('new-staff-pass').value = '';
-  renderStaffListDisplay();
-  showToast(`Staff account '${u}' created!`);
+  showToast('Staff accounts must be created securely through Supabase Auth. Passwords are not stored in this browser.');
 }
 
 function renderStaffListDisplay() {
@@ -4029,7 +4001,6 @@ async function logoutUser() {
     try { await supabaseClient.auth.signOut(); } catch (e) {}
   }
   loggedInUser = null;
-  currentRole = 'customer';
   sessionStorage.removeItem('rebel_user_session');
   updateUserBadgeDisplay();
   showToast('Logged out successfully');
