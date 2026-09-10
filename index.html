@@ -4095,12 +4095,20 @@ async function processUserLogin() {
   try {
     if (!supabaseClient) throw new Error('Supabase is not connected.');
 
-    const { data: emailData, error: usernameError } = await supabaseClient.rpc('get_login_email_by_username', {
-      p_username: inputVal
-    });
-    if (usernameError) throw usernameError;
+    let emailToUse = '';
 
-    const emailToUse = String(emailData || '').trim();
+    // Allow registered email login as well as username login.
+    // Username is resolved through the secure RPC; email goes directly to Supabase Auth.
+    if (inputVal.includes('@')) {
+      emailToUse = inputVal.toLowerCase();
+    } else {
+      const { data: emailData, error: usernameError } = await supabaseClient.rpc('get_login_email_by_username', {
+        p_username: inputVal
+      });
+      if (usernameError) throw usernameError;
+      emailToUse = String(emailData || '').trim().toLowerCase();
+    }
+
     if (!emailToUse) throw new Error('Username not found.');
 
     const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
