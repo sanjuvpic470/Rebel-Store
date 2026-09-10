@@ -1405,7 +1405,7 @@ let staffAccounts = JSON.parse(localStorage.getItem('rebel_staff_accounts')) || 
 let cart = JSON.parse(localStorage.getItem('rebel_cart')) || [];
 let wishlist = JSON.parse(localStorage.getItem('rebel_wishlist')) || [];
 
-let currentRole = 'owner';
+let currentRole = 'customer';
 let lastViewedProductId = null;
 let activeAdminEditingCategoryName = 'Oversized Tee';
 let activeOfferCode = 'REBEL16';
@@ -3585,6 +3585,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       if (event === 'SIGNED_OUT') {
         loggedInUser = null;
+        currentRole = 'customer';
         sessionStorage.removeItem('rebel_user_session');
         updateUserBadgeDisplay();
       }
@@ -3707,22 +3708,73 @@ async function verifyAdminCredentialsFromSupabase() {
       password: passInput
     });
 
-    if (error) {
-      throw error;
+    if (error) throw error;
+    if (!data?.user) throw new Error('Authentication failed.');
+
+    // Supabase Auth proves the identity; the profiles.role column decides admin access.
+    const { data: profile, error: profileError } = await supabaseClient
+      .from('profiles')
+      .select('role')
+      .eq('id', data.user.id)
+      .maybeSingle();
+
+    if (profileError) throw profileError;
+
+    if (profile?.role !== 'owner') {
+      currentRole = 'customer';
+      await supabaseClient.auth.signOut();
+      showToast('Admin access denied for this account.');
+      return;
     }
 
-    if (data && data.user) {
-      currentRole = 'owner';
-      grantAdminAccess();
-      showToast('Admin authenticated securely via Supabase!');
-    }
+    currentRole = 'owner';
+    await grantAdminAccess();
+    showToast('Admin authenticated securely via Supabase!');
   } catch (err) {
-    console.error("Admin Authentication Error:", err);
-    alert("Admin Login Failed: " + err.message);
+    currentRole = 'customer';
+    console.error('Admin Authentication Error:', err);
+    alert('Admin Login Failed: ' + err.message);
   }
 }
 
-function grantAdminAccess() {
+async function grantAdminAccess() {
+  // Never trust the URL/hash or a client-side role value as authorization.
+  if (!supabaseClient) {
+    currentRole = 'customer';
+    showHomeView();
+    return;
+  }
+
+  try {
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    if (authError || !user) throw new Error('Please sign in first.');
+
+    const { data: profile, error: profileError } = await supabaseClient
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (profileError) throw profileError;
+    if (profile?.role !== 'owner') {
+      currentRole = 'customer';
+      if (window.location.hash === '#admin') window.location.hash = '#home';
+      showHomeView();
+      showToast('Admin access denied.');
+      return;
+    }
+
+    currentRole = 'owner';
+  } catch (err) {
+    currentRole = 'customer';
+    console.warn('Admin access check failed:', err.message);
+    if (window.location.hash === '#admin') window.location.hash = '#home';
+    showHomeView();
+    return;
+  }
+
+  closeAdminAuth();
+  // FIXED: Ensure home-view and other views are hidden so admin-view acts as a full standalone page
   closeAdminAuth();
   // FIXED: Ensure home-view and other views are hidden so admin-view acts as a full standalone page
   document.getElementById('home-view').style.display = 'none';
@@ -3977,6 +4029,7 @@ async function logoutUser() {
     try { await supabaseClient.auth.signOut(); } catch (e) {}
   }
   loggedInUser = null;
+  currentRole = 'customer';
   sessionStorage.removeItem('rebel_user_session');
   updateUserBadgeDisplay();
   showToast('Logged out successfully');
