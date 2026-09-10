@@ -3555,13 +3555,30 @@ document.addEventListener('DOMContentLoaded', () => {
   // Supabase Auth is the source of truth. Google name/email/avatar are copied
   // into the profile only when the cloud profile is missing those values.
   if (supabaseClient) {
+    // A recovery link creates a temporary authenticated session. Keep the
+    // recovery screen open even if Supabase also emits SIGNED_IN.
+    window.rebelPasswordRecoveryActive = /(?:#|&)type=recovery(?:&|$)/i.test(window.location.hash || '');
+
     supabaseClient.auth.getSession().then(({ data: { session } }) => {
+      if (window.rebelPasswordRecoveryActive) {
+        showPasswordRecoveryView();
+        return;
+      }
       if (session?.user) hydrateLoggedInUserFromSupabase(session.user, false);
     });
 
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
       if (event === 'PASSWORD_RECOVERY') {
+        window.rebelPasswordRecoveryActive = true;
         showPasswordRecoveryView();
+        return;
+      }
+      if (window.rebelPasswordRecoveryActive) {
+        // Do not close the auth modal or show a normal login-success state
+        // while the user is changing the password.
+        if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED') {
+          showPasswordRecoveryView();
+        }
         return;
       }
       if (session?.user && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED')) {
@@ -3864,6 +3881,7 @@ async function updateRecoveredPassword() {
     if (data?.user) {
       await hydrateLoggedInUserFromSupabase(data.user, false);
     }
+    window.rebelPasswordRecoveryActive = false;
     closeAuthModal();
     switchAuthView('login');
     if (window.history && window.history.replaceState) {
