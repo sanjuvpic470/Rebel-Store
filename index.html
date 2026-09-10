@@ -2371,7 +2371,7 @@ async function proceedToPayment() {
       throw new Error('Your cart is empty.');
     }
 
-    const response = await fetch('https://rdqzslvgqtajhiwxwauo.supabase.co/functions/v1/Create_razorpay_order', {
+    const response = await fetch('https://rdqzslvgqtajhiwxwauo.supabase.co/functions/v1/Create_razorpay_order?v=20260910', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -2385,7 +2385,9 @@ async function proceedToPayment() {
         // Send both keys so this frontend works with either the current
         // Create_razorpay_order function or an older deployed version.
         items: paymentItems,
-        products: paymentItems
+        products: paymentItems,
+        cart: paymentItems,
+        cartItems: paymentItems
       })
     });
 
