@@ -1632,7 +1632,7 @@ let DEFAULT_CATEGORIES = [
     id: 'cat-oversized',
     name: 'Oversized Tee',
     products: [
-      { id: 'o1', code: 'RIOT', title: 'The Riot Oversized Tee', desc: 'Acid Yellow & Distressed Grunge Graphic. 240 GSM.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
+      { id: 'o1', code: 'RIOT', title: 'The Riot Oversized Tee', desc: 'Acid Yellow & Distressed Grunge Graphic. 240 GSM.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
       { id: 'o2', code: 'VOLT', title: 'The Volt Oversized Tee', desc: 'Stealth Black with High-Voltage Neon Typography.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
       { id: 'o3', code: 'VOID', title: 'The Void Acid Tee', desc: 'Acid wash dark grey streetwear style.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['M', 'L', 'XL'] },
       { id: 'o4', code: 'REB1', title: 'Rebel Heavyweight Tee 01', desc: '240 GSM heavy combed cotton.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
@@ -1645,11 +1645,11 @@ let DEFAULT_CATEGORIES = [
     name: 'Hoodie',
     products: [
       { id: 'h1', code: 'HOD1', title: 'The Bone Neutral Hoodie', desc: 'Vintage Washed Off-White heavyweight hoodie.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['M', 'L', 'XL', 'XXL'] },
-      { id: 'h2', code: 'HOD2', title: 'Dark Cyber Hoodie 01', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
-      { id: 'h3', code: 'HOD3', title: 'Dark Cyber Hoodie 02', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
-      { id: 'h4', code: 'HOD4', title: 'Street Riot Hoodie 01', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
-      { id: 'h5', code: 'HOD5', title: 'Street Riot Hoodie 02', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
-      { id: 'h6', code: 'HOD6', title: 'Urban Dissent Hoodie', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] }
+      { id: 'h2', code: 'HOD2', title: 'Dark Cyber Hoodie 01', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
+      { id: 'h3', code: 'HOD3', title: 'Dark Cyber Hoodie 02', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
+      { id: 'h4', code: 'HOD4', title: 'Street Riot Hoodie 01', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
+      { id: 'h5', code: 'HOD5', title: 'Street Riot Hoodie 02', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
+      { id: 'h6', code: 'HOD6', title: 'Urban Dissent Hoodie', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL', 'XXL'] }
     ]
   }
 ];
@@ -2200,7 +2200,7 @@ function openProductByDetails(catName, productId) {
   sizeContainer.innerHTML = '';
 
   const prodColors = (foundProd.colors && foundProd.colors.length > 0) ? foundProd.colors : ['Yellow', 'White'];
-  const prodSizes = (foundProd.sizes && foundProd.sizes.length > 0) ? foundProd.sizes : ['S', 'M', 'L', 'XL'];
+  const prodSizes = (foundProd.sizes && foundProd.sizes.length > 0) ? foundProd.sizes : ['S', 'M', 'L', 'XL', 'XXL'];
 
   const availableColors = Array.isArray(foundProd.availableColors) ? foundProd.availableColors : prodColors;
   const availableSizes = Array.isArray(foundProd.availableSizes) ? foundProd.availableSizes : prodSizes;
@@ -2364,6 +2364,11 @@ async function loadPdpStockForCurrentProduct(product) {
 
     const rows = Array.isArray(variants) ? variants : [];
     currentProduct.stockVariants = rows;
+    currentProduct.stockLoadFailed = false;
+
+    // Rebuild the PDP size buttons from the catalogue + authoritative DB
+    // variants so Admin-added sizes (for example XXL) are never hidden.
+    syncPdpSizeButtonsFromLiveStock();
 
     // A blank color in the database is the current/default color model.
     // In that case stock is size-based and applies to the selected catalogue color.
@@ -2408,8 +2413,61 @@ async function loadPdpStockForCurrentProduct(product) {
     // cannot be read. Keep the product order button disabled until stock loads.
     currentProduct.stockVariants = [];
     currentProduct.stockLoadFailed = true;
+    syncPdpSizeButtonsFromLiveStock();
     updatePdpSelectionStatus();
   }
+}
+
+
+function syncPdpSizeButtonsFromLiveStock() {
+  if (!currentProduct) return;
+  const container = document.getElementById('pdp-size-selector');
+  if (!container) return;
+
+  const catalogSizes = Array.isArray(currentProduct.sizes) && currentProduct.sizes.length
+    ? currentProduct.sizes.map(v => String(v).trim()).filter(Boolean)
+    : ['S','M','L','XL','XXL'];
+
+  const liveSizes = Array.isArray(currentProduct.stockVariants)
+    ? currentProduct.stockVariants.map(v => String(v.size || '').trim()).filter(Boolean)
+    : [];
+
+  const order = ['S','M','L','XL','XXL'];
+  const merged = [...new Set([...catalogSizes, ...liveSizes])].sort((a,b) => {
+    const ai = order.findIndex(x => x.toLowerCase() === a.toLowerCase());
+    const bi = order.findIndex(x => x.toLowerCase() === b.toLowerCase());
+    if (ai !== -1 && bi !== -1) return ai - bi;
+    if (ai !== -1) return -1;
+    if (bi !== -1) return 1;
+    return a.localeCompare(b, undefined, {numeric:true});
+  });
+
+  container.innerHTML = '';
+
+  merged.forEach(sz => {
+    const stock = typeof currentProduct.getStockForSelection === 'function'
+      ? currentProduct.getStockForSelection(sz, selectedColor)
+      : 0;
+    const available = !currentProduct.stockLoadFailed && stock > 0;
+
+    const sBtn = document.createElement('button');
+    sBtn.type = 'button';
+    sBtn.className = `size-btn ${sz.toLowerCase() === String(selectedSize || '').toLowerCase() && available ? 'selected' : ''} ${available ? '' : 'is-unavailable'}`;
+    sBtn.innerText = sz;
+    sBtn.disabled = !available;
+    sBtn.title = available ? `${sz}: ${stock} available` : `${sz}: Out of stock`;
+    sBtn.onclick = () => {
+      if (sBtn.disabled) return;
+      selectedSize = sz;
+      selectedQty = 1;
+      const qtyEl = document.getElementById('pdp-qty');
+      if (qtyEl) qtyEl.innerText = '1';
+      document.querySelectorAll('#pdp-size-selector .size-btn').forEach(b => b.classList.remove('selected'));
+      sBtn.classList.add('selected');
+      updatePdpSelectionStatus();
+    };
+    container.appendChild(sBtn);
+  });
 }
 
 function updatePdpSizeButtons() {
@@ -2460,7 +2518,9 @@ function updatePdpSelectionStatus() {
   } else if (currentProduct.stockLoadFailed) {
     stockText.innerText = 'Stock unavailable · Please refresh';
   } else if (available) {
-    stockText.innerText = selectedStock <= 3 ? `Only ${selectedStock} left · Ready to Order` : 'In Stock · Ready to Order';
+    stockText.innerText = selectedStock <= 3
+      ? `Only ${selectedStock} left · Ready to Order`
+      : `In Stock · ${selectedStock} available · Ready to Order`;
   } else {
     stockText.innerText = 'Currently Unavailable';
   }
@@ -2477,7 +2537,7 @@ function updatePdpSelectionStatus() {
 
   if (countBadge) {
     countBadge.innerText = hasLiveStock && !currentProduct.stockLoadFailed
-      ? `${availableSizes.length} size${availableSizes.length === 1 ? '' : 's'} available`
+      ? (available ? `${selectedStock} available` : '0 available')
       : 'Checking stock';
   }
 
@@ -4114,7 +4174,7 @@ function addNewCategory() {
     id: 'cat-' + Date.now(),
     name: name,
     products: [
-      { id: 'p' + Date.now(), code: 'NEW1', title: `New ${name} 01`, desc: 'Heavyweight cotton drop.', mrp: 1200, price: 800, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] }
+      { id: 'p' + Date.now(), code: 'NEW1', title: `New ${name} 01`, desc: 'Heavyweight cotton drop.', mrp: 1200, price: 800, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL', 'XXL'] }
     ]
   });
   document.getElementById('new-category-input').value = '';
