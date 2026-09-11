@@ -135,6 +135,21 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .view-more-btn:hover{text-decoration:underline}
 #category-page{display:none;max-width:1200px;margin:0 auto;padding:2rem var(--gap) 4rem}
 .cat-prod-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:1.5rem}
+.shop-controls{background:#111113;border:1.5px solid rgba(242,240,234,.16);padding:1rem;margin:0 0 1.5rem;border-radius:4px}
+.shop-search-wrap{display:flex;align-items:center;background:#1a1a1d;border:1px solid rgba(242,240,234,.25);margin-bottom:.8rem}
+.shop-search-icon{font-size:1.25rem;color:var(--spray-yellow);padding-left:.75rem;line-height:1}
+.shop-search-wrap input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:var(--paper);padding:.75rem .65rem;font-family:'Space Mono',monospace;font-size:.78rem}
+.shop-search-wrap input::placeholder{color:#77777d}
+.shop-clear-btn{background:none;border:0;color:var(--grey);font-size:1.35rem;padding:.3rem .7rem;cursor:pointer}
+.shop-filter-row{display:grid;grid-template-columns:repeat(5,1fr);gap:.6rem}
+.shop-filter{width:100%;box-sizing:border-box;background:#1a1a1d;border:1px solid rgba(242,240,234,.22);color:var(--paper);padding:.7rem .6rem;font-family:'Space Mono',monospace;font-size:.68rem;border-radius:2px;outline:none}
+.shop-filter:focus{border-color:var(--spray-yellow)}
+.shop-results-bar{display:flex;justify-content:space-between;align-items:center;gap:.75rem;margin-top:.8rem;font-family:'Space Mono',monospace;font-size:.68rem;color:var(--grey)}
+.shop-reset-btn{background:transparent;color:var(--spray-yellow);border:1px solid var(--spray-yellow);padding:.45rem .7rem;font-family:'Space Mono',monospace;font-size:.64rem;text-transform:uppercase;cursor:pointer}
+.shop-reset-btn:hover{background:var(--spray-yellow);color:var(--ink)}
+.shop-results-grid{margin-top:0}
+@media(max-width:900px){.shop-filter-row{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.shop-filter-row{grid-template-columns:1fr}.shop-results-bar{align-items:flex-start;flex-direction:column}}
 @media(max-width:960px){.cat-prod-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.cat-prod-grid{grid-template-columns:1fr}}
 .cat-prod-grid .card{width:100%;min-width:auto;height:500px}
@@ -410,7 +425,44 @@ footer a:hover{color:var(--paper)}
         <h2 id="sec-drops-title">Shop the<br>Drops</h2>
         <p id="sec-drops-subtitle">Signature 240 GSM drops. Browse categories below.</p>
       </div>
+      <div class="shop-controls" id="shop-controls">
+        <div class="shop-search-wrap">
+          <span class="shop-search-icon">⌕</span>
+          <input id="shop-search-input" type="search" placeholder="Search products..." autocomplete="off" oninput="applyShopFilters()" aria-label="Search products">
+          <button type="button" class="shop-clear-btn" id="shop-search-clear" onclick="clearShopSearch()" aria-label="Clear search">×</button>
+        </div>
+        <div class="shop-filter-row">
+          <select id="shop-category-filter" class="shop-filter" onchange="applyShopFilters()" aria-label="Filter by category">
+            <option value="">All Categories</option>
+          </select>
+          <select id="shop-size-filter" class="shop-filter" onchange="applyShopFilters()" aria-label="Filter by size">
+            <option value="">All Sizes</option>
+          </select>
+          <select id="shop-color-filter" class="shop-filter" onchange="applyShopFilters()" aria-label="Filter by color">
+            <option value="">All Colors</option>
+          </select>
+          <select id="shop-price-filter" class="shop-filter" onchange="applyShopFilters()" aria-label="Filter by price">
+            <option value="">Any Price</option>
+            <option value="0-799">Under ₹800</option>
+            <option value="800-999">₹800 – ₹999</option>
+            <option value="1000-1499">₹1,000 – ₹1,499</option>
+            <option value="1500-999999">₹1,500+</option>
+          </select>
+          <select id="shop-sort-filter" class="shop-filter" onchange="applyShopFilters()" aria-label="Sort products">
+            <option value="relevance">Sort: Relevance</option>
+            <option value="latest">Sort: Latest</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="title">Name: A to Z</option>
+          </select>
+        </div>
+        <div class="shop-results-bar">
+          <span id="shop-results-count">Showing all products</span>
+          <button type="button" class="shop-reset-btn" onclick="resetShopFilters()">Reset Filters</button>
+        </div>
+      </div>
       <div id="home-categories-container"></div>
+      <div id="shop-results-grid" class="cat-prod-grid shop-results-grid" style="display:none;"></div>
     </section>
     <section class="custom-order-compact-section">
       <h2 id="compact-custom-title">Create Your Custom Order ⚡</h2>
@@ -1588,7 +1640,108 @@ async function loadSiteContentFromCloud() {
   }
 }
 
+function getAllStoreProducts() {
+  const all = [];
+  CATEGORIES.forEach((cat, categoryIndex) => {
+    (cat.products || []).forEach((prod, productIndex) => {
+      all.push({ catName: cat.name, categoryIndex, productIndex, product: prod });
+    });
+  });
+  return all;
+}
+
+function populateShopFilterOptions() {
+  const categorySelect = document.getElementById('shop-category-filter');
+  const sizeSelect = document.getElementById('shop-size-filter');
+  const colorSelect = document.getElementById('shop-color-filter');
+  if (!categorySelect || !sizeSelect || !colorSelect) return;
+
+  const currentCategory = categorySelect.value;
+  const currentSize = sizeSelect.value;
+  const currentColor = colorSelect.value;
+  const products = getAllStoreProducts();
+  const categories = [...new Set(products.map(x => String(x.catName || '').trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b));
+  const sizes = [...new Set(products.flatMap(x => Array.isArray(x.product?.sizes) ? x.product.sizes : [] ).map(x => String(x).trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b, undefined, {numeric:true}));
+  const colors = [...new Set(products.flatMap(x => Array.isArray(x.product?.colors) ? x.product.colors : [] ).map(x => String(x).trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b));
+
+  categorySelect.innerHTML = '<option value="">All Categories</option>' + categories.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+  sizeSelect.innerHTML = '<option value="">All Sizes</option>' + sizes.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+  colorSelect.innerHTML = '<option value="">All Colors</option>' + colors.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+  categorySelect.value = categories.includes(currentCategory) ? currentCategory : '';
+  sizeSelect.value = sizes.includes(currentSize) ? currentSize : '';
+  colorSelect.value = colors.includes(currentColor) ? currentColor : '';
+}
+
+function applyShopFilters() {
+  const search = String(document.getElementById('shop-search-input')?.value || '').trim().toLowerCase();
+  const category = String(document.getElementById('shop-category-filter')?.value || '');
+  const size = String(document.getElementById('shop-size-filter')?.value || '');
+  const color = String(document.getElementById('shop-color-filter')?.value || '');
+  const priceRange = String(document.getElementById('shop-price-filter')?.value || '');
+  const sort = String(document.getElementById('shop-sort-filter')?.value || 'relevance');
+  const resultsGrid = document.getElementById('shop-results-grid');
+  const categoriesContainer = document.getElementById('home-categories-container');
+  const resultsCount = document.getElementById('shop-results-count');
+  if (!resultsGrid || !categoriesContainer) return;
+
+  const hasFilters = Boolean(search || category || size || color || priceRange || sort !== 'relevance');
+  if (!hasFilters) {
+    resultsGrid.style.display = 'none';
+    categoriesContainer.style.display = '';
+    if (resultsCount) resultsCount.textContent = 'Showing all products';
+    return;
+  }
+
+  let matches = getAllStoreProducts().filter(entry => {
+    const p = entry.product || {};
+    const haystack = [p.title, p.desc, p.code, entry.catName].map(v => String(v || '').toLowerCase()).join(' ');
+    const sizes = Array.isArray(p.sizes) ? p.sizes.map(v => String(v).toLowerCase()) : [];
+    const colors = Array.isArray(p.colors) ? p.colors.map(v => String(v).toLowerCase()) : [];
+    const price = Number(p.price);
+    if (search && !haystack.includes(search)) return false;
+    if (category && entry.catName !== category) return false;
+    if (size && !sizes.includes(size.toLowerCase())) return false;
+    if (color && !colors.includes(color.toLowerCase())) return false;
+    if (priceRange) {
+      const [min, max] = priceRange.split('-').map(Number);
+      if (!Number.isFinite(price) || price < min || price > max) return false;
+    }
+    return true;
+  });
+
+  if (sort === 'price-low') matches.sort((a,b) => Number(a.product?.price || 0) - Number(b.product?.price || 0));
+  else if (sort === 'price-high') matches.sort((a,b) => Number(b.product?.price || 0) - Number(a.product?.price || 0));
+  else if (sort === 'title') matches.sort((a,b) => String(a.product?.title || '').localeCompare(String(b.product?.title || '')));
+  else if (sort === 'latest') matches.sort((a,b) => (b.categoryIndex - a.categoryIndex) || (b.productIndex - a.productIndex));
+
+  categoriesContainer.style.display = 'none';
+  resultsGrid.style.display = 'grid';
+  resultsGrid.innerHTML = '';
+  matches.forEach((entry, index) => resultsGrid.appendChild(createProductCard(entry.catName, entry.product, index)));
+  if (!matches.length) {
+    resultsGrid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem 1rem;border:1px dashed rgba(242,240,234,.18);font-family:'Space Mono',monospace;color:var(--grey);">No products found.<br><span style="display:inline-block;margin-top:.5rem;color:var(--spray-yellow);">Try changing your search or filters.</span></div>`;
+  }
+  if (resultsCount) resultsCount.textContent = `${matches.length} product${matches.length === 1 ? '' : 's'} found`;
+}
+
+function clearShopSearch() {
+  const input = document.getElementById('shop-search-input');
+  if (input) input.value = '';
+  applyShopFilters();
+  input?.focus();
+}
+
+function resetShopFilters() {
+  const ids = ['shop-search-input','shop-category-filter','shop-size-filter','shop-color-filter','shop-price-filter','shop-sort-filter'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = id === 'shop-sort-filter' ? 'relevance' : '';
+  });
+  applyShopFilters();
+}
+
 function renderStorefront() {
+  populateShopFilterOptions();
   const container = document.getElementById('home-categories-container');
   const footerLinks = document.getElementById('footer-shop-links');
   if (!container || !footerLinks) return;
@@ -1616,6 +1769,7 @@ function renderStorefront() {
     container.appendChild(rowBlock);
   });
   updateCustomOrderGarmentDropdown();
+  populateShopFilterOptions();
   if(document.getElementById('t-code')) document.getElementById('t-code').innerText = activeOfferCode;
   if(document.getElementById('t-discount')) document.getElementById('t-discount').innerText = activeDiscountPercent + '%';
   if(document.getElementById('t-code-2')) document.getElementById('t-code-2').innerText = activeOfferCode;
@@ -1695,6 +1849,8 @@ function showHomeView() {
   document.getElementById('category-page').style.display = 'none';
   document.getElementById('admin-view').style.display = 'none';
   document.getElementById('home-view').style.display = 'block';
+  if (document.getElementById('shop-results-grid')) document.getElementById('shop-results-grid').style.display = 'none';
+  if (document.getElementById('home-categories-container')) document.getElementById('home-categories-container').style.display = '';
   window.location.hash = '#home';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
