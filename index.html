@@ -1352,9 +1352,27 @@ footer a:hover{color:var(--paper)}
         </div>
         <div style="background:#0d0d0f; border:1px solid rgba(242,240,234,.12); padding:.8rem 1rem; margin:.8rem 0 1rem; font-family:'Space Mono'; font-size:.68rem; line-height:1.5; color:#cfcfcf;">
           <strong style="color:var(--spray-yellow);">SECURE PRODUCT DATABASE</strong><br>
-          Product price/MRP are synced to the protected <code>products</code> table. Images sync to <code>product_images</code>. Size/color stock will be connected in the Stock Management phase, so existing products are not accidentally marked out of stock.
+          Product price/MRP are synced to the protected <code>products</code> table. Images sync to <code>product_images</code>. Size/color stock is managed securely below. Existing inventory is never overwritten by the product details save.
         </div>
         <div id="admin-categories-container" style="display:flex; flex-direction:column; gap:1.5rem;"></div>
+        <div id="admin-stock-management" style="margin-top:2rem; background:#0b0b0c; border:1px solid rgba(242,240,234,.16); padding:1.2rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; margin-bottom:1rem;">
+            <div>
+              <h3 style="margin:0 0 .35rem; font-family:'Anton',sans-serif; text-transform:uppercase; letter-spacing:.02em;">📦 Stock Management</h3>
+              <div style="font-family:'Space Mono'; font-size:.68rem; color:#aaa; line-height:1.5;">Manage live stock by size and color. Changes are recorded in inventory history.</div>
+            </div>
+            <button class="btn btn--ghost" type="button" style="padding:.45rem .8rem; font-size:.7rem;" onclick="loadAdminStockForCurrentCategory()">↻ Refresh Stock</button>
+          </div>
+          <div style="display:grid; grid-template-columns:minmax(220px,1fr) minmax(140px,220px); gap:.8rem; align-items:end; margin-bottom:1rem;">
+            <div>
+              <label class="admin-field-label">Select Product</label>
+              <select id="admin-stock-product-select" class="admin-input-small" onchange="loadAdminStockForSelectedProduct()"></select>
+            </div>
+            <div id="admin-stock-summary" style="font-family:'Space Mono'; font-size:.68rem; color:var(--spray-yellow); padding:.7rem; border:1px solid rgba(242,240,234,.12); min-height:38px; box-sizing:border-box;">Select a product</div>
+          </div>
+          <div id="admin-stock-table-wrap" style="overflow:auto;"></div>
+          <div id="admin-stock-history-wrap" style="margin-top:1rem;"></div>
+        </div>
         <button class="btn btn--solid" id="save-categories-btn" style="width:100%; justify-content:center; margin-top:2rem;" onclick="saveAllCategoriesAndProducts()">Save Products & Categories 💾</button>
       </div>
     </div>
@@ -3871,6 +3889,7 @@ function openAdminCategoryProducts(catName) {
   document.getElementById('admin-category-detail-view').style.display = 'block';
   document.getElementById('adm-cat-detail-title').innerText = `${catName} Products Manager`;
   renderAdminProductFormsForCategory(catName);
+  setTimeout(() => loadAdminStockForCurrentCategory(), 0);
 }
 
 function backToAdminCategoriesGrid() {
@@ -4025,6 +4044,156 @@ function collectCategoryFormValues() {
   });
 }
 
+
+let adminStockProductCache = [];
+
+function escapeAdminStockHtml(value) {
+  return String(value ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+}
+
+async function loadAdminStockForCurrentCategory() {
+  const select = document.getElementById('admin-stock-product-select');
+  const wrap = document.getElementById('admin-stock-table-wrap');
+  const summary = document.getElementById('admin-stock-summary');
+  if (!select || !supabaseClient) return;
+  const catObj = CATEGORIES.find(c => c.name === activeAdminEditingCategoryName);
+  const products = catObj?.products || [];
+  if (!products.length) {
+    select.innerHTML = '<option value="">No products</option>';
+    if (wrap) wrap.innerHTML = '';
+    return;
+  }
+
+  try {
+    const codes = products.map(p => String(p.code || '').trim().toUpperCase()).filter(Boolean);
+    const { data, error } = await supabaseClient
+      .from('products')
+      .select('id, product_code, title, active')
+      .in('product_code', codes);
+    if (error) throw error;
+    adminStockProductCache = data || [];
+    const currentCode = select.value;
+    select.innerHTML = adminStockProductCache.map(p =>
+      `<option value="${escapeAdminStockHtml(p.id)}">${escapeAdminStockHtml(p.product_code)} — ${escapeAdminStockHtml(p.title)}</option>`
+    ).join('');
+    if (currentCode && adminStockProductCache.some(p => String(p.id) === currentCode)) select.value = currentCode;
+    await loadAdminStockForSelectedProduct();
+  } catch (err) {
+    console.error('Stock product load failed:', err);
+    if (summary) summary.textContent = 'Unable to load stock.';
+    if (wrap) wrap.innerHTML = `<div style="padding:1rem; color:#ff7777; font-family:'Space Mono'; font-size:.7rem;">${escapeAdminStockHtml(err?.message || 'Stock load failed')}</div>`;
+  }
+}
+
+async function loadAdminStockForSelectedProduct() {
+  const select = document.getElementById('admin-stock-product-select');
+  const wrap = document.getElementById('admin-stock-table-wrap');
+  const summary = document.getElementById('admin-stock-summary');
+  const history = document.getElementById('admin-stock-history-wrap');
+  if (!select || !wrap || !supabaseClient) return;
+  const productId = String(select.value || '').trim();
+  if (!productId) { wrap.innerHTML = ''; if (summary) summary.textContent = 'Select a product'; if (history) history.innerHTML=''; return; }
+  try {
+    const [{ data: variants, error: vErr }, { data: product, error: pErr }] = await Promise.all([
+      supabaseClient.from('product_variants').select('id, size, color, stock, active, updated_at').eq('product_id', productId).order('size'),
+      supabaseClient.from('products').select('product_code, title, active').eq('id', productId).single()
+    ]);
+    if (vErr) throw vErr;
+    if (pErr) throw pErr;
+    const rows = variants || [];
+    const total = rows.reduce((sum, v) => sum + Number(v.stock || 0), 0);
+    const activeRows = rows.filter(v => v.active !== false);
+    if (summary) summary.textContent = `${rows.length} variants · ${total} units total · ${activeRows.length} active`;
+    if (!rows.length) {
+      wrap.innerHTML = `<div style="padding:1rem; border:1px dashed rgba(242,240,234,.18); font-family:'Space Mono'; font-size:.7rem; color:#aaa;">No size/color variants found for ${escapeAdminStockHtml(product?.product_code || '')}. Product variants must be created before stock can be managed.</div>`;
+      if (history) history.innerHTML = '';
+      return;
+    }
+    wrap.innerHTML = `
+      <div style="display:grid; grid-template-columns:1fr 1fr 120px 90px 110px; gap:.5rem; min-width:720px; padding:.55rem .65rem; background:#151518; font-family:'Space Mono'; font-size:.62rem; color:var(--spray-yellow); text-transform:uppercase;">
+        <span>Size</span><span>Color</span><span>Current</span><span>Active</span><span>New Stock</span>
+      </div>
+      ${rows.map(v => `
+        <div style="display:grid; grid-template-columns:1fr 1fr 120px 90px 110px; gap:.5rem; min-width:720px; align-items:center; padding:.55rem .65rem; border-bottom:1px solid rgba(242,240,234,.08);">
+          <strong style="font-family:'Space Mono'; font-size:.72rem;">${escapeAdminStockHtml(v.size)}</strong>
+          <span style="font-family:'Space Mono'; font-size:.72rem;">${escapeAdminStockHtml(v.color || 'Default')}</span>
+          <span style="font-family:'Space Mono'; font-size:.72rem; color:#aaa;">${Number(v.stock || 0)}</span>
+          <span style="font-family:'Space Mono'; font-size:.65rem;">${v.active === false ? 'OFF' : 'ON'}</span>
+          <input type="number" min="0" step="1" class="admin-input-small admin-stock-input" data-variant-id="${escapeAdminStockHtml(v.id)}" data-old-stock="${Number(v.stock || 0)}" value="${Number(v.stock || 0)}" style="margin:0; padding:.45rem;">
+        </div>
+      `).join('')}
+      <div style="display:flex; justify-content:flex-end; margin-top:.8rem;">
+        <button class="btn btn--solid" type="button" style="padding:.55rem 1rem; font-size:.72rem;" onclick="saveAdminStockForSelectedProduct()">💾 Save Stock</button>
+      </div>`;
+    await loadAdminStockHistory(productId);
+  } catch (err) {
+    console.error('Stock variant load failed:', err);
+    if (summary) summary.textContent = 'Unable to load stock.';
+    wrap.innerHTML = `<div style="padding:1rem; color:#ff7777; font-family:'Space Mono'; font-size:.7rem;">${escapeAdminStockHtml(err?.message || 'Stock load failed')}</div>`;
+  }
+}
+
+async function saveAdminStockForSelectedProduct() {
+  const wrap = document.getElementById('admin-stock-table-wrap');
+  const inputs = Array.from(document.querySelectorAll('#admin-stock-table-wrap .admin-stock-input'));
+  if (!inputs.length || !supabaseClient) return;
+  const button = wrap?.querySelector('button[onclick="saveAdminStockForSelectedProduct()"]');
+  if (button) { button.disabled = true; button.textContent = 'Saving...'; }
+  try {
+    let changed = 0;
+    for (const input of inputs) {
+      const variantId = String(input.dataset.variantId || '').trim();
+      const oldStock = Number(input.dataset.oldStock || 0);
+      const newStock = Number(input.value);
+      if (!variantId || !Number.isInteger(newStock) || newStock < 0) throw new Error('Stock must be a whole number of 0 or more.');
+      if (newStock === oldStock) continue;
+      const { error } = await supabaseClient.rpc('admin_set_variant_stock', {
+        p_variant_id: variantId,
+        p_stock: newStock,
+        p_reason: 'manual_adjustment',
+        p_note: 'Admin Stock Management'
+      });
+      if (error) throw error;
+      changed++;
+    }
+    showToast(changed ? `Stock updated for ${changed} variant${changed === 1 ? '' : 's'}.` : 'No stock changes to save.');
+    await loadAdminStockForSelectedProduct();
+  } catch (err) {
+    console.error('Stock save failed:', err);
+    showToast(`Stock save failed: ${err?.message || 'Please try again.'}`);
+    if (button) { button.disabled = false; button.textContent = '💾 Save Stock'; }
+  }
+}
+
+async function loadAdminStockHistory(productId) {
+  const history = document.getElementById('admin-stock-history-wrap');
+  if (!history || !supabaseClient) return;
+  try {
+    const { data: variants, error: vErr } = await supabaseClient.from('product_variants').select('id, size, color').eq('product_id', productId);
+    if (vErr) throw vErr;
+    const ids = (variants || []).map(v => v.id);
+    if (!ids.length) { history.innerHTML = ''; return; }
+    const names = new Map((variants || []).map(v => [String(v.id), `${v.size} / ${v.color || 'Default'}`]));
+    const { data, error } = await supabaseClient
+      .from('inventory_movements')
+      .select('variant_id, quantity_before, quantity_change, quantity_after, reason, note, created_at')
+      .in('variant_id', ids)
+      .order('created_at', { ascending: false })
+      .limit(20);
+    if (error) throw error;
+    const rows = data || [];
+    history.innerHTML = `
+      <div style="font-family:'Space Mono'; font-size:.68rem; color:var(--spray-yellow); margin-bottom:.45rem;">RECENT INVENTORY HISTORY</div>
+      ${rows.length ? `<div style="overflow:auto; max-height:260px; border:1px solid rgba(242,240,234,.1);"><table style="width:100%; min-width:700px; border-collapse:collapse; font-family:'Space Mono'; font-size:.62rem;">
+        <thead><tr style="background:#151518; color:#aaa;"><th style="padding:.55rem; text-align:left;">Variant</th><th style="padding:.55rem; text-align:right;">Before</th><th style="padding:.55rem; text-align:right;">Change</th><th style="padding:.55rem; text-align:right;">After</th><th style="padding:.55rem; text-align:left;">Reason</th><th style="padding:.55rem; text-align:left;">Date</th></tr></thead>
+        <tbody>${rows.map(r => `<tr><td style="padding:.55rem; border-top:1px solid rgba(242,240,234,.06);">${escapeAdminStockHtml(names.get(String(r.variant_id)) || 'Variant')}</td><td style="padding:.55rem; text-align:right; border-top:1px solid rgba(242,240,234,.06);">${Number(r.quantity_before)}</td><td style="padding:.55rem; text-align:right; border-top:1px solid rgba(242,240,234,.06);">${Number(r.quantity_change) > 0 ? '+' : ''}${Number(r.quantity_change)}</td><td style="padding:.55rem; text-align:right; border-top:1px solid rgba(242,240,234,.06);">${Number(r.quantity_after)}</td><td style="padding:.55rem; border-top:1px solid rgba(242,240,234,.06);">${escapeAdminStockHtml(r.reason)}</td><td style="padding:.55rem; border-top:1px solid rgba(242,240,234,.06);">${new Date(r.created_at).toLocaleString()}</td></tr>`).join('')}</tbody>
+      </table></div>` : '<div style="padding:.8rem; color:#888; font-family:\'Space Mono\'; font-size:.65rem; border:1px dashed rgba(242,240,234,.12);">No inventory movements yet.</div>'}`;
+  } catch (err) {
+    console.warn('Stock history load failed:', err);
+    history.innerHTML = '';
+  }
+}
+
 async function saveAllCategoriesAndProducts() {
   collectCategoryFormValues();
 
@@ -4070,10 +4239,10 @@ async function saveAllCategoriesAndProducts() {
 
           const existing = existingByCode.get(code);
 
-          // Keep variant stock empty for now unless an admin stock matrix is
-          // explicitly added in the Stock Management phase. This prevents
-          // accidentally turning existing products into zero-stock products.
-          const variants = Array.isArray(prod.stockVariants) ? prod.stockVariants : [];
+          // IMPORTANT: product details save must NEVER overwrite live inventory.
+          // Stock is managed separately through admin_set_variant_stock().
+          // Passing [] here is treated by the backend as "preserve existing variants".
+          const variants = [];
 
           // Only send real image URLs; blank placeholders from the legacy
           // catalogue must not reach the secure RPC.
@@ -4134,6 +4303,7 @@ async function saveAllCategoriesAndProducts() {
     }
 
     showToast(`Products saved securely (${secureDbCount}).`);
+    setTimeout(() => loadAdminStockForCurrentCategory(), 0);
   }
 
   if(saveBtn) { saveBtn.disabled = false; saveBtn.innerText = originalText; }
