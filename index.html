@@ -135,7 +135,7 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .view-more-btn:hover{text-decoration:underline}
 #category-page{display:none;max-width:1200px;margin:0 auto;padding:2rem var(--gap) 4rem}
 .cat-prod-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:1.5rem}
-.shop-controls{background:#111113;border:1.5px solid rgba(242,240,234,.16);padding:1rem;margin:0 0 1.5rem;border-radius:4px}
+.shop-controls{display:none!important;background:#111113;border:1.5px solid rgba(242,240,234,.16);padding:1rem;margin:0 0 1.5rem;border-radius:4px}
 .shop-search-wrap{display:flex;align-items:center;background:#1a1a1d;border:1px solid rgba(242,240,234,.25);margin-bottom:.8rem}
 .shop-search-icon{font-size:1.25rem;color:var(--spray-yellow);padding-left:.75rem;line-height:1}
 .shop-search-wrap input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:var(--paper);padding:.75rem .65rem;font-family:'Space Mono',monospace;font-size:.78rem}
@@ -185,7 +185,27 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .thumb-card img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none}
 .thumb-card span.thumb-title{font-family:'Space Mono',monospace;font-size:.6rem;color:var(--paper);font-weight:700;background:rgba(0,0,0,0.6);padding:2px 4px}
 
-.pdp-info{width:100%;box-sizing:border-box;overflow:hidden;}
+
+/* PHASE 2 — Size Chart & Fit Guide */
+.pdp-size-guide{margin:.9rem 0 1.3rem;padding:.85rem 1rem;background:#17171a;border:1px solid rgba(242,240,234,.18);display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.pdp-size-guide-text{font-family:'Space Mono',monospace;font-size:.68rem;color:var(--grey);line-height:1.5;}
+.pdp-size-guide-text strong{display:block;color:var(--paper);font-size:.72rem;text-transform:uppercase;margin-bottom:.15rem;}
+.size-chart-btn{background:transparent;color:var(--spray-yellow);border:1px solid var(--spray-yellow);padding:.55rem .75rem;font-family:'Space Mono',monospace;font-size:.65rem;font-weight:700;text-transform:uppercase;cursor:pointer;white-space:nowrap;}
+.size-chart-btn:hover{background:var(--spray-yellow);color:var(--ink);}
+.size-chart-modal{position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(6px);z-index:260;display:none;align-items:center;justify-content:center;padding:1rem;}
+.size-chart-box{width:min(680px,100%);max-height:88vh;overflow:auto;background:#111114;border:2px solid var(--spray-yellow);box-shadow:8px 8px 0 var(--paper);padding:1.4rem;}
+.size-chart-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1rem;}
+.size-chart-head h3{font-family:'Anton',sans-serif;font-size:2rem;text-transform:uppercase;color:var(--spray-yellow);margin:0;}
+.size-chart-close{background:none;border:0;color:var(--paper);font-size:1.8rem;cursor:pointer;line-height:1;}
+.size-chart-note{font-family:'Space Mono',monospace;color:var(--grey);font-size:.67rem;line-height:1.6;margin-bottom:1rem;}
+.size-chart-table{width:100%;border-collapse:collapse;font-family:'Space Mono',monospace;font-size:.7rem;}
+.size-chart-table th,.size-chart-table td{border:1px solid rgba(242,240,234,.16);padding:.7rem .55rem;text-align:center;}
+.size-chart-table th{color:var(--spray-yellow);background:#1b1b1f;text-transform:uppercase;}
+.size-chart-table td:first-child{font-weight:700;color:var(--paper);}
+.fit-guide{margin-top:1.2rem;padding:1rem;background:#18181c;border-left:3px solid var(--spray-yellow);font-family:'Space Mono',monospace;font-size:.68rem;color:var(--grey);line-height:1.65;}
+.fit-guide strong{color:var(--paper);}
+@media(max-width:600px){.pdp-size-guide{align-items:flex-start;flex-direction:column}.size-chart-btn{width:100%}.size-chart-box{padding:1rem}.size-chart-table{font-size:.62rem}.size-chart-table th,.size-chart-table td{padding:.55rem .35rem}}
+ .pdp-selection-status{margin:.45rem 0 .85rem;font-family:'Space Mono',monospace;font-size:.68rem;color:var(--grey);min-height:1.2em}.pdp-selection-status strong{color:var(--spray-yellow)} .size-btn.is-unavailable{opacity:.35;text-decoration:line-through;cursor:not-allowed;position:relative}.size-btn.is-unavailable::after{content:"";position:absolute;left:8%;right:8%;top:50%;border-top:1px solid currentColor;transform:rotate(-18deg)} .pdp-stock-note{display:flex;align-items:center;gap:.5rem;margin:.75rem 0 1rem;font-family:'Space Mono',monospace;font-size:.68rem;text-transform:uppercase;letter-spacing:.04em}.pdp-stock-dot{width:8px;height:8px;border-radius:50%;background:#7cff8a;display:inline-block}.pdp-stock-dot.low{background:var(--spray-yellow)}.pdp-stock-dot.out{background:#ff6b6b}.pdp-zoom-btn{position:absolute;right:12px;bottom:12px;z-index:4;background:rgba(0,0,0,.72);color:#fff;border:1px solid rgba(255,255,255,.3);padding:.55rem .7rem;font-family:'Space Mono',monospace;font-size:.65rem;text-transform:uppercase;cursor:pointer}.pdp-zoom-modal{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;display:none;align-items:center;justify-content:center;padding:1rem}.pdp-zoom-modal img{max-width:94vw;max-height:90vh;object-fit:contain;cursor:zoom-out}.pdp-zoom-close{position:absolute;top:18px;right:20px;background:transparent;color:#fff;border:0;font-size:2rem;cursor:pointer}.pdp-zoom-caption{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-family:'Space Mono',monospace;color:#fff;font-size:.65rem;text-transform:uppercase;white-space:nowrap}.pdp-info{width:100%;box-sizing:border-box;overflow:hidden;}
 .pdp-info h1{font-family:'Anton',sans-serif;font-size:clamp(2rem,5vw,3rem);text-transform:uppercase;line-height:1;margin-bottom:.4rem;word-break:break-word;}
 .pdp-tag{font-family:'Space Mono',monospace;color:var(--spray-yellow);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.8rem;display:block}
 .pdp-price-wrap{display:flex;align-items:center;gap:1rem;margin:1rem 0;padding:.8rem 0;border-top:1px solid rgba(242,240,234,.12);border-bottom:1px solid rgba(242,240,234,.12)}
@@ -348,7 +368,67 @@ footer a:hover{color:var(--paper)}
 .address-actions button.primary{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow)}
 .address-actions button.danger{color:var(--rebel-red);border-color:var(--rebel-red)}
 @media(max-width:600px){.account-grid{grid-template-columns:1fr}}
+
+/* PHASE 3 — ORDER TRACKING + DELIVERY ESTIMATE */
+.order-track-panel{margin-top:.8rem;padding:1rem;background:#111113;border:1px solid rgba(242,240,234,.14);}
+.order-track-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;margin:1rem 0 .7rem;}
+.order-track-step{text-align:center;font-family:'Space Mono',monospace;font-size:.58rem;text-transform:uppercase;color:var(--grey);position:relative;}
+.order-track-dot{width:12px;height:12px;border:2px solid rgba(242,240,234,.25);border-radius:50%;margin:0 auto .35rem;background:#18181b;}
+.order-track-step.active{color:var(--paper);}.order-track-step.active .order-track-dot{background:var(--spray-yellow);border-color:var(--spray-yellow);}
+.order-track-step.done .order-track-dot{background:var(--success-green);border-color:var(--success-green);}
+.delivery-estimator{display:flex;gap:.5rem;align-items:center;margin-top:.8rem;flex-wrap:wrap;}
+.delivery-estimator input{flex:1;min-width:150px;background:#18181b;border:1px solid rgba(242,240,234,.2);color:var(--paper);padding:.65rem;font-family:'Space Mono',monospace;}
+.delivery-result{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--grey);margin-top:.55rem;}
+@media(max-width:600px){.order-track-steps{grid-template-columns:repeat(2,1fr);row-gap:.8rem;}}
+
+
+/* PHASE 3 V4 - Wishlist improvements + FAQ */
+.wl-toolbar{display:flex;gap:.5rem;justify-content:space-between;align-items:center;margin:.8rem 0 1rem;flex-wrap:wrap}.wl-count{font-family:'Space Mono';font-size:.72rem;color:var(--grey)}.wl-actions{display:flex;gap:.4rem}.wl-action{border:1px solid rgba(242,240,234,.2);background:transparent;color:var(--paper);padding:.5rem .7rem;font-family:'Space Mono';font-size:.68rem;cursor:pointer}.wl-action:hover{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow)}
+.faq-list{margin-top:1rem}.faq-item{border-bottom:1px solid rgba(242,240,234,.12)}.faq-q{width:100%;background:transparent;border:0;color:var(--paper);padding:1rem 0;text-align:left;font-family:'Archivo Black';font-size:.9rem;cursor:pointer;display:flex;justify-content:space-between;gap:1rem}.faq-a{display:none;color:var(--grey);font-family:'Space Mono';font-size:.76rem;line-height:1.65;padding:0 0 1rem}.faq-item.open .faq-a{display:block}.faq-item.open .faq-q span:last-child{transform:rotate(45deg)}
 </style>
+
+<style>
+.notify-stock-btn{display:none;width:100%;margin:.35rem 0 1rem;padding:.8rem 1rem;background:transparent;color:var(--spray-yellow);border:1px solid var(--spray-yellow);font-family:'Space Mono',monospace;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;cursor:pointer}.notify-stock-btn:hover{background:var(--spray-yellow);color:#111}.notify-stock-note{display:none;font-family:'Space Mono',monospace;font-size:.62rem;color:var(--grey);margin:-.45rem 0 1rem;line-height:1.5}.stock-count-badge{font-family:'Space Mono',monospace;font-size:.62rem;color:var(--grey);margin-left:.35rem}
+</style>
+
+<style id="phase3-reviews-css">
+.review-section{margin-top:2.5rem;padding:1.5rem;border:1px solid rgba(242,240,234,.12);background:rgba(255,255,255,.02)}
+.review-head{display:flex;justify-content:space-between;gap:1rem;align-items:center;flex-wrap:wrap}.review-head h3{margin:0;font-size:1.15rem}.review-summary{display:flex;align-items:center;gap:.6rem;font-family:'Space Mono',monospace;font-size:.78rem}.review-stars{letter-spacing:2px;color:var(--spray-yellow)}
+.review-form{display:none;margin-top:1rem;padding:1rem;background:rgba(255,213,0,.05);border:1px dashed rgba(255,213,0,.35)}
+.review-form.show{display:block}.review-rating button{background:none;border:0;color:#555;font-size:1.5rem;cursor:pointer;padding:0 .1rem}.review-rating button.active{color:var(--spray-yellow)}
+.review-text{width:100%;min-height:80px;resize:vertical;background:#111;color:#fff;border:1px solid rgba(242,240,234,.18);padding:.75rem;margin:.7rem 0;font:inherit}.review-list{margin-top:1.2rem;display:grid;gap:.8rem}.review-item{padding:1rem 0;border-top:1px solid rgba(242,240,234,.1)}.review-meta{display:flex;justify-content:space-between;gap:1rem;font-size:.75rem}.review-item p{margin:.45rem 0 0;line-height:1.5;color:#ccc}.review-empty{color:#888;font-size:.82rem;padding:.8rem 0}.review-login-note{font-size:.75rem;color:#999;margin-top:.7rem}
+</style>
+
+
+<style id="rebel-master-features-css">
+/* REBEL STORE — ALL PHASES FRONTEND MASTER */
+/* Phase 1 remains hidden for now; logic is preserved for future catalog expansion. */
+#shop-filter-panel,#shop-filter-controls,#shop-search-panel{display:none!important}
+.master-feature-trigger{cursor:pointer}
+.master-modal{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(7px);z-index:10050;display:none;align-items:center;justify-content:center;padding:18px}
+.master-modal.show{display:flex}
+.master-modal-card{width:min(1080px,100%);max-height:90vh;overflow:auto;background:#111113;border:1px solid rgba(242,240,234,.2);box-shadow:0 20px 80px rgba(0,0,0,.55);padding:24px;position:relative}
+.master-close{position:absolute;right:14px;top:12px;width:38px;height:38px;border:1px solid rgba(242,240,234,.25);background:#18181b;color:var(--paper);cursor:pointer;font-size:20px}
+.master-title{font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:.05em;font-size:1.1rem;margin:0 40px 6px 0}
+.master-sub{color:var(--grey);font-size:.8rem;margin:0 0 18px}
+.master-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.master-tab{border:1px solid rgba(242,240,234,.18);background:#18181b;color:var(--paper);padding:8px 11px;cursor:pointer;font:700 .68rem 'Space Mono',monospace;text-transform:uppercase}
+.master-tab.active{background:var(--spray-yellow);color:#111}
+.master-pane{display:none}.master-pane.active{display:block}
+.master-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.master-card{border:1px solid rgba(242,240,234,.14);background:#18181b;padding:16px;min-height:150px}
+.master-card h4{font-family:'Space Mono',monospace;font-size:.8rem;text-transform:uppercase;margin:0 0 8px}
+.master-card p{font-size:.78rem;color:var(--grey);line-height:1.55;margin:0 0 12px}
+.master-badge{display:inline-block;font:700 .58rem 'Space Mono',monospace;padding:4px 7px;border:1px solid rgba(242,240,234,.2);margin-bottom:9px}
+.master-form{display:grid;gap:10px;max-width:620px}.master-form input,.master-form select,.master-form textarea{width:100%;background:#18181b;color:var(--paper);border:1px solid rgba(242,240,234,.2);padding:11px;font:500 .75rem 'Space Mono',monospace;box-sizing:border-box}.master-form textarea{min-height:100px;resize:vertical}
+.master-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.master-gift-balance{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px dashed rgba(242,240,234,.25);padding:14px;margin:12px 0;font-family:'Space Mono',monospace}
+.master-membership{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.master-plan{border:1px solid rgba(242,240,234,.15);padding:18px;background:#18181b}.master-plan.featured{border-color:var(--spray-yellow)}.master-plan h3{margin:0 0 8px;font-family:'Space Mono',monospace}.master-plan .price{font-size:1.5rem;font-weight:900;margin-bottom:10px}.master-plan ul{padding-left:18px;color:var(--grey);font-size:.75rem;line-height:1.7}
+.master-admin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.master-admin-btn{padding:14px;background:#18181b;border:1px solid rgba(242,240,234,.16);color:var(--paper);text-align:left;cursor:pointer}.master-admin-btn strong{display:block;font-family:'Space Mono',monospace;font-size:.7rem;margin-bottom:5px}.master-admin-btn span{font-size:.68rem;color:var(--grey)}
+@media(max-width:760px){.master-grid,.master-membership,.master-admin-grid{grid-template-columns:1fr 1fr}.master-row{grid-template-columns:1fr}}
+@media(max-width:520px){.master-modal{padding:8px}.master-modal-card{padding:16px}.master-grid,.master-membership,.master-admin-grid{grid-template-columns:1fr}.master-title{font-size:.95rem}}
+</style>
+
 </head>
 <body>
 
@@ -372,6 +452,7 @@ footer a:hover{color:var(--paper)}
       <a onclick="handleNavShopClick()" id="nav-link-shop">Shop</a>
       <a onclick="openCustomOrderPage()" id="nav-link-manifesto">Manifesto</a>
       <a onclick="handleNavContactClick()" id="nav-link-contact">Contact</a>
+      <a onclick="openMasterFeatures()" id="nav-link-features">Features</a>
     </nav>
     <div class="header-actions">
       <div class="user-badge" id="user-badge" onclick="handleAuthClick(event)">
@@ -390,6 +471,7 @@ footer a:hover{color:var(--paper)}
     </div>
   </header>
 
+  <div id="sales-offer-strip" style="display:none;max-width:1200px;margin:18px auto 0;padding:12px 18px;border:2px solid #111;background:#f4d35e;font-family:Space Mono,monospace;font-weight:700;text-align:center;border-radius:10px;cursor:pointer" onclick="openOffersPanel()">🔥 <span id="sales-offer-strip-text">Limited-time offer</span> · View Offers</div>
   <main id="home-view">
     <section class="hero">
       <div>
@@ -562,8 +644,14 @@ footer a:hover{color:var(--paper)}
         <p class="pdp-desc" id="pdp-desc-text">240 GSM premium combed cotton.</p>
         <span class="option-label">Select Size</span>
         <div class="size-selector" id="pdp-size-selector"></div>
+        <div class="pdp-size-guide">
+          <div class="pdp-size-guide-text"><strong>Not sure about your size?</strong>Check the measurements before ordering.</div>
+          <button type="button" class="size-chart-btn" onclick="openSizeChart()">Size Chart ↗</button>
+        </div>
         <span class="option-label">Select Color (Default: Yellow & White)</span>
         <div class="size-selector" id="pdp-color-selector"></div>
+        <div class="pdp-selection-status" id="pdp-selection-status"></div>
+        <div class="pdp-stock-note" id="pdp-stock-note"><span class="pdp-stock-dot"></span><span id="pdp-stock-text">In Stock</span><span id="pdp-stock-count" class="stock-count-badge"></span></div><button type="button" class="notify-stock-btn" id="notify-stock-btn" onclick="notifyWhenBackInStock()">Notify Me When Available ↗</button><div class="notify-stock-note" id="notify-stock-note">We’ll save your request on this device for this product + selected size/color.</div>
         <span class="option-label">Quantity</span>
         <div class="qty-selector">
           <button class="qty-btn" onclick="changeQty(-1)">−</button>
@@ -574,14 +662,70 @@ footer a:hover{color:var(--paper)}
         <button class="wishlist-pdp-btn" onclick="addToWishlist()">Add to Wishlist ❤️</button>
       </div>
     </div>
+
+    <div class="review-section" id="product-reviews-section">
+      <div class="review-head">
+        <h3>Customer Reviews</h3>
+        <div class="review-summary"><span class="review-stars" id="review-summary-stars">☆☆☆☆☆</span><span id="review-summary-text">No reviews yet</span></div>
+      </div>
+      <button type="button" class="btn btn--solid" style="margin-top:1rem" onclick="toggleReviewForm()">Write a Review</button>
+      <div class="review-form" id="review-form">
+        <div class="review-rating" id="review-rating-buttons" aria-label="Choose rating"></div>
+        <textarea id="review-text" class="review-text" maxlength="500" placeholder="Tell us what you think about this product..."></textarea>
+        <button type="button" class="btn btn--solid" onclick="submitProductReview()">Submit Review</button>
+        <div class="review-login-note">Reviews are saved to this account/device. Please avoid sharing personal information.</div>
+      </div>
+      <div class="review-list" id="review-list"></div>
+    </div>
   </section>
+
+  <!-- PHASE 2 — SIZE CHART MODAL -->
+  <div class="size-chart-modal" id="size-chart-modal" onclick="if(event.target===this) closeSizeChart()">
+    <div class="size-chart-box" role="dialog" aria-modal="true" aria-labelledby="size-chart-title">
+      <div class="size-chart-head">
+        <h3 id="size-chart-title">Tee Size Chart</h3>
+        <button type="button" class="size-chart-close" onclick="closeSizeChart()" aria-label="Close size chart">×</button>
+      </div>
+      <p class="size-chart-note">Measurements are in inches. Measure a similar T-shirt flat and compare with the chart below. For a relaxed oversized look, consider one size up.</p>
+      <table class="size-chart-table">
+        <thead><tr><th>Size</th><th>Chest</th><th>Length</th><th>Shoulder</th></tr></thead>
+        <tbody>
+          <tr><td>S</td><td>38</td><td>27</td><td>17</td></tr>
+          <tr><td>M</td><td>40</td><td>28</td><td>18</td></tr>
+          <tr><td>L</td><td>42</td><td>29</td><td>19</td></tr>
+          <tr><td>XL</td><td>44</td><td>30</td><td>20</td></tr>
+          <tr><td>XXL</td><td>46</td><td>31</td><td>21</td></tr>
+        </tbody>
+      </table>
+      <div class="fit-guide"><strong>Fit Guide:</strong> Chest = armpit-to-armpit × 2. Length = highest shoulder point to bottom hem. If you are between two sizes, choose the larger size for a relaxed fit.</div>
+    </div>
+  </div>
+
+  <!-- FAQ / SUPPORT MODAL -->
+  <div class="auth-modal" id="faq-modal">
+    <div class="profile-modal-box" style="max-width: 650px; max-height: 85vh; overflow-y:auto;">
+      <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeFaqModal()">×</button>
+      <h3>FAQ / SUPPORT</h3>
+      <div class="faq-list">
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">How do I choose my size?<span>＋</span></button><div class="faq-a">Open the Size Chart on the product page and compare the measurements with a T-shirt you already own.</div></div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">How can I track my order?<span>＋</span></button><div class="faq-a">Use Track My Order from your account/order area and enter your order details to view the latest status.</div></div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Can I cancel or exchange an order?<span>＋</span></button><div class="faq-a">Open the relevant order and use the available cancellation or return/exchange option, subject to the order status and policy.</div></div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">What if my size is out of stock?<span>＋</span></button><div class="faq-a">Use Notify Me on the product page. We can use your request to alert you when that size becomes available.</div></div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Need more help?<span>＋</span></button><div class="faq-a">Use the Contact section in the footer for support. Please include your order number when asking about an existing order.</div></div>
+      </div>
+    </div>
+  </div>
 
   <!-- CUSTOMER WISHLIST MODAL -->
   <div class="auth-modal" id="wishlist-modal">
     <div class="profile-modal-box" style="max-width: 500px;">
       <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeWishlistModal()">×</button>
       <h3>My Wishlist ❤️</h3>
-      <div id="wishlist-modal-items" style="max-height: 60vh; overflow-y: auto; margin-top:1rem;"></div>
+      <div class="wl-toolbar">
+        <span class="wl-count" id="wishlist-count-label">0 items saved</span>
+        <div class="wl-actions"><button class="wl-action" onclick="moveAllWishlistToCart()">Add All to Bag</button><button class="wl-action" onclick="clearWishlist()">Clear All</button></div>
+      </div>
+      <div id="wishlist-modal-items" style="max-height: 60vh; overflow-y: auto;"></div>
     </div>
   </div>
 
@@ -776,7 +920,7 @@ footer a:hover{color:var(--paper)}
   <div class="auth-modal" id="orders-modal">
     <div class="profile-modal-box" style="max-width: 650px;">
       <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeOrdersModal()">×</button>
-      <h3>My Order History</h3>
+      <h3>My Orders & Tracking</h3>
       <div id="orders-content-area" style="max-height: 65vh; overflow-y: auto; margin-top:1rem;"></div>
     </div>
   </div>
@@ -810,6 +954,23 @@ footer a:hover{color:var(--paper)}
           <button class="btn btn--solid" onclick="saveSavedAddress()">Save Address</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ORDER SERVICE MODAL -->
+  <div class="cart-overlay" id="order-service-modal" style="display:none;z-index:1200;">
+    <div class="cart-drawer" style="max-width:520px;width:92%;height:auto;max-height:90vh;overflow:auto;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:1rem;">
+        <div><div class="section-kicker">ORDER SERVICE</div><h3 id="order-service-title" style="margin:.2rem 0 0">Request</h3></div>
+        <button class="cart-close-btn" onclick="closeOrderServiceModal()">×</button>
+      </div>
+      <div id="order-service-order" style="font-family:'Space Mono';font-size:.7rem;color:var(--grey);margin-bottom:.8rem"></div>
+      <label class="admin-field-label">Reason</label>
+      <select id="order-service-reason" class="admin-input-full"></select>
+      <label class="admin-field-label" style="margin-top:.7rem">Additional note</label>
+      <textarea id="order-service-note" class="admin-input-full" rows="4" maxlength="500" placeholder="Tell us briefly what happened..."></textarea>
+      <button class="btn btn--solid" style="width:100%;justify-content:center;margin-top:.8rem" onclick="submitOrderServiceRequest()">Submit Request</button>
+      <div id="order-service-status" style="font-family:'Space Mono';font-size:.68rem;margin-top:.7rem;color:var(--grey)"></div>
     </div>
   </div>
 
@@ -1259,9 +1420,9 @@ footer a:hover{color:var(--paper)}
         <div>
           <h5 style="display:block; margin-bottom:0.8rem; font-family:'Space Mono'; color:var(--spray-yellow);">Support</h5>
           <ul>
-            <li><a onclick="showToast('Shipping information & FAQs')">Shipping</a></li>
-            <li><a onclick="showToast('Easy returns and exchange policy')">Returns</a></li>
-            <li><a onclick="showToast('Size guide reference')">Size Guide</a></li>
+            <li><a onclick="openFaqModal()">Shipping / FAQ</a></li>
+            <li><a onclick="openFaqModal()">Returns / Exchange</a></li>
+            <li><a onclick="openFaqModal()">Help & Size Guide</a></li>
           </ul>
         </div>
         <div>
@@ -1279,10 +1440,11 @@ footer a:hover{color:var(--paper)}
     </div>
   </footer>
 
+<div id="offers-panel" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99999;align-items:center;justify-content:center;padding:20px"><div style="background:#fff;max-width:560px;width:100%;padding:26px;border:3px solid #111;border-radius:16px;box-shadow:10px 10px 0 #111"><div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0;font-family:Space Mono,monospace">OFFERS &amp; COUPONS</h2><button onclick="closeOffersPanel()" style="border:2px solid #111;background:#fff;border-radius:8px;padding:6px 10px;font-weight:700">✕</button></div><div id="offers-panel-content" style="margin-top:18px"></div></div></div>
 <script>
 function handleNavShopClick() {
   showHomeView();
-  setTimeout(() => {
+  setTimeout(() => { refreshSalesOfferStrip();
     const col = document.getElementById('collections');
     if(col) col.scrollIntoView({ behavior: 'smooth' });
   }, 100);
@@ -1950,6 +2112,37 @@ async function addCustomOrderToCart() {
   }
 }
 
+function openProductImageZoom() {
+  const img = document.querySelector('#slider-track .slide-item img');
+  const modal = document.getElementById('pdp-zoom-modal');
+  const zoomImg = document.getElementById('pdp-zoom-image');
+  if (!img || !modal || !zoomImg || !img.src) return;
+  zoomImg.src = img.src;
+  zoomImg.alt = img.alt || 'Product image';
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeProductImageZoom() {
+  const modal = document.getElementById('pdp-zoom-modal');
+  if (!modal) return;
+  modal.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function openSizeChart() {
+  const modal = document.getElementById('size-chart-modal');
+  if (!modal) return;
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSizeChart() {
+  const modal = document.getElementById('size-chart-modal');
+  if (!modal) return;
+  modal.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
 function openProductByDetails(catName, productId) {
   let foundCat = CATEGORIES.find(c => c.name === catName);
   let foundProd = null;
@@ -1987,34 +2180,47 @@ function openProductByDetails(catName, productId) {
   const prodColors = (foundProd.colors && foundProd.colors.length > 0) ? foundProd.colors : ['Yellow', 'White'];
   const prodSizes = (foundProd.sizes && foundProd.sizes.length > 0) ? foundProd.sizes : ['S', 'M', 'L', 'XL'];
 
-  selectedColor = prodColors[0];
-  selectedSize = prodSizes[1] || prodSizes[0];
+  const availableColors = Array.isArray(foundProd.availableColors) ? foundProd.availableColors : prodColors;
+  const availableSizes = Array.isArray(foundProd.availableSizes) ? foundProd.availableSizes : prodSizes;
+  selectedColor = availableColors.includes(prodColors[0]) ? prodColors[0] : (availableColors[0] || prodColors[0]);
+  selectedSize = availableSizes.includes(prodSizes[1]) ? prodSizes[1] : (availableSizes[0] || prodSizes[0]);
 
   prodColors.forEach((col, idx) => {
+    const isAvailable = availableColors.includes(col);
     const cBtn = document.createElement('button');
     cBtn.type = 'button';
-    cBtn.className = `size-btn ${idx === 0 ? 'selected' : ''}`;
+    cBtn.className = `size-btn ${col === selectedColor ? 'selected' : ''} ${isAvailable ? '' : 'is-unavailable'}`;
     cBtn.innerText = col;
+    cBtn.disabled = !isAvailable;
+    cBtn.title = isAvailable ? `${col} available` : `${col} unavailable`;
     cBtn.onclick = () => {
+      if (!isAvailable) return;
       selectedColor = col;
       document.querySelectorAll('#pdp-color-selector .size-btn').forEach(b => b.classList.remove('selected'));
       cBtn.classList.add('selected');
+      updatePdpSelectionStatus();
     };
     colorContainer.appendChild(cBtn);
   });
 
   prodSizes.forEach((sz, idx) => {
+    const isAvailable = availableSizes.includes(sz);
     const sBtn = document.createElement('button');
     sBtn.type = 'button';
-    sBtn.className = `size-btn ${sz === selectedSize ? 'selected' : ''}`;
+    sBtn.className = `size-btn ${sz === selectedSize ? 'selected' : ''} ${isAvailable ? '' : 'is-unavailable'}`;
     sBtn.innerText = sz;
+    sBtn.disabled = !isAvailable;
+    sBtn.title = isAvailable ? `${sz} available` : `${sz} unavailable`;
     sBtn.onclick = () => {
+      if (!isAvailable) return;
       selectedSize = sz;
       document.querySelectorAll('#pdp-size-selector .size-btn').forEach(b => b.classList.remove('selected'));
       sBtn.classList.add('selected');
+      updatePdpSelectionStatus();
     };
     sizeContainer.appendChild(sBtn);
   });
+  updatePdpSelectionStatus();
 
   const sliderTrack = document.getElementById('slider-track');
   const thumbRow = document.getElementById('thumb-row-container');
@@ -2030,7 +2236,7 @@ function openProductByDetails(catName, productId) {
     const slideDiv = document.createElement('div');
     slideDiv.className = 'slide-item';
     if (cleanUrl) {
-      slideDiv.innerHTML = `<img src="${cleanUrl}" alt="${foundProd.title}">`;
+      slideDiv.innerHTML = `<img src="${cleanUrl}" alt="${foundProd.title}"><button type="button" class="pdp-zoom-btn" onclick="event.stopPropagation(); openProductImageZoom()">Zoom ↗</button>`;
     } else {
       slideDiv.innerHTML = `<div class="big-preview-text">${foundProd.code} [${idx+1}]</div>`;
     }
@@ -2061,6 +2267,7 @@ function openProductByDetails(catName, productId) {
   const catSlug = foundCat.name.toLowerCase().replace(/\s+/g, '-');
   const prodSlug = foundProd.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   window.location.hash = `#shop/${catSlug}/${prodSlug}`;
+  renderProductReviews();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -2083,6 +2290,53 @@ function nextSlide() { currentSlideIndex = (currentSlideIndex + 1) % (window.TOT
 function prevSlide() { currentSlideIndex = (currentSlideIndex - 1 + (window.TOTAL_SLIDES_COUNT || 1)) % (window.TOTAL_SLIDES_COUNT || 1); updateSliderPosition(); }
 function goToSlide(i) { currentSlideIndex = i % (window.TOTAL_SLIDES_COUNT || 1); updateSliderPosition(); }
 
+function getNotifyRequests() {
+  try { return JSON.parse(localStorage.getItem('rebel_notify_requests') || '[]'); } catch(e) { return []; }
+}
+function saveNotifyRequest(product, size, color, email) {
+  const list = getNotifyRequests();
+  const key = [product?.code || product?.id || '', size || '', color || '', email || ''].join('|').toLowerCase();
+  if (!list.some(x => x.key === key)) list.push({ key, productCode: product?.code || product?.id || '', productTitle: product?.title || '', size, color, email, createdAt: new Date().toISOString() });
+  localStorage.setItem('rebel_notify_requests', JSON.stringify(list));
+}
+function notifyWhenBackInStock() {
+  if (!currentProduct) return;
+  const size = selectedSize || '';
+  const color = selectedColor || '';
+  let email = (typeof loggedInUser !== 'undefined' && loggedInUser?.email) ? String(loggedInUser.email).trim() : '';
+  if (!email) email = window.prompt('Enter your email for the stock notification:') || '';
+  email = email.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('Please enter a valid email address.'); return; }
+  saveNotifyRequest(currentProduct, size, color, email);
+  const note = document.getElementById('notify-stock-note');
+  if (note) { note.style.display = 'block'; note.innerText = `Notification saved for ${size || 'selected size'} / ${color || 'selected color'}.`; }
+  showToast('Notify Me request saved successfully.');
+}
+
+function updatePdpSelectionStatus() {
+  const status = document.getElementById('pdp-selection-status');
+  const stockText = document.getElementById('pdp-stock-text');
+  const dot = document.querySelector('#pdp-stock-note .pdp-stock-dot');
+  if (!status || !stockText || !currentProduct) return;
+  const sizes = Array.isArray(currentProduct.availableSizes) ? currentProduct.availableSizes : ((currentProduct.sizes && currentProduct.sizes.length) ? currentProduct.sizes : ['S','M','L','XL']);
+  const colors = Array.isArray(currentProduct.availableColors) ? currentProduct.availableColors : ((currentProduct.colors && currentProduct.colors.length) ? currentProduct.colors : ['Yellow','White']);
+  const sizeOk = sizes.includes(selectedSize);
+  const colorOk = colors.includes(selectedColor);
+  status.innerHTML = `Selected: <strong>${selectedSize || '—'}</strong> · <strong>${selectedColor || '—'}</strong>`;
+  const available = sizeOk && colorOk;
+  stockText.innerText = available ? 'In Stock · Ready to Order' : 'Currently Unavailable';
+  dot.classList.toggle('out', !available);
+  dot.classList.toggle('low', available && sizes.length === 1);
+  const addBtn = document.getElementById('add-btn');
+  const notifyBtn = document.getElementById('notify-stock-btn');
+  const notifyNote = document.getElementById('notify-stock-note');
+  const countBadge = document.getElementById('pdp-stock-count');
+  if (countBadge) countBadge.innerText = available ? `${sizes.length} size${sizes.length === 1 ? '' : 's'} available` : 'Sold out';
+  if (addBtn) { addBtn.disabled = !available; addBtn.style.opacity = available ? '1' : '.5'; addBtn.style.cursor = available ? 'pointer' : 'not-allowed'; }
+  if (notifyBtn) notifyBtn.style.display = available ? 'none' : 'block';
+  if (notifyNote && available) notifyNote.style.display = 'none';
+}
+
 function selectSize(btn, size) {
   selectedSize = size;
   document.querySelectorAll('.pdp-info .size-btn').forEach(b => b.classList.remove('selected'));
@@ -2093,6 +2347,7 @@ function selectSize(btn, size) {
   if (currentProduct && document.getElementById('add-btn')) {
     document.getElementById('add-btn').innerText = `Add to Cart — ரூ ${currentProduct.price * selectedQty}`;
   }
+  updatePdpSelectionStatus();
 }
 
 function changeQty(amount) {
@@ -2190,6 +2445,8 @@ function openWishlistModal() {
   const modal = document.getElementById('wishlist-modal');
   const area = document.getElementById('wishlist-modal-items');
   area.innerHTML = '';
+  const countLabel = document.getElementById('wishlist-count-label');
+  if (countLabel) countLabel.textContent = `${wishlist.length} ${wishlist.length === 1 ? 'item' : 'items'} saved`;
 
   if (wishlist.length === 0) {
     area.innerHTML = `<div style="font-family:'Space Mono'; color:var(--grey); padding: 1rem; text-align:center;">Your wishlist is empty.</div>`;
@@ -2224,6 +2481,47 @@ function removeFromWishlist(e, idx) {
   localStorage.setItem('rebel_wishlist', JSON.stringify(wishlist));
   openWishlistModal();
   showToast('Removed from wishlist');
+}
+
+function clearWishlist() {
+  if (!wishlist.length) { showToast('Wishlist is already empty'); return; }
+  wishlist = [];
+  localStorage.setItem('rebel_wishlist', JSON.stringify(wishlist));
+  openWishlistModal();
+  showToast('Wishlist cleared');
+}
+
+function moveAllWishlistToCart() {
+  if (!wishlist.length) { showToast('Wishlist is empty'); return; }
+  let added = 0;
+  wishlist.forEach(item => {
+    const product = resolveRegularProductFromCatalog(item.id);
+    if (!product) return;
+    const color = (item.title && item.title.includes(' (')) ? item.title.split(' (').pop().replace(/\)$/, '') : (product.colors?.[0] || 'Default');
+    const size = product.sizes?.[0] || 'M';
+    const cartItem = { id: product.id || item.id, title: product.title, price: Number(product.price || item.price || 0), image: product.images?.[0] || item.image || '', color, size, qty: 1 };
+    const existing = cart.find(c => c.id === cartItem.id && c.color === cartItem.color && c.size === cartItem.size);
+    if (existing) existing.qty = Number(existing.qty || 0) + 1; else cart.push(cartItem);
+    added++;
+  });
+  localStorage.setItem('rebel_cart', JSON.stringify(cart));
+  updateCartBadge();
+  renderCart();
+  showToast(added ? `${added} wishlist item${added > 1 ? 's' : ''} added to bag` : 'No available wishlist items');
+}
+
+function openFaqModal() {
+  const modal = document.getElementById('faq-modal');
+  if (modal) modal.style.display = 'flex';
+}
+function closeFaqModal() {
+  const modal = document.getElementById('faq-modal');
+  if (modal) modal.style.display = 'none';
+}
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  document.querySelectorAll('#faq-modal .faq-item').forEach(el => { if (el !== item) el.classList.remove('open'); });
+  item.classList.toggle('open');
 }
 
 function updateCartBadge() {
@@ -4601,8 +4899,39 @@ function renderOrdersInsideProfile() {
       <div class="address-card-head"><strong class="address-label">${escapeHtml(ord.id)}</strong><span style="font-family:'Space Mono';font-size:.68rem;color:var(--grey);">${escapeHtml(ord.date || '')}</span></div>
       <div class="address-meta">Total: ₹${Number(ord.totalAmount || 0).toFixed(0)} · Payment: ${escapeHtml(ord.paymentStatus || 'paid')} · Status: ${escapeHtml(ord.orderStatus || 'New')}</div>
       <div id="user-order-items-${escapeHtml(ord.id)}" style="display:none;margin-top:.7rem;border-top:1px dashed rgba(242,240,234,.18);padding-top:.6rem;">${items}<div style="font-family:'Space Mono';font-size:.7rem;color:var(--grey);margin-top:.4rem;">Shipping: ${escapeHtml(ord.billing?.address || '')}</div></div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.7rem;" onclick="event.stopPropagation()">
+        ${['New','Processing','Confirmed'].includes(String(ord.orderStatus||'')) ? `<button class="btn btn--ghost" style="font-size:.68rem;padding:.45rem .7rem" onclick="openOrderServiceModal('${escapeHtml(ord.id)}','cancel')">Cancel Order</button>` : ''}
+        ${['Delivered','Completed'].includes(String(ord.orderStatus||'')) ? `<button class="btn btn--ghost" style="font-size:.68rem;padding:.45rem .7rem" onclick="openOrderServiceModal('${escapeHtml(ord.id)}','return')">Return / Exchange</button>` : ''}
+      </div>
     </div>`;
   }).join('');
+}
+
+let activeOrderService = { id:null, type:null };
+function openOrderServiceModal(orderId, type){
+  activeOrderService={id:orderId,type:type};
+  const modal=document.getElementById('order-service-modal'); if(!modal)return;
+  document.getElementById('order-service-title').textContent=type==='cancel'?'Cancel Order':'Return / Exchange';
+  document.getElementById('order-service-order').textContent='Order: '+orderId;
+  const sel=document.getElementById('order-service-reason');
+  const opts=type==='cancel'?['Changed my mind','Ordered by mistake','Need to change order','Other']:['Wrong size / fit','Damaged / defective','Wrong item received','Exchange for another size','Other'];
+  sel.innerHTML=opts.map(x=>`<option>${escapeHtml(x)}</option>`).join('');
+  document.getElementById('order-service-note').value='';
+  document.getElementById('order-service-status').textContent='';
+  modal.style.display='flex';
+}
+function closeOrderServiceModal(){const m=document.getElementById('order-service-modal');if(m)m.style.display='none';activeOrderService={id:null,type:null};}
+function submitOrderServiceRequest(){
+  if(!activeOrderService.id)return;
+  const reason=document.getElementById('order-service-reason')?.value||'Other';
+  const note=(document.getElementById('order-service-note')?.value||'').trim();
+  const key='rebel_order_service_requests';
+  let requests=[]; try{requests=JSON.parse(localStorage.getItem(key)||'[]')}catch(e){}
+  requests.push({orderId:activeOrderService.id,type:activeOrderService.type,reason,note,createdAt:new Date().toISOString(),email:loggedInUser?.email||''});
+  localStorage.setItem(key,JSON.stringify(requests));
+  const status=document.getElementById('order-service-status');
+  if(status)status.textContent=activeOrderService.type==='cancel'?'Cancellation request submitted.':'Return / exchange request submitted.';
+  setTimeout(closeOrderServiceModal,900);
 }
 
 async function renderAddressesInsideProfile() {
@@ -4747,40 +5076,65 @@ async function getDefaultSavedAddress(){
 }
 
 
+function getOrderTrackingStage(status) {
+  const st = String(status || 'New').toLowerCase();
+  if (st.includes('deliver')) return 3;
+  if (st.includes('ship') || st.includes('dispatch') || st.includes('transit')) return 2;
+  if (st.includes('process') || st.includes('confirm') || st.includes('new') || st.includes('paid')) return 1;
+  if (st.includes('cancel') || st.includes('return')) return 0;
+  return 1;
+}
+
+function formatDeliveryDate(date) {
+  return date.toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'});
+}
+
+function calculateDeliveryEstimate(orderId) {
+  const input = document.getElementById(`pincode-${CSS.escape(String(orderId))}`);
+  const result = document.getElementById(`delivery-result-${CSS.escape(String(orderId))}`);
+  if (!input || !result) return;
+  const pin = input.value.trim();
+  if (!/^\d{6}$/.test(pin)) {
+    result.textContent = 'Enter a valid 6-digit pincode.';
+    result.style.color = '#ff6b6b';
+    return;
+  }
+  const first = Number(pin.charAt(0));
+  const days = (first >= 6 && first <= 7) ? 3 : (first === 5 || first === 4 ? 5 : 7);
+  const from = new Date();
+  from.setDate(from.getDate() + days);
+  const to = new Date(from);
+  to.setDate(to.getDate() + 2);
+  result.style.color = 'var(--success-green)';
+  result.textContent = `Estimated delivery: ${formatDeliveryDate(from)} – ${formatDeliveryDate(to)}. Final ETA may vary by courier.`;
+}
+
+function openOrderTracking(orderId) {
+  const panel = document.getElementById(`order-track-${CSS.escape(String(orderId))}`);
+  if (panel) panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
 function openOrdersModal() {
   if (!loggedInUser) return;
   const area = document.getElementById('orders-content-area');
   const myOrders = ordersHistory.filter(o => o.userEmail === loggedInUser.email || (o.billing && o.billing.email === loggedInUser.email));
-  
-  if (myOrders.length === 0) {
-    area.innerHTML = `<div style="font-family:'Space Mono'; color:var(--grey); padding: 1rem; text-align:center;">No order history found.</div>`;
+  if (!myOrders.length) {
+    area.innerHTML = `<div style="font-family:'Space Mono';color:var(--grey);padding:1rem;text-align:center;">No order history found.</div>`;
   } else {
-    let html = '';
-    myOrders.forEach(ord => {
-      let itemsListHtml = '';
-      if (ord.items && Array.isArray(ord.items)) {
-        ord.items.forEach(it => {
-          itemsListHtml += `<div style="font-size:0.75rem; color:var(--paper); padding:2px 0;">• ${it.title} (Size: ${it.size}, Qty: ${it.qty}) - ரூ ${it.price * it.qty}</div>`;
-        });
-      }
-      html += `
-        <div style="background:#1a1a1d; border:1px solid rgba(242,240,234,0.15); padding:1rem; margin-bottom:1rem; border-radius:4px; cursor:pointer;" onclick="toggleUserOrderExpand('${ord.id}')">
-          <div style="display:flex; justify-content:space-between; font-family:'Space Mono'; font-size:0.8rem; color:var(--spray-yellow);">
-            <span>Order ID: ${ord.id}</span>
-            <span>Date: ${ord.date}</span>
-          </div>
-          <div style="font-family:'Space Mono'; font-size:0.75rem; color:var(--paper); margin:0.4rem 0;">
-            Total Items: ${ord.totalQty} | Total Amount: <strong>ரூ ${ord.totalAmount}</strong> | Status: <strong style="color:var(--success-green);">${ord.orderStatus}</strong>
-          </div>
-          <div id="user-order-items-${ord.id}" style="display:none; margin-top:8px; border-top:1px dashed rgba(242,240,234,0.2); padding-top:6px;">
-            <div style="font-size:0.75rem; color:var(--spray-yellow); margin-bottom:4px;"><strong>Ordered Items:</strong></div>
-            ${itemsListHtml}
-            <div style="font-size:0.75rem; color:var(--grey); margin-top:4px;"><strong>Shipping Address:</strong> ${ord.billing.address}</div>
-          </div>
-        </div>
-      `;
-    });
-    area.innerHTML = html;
+    area.innerHTML = myOrders.map(ord => {
+      const stage = getOrderTrackingStage(ord.orderStatus);
+      const labels = ['Order Placed','Processing','Shipped','Delivered'];
+      const steps = labels.map((label,i) => `<div class="order-track-step ${i < stage ? 'done' : ''} ${i === stage ? 'active' : ''}"><div class="order-track-dot"></div>${label}</div>`).join('');
+      const itemsListHtml = Array.isArray(ord.items) ? ord.items.map(it => `<div style="font-size:.75rem;color:var(--paper);padding:2px 0;">• ${escapeHtml(it.title || it.name || 'Product')} (Size: ${escapeHtml(it.size || '-')}, Qty: ${escapeHtml(it.qty || it.quantity || 1)})</div>`).join('') : '';
+      const safeId = escapeHtml(String(ord.id || ''));
+      return `<div style="background:#1a1a1d;border:1px solid rgba(242,240,234,.15);padding:1rem;margin-bottom:1rem;border-radius:4px;">
+        <div style="display:flex;justify-content:space-between;gap:.5rem;flex-wrap:wrap;font-family:'Space Mono';font-size:.75rem;color:var(--spray-yellow);"><span>Order ID: ${safeId}</span><span>${escapeHtml(ord.date || '')}</span></div>
+        <div style="font-family:'Space Mono';font-size:.72rem;color:var(--paper);margin:.5rem 0;">Total: ₹${Number(ord.totalAmount || 0).toFixed(0)} · Status: <strong>${escapeHtml(ord.orderStatus || 'New')}</strong></div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;"><button class="btn btn--ghost" type="button" onclick="openOrderTracking('${safeId}')">📦 Track Order</button><button class="btn btn--ghost" type="button" onclick="toggleUserOrderExpand('${safeId}')">View Details</button></div>
+        <div id="order-track-${safeId}" class="order-track-panel" style="display:none;"><div style="font-family:'Space Mono';font-size:.68rem;color:var(--grey);text-transform:uppercase;">Current status: <strong style="color:var(--paper);">${escapeHtml(ord.orderStatus || 'New')}</strong></div><div class="order-track-steps">${steps}</div><div class="delivery-estimator"><input id="pincode-${safeId}" inputmode="numeric" maxlength="6" placeholder="Enter delivery pincode"><button class="btn btn--solid" type="button" onclick="calculateDeliveryEstimate('${safeId}')">Check ETA</button></div><div id="delivery-result-${safeId}" class="delivery-result">Enter your pincode to get an estimated delivery window.</div></div>
+        <div id="user-order-items-${safeId}" style="display:none;margin-top:.8rem;border-top:1px dashed rgba(242,240,234,.2);padding-top:.7rem;"><div style="font-size:.75rem;color:var(--spray-yellow);margin-bottom:4px;"><strong>Ordered Items:</strong></div>${itemsListHtml}<div style="font-size:.75rem;color:var(--grey);margin-top:5px;"><strong>Shipping Address:</strong> ${escapeHtml(ord.billing?.address || '')}</div></div>
+      </div>`;
+    }).join('');
   }
   document.getElementById('orders-modal').style.display = 'flex';
 }
@@ -4802,5 +5156,193 @@ function showToast(msg) {
   setTimeout(() => { toast.classList.remove('side-panel'); toast.classList.remove('show'); }, 3500);
 }
 </script>
+<div class="pdp-zoom-modal" id="pdp-zoom-modal" onclick="if(event.target===this) closeProductImageZoom()">
+  <button type="button" class="pdp-zoom-close" onclick="closeProductImageZoom()" aria-label="Close">×</button>
+  <img id="pdp-zoom-image" src="" alt="Product image">
+  <div class="pdp-zoom-caption">Tap image or × to close</div>
+</div>
+
+<script>
+function openOffersPanel(){const m=document.getElementById('offers-panel');if(!m)return;const o=window.storeOfferSettings||{};const code=String(o.code||'REBEL16');const pct=Number(o.discount||16);document.getElementById('offers-panel-content').innerHTML='<div style="padding:18px;border:2px dashed #111;border-radius:12px"><div style="font-size:13px;font-family:Space Mono,monospace">CURRENT OFFER</div><div style="font-size:28px;font-weight:900;margin:8px 0">'+pct+'% OFF</div><div>Use coupon <strong style="font-family:Space Mono,monospace">'+code+'</strong> at checkout.</div></div><p style="font-size:13px;opacity:.7;margin-bottom:0">Coupon validity and discount are validated securely during checkout.</p>';m.style.display='flex'}
+function closeOffersPanel(){const m=document.getElementById('offers-panel');if(m)m.style.display='none'}
+function refreshSalesOfferStrip(){const el=document.getElementById('sales-offer-strip'),tx=document.getElementById('sales-offer-strip-text');if(!el||!tx)return;const o=window.storeOfferSettings||{};const pct=Number(o.discount||0);const code=String(o.code||'').trim();if(pct>0&&code){tx.textContent=pct+'% OFF · Use code '+code;el.style.display='block'}else el.style.display='none'}
+if(typeof window!=='undefined'){window.openOffersPanel=openOffersPanel;window.closeOffersPanel=closeOffersPanel;window.refreshSalesOfferStrip=refreshSalesOfferStrip}
+</script>
+
+
+<!-- ALL PHASES FRONTEND MASTER FEATURE CENTER -->
+<div class="master-modal" id="master-features-modal" aria-hidden="true">
+  <div class="master-modal-card" role="dialog" aria-modal="true" aria-labelledby="master-feature-title">
+    <button class="master-close" onclick="closeMasterFeatures()" aria-label="Close">×</button>
+    <h2 class="master-title" id="master-feature-title">REBEL STORE · ALL FEATURES</h2>
+    <p class="master-sub">Complete frontend feature set. Backend/API wiring will be handled separately.</p>
+    <div class="master-tabs" role="tablist">
+      <button class="master-tab active" onclick="switchMasterPane('shop',this)">Shop</button>
+      <button class="master-tab" onclick="switchMasterPane('orders',this)">Orders</button>
+      <button class="master-tab" onclick="switchMasterPane('sales',this)">Sales</button>
+      <button class="master-tab" onclick="switchMasterPane('brand',this)">Brand</button>
+      <button class="master-tab" id="master-admin-tab" onclick="switchMasterPane('admin',this)" style="display:none">Admin</button>
+    </div>
+
+    <section class="master-pane active" id="master-pane-shop">
+      <div class="master-grid">
+        <div class="master-card"><span class="master-badge">PHASE 1 · READY</span><h4>Search / Filter / Sort</h4><p>Search, category, size, color, price and sorting UI is retained for future catalog expansion but hidden from the storefront for now.</p></div>
+        <div class="master-card"><span class="master-badge">PHASE 2</span><h4>Size Chart + Fit Guide</h4><p>Customer-facing size chart, fit guidance and size selection experience.</p><button class="btn btn--ghost" onclick="showToast('Size Chart is available on product pages.')">Open Guide</button></div>
+        <div class="master-card"><span class="master-badge">PHASE 2</span><h4>Color + Availability</h4><p>Clear size/color choices, availability states and Notify Me entry point.</p><button class="btn btn--ghost" onclick="showToast('Choose a product to see size, color and availability.')">View Product</button></div>
+        <div class="master-card"><span class="master-badge">PHASE 2</span><h4>Gallery + Zoom</h4><p>Multiple product images, slider navigation and image zoom experience.</p><button class="btn btn--ghost" onclick="showToast('Product gallery and zoom are available on product pages.')">Open Gallery</button></div>
+      </div>
+    </section>
+
+    <section class="master-pane" id="master-pane-orders">
+      <div class="master-grid">
+        <div class="master-card"><span class="master-badge">PHASE 3</span><h4>Track My Order</h4><p>Order status timeline and tracking interface for customers.</p><button class="btn btn--ghost" onclick="openOrdersModal()">My Orders</button></div>
+        <div class="master-card"><span class="master-badge">PHASE 3</span><h4>Delivery Estimate</h4><p>Pincode-based delivery estimate interface.</p><button class="btn btn--ghost" onclick="showToast('Delivery estimate is available from the order/tracking area.')">Check Estimate</button></div>
+        <div class="master-card"><span class="master-badge">PHASE 3</span><h4>Returns / Exchange</h4><p>Frontend flow for requesting a return or exchange against an eligible order.</p><button class="btn btn--ghost" onclick="showToast('Select an eligible order to start a return or exchange.')">Start Request</button></div>
+        <div class="master-card"><span class="master-badge">PHASE 3</span><h4>Cancellation</h4><p>Customer cancellation interface with order-status checks.</p><button class="btn btn--ghost" onclick="showToast('Cancellation is available on eligible orders.')">View Orders</button></div>
+        <div class="master-card"><span class="master-badge">PHASE 3</span><h4>Reviews & Ratings</h4><p>Star rating, review submission and review display on product pages.</p><button class="btn btn--ghost" onclick="showToast('Open a product page to see Reviews & Ratings.')">View Reviews</button></div>
+        <div class="master-card"><span class="master-badge">PHASE 3</span><h4>FAQ / Support</h4><p>Frequently asked questions and support entry points.</p><button class="btn btn--ghost" onclick="openFaqModal()">Open FAQ</button></div>
+      </div>
+    </section>
+
+    <section class="master-pane" id="master-pane-sales">
+      <div class="master-grid">
+        <div class="master-card"><span class="master-badge">PHASE 4</span><h4>Coupon Center</h4><p>Coupon entry, validation feedback, discount summary and offer messaging.</p><button class="btn btn--ghost" onclick="toggleCartDrawer(true)">Open Bag</button></div>
+        <div class="master-card"><span class="master-badge">PHASE 4</span><h4>Offers / Sale</h4><p>Sale badges, offer banners and promotional messaging across the storefront.</p><button class="btn btn--ghost" onclick="handleNavShopClick()">Shop Offers</button></div>
+        <div class="master-card"><span class="master-badge">PHASE 4 · FRONTEND</span><h4>Gift Cards</h4><p>Gift card purchase, recipient details, denomination and message interface.</p><button class="btn btn--ghost" onclick="openGiftCardPane()">Gift Cards</button></div>
+        <div class="master-card"><span class="master-badge">PHASE 4 · FRONTEND</span><h4>Loyalty / Membership</h4><p>Membership tiers, benefits and join experience ready for backend points/rewards wiring.</p><button class="btn btn--ghost" onclick="openMembershipPane()">Membership</button></div>
+      </div>
+    </section>
+
+    <section class="master-pane" id="master-pane-brand">
+      <div class="master-grid">
+        <div class="master-card"><span class="master-badge">PHASE 5</span><h4>New Drops</h4><p>Dedicated new-drop merchandising block and product discovery entry point.</p><button class="btn btn--ghost" onclick="showToast('New Drops collection ready for catalog tagging.')">View Drops</button></div>
+        <div class="master-card"><span class="master-badge">PHASE 5</span><h4>Trending / Best Sellers</h4><p>Merchandising slots for trending products and best sellers.</p><button class="btn btn--ghost" onclick="showToast('Trending / Best Seller slots are ready for product data.')">View Trending</button></div>
+        <div class="master-card"><span class="master-badge">PHASE 5</span><h4>Complete the Look</h4><p>Cross-sell module for matching products and outfit combinations.</p><button class="btn btn--ghost" onclick="showToast('Complete the Look module is ready for product relationships.')">Explore</button></div>
+        <div class="master-card"><span class="master-badge">PHASE 5</span><h4>UGC / Community</h4><p>Customer-content showcase area for photos, tags and social proof.</p><button class="btn btn--ghost" onclick="openUgcPane()">UGC</button></div>
+        <div class="master-card"><span class="master-badge">PHASE 5</span><h4>Mobile-first UX</h4><p>Responsive product, cart, account and feature-center layouts for mobile screens.</p><button class="btn btn--ghost" onclick="showToast('Mobile responsive layout is enabled.')">Responsive</button></div>
+        <div class="master-card"><span class="master-badge">PHASE 5</span><h4>Better Product Gallery</h4><p>Large imagery, thumbnails, slider controls and zoom interaction.</p><button class="btn btn--ghost" onclick="showToast('Open any product to use the gallery.')">Open Product</button></div>
+      </div>
+    </section>
+
+    <section class="master-pane" id="master-pane-admin">
+      <div class="master-admin-grid">
+        <button class="master-admin-btn" onclick="openMasterAdminAction('Product Management')"><strong>PRODUCT MANAGEMENT</strong><span>Stock · size · color · images</span></button>
+        <button class="master-admin-btn" onclick="openMasterAdminAction('Order Management')"><strong>ORDER MANAGEMENT</strong><span>Status · fulfilment · customer order view</span></button>
+        <button class="master-admin-btn" onclick="openMasterAdminAction('Returns / Exchange')"><strong>RETURNS / EXCHANGE</strong><span>Requests · decisions · status</span></button>
+        <button class="master-admin-btn" onclick="openMasterAdminAction('Coupon Management')"><strong>COUPON MANAGEMENT</strong><span>Codes · rules · expiry · limits</span></button>
+        <button class="master-admin-btn" onclick="openMasterAdminAction('Review Moderation')"><strong>REVIEW MODERATION</strong><span>Approve · hide · flag</span></button>
+        <button class="master-admin-btn" onclick="openMasterAdminAction('Sales Dashboard')"><strong>SALES DASHBOARD</strong><span>Revenue · orders · products · trends</span></button>
+      </div>
+    </section>
+
+    <section class="master-pane" id="master-pane-gift" style="display:none">
+      <h3 class="master-title">Gift Card</h3><p class="master-sub">Frontend purchase form — payment, issuance and balance validation will be wired in backend phase.</p>
+      <div class="master-form">
+        <div class="master-row"><input id="gc-amount" type="number" min="100" step="100" placeholder="Amount ₹"><input id="gc-recipient" type="email" placeholder="Recipient email"></div>
+        <input id="gc-name" type="text" maxlength="80" placeholder="Recipient name">
+        <textarea id="gc-message" maxlength="250" placeholder="Gift message (optional)"></textarea>
+        <button class="btn btn--solid" onclick="submitGiftCardFrontend()">Continue with Gift Card</button>
+      </div>
+    </section>
+
+    <section class="master-pane" id="master-pane-membership" style="display:none">
+      <h3 class="master-title">REBEL MEMBERSHIP</h3><p class="master-sub">Choose a tier. Membership billing and reward points will be connected in the backend phase.</p>
+      <div class="master-membership">
+        <div class="master-plan"><h3>REBEL BASIC</h3><div class="price">FREE</div><ul><li>Member profile</li><li>Drop notifications</li><li>Wishlist priority</li></ul><button class="btn btn--ghost" onclick="joinMembershipFrontend('Basic')">Join</button></div>
+        <div class="master-plan featured"><h3>REBEL PLUS</h3><div class="price">₹499</div><ul><li>Early access to drops</li><li>Member-only offers</li><li>Priority support</li></ul><button class="btn btn--solid" onclick="joinMembershipFrontend('Plus')">Choose Plus</button></div>
+        <div class="master-plan"><h3>REBEL PRO</h3><div class="price">₹999</div><ul><li>All Plus benefits</li><li>Extra loyalty rewards</li><li>Exclusive drops</li></ul><button class="btn btn--ghost" onclick="joinMembershipFrontend('Pro')">Choose Pro</button></div>
+      </div>
+    </section>
+
+    <section class="master-pane" id="master-pane-ugc" style="display:none">
+      <h3 class="master-title">REBEL COMMUNITY / UGC</h3><p class="master-sub">Frontend showcase for customer looks. Upload/storage/moderation will be connected separately.</p>
+      <div class="master-form"><input id="ugc-handle" type="text" maxlength="40" placeholder="Instagram / social handle"><input id="ugc-image" type="url" placeholder="Image URL"><textarea id="ugc-caption" maxlength="250" placeholder="Caption"></textarea><button class="btn btn--solid" onclick="submitUgcFrontend()">Submit Look</button></div>
+    </section>
+  </div>
+</div>
+
 </body>
+
+<script id="rebel-master-features-js">
+(function(){
+  window.openMasterFeatures=function(){
+    const m=document.getElementById('master-features-modal'); if(!m)return;
+    m.classList.add('show'); m.setAttribute('aria-hidden','false');
+    const owner=!!(window.loggedInUser && String(window.loggedInUser.role||'').toLowerCase()==='owner');
+    const at=document.getElementById('master-admin-tab'); if(at) at.style.display=owner?'inline-block':'none';
+  };
+  window.closeMasterFeatures=function(){const m=document.getElementById('master-features-modal');if(m){m.classList.remove('show');m.setAttribute('aria-hidden','true');}};
+  window.switchMasterPane=function(name,btn){
+    document.querySelectorAll('#master-features-modal .master-tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('#master-features-modal .master-pane').forEach(x=>{x.classList.remove('active');x.style.display='none';});
+    if(btn)btn.classList.add('active');
+    const p=document.getElementById('master-pane-'+name); if(p){p.classList.add('active');p.style.display='block';}
+  };
+  window.openGiftCardPane=function(){openMasterFeatures();switchMasterPane('gift',null);};
+  window.openMembershipPane=function(){openMasterFeatures();switchMasterPane('membership',null);};
+  window.openUgcPane=function(){openMasterFeatures();switchMasterPane('ugc',null);};
+  window.submitGiftCardFrontend=function(){
+    const amount=Number(document.getElementById('gc-amount')?.value||0), email=(document.getElementById('gc-recipient')?.value||'').trim();
+    if(amount<100){showToast('Gift card amount must be at least ₹100.');return;}
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showToast('Enter a valid recipient email.');return;}
+    showToast('Gift card details saved for backend setup.');
+  };
+  window.joinMembershipFrontend=function(plan){
+    try{localStorage.setItem('rebel_selected_membership',plan);}catch(e){}
+    showToast(plan+' membership selected. Payment/rewards will be connected in backend.');
+  };
+  window.submitUgcFrontend=function(){
+    const handle=(document.getElementById('ugc-handle')?.value||'').trim(), img=(document.getElementById('ugc-image')?.value||'').trim();
+    if(!handle||!img){showToast('Add your handle and image URL.');return;}
+    try{const a=JSON.parse(localStorage.getItem('rebel_ugc_submissions')||'[]');a.push({handle:handle.slice(0,40),image:img.slice(0,500),caption:(document.getElementById('ugc-caption')?.value||'').slice(0,250),createdAt:new Date().toISOString(),status:'pending'});localStorage.setItem('rebel_ugc_submissions',JSON.stringify(a));}catch(e){}
+    showToast('UGC submission saved for moderation.');
+  };
+  window.openMasterAdminAction=function(name){showToast(name+' frontend is ready; backend/admin wiring will be handled separately.');};
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMasterFeatures();});
+  document.addEventListener('click',e=>{const m=document.getElementById('master-features-modal');if(m&&m.classList.contains('show')&&e.target===m)closeMasterFeatures();});
+})();
+</script>
+
 </html>
+<script>document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSizeChart();});
+// PHASE 3 — CUSTOMER REVIEWS / RATINGS
+let selectedReviewRating = 0;
+function getProductReviewKey(product){ return String(product?.code || product?.id || '').trim().toLowerCase(); }
+function getProductReviews(product){
+  try { const all=JSON.parse(localStorage.getItem('rebel_product_reviews')||'{}'); return Array.isArray(all[getProductReviewKey(product)]) ? all[getProductReviewKey(product)] : []; } catch(e){ return []; }
+}
+function renderReviewStars(rating){ const n=Math.max(0,Math.min(5,Number(rating)||0)); return '★★★★★'.slice(0,n)+'☆☆☆☆☆'.slice(0,5-n); }
+function renderProductReviews(){
+  if(!currentProduct) return;
+  const list=document.getElementById('review-list'), text=document.getElementById('review-summary-text'), stars=document.getElementById('review-summary-stars');
+  if(!list) return;
+  const reviews=getProductReviews(currentProduct);
+  if(!reviews.length){ stars.textContent='☆☆☆☆☆'; text.textContent='No reviews yet'; list.innerHTML='<div class="review-empty">Be the first to review this product.</div>'; return; }
+  const avg=reviews.reduce((a,r)=>a+(Number(r.rating)||0),0)/reviews.length;
+  stars.textContent=renderReviewStars(Math.round(avg)); text.textContent=`${avg.toFixed(1)} / 5 · ${reviews.length} review${reviews.length===1?'':'s'}`;
+  list.innerHTML=reviews.slice().reverse().map(r=>`<div class="review-item"><div class="review-meta"><strong>${escapeHtml(r.name||'Customer')}</strong><span>${renderReviewStars(r.rating)} · ${new Date(r.createdAt).toLocaleDateString()}</span></div><p>${escapeHtml(r.text||'')}</p></div>`).join('');
+}
+function buildReviewRatingButtons(){
+  const box=document.getElementById('review-rating-buttons'); if(!box) return;
+  box.innerHTML='<span style="font-size:.75rem;margin-right:.5rem">Your rating:</span>'+[1,2,3,4,5].map(n=>`<button type="button" aria-label="${n} star" class="${n<=selectedReviewRating?'active':''}" onclick="setReviewRating(${n})">★</button>`).join('');
+}
+function setReviewRating(n){ selectedReviewRating=n; buildReviewRatingButtons(); }
+function toggleReviewForm(){
+  const form=document.getElementById('review-form'); if(!form) return;
+  form.classList.toggle('show'); if(form.classList.contains('show')){ selectedReviewRating=0; buildReviewRatingButtons(); document.getElementById('review-text')?.focus(); }
+}
+function submitProductReview(){
+  if(!currentProduct) return;
+  if(typeof loggedInUser==='undefined' || !loggedInUser){ showToast('Please login to write a review.'); if(typeof openAuthModal==='function') openAuthModal(); return; }
+  if(!selectedReviewRating){ showToast('Please select a rating.'); return; }
+  const input=document.getElementById('review-text'); const reviewText=(input?.value||'').trim();
+  if(reviewText.length<5){ showToast('Please write at least 5 characters.'); return; }
+  try {
+    const all=JSON.parse(localStorage.getItem('rebel_product_reviews')||'{}'); const key=getProductReviewKey(currentProduct); const arr=Array.isArray(all[key])?all[key]:[];
+    const name=String(loggedInUser.username || loggedInUser.name || 'Customer').slice(0,60);
+    arr.push({rating:selectedReviewRating,text:reviewText.slice(0,500),name,createdAt:new Date().toISOString()}); all[key]=arr; localStorage.setItem('rebel_product_reviews',JSON.stringify(all));
+    input.value=''; selectedReviewRating=0; document.getElementById('review-form')?.classList.remove('show'); renderProductReviews(); showToast('Review submitted successfully.');
+  } catch(e){ showToast('Could not save your review.'); }
+}
+
+</script>
