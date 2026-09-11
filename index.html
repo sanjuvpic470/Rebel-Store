@@ -1486,10 +1486,10 @@ function applySiteContentToDOM() {
   if (document.getElementById('ticker-msg-3')) document.getElementById('ticker-msg-3').innerText = SITE_CONTENT.tickerMsg;
   if (document.getElementById('hero-eyebrow-text')) document.getElementById('hero-eyebrow-text').innerText = SITE_CONTENT.heroEyebrow;
   if (document.getElementById('hero-title-box')) {
-    document.getElementById('hero-title-box').innerHTML = `${SITE_CONTENT.heroT1}<br><span class="fill-yellow">${SITE_CONTENT.heroT2}</span><br><span class="stroke">${SITE_CONTENT.heroT3.split(' ')[0] || ''}</span> ${SITE_CONTENT.heroT3.split(' ').slice(1).join(' ')}`;
+    document.getElementById('hero-title-box').innerHTML = `${escapeHtml(SITE_CONTENT.heroT1)}<br><span class="fill-yellow">${escapeHtml(SITE_CONTENT.heroT2)}</span><br><span class="stroke">${escapeHtml(SITE_CONTENT.heroT3.split(' ')[0] || '')}</span> ${escapeHtml(SITE_CONTENT.heroT3.split(' ').slice(1).join(' '))}`;
   }
   if (document.getElementById('hero-sub-text')) {
-    document.getElementById('hero-sub-text').innerHTML = `${SITE_CONTENT.heroSub} Use code <strong id="hero-coupon-display">${activeOfferCode}</strong> in bag for extra <strong id="hero-discount-display">${activeDiscountPercent}%</strong> off.`;
+    document.getElementById('hero-sub-text').innerHTML = `${escapeHtml(SITE_CONTENT.heroSub)} Use code <strong id="hero-coupon-display">${escapeHtml(activeOfferCode)}</strong> in bag for extra <strong id="hero-discount-display">${Number(activeDiscountPercent)}%</strong> off.`;
   }
   if (document.getElementById('hero-stamp-text')) document.getElementById('hero-stamp-text').innerText = SITE_CONTENT.heroStamp;
   if (document.getElementById('feat-1-title')) document.getElementById('feat-1-title').innerText = SITE_CONTENT.feat1Title;
@@ -1734,100 +1734,63 @@ async function uploadFileToSupabaseStorage(fileInputId, bucketName = 'custom-pri
   const fileInput = document.getElementById(fileInputId);
   if (!fileInput || !fileInput.files || !fileInput.files[0]) return null;
   const file = fileInput.files[0];
-  if (file.size > 5 * 1024 * 1024) {
-    showToast(`File ${file.name} exceeds 5MB limit!`);
-    throw new Error("File exceeds 5MB limit");
-  }
-  const fileExt = file.name.split('.').pop();
-  const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
-  const filePath = `${fileName}`;
-
-  if (supabaseClient) {
-    try {
-      const { data, error } = await supabaseClient.storage.from(bucketName).upload(filePath, file);
-      if (error) throw error;
-      const { data: publicUrlData } = supabaseClient.storage.from(bucketName).getPublicUrl(filePath);
-      return { name: file.name, path: publicUrlData.publicUrl };
-    } catch (err) {
-      console.warn("Storage upload fallback to local URL:", err);
-    }
-  }
-  return { name: file.name, path: URL.createObjectURL(file) };
+  if (file.size > 5 * 1024 * 1024) throw new Error(`File ${file.name} exceeds 5MB limit!`);
+  if (!supabaseClient) throw new Error('Secure storage is unavailable. Please try again.');
+  const allowedTypes = ['image/png', 'image/jpeg', 'image/webp'];
+  if (!allowedTypes.includes(file.type)) throw new Error('Only PNG, JPEG and WebP print files are allowed.');
+  const safeBase = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').slice(-80);
+  const userId = (await supabaseClient.auth.getUser()).data.user?.id;
+  if (!userId) throw new Error('Please login again before uploading print files.');
+  const filePath = `${userId}/${crypto.randomUUID()}_${safeBase}`;
+  const { error } = await supabaseClient.storage.from(bucketName).upload(filePath, file, { contentType: file.type, upsert: false });
+  if (error) throw error;
+  return { name: file.name, path: filePath, bucket: bucketName };
 }
 
+let customOrderSubmitInProgress = false;
+
 async function addCustomOrderToCart() {
-  if (custQty < 2) {
-    showToast('Minimum quantity for custom order is 2!');
-    return;
-  }
-  const garment = document.getElementById('cust-garment').value;
-  showToast('Uploading custom print files to cloud...');
+  if (customOrderSubmitInProgress) { showToast('Custom order is already being added. Please wait...'); return; }
+  if (custQty < 2) { showToast('Minimum quantity for custom order is 2!'); return; }
+  const garment = String(document.getElementById('cust-garment')?.value || '').trim();
+  if (!garment) { showToast('Please select a garment type.'); return; }
+
+  customOrderSubmitInProgress = true;
+  const addCustomBtn = document.querySelector('button[onclick="addCustomOrderToCart()"]');
+  const originalText = addCustomBtn?.innerText || '';
+  if (addCustomBtn) { addCustomBtn.disabled = true; addCustomBtn.innerText = 'ADDING CUSTOM ORDER...'; }
+
+  let uploadedFiles = [];
   try {
+    showToast('Uploading custom print files securely...');
     const frontPrint = await uploadFileToSupabaseStorage('cust-file-front');
+    if (frontPrint) uploadedFiles.push(frontPrint);
     const backPrint = await uploadFileToSupabaseStorage('cust-file-back');
-    
-    if (!frontPrint && !backPrint) {
-      showToast('Please upload at least one print file (Front or Back)!');
-      return;
-    }
-    const customItem = {
-      isCustom: true,
-      title: `Custom ${garment} (${custColor})`,
-      size: custSize,
-      color: custColor,
-      price: custUnitPrice,
-      qty: custQty,
-      prints: { front: frontPrint, back: backPrint },
-      image: frontPrint ? frontPrint.path : (backPrint ? backPrint.path : ''),
+    if (backPrint) uploadedFiles.push(backPrint);
+
+    if (!frontPrint && !backPrint) throw new Error('Please upload at least one print file (Front or Back)!');
+
+    cart.push({
+      isCustom: true, title: `Custom ${garment} (${custColor})`, garment, size: custSize, color: custColor,
+      price: custUnitPrice, qty: custQty, prints: { front: frontPrint, back: backPrint }, image: '',
       stockStatus: { available: true, notes: '' }
-    };
-    cart.push(customItem);
+    });
     localStorage.setItem('rebel_cart', JSON.stringify(cart));
-
-    // Save to Custom Orders History for Admin View
-    const todayStr = new Date().toISOString().split('T')[0];
-    const customRecordId = 'CUST-' + Math.floor(100000 + Math.random() * 900000);
-    const customOrderRecord = {
-      orderId: customRecordId,
-      date: todayStr,
-      customer: {
-        name: loggedInUser ? (loggedInUser.name || loggedInUser.username) : 'Guest Customer',
-        phone: loggedInUser ? (loggedInUser.phone || 'N/A') : 'N/A',
-        address: loggedInUser ? (loggedInUser.address || 'Online Custom Order') : 'Online Custom Order'
-      },
-      title: `Custom ${garment} (${custColor})`,
-      size: custSize,
-      color: custColor,
-      qty: custQty,
-      totalAmount: custUnitPrice * custQty,
-      prints: { front: frontPrint, back: backPrint }
-    };
-    customOrdersHistory.unshift(customOrderRecord);
-    localStorage.setItem('rebel_custom_orders_history', JSON.stringify(customOrdersHistory));
-
-    if (supabaseClient) {
-      try {
-        await supabaseClient.from('custom_orders').insert([{
-          order_id: customRecordId,
-          customer_name: customOrderRecord.customer.name,
-          customer_phone: customOrderRecord.customer.phone,
-          garment: garment,
-          color: custColor,
-          size: custSize,
-          quantity: custQty,
-          total_amount: customOrderRecord.totalAmount,
-          prints: { front: frontPrint, back: backPrint }
-        }]);
-      } catch (err) {
-        console.warn("Supabase custom orders sync warning:", err);
-      }
-    }
-
     updateCartBadge();
     renderCartDrawer();
     showToast('Custom order added to cart successfully!');
   } catch (err) {
-    // Error handled in upload method
+    console.error('Custom order upload failed:', err);
+    // Remove successfully uploaded files if the second upload or cart step fails.
+    for (const file of uploadedFiles) {
+      if (file?.path && supabaseClient) {
+        try { await supabaseClient.storage.from(file.bucket || 'custom-prints').remove([file.path]); } catch (cleanupErr) { console.warn('Print cleanup failed:', cleanupErr); }
+      }
+    }
+    showToast(err?.message || 'Custom print upload failed. Please try again.');
+  } finally {
+    customOrderSubmitInProgress = false;
+    if (addCustomBtn) { addCustomBtn.disabled = false; addCustomBtn.innerText = originalText || 'Add Custom Order →'; }
   }
 }
 
@@ -2080,9 +2043,9 @@ function openWishlistModal() {
       html += `
         <div style="background:#1a1a1d; border:1px solid rgba(242,240,234,0.15); padding:1rem; margin-bottom:1rem; border-radius:4px; display:flex; justify-content:space-between; align-items:center;">
           <div style="display:flex; gap:10px; align-items:center; cursor:pointer;" onclick="closeWishlistModal(); openProductByDetails('', '${item.id}')">
-            ${item.image ? `<img src="${item.image}" style="width:45px; height:45px; object-fit:contain; background:#111; border:1px solid #333;">` : ''}
+            ${item.image ? `<img src="${escapeHtml(item.image)}" style="width:45px; height:45px; object-fit:contain; background:#111; border:1px solid #333;">` : ''}
             <div>
-              <h5 style="font-family:'Archivo Black'; font-size:0.9rem; text-transform:uppercase; color:var(--paper);">${item.title}</h5>
+              <h5 style="font-family:'Archivo Black'; font-size:0.9rem; text-transform:uppercase; color:var(--paper);">${escapeHtml(item.title)}</h5>
               <div style="font-family:'Space Mono'; font-size:0.8rem; color:var(--spray-yellow);">ரூ ${item.price} <span style="font-size:0.65rem; color:var(--grey);">(Click to View)</span></div>
             </div>
           </div>
@@ -2154,9 +2117,9 @@ function renderCartDrawer() {
     div.className = 'cart-item';
     div.innerHTML = `
       <div style="display:flex; gap:10px; align-items:center;">
-        ${item.image ? `<img src="${item.image}" style="width:45px; height:45px; object-fit:contain; background:#111; border:1px solid #333;">` : ''}
+        ${item.image ? `<img src="${escapeHtml(item.image)}" style="width:45px; height:45px; object-fit:contain; background:#111; border:1px solid #333;">` : ''}
         <div>
-          <h5>${item.title}</h5>
+          <h5>${escapeHtml(item.title)}</h5>
           <div class="cart-item-meta">Size: <strong>${item.size}</strong> | Qty: ${item.qty}</div>
           <div class="cart-item-price">ரூ ${itemTotal}</div>
         </div>
@@ -2337,15 +2300,14 @@ async function proceedToPayment() {
   payBtn.disabled = true;
   payBtn.innerText = 'Initializing Secure Payment...';
 
-  const pendingOrder = {
-    billing: billingData,
-    items: [...cart],
-    totalAmount: 0,
-    date: new Date().toISOString().split('T')[0]
-  };
-  localStorage.setItem('rebel_pending_order', JSON.stringify(pendingOrder));
-
   try {
+    // Checkout is account-only. Never create a Razorpay order without a real
+    // Supabase Auth access token.
+    const accessToken = await getAuthenticatedAccessToken();
+    if (!accessToken) {
+      throw new Error('Your login session has expired. Please login again.');
+    }
+
     const checkoutItems = cart.map((item, index) => {
       const qty = Number(item?.qty || 0);
       if (!Number.isInteger(qty) || qty < 1 || qty > 20) {
@@ -2365,33 +2327,45 @@ async function proceedToPayment() {
       }
 
       const resolved = resolveRegularProductFromCatalog(item);
-      if (!resolved.code && !resolved.productId) {
-        throw new Error('A product in your cart could not be matched to the store catalogue. Please remove it and add it again.');
+      if (!resolved.code) {
+        throw new Error(`Product ${index + 1} could not be matched to the store catalogue. Please remove it and add it again.`);
       }
 
       return {
         isCustom: false,
-        product_code: resolved.code || '',
+        product_code: resolved.code,
         product_id: resolved.productId || null,
-        qty
+        qty,
+        size: String(item?.size || '').trim().slice(0, 20),
+        color: String(item?.color || '').trim().slice(0, 40)
       };
     });
 
-    // Never send the browser-calculated amount as the payment authority.
-    const accessToken = await getAuthenticatedAccessToken();
-    const headers = {
-      'Content-Type': 'application/json',
-      'apikey': SUPABASE_ANON_KEY
+    const couponCode = isCouponApplied
+      ? String(activeOfferCode || '').trim().toUpperCase()
+      : '';
+
+    const pendingOrder = {
+      billing: billingData,
+      items: [...cart],
+      totalAmount: 0,
+      date: new Date().toISOString().split('T')[0],
+      couponCode
     };
-    headers['Authorization'] = `Bearer ${accessToken || SUPABASE_ANON_KEY}`;
+    localStorage.setItem('rebel_pending_order', JSON.stringify(pendingOrder));
 
     const response = await fetch(
-      `${SUPABASE_PROJECT_URL}/functions/v1/Create_razorpay_order?v=20260910-2`,
+      `${SUPABASE_PROJECT_URL}/functions/v1/Create_razorpay_order?v=20260910-5`,
       {
         method: 'POST',
-        headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${accessToken}`
+        },
         body: JSON.stringify({
           items: checkoutItems,
+          coupon_code: couponCode,
           receipt: `rebel_receipt_${Date.now()}`
         })
       }
@@ -2405,7 +2379,7 @@ async function proceedToPayment() {
       throw new Error(data?.error || 'Unable to initialize payment right now.');
     }
 
-    pendingOrder.totalAmount = Number(data.amount) / 100;
+    pendingOrder.totalAmount = Number(data.total_amount ?? data.amount / 100);
     localStorage.setItem('rebel_pending_order', JSON.stringify(pendingOrder));
 
     const options = {
@@ -2422,12 +2396,12 @@ async function proceedToPayment() {
         contact: billingData.phone
       },
       theme: { color: '#ffd500' },
-      handler: async function (response) {
+      handler: async function (paymentResponse) {
         try {
           await handleOrderSuccessDirect({
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_signature: response.razorpay_signature
+            razorpay_payment_id: paymentResponse.razorpay_payment_id,
+            razorpay_order_id: paymentResponse.razorpay_order_id,
+            razorpay_signature: paymentResponse.razorpay_signature
           });
         } finally {
           payBtn.disabled = false;
@@ -2454,7 +2428,7 @@ async function proceedToPayment() {
     console.error('Payment Initialization Error:', err);
     payBtn.disabled = false;
     payBtn.innerText = 'Proceed to Payment →';
-    alert('Sorry, we couldn\'t start the payment. Please try again.');
+    alert(err?.message || 'Sorry, we could not start the payment. Please try again.');
   }
 }
 
@@ -2562,7 +2536,7 @@ async function handleOrderSuccessDirect(paymentData) {
 
   if (!savedOrderRaw) {
     console.warn('No pending order found in localStorage.');
-    showToast('Payment received, but no pending order was found. Please contact support.');
+    showToast('Payment received, but the pending order could not be found. Please contact support.');
     return false;
   }
 
@@ -2580,70 +2554,74 @@ async function handleOrderSuccessDirect(paymentData) {
   const razorpaySignature = String(paymentData?.razorpay_signature || '').trim();
 
   if (!razorpayPaymentId || !razorpayOrderId || !razorpaySignature) {
-    console.error('Incomplete Razorpay success response:', {
-      hasPaymentId: !!razorpayPaymentId,
-      hasOrderId: !!razorpayOrderId,
-      hasSignature: !!razorpaySignature
-    });
+    console.error('Incomplete Razorpay success response.');
     showToast('Payment received, but verification details were incomplete. Please contact support.');
     return false;
   }
 
   if (!Array.isArray(savedOrder.items) || savedOrder.items.length === 0) {
-    console.error('Pending order contains no items.');
     showToast('Payment received, but order items were not found. Please contact support.');
     return false;
   }
 
-  showPaymentProcessing('Confirming Your Payment', 'Payment received. Please wait while we securely verify your payment and confirm your order.');
+  showPaymentProcessing(
+    'Confirming Your Payment',
+    'Payment received. Please wait while we securely verify your payment and confirm your order.'
+  );
 
   try {
     const lineItems = savedOrder.items.map((item, index) => {
       const quantity = Number(item?.qty || 0);
-      const rate = Number(item?.price || 0);
-
-      if (!Number.isFinite(quantity) || quantity <= 0) {
+      if (!Number.isInteger(quantity) || quantity <= 0 || quantity > 20) {
         throw new Error(`Invalid quantity for cart item ${index + 1}.`);
       }
 
-      if (!Number.isFinite(rate) || rate < 0) {
-        throw new Error(`Invalid price for cart item ${index + 1}.`);
+      if (isCustomCartItem(item)) {
+        if (quantity < 2) throw new Error('Minimum quantity for custom order is 2.');
+        return {
+          isCustom: true,
+          garment: String(item?.garment || '').trim().slice(0, 60),
+          color: String(item?.color || '').trim().slice(0, 40),
+          size: String(item?.size || '').trim().slice(0, 20),
+          quantity,
+          qty: quantity,
+          prints: item?.prints || null
+        };
+      }
+
+      const resolved = resolveRegularProductFromCatalog(item);
+      if (!resolved.code) {
+        throw new Error(`Regular product ${index + 1} could not be matched to the store catalogue.`);
       }
 
       return {
-        // Optional Zoho Item ID. The backend will resolve/create the Zoho item
-        // by name when this is not present.
-        item_id: String(item?.zoho_item_id || item?.zohoItemId || '').trim(),
-        name: String(item?.title || item?.name || 'Product').trim().slice(0, 100),
-        description: [
-          item?.color ? `Color: ${item.color}` : '',
-          item?.size ? `Size: ${item.size}` : ''
-        ].filter(Boolean).join(' | '),
+        isCustom: false,
+        product_code: resolved.code,
+        product_id: resolved.productId || null,
         quantity,
-        rate
+        qty: quantity,
+        size: String(item?.size || '').trim().slice(0, 20),
+        color: String(item?.color || '').trim().slice(0, 40)
       };
     });
 
     const billing = savedOrder.billing || {};
-    const authenticatedAccessToken = await getAuthenticatedAccessToken();
+    const accessToken = await getAuthenticatedAccessToken();
+    if (!accessToken) throw new Error('Your login session expired during payment verification. Please login again.');
 
     const verifyResponse = await fetch(EDGE_FUNCTION_VERIFY_PAYMENT_URL, {
       method: 'POST',
-      headers: (() => {
-        const headers = {
-          'Content-Type': 'application/json',
-          'apikey': SUPABASE_ANON_KEY
-        };
-        if (authenticatedAccessToken) {
-          headers['Authorization'] = `Bearer ${authenticatedAccessToken}`;
-        }
-        return headers;
-      })(),
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${accessToken}`
+      },
       body: JSON.stringify({
         razorpay_order_id: razorpayOrderId,
         razorpay_payment_id: razorpayPaymentId,
         razorpay_signature: razorpaySignature,
         order_id: razorpayOrderId,
+        coupon_code: String(savedOrder.couponCode || '').trim().toUpperCase(),
         customer: {
           name: String(billing.name || '').trim(),
           email: String(billing.email || '').trim(),
@@ -2658,14 +2636,10 @@ async function handleOrderSuccessDirect(paymentData) {
     });
 
     let verifyData = {};
-    try {
-      verifyData = await verifyResponse.json();
-    } catch (parseError) {
-      verifyData = {};
-    }
+    try { verifyData = await verifyResponse.json(); } catch (_) {}
 
-    if (!verifyResponse.ok || !verifyData.success || verifyData.verified !== true) {
-      console.error('Razorpay/Zoho backend processing failed:', verifyData);
+    if (!verifyResponse.ok || !verifyData?.success || verifyData?.verified !== true) {
+      console.error('Razorpay verification failed:', verifyData);
       hidePaymentProcessing();
       showToast(
         verifyData?.error
@@ -2675,31 +2649,31 @@ async function handleOrderSuccessDirect(paymentData) {
       return false;
     }
 
-    const todayStr = savedOrder.date || new Date().toISOString().split('T')[0];
     const finalOrderId = String(verifyData?.order_id || '').trim();
     if (!finalOrderId) {
-      console.error('Backend verification succeeded without an order_id:', verifyData);
       hidePaymentProcessing();
       showToast('Payment verified, but order ID was not returned. Please contact support.');
       return false;
     }
-    const totalQuantity = savedOrder.items.reduce(
-      (sum, item) => sum + Number(item?.qty || 1),
-      0
-    );
 
+    const todayStr = savedOrder.date || new Date().toISOString().split('T')[0];
+    const totalQuantity = savedOrder.items.reduce((sum, item) => sum + Number(item?.qty || 0), 0);
     const formattedItems = savedOrder.items.map(item => ({
       ...item,
       stockStatus: item.stockStatus || { available: true, notes: '' }
     }));
 
-    ordersHistory.unshift({
+    const displayOrder = {
+      ...savedOrder,
       id: finalOrderId,
+      orderId: finalOrderId,
       date: todayStr,
-      userEmail: billing.email || '',
+      userEmail: billing.email || loggedInUser?.email || '',
       billing,
       totalQty: totalQuantity,
       totalAmount: Number(verifyData?.total_amount ?? savedOrder.totalAmount ?? 0),
+      discountAmount: Number(verifyData?.discount_amount || 0),
+      appliedCoupon: verifyData?.applied_coupon || null,
       items: formattedItems,
       paymentStatus: 'paid',
       paymentId: razorpayPaymentId,
@@ -2708,8 +2682,10 @@ async function handleOrderSuccessDirect(paymentData) {
       zohoInvoiceId: verifyData?.zoho?.invoice_id || null,
       zohoInvoiceNumber: verifyData?.zoho?.invoice_number || null,
       zohoEmailSent: verifyData?.zoho?.email_sent === true
-    });
+    };
 
+    ordersHistory = ordersHistory.filter(o => String(o.id || o.orderId || '') !== finalOrderId);
+    ordersHistory.unshift(displayOrder);
     localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
     localStorage.removeItem('rebel_pending_order');
     cart = [];
@@ -2721,7 +2697,7 @@ async function handleOrderSuccessDirect(paymentData) {
     return true;
   } catch (error) {
     hidePaymentProcessing();
-    console.error('Secure payment verification / Zoho automation error:', error);
+    console.error('Secure payment verification error:', error);
     showToast(
       error?.message
         ? `Payment received, but order processing failed: ${error.message}`
@@ -2810,28 +2786,36 @@ function closeAdminSubPages() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function renderAdminCustomOrdersTable() {
+async function renderAdminCustomOrdersTable() {
   const customTbody = document.getElementById('admin-custom-orders-tbody');
   if (!customTbody) return;
   customTbody.innerHTML = '';
   if (customOrdersHistory.length === 0) {
     customTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--grey);">No custom orders received yet.</td></tr>`;
-  } else {
-    customOrdersHistory.forEach(co => {
-      let printLinks = '';
-      if (co.prints && co.prints.front) printLinks += `<a href="${co.prints.front.path}" target="_blank" download="${co.prints.front.name}" class="preview-link-btn" style="margin:2px; display:inline-block;">📥 Front Print</a>`;
-      if (co.prints && co.prints.back) printLinks += `<a href="${co.prints.back.path}" target="_blank" download="${co.prints.back.name}" class="preview-link-btn" style="margin:2px; display:inline-block;">📥 Back Print</a>`;
-      if (!co.prints || (!co.prints.front && !co.prints.back)) printLinks = 'No files';
-
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><strong>${co.orderId}</strong><br><span style="font-size:0.7rem; color:var(--grey);">${co.date}</span></td>
-        <td><strong>${co.customer.name}</strong><br>${co.customer.phone}<br><span style="font-size:0.7rem; color:var(--grey);">${co.customer.address}</span></td>
-        <td>${co.title}<br>Color: <strong style="color:var(--spray-yellow);">${co.color || 'Black'}</strong> | Size: <strong>${co.size}</strong> (Qty: ${co.qty})<br><span style="color:var(--spray-yellow);">Amt: ரூ ${co.totalAmount}</span></td>
-        <td>${printLinks}</td>
-      `;
-      customTbody.appendChild(tr);
-    });
+    return;
+  }
+  for (const co of customOrdersHistory) {
+    let printLinks = '';
+    for (const [key, label] of [['front','Front Print'],['back','Back Print']]) {
+      const file = co.prints?.[key];
+      if (!file?.path) continue;
+      let href = /^https?:\/\//i.test(String(file.path)) ? String(file.path) : '';
+      if (!href && supabaseClient) {
+        try {
+          const { data, error } = await supabaseClient.storage.from(file.bucket || 'custom-prints').createSignedUrl(file.path, 3600);
+          if (!error) href = data?.signedUrl || '';
+        } catch (err) { console.warn('Signed print URL failed:', err); }
+      }
+      if (href) printLinks += `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer" download="${escapeHtml(file.name || label)}" class="preview-link-btn" style="margin:2px; display:inline-block;">📥 ${escapeHtml(label)}</a>`;
+    }
+    if (!printLinks) printLinks = 'Files unavailable';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${escapeHtml(co.orderId)}</strong><br><span style="font-size:0.7rem; color:var(--grey);">${escapeHtml(co.date)}</span></td>
+      <td><strong>${escapeHtml(co.customer?.name || '')}</strong><br>${escapeHtml(co.customer?.phone || '')}<br><span style="font-size:0.7rem; color:var(--grey);">${escapeHtml(co.customer?.address || '')}</span></td>
+      <td>${escapeHtml(co.title)}<br>Color: <strong style="color:var(--spray-yellow);">${escapeHtml(co.color || 'Black')}</strong> | Size: <strong>${escapeHtml(co.size)}</strong> (Qty: ${escapeHtml(co.qty)})<br><span style="color:var(--spray-yellow);">Amt: ரூ ${Number(co.totalAmount || 0)}</span></td>
+      <td>${printLinks}</td>`;
+    customTbody.appendChild(tr);
   }
 }
 
@@ -3701,7 +3685,9 @@ document.addEventListener('DOMContentLoaded', () => {
   renderStorefront();
   renderAdminPanels();
   loadCategoriesFromCloud();
+  loadOfferSettingsFromCloud();
   loadSiteContentFromCloud();
+  if (loggedInUser) loadCustomerOrdersFromSupabase();
   window.addEventListener('hashchange', handleRouteFromHash);
   handleRouteFromHash();
 
@@ -3762,6 +3748,7 @@ async function hydrateLoggedInUserFromSupabase(authUser, closeModal = false) {
   currentRole = dbProf?.role === 'owner' ? 'owner' : 'customer';
   sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
   updateUserBadgeDisplay();
+  loadCustomerOrdersFromSupabase();
 
   if (closeModal) {
     closeAuthModal();
@@ -3900,14 +3887,49 @@ function renderStaffListDisplay() {
   disp.innerHTML = html;
 }
 
-function saveOfferSettings() {
+async function saveOfferSettings() {
   const codeInput = document.getElementById('adm-offer-code-input').value.trim().toUpperCase();
-  const discInput = parseInt(document.getElementById('adm-offer-disc-input').value) || 16;
+  const discInput = parseInt(document.getElementById('adm-offer-disc-input').value, 10);
   if (!codeInput) { showToast('Enter valid offer code'); return; }
+  if (!Number.isInteger(discInput) || discInput < 0 || discInput > 90) { showToast('Discount must be between 0% and 90%.'); return; }
+  if (currentRole !== 'owner') { showToast('Only the store owner can change offers.'); return; }
+
   activeOfferCode = codeInput;
   activeDiscountPercent = discInput;
   renderStorefront();
+
+  if (!supabaseClient) { showToast('Supabase is not connected.'); return; }
+  const { error } = await supabaseClient.from('store_settings').upsert({
+    key: 'active_offer',
+    value: { code: activeOfferCode, discount_percent: activeDiscountPercent }
+  }, { onConflict: 'key' });
+  if (error) {
+    console.error('Offer save failed:', error);
+    showToast('Offer could not be saved securely.');
+    return;
+  }
   showToast(`Offer updated: '${activeOfferCode}' (${activeDiscountPercent}%)`);
+}
+
+async function loadOfferSettingsFromCloud() {
+  if (!supabaseClient) return;
+  try {
+    const { data, error } = await supabaseClient
+      .from('store_settings')
+      .select('value')
+      .eq('key', 'active_offer')
+      .maybeSingle();
+    if (error || !data?.value) return;
+    const code = String(data.value?.code || '').trim().toUpperCase();
+    const discount = Number(data.value?.discount_percent);
+    if (code && Number.isInteger(discount) && discount >= 0 && discount <= 90) {
+      activeOfferCode = code;
+      activeDiscountPercent = discount;
+      renderStorefront();
+    }
+  } catch (err) {
+    console.warn('Offer settings load skipped:', err);
+  }
 }
 
 function handleAuthClick(e) {
@@ -4367,6 +4389,49 @@ async function saveUserProfileEdits() {
 
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+async function loadCustomerOrdersFromSupabase() {
+  if (!supabaseClient) return;
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) return;
+
+    const { data, error } = await supabaseClient
+      .from('orders')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error || !Array.isArray(data)) {
+      console.warn('Customer order sync skipped:', error?.message || 'No data');
+      return;
+    }
+
+    const cloudOrders = data.map(o => ({
+      id: o.order_id,
+      date: o.created_at ? o.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
+      userEmail: o.customer_email,
+      billing: {
+        name: o.customer_name,
+        phone: o.customer_phone,
+        address: o.customer_address
+      },
+      totalQty: Number(o.total_qty || 0),
+      totalAmount: Number(o.total_amount || 0),
+      items: Array.isArray(o.items) ? o.items : [],
+      paymentStatus: o.payment_status || 'paid',
+      paymentId: o.razorpay_payment_id || 'N/A',
+      orderStatus: o.order_status || 'New'
+    }));
+
+    const localOnly = ordersHistory.filter(local =>
+      !cloudOrders.some(cloud => String(cloud.id) === String(local.id || local.orderId))
+    );
+    ordersHistory = [...cloudOrders, ...localOnly];
+    localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
+  } catch (err) {
+    console.warn('Customer order sync failed:', err);
+  }
 }
 
 function renderOrdersInsideProfile() {
