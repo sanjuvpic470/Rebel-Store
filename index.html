@@ -1350,6 +1350,10 @@ footer a:hover{color:var(--paper)}
           <h2 id="adm-cat-detail-title">Category Products</h2>
           <button class="btn btn--solid" style="padding:.4rem .8rem; font-size:.7rem;" onclick="addProdToCurrentAdminCategory()">+ Add Product</button>
         </div>
+        <div style="background:#0d0d0f; border:1px solid rgba(242,240,234,.12); padding:.8rem 1rem; margin:.8rem 0 1rem; font-family:'Space Mono'; font-size:.68rem; line-height:1.5; color:#cfcfcf;">
+          <strong style="color:var(--spray-yellow);">SECURE PRODUCT DATABASE</strong><br>
+          Product price/MRP are synced to the protected <code>products</code> table. Images sync to <code>product_images</code>. Size/color stock will be connected in the Stock Management phase, so existing products are not accidentally marked out of stock.
+        </div>
         <div id="admin-categories-container" style="display:flex; flex-direction:column; gap:1.5rem;"></div>
         <button class="btn btn--solid" id="save-categories-btn" style="width:100%; justify-content:center; margin-top:2rem;" onclick="saveAllCategoriesAndProducts()">Save Products & Categories 💾</button>
       </div>
@@ -4023,23 +4027,116 @@ function collectCategoryFormValues() {
 
 async function saveAllCategoriesAndProducts() {
   collectCategoryFormValues();
-  localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
-  renderStorefront();
 
   const saveBtn = document.getElementById('save-categories-btn');
-  if(saveBtn) saveBtn.innerText = 'Saving...';
+  const originalText = saveBtn ? saveBtn.innerText : 'Save Products & Categories 💾';
+  if(saveBtn) { saveBtn.disabled = true; saveBtn.innerText = 'Saving securely...'; }
 
+  let secureDbSaved = true;
+  let secureDbCount = 0;
+
+  // New backend source of truth for product records.
+  // IMPORTANT: this does not replace store_categories because the current
+  // storefront still uses that catalogue structure for rendering/category order.
+  // Razorpay continues to use products.price as its authoritative price.
   if (supabaseClient) {
     try {
-      await supabaseClient
-        .from('store_settings')
-        .upsert({ key: 'store_categories', value: CATEGORIES }, { onConflict: 'key' });
+      const { data: existingProducts, error: existingError } = await supabaseClient
+        .from('products')
+        .select('id, product_code, title, price, mrp, active')
+        .limit(1000);
+
+      if (existingError) throw existingError;
+
+      const existingByCode = new Map(
+        (existingProducts || [])
+          .filter(p => p && p.product_code)
+          .map(p => [String(p.product_code).trim().toUpperCase(), p])
+      );
+
+      for (const category of CATEGORIES) {
+        for (const prod of (category.products || [])) {
+          const code = String(prod.code || '').trim().toUpperCase();
+          const title = String(prod.title || '').trim();
+          if (!code || !title) {
+            throw new Error(`Product code/title missing in ${category.name || 'category'}`);
+          }
+
+          const price = Number(prod.price);
+          const mrp = Number(prod.mrp);
+          if (!Number.isFinite(price) || price < 0 || !Number.isFinite(mrp) || mrp < 0 || price > mrp) {
+            throw new Error(`Invalid price/MRP for ${code}`);
+          }
+
+          const existing = existingByCode.get(code);
+
+          // Keep variant stock empty for now unless an admin stock matrix is
+          // explicitly added in the Stock Management phase. This prevents
+          // accidentally turning existing products into zero-stock products.
+          const variants = Array.isArray(prod.stockVariants) ? prod.stockVariants : [];
+
+          // Only send real image URLs; blank placeholders from the legacy
+          // catalogue must not reach the secure RPC.
+          const images = (Array.isArray(prod.images) ? prod.images : [])
+            .map((url, index) => ({ image_url: String(url || '').trim(), sort_order: index, active: true }))
+            .filter(x => x.image_url);
+
+          const { data: savedId, error: saveError } = await supabaseClient.rpc('admin_save_product', {
+            p_product_id: existing?.id || null,
+            p_product_code: code,
+            p_title: title,
+            p_price: price,
+            p_mrp: mrp,
+            p_active: prod.active !== false,
+            p_variants: variants,
+            p_images: images
+          });
+
+          if (saveError) throw saveError;
+
+          // Keep the catalog object's legacy id for storefront routing, but
+          // remember the authoritative Supabase product UUID separately.
+          prod.dbProductId = savedId;
+          prod.code = code;
+          secureDbCount++;
+          existingByCode.set(code, { id: savedId, product_code: code });
+        }
+      }
     } catch (err) {
-      console.warn('Categories cloud sync note:', err);
+      secureDbSaved = false;
+      console.error('Secure product database save failed:', err);
+      showToast('Secure product save failed. Catalogue was not cloud-synced.');
     }
+  } else {
+    secureDbSaved = false;
+    showToast('Supabase is unavailable. Product database was not updated.');
   }
-  showToast('Products saved successfully!');
-  if(saveBtn) saveBtn.innerText = 'Save Products & Categories 💾';
+
+  // Preserve the existing category/catalogue behaviour only after secure
+  // product DB sync succeeds. This keeps the current storefront working while
+  // adding the authoritative backend product records.
+  if (secureDbSaved) {
+    localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
+    renderStorefront();
+
+    if (supabaseClient) {
+      try {
+        const { error: categoryError } = await supabaseClient
+          .from('store_settings')
+          .upsert({ key: 'store_categories', value: CATEGORIES }, { onConflict: 'key' });
+        if (categoryError) throw categoryError;
+      } catch (err) {
+        console.warn('Categories cloud sync note:', err);
+        showToast(`Products saved (${secureDbCount}) but category sync needs retry.`);
+        if(saveBtn) { saveBtn.disabled = false; saveBtn.innerText = originalText; }
+        return;
+      }
+    }
+
+    showToast(`Products saved securely (${secureDbCount}).`);
+  }
+
+  if(saveBtn) { saveBtn.disabled = false; saveBtn.innerText = originalText; }
 }
 
 async function loadCategoriesFromCloud() {
