@@ -2216,7 +2216,7 @@ function openProductByDetails(catName, productId) {
     cBtn.disabled = !isAvailable;
     cBtn.title = isAvailable ? `${col} available` : `${col} unavailable`;
     cBtn.onclick = () => {
-      if (!isAvailable) return;
+      if (cBtn.disabled) return;
       selectedColor = col;
       document.querySelectorAll('#pdp-color-selector .size-btn').forEach(b => b.classList.remove('selected'));
       cBtn.classList.add('selected');
@@ -2243,6 +2243,9 @@ function openProductByDetails(catName, productId) {
     sizeContainer.appendChild(sBtn);
   });
   updatePdpSelectionStatus();
+  // Load authoritative live stock from Supabase after rendering the PDP.
+  // The legacy catalogue only knows which sizes/colors exist; it does not know stock.
+  loadPdpStockForCurrentProduct(foundProd);
 
   const sliderTrack = document.getElementById('slider-track');
   const thumbRow = document.getElementById('thumb-row-container');
@@ -2335,27 +2338,156 @@ function notifyWhenBackInStock() {
   showToast('Notify Me request saved successfully.');
 }
 
+async function loadPdpStockForCurrentProduct(product) {
+  if (!product || !supabaseClient) return;
+  const productCode = String(product.code || '').trim().toUpperCase();
+  if (!productCode) return;
+
+  try {
+    const { data: dbProduct, error: pErr } = await supabaseClient
+      .from('products')
+      .select('id, product_code, active')
+      .eq('product_code', productCode)
+      .eq('active', true)
+      .maybeSingle();
+    if (pErr) throw pErr;
+    if (!dbProduct) throw new Error('Product not found in secure product database');
+
+    currentProduct.dbProductId = dbProduct.id;
+
+    const { data: variants, error: vErr } = await supabaseClient
+      .from('product_variants')
+      .select('id, size, color, stock, active')
+      .eq('product_id', dbProduct.id)
+      .eq('active', true);
+    if (vErr) throw vErr;
+
+    const rows = Array.isArray(variants) ? variants : [];
+    currentProduct.stockVariants = rows;
+
+    // A blank color in the database is the current/default color model.
+    // In that case stock is size-based and applies to the selected catalogue color.
+    // If real color variants exist, use an exact color match first.
+    currentProduct.getStockForSelection = (size, color) => {
+      const wantedSize = String(size || '').trim().toLowerCase();
+      const wantedColor = String(color || '').trim().toLowerCase();
+      const exact = rows.find(v =>
+        String(v.size || '').trim().toLowerCase() === wantedSize &&
+        String(v.color || '').trim().toLowerCase() === wantedColor
+      );
+      if (exact) return Number(exact.stock || 0);
+      const defaultColor = rows.find(v =>
+        String(v.size || '').trim().toLowerCase() === wantedSize &&
+        String(v.color || '').trim() === ''
+      );
+      return defaultColor ? Number(defaultColor.stock || 0) : 0;
+    };
+
+    currentProduct.getAvailableSizesForColor = (color) => {
+      const wantedColor = String(color || '').trim().toLowerCase();
+      const realColorRows = rows.filter(v => String(v.color || '').trim() !== '');
+      return (Array.isArray(currentProduct.sizes) ? currentProduct.sizes : ['S','M','L','XL','XXL'])
+        .filter(size => {
+          const exact = realColorRows.find(v =>
+            String(v.size || '').trim().toLowerCase() === String(size).trim().toLowerCase() &&
+            String(v.color || '').trim().toLowerCase() === wantedColor
+          );
+          if (exact) return Number(exact.stock || 0) > 0;
+          const fallback = rows.find(v =>
+            String(v.size || '').trim().toLowerCase() === String(size).trim().toLowerCase() &&
+            String(v.color || '').trim() === ''
+          );
+          return fallback ? Number(fallback.stock || 0) > 0 : false;
+        });
+    };
+
+    updatePdpSelectionStatus();
+  } catch (err) {
+    console.warn('Live PDP stock load failed:', err);
+    // Do not silently claim stock is available when the authoritative inventory
+    // cannot be read. Keep the product order button disabled until stock loads.
+    currentProduct.stockVariants = [];
+    currentProduct.stockLoadFailed = true;
+    updatePdpSelectionStatus();
+  }
+}
+
+function updatePdpSizeButtons() {
+  if (!currentProduct) return;
+  const buttons = document.querySelectorAll('#pdp-size-selector .size-btn');
+  const hasLiveStock = Array.isArray(currentProduct.stockVariants);
+  buttons.forEach(btn => {
+    const size = String(btn.innerText || '').trim();
+    const stock = hasLiveStock && typeof currentProduct.getStockForSelection === 'function'
+      ? currentProduct.getStockForSelection(size, selectedColor)
+      : 0;
+    const available = hasLiveStock && !currentProduct.stockLoadFailed && stock > 0;
+    btn.disabled = !available;
+    btn.classList.toggle('is-unavailable', !available);
+    btn.classList.toggle('selected', available && size.toLowerCase() === String(selectedSize || '').toLowerCase());
+    btn.title = available ? `${size} available · ${stock} left` : `${size} unavailable`;
+  });
+}
+
 function updatePdpSelectionStatus() {
   const status = document.getElementById('pdp-selection-status');
   const stockText = document.getElementById('pdp-stock-text');
   const dot = document.querySelector('#pdp-stock-note .pdp-stock-dot');
   if (!status || !stockText || !currentProduct) return;
-  const sizes = Array.isArray(currentProduct.availableSizes) ? currentProduct.availableSizes : ((currentProduct.sizes && currentProduct.sizes.length) ? currentProduct.sizes : ['S','M','L','XL']);
-  const colors = Array.isArray(currentProduct.availableColors) ? currentProduct.availableColors : ((currentProduct.colors && currentProduct.colors.length) ? currentProduct.colors : ['Yellow','White']);
-  const sizeOk = sizes.includes(selectedSize);
-  const colorOk = colors.includes(selectedColor);
+
+  const sizes = Array.isArray(currentProduct.sizes) && currentProduct.sizes.length
+    ? currentProduct.sizes
+    : ['S','M','L','XL','XXL'];
+  const colors = Array.isArray(currentProduct.colors) && currentProduct.colors.length
+    ? currentProduct.colors
+    : ['Yellow','White'];
+
   status.innerHTML = `Selected: <strong>${selectedSize || '—'}</strong> · <strong>${selectedColor || '—'}</strong>`;
-  const available = sizeOk && colorOk;
-  stockText.innerText = available ? 'In Stock · Ready to Order' : 'Currently Unavailable';
-  dot.classList.toggle('out', !available);
-  dot.classList.toggle('low', available && sizes.length === 1);
+
+  const hasLiveStock = Array.isArray(currentProduct.stockVariants);
+  const selectedStock = hasLiveStock && !currentProduct.stockLoadFailed && typeof currentProduct.getStockForSelection === 'function'
+    ? currentProduct.getStockForSelection(selectedSize, selectedColor)
+    : 0;
+  const availableSizes = hasLiveStock && !currentProduct.stockLoadFailed && typeof currentProduct.getAvailableSizesForColor === 'function'
+    ? currentProduct.getAvailableSizesForColor(selectedColor)
+    : [];
+  const available = hasLiveStock && !currentProduct.stockLoadFailed && selectedStock > 0;
+
+  updatePdpSizeButtons();
+
+  if (!hasLiveStock) {
+    stockText.innerText = 'Checking live stock…';
+  } else if (currentProduct.stockLoadFailed) {
+    stockText.innerText = 'Stock unavailable · Please refresh';
+  } else if (available) {
+    stockText.innerText = selectedStock <= 3 ? `Only ${selectedStock} left · Ready to Order` : 'In Stock · Ready to Order';
+  } else {
+    stockText.innerText = 'Currently Unavailable';
+  }
+
+  if (dot) {
+    dot.classList.toggle('out', !available);
+    dot.classList.toggle('low', available && selectedStock <= 3);
+  }
+
   const addBtn = document.getElementById('add-btn');
   const notifyBtn = document.getElementById('notify-stock-btn');
   const notifyNote = document.getElementById('notify-stock-note');
   const countBadge = document.getElementById('pdp-stock-count');
-  if (countBadge) countBadge.innerText = available ? `${sizes.length} size${sizes.length === 1 ? '' : 's'} available` : 'Sold out';
-  if (addBtn) { addBtn.disabled = !available; addBtn.style.opacity = available ? '1' : '.5'; addBtn.style.cursor = available ? 'pointer' : 'not-allowed'; }
-  if (notifyBtn) notifyBtn.style.display = available ? 'none' : 'block';
+
+  if (countBadge) {
+    countBadge.innerText = hasLiveStock && !currentProduct.stockLoadFailed
+      ? `${availableSizes.length} size${availableSizes.length === 1 ? '' : 's'} available`
+      : 'Checking stock';
+  }
+
+  const qtyAllowed = available && selectedQty <= selectedStock;
+  if (addBtn) {
+    addBtn.disabled = !qtyAllowed;
+    addBtn.style.opacity = qtyAllowed ? '1' : '.5';
+    addBtn.style.cursor = qtyAllowed ? 'pointer' : 'not-allowed';
+  }
+  if (notifyBtn) notifyBtn.style.display = (hasLiveStock && !currentProduct.stockLoadFailed && !available) ? 'block' : 'none';
   if (notifyNote && available) notifyNote.style.display = 'none';
 }
 
@@ -2375,13 +2507,37 @@ function selectSize(btn, size) {
 function changeQty(amount) {
   selectedQty += amount;
   if (selectedQty < 1) selectedQty = 1;
+  if (currentProduct && Array.isArray(currentProduct.stockVariants) && typeof currentProduct.getStockForSelection === 'function' && !currentProduct.stockLoadFailed) {
+    const stock = currentProduct.getStockForSelection(selectedSize, selectedColor);
+    if (selectedQty > stock) selectedQty = Math.max(1, stock);
+  }
   document.getElementById('pdp-qty').innerText = selectedQty;
   if(currentProduct) {
     document.getElementById('add-btn').innerText = `Add to Cart — ரூ ${currentProduct.price * selectedQty}`;
   }
+  updatePdpSelectionStatus();
 }
 
 function addToCart() {
+  if (!currentProduct) return;
+  if (!Array.isArray(currentProduct.stockVariants) || currentProduct.stockLoadFailed || typeof currentProduct.getStockForSelection !== 'function') {
+    showToast('Live stock is not available yet. Please refresh and try again.');
+    return;
+  }
+  const liveStock = currentProduct.getStockForSelection(selectedSize, selectedColor);
+  if (liveStock <= 0) {
+    showToast('Selected size is out of stock.');
+    updatePdpSelectionStatus();
+    return;
+  }
+  if (selectedQty > liveStock) {
+    showToast(`Only ${liveStock} available for ${selectedSize}.`);
+    selectedQty = liveStock;
+    const qtyEl = document.getElementById('pdp-qty');
+    if (qtyEl) qtyEl.innerText = String(selectedQty);
+    updatePdpSelectionStatus();
+    return;
+  }
   let productImg = '';
   if (currentProduct.images && currentProduct.images[0] && currentProduct.images[0].trim() !== '') {
     productImg = currentProduct.images[0].trim();
