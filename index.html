@@ -503,7 +503,7 @@ footer a:hover{color:var(--paper)}
         <div class="user-dropdown-item" onclick="logoutUser()" style="color:var(--rebel-red);">🚪 Logout</div>
       </div>
       <button class="wishlist-icon-btn" onclick="openWishlistModal()" title="View Wishlist">❤️</button>
-      <button class="cart-btn" onclick="toggleCartDrawer(true)">Cart (<span id="cart-count">0</span>)</button>
+      <button class="cart-btn" onclick="toggleCartDrawer(true)">Cart (<span id="cart-count-header">0</span>)</button>
     </div>
   </header>
 
@@ -683,7 +683,7 @@ footer a:hover{color:var(--paper)}
         <div class="pdp-size-guide">
           <div class="pdp-size-guide-text"><strong>Not sure about your size?</strong>Check the measurements before ordering.</div>
           <button type="button" class="size-chart-btn" onclick="openSizeChart()">Size Chart ↗</button>
-          <button type="button" class="fit-finder-btn" onclick="openFitFinder()">👕 Find My T-Shirt Size</button>
+          <button type="button" id="fit-finder-open-btn" class="fit-finder-btn">👕 Find My T-Shirt Size</button>
         </div>
         <span class="option-label">Select Color (Default: Yellow & White)</span>
         <div class="size-selector" id="pdp-color-selector"></div>
@@ -827,7 +827,7 @@ footer a:hover{color:var(--paper)}
   <div class="cart-overlay" id="cart-overlay" onclick="toggleCartDrawer(false)"></div>
   <aside class="cart-drawer" id="cart-drawer">
     <div class="cart-header">
-      <h3>Your Bag (<span id="cart-count">0</span>)</h3>
+      <h3>Your Bag (<span id="cart-count-drawer">0</span>)</h3>
       <button class="cart-close-btn" onclick="toggleCartDrawer(false)">×</button>
     </div>
     <div class="cart-items-list" id="cart-items-list"></div>
@@ -1545,8 +1545,8 @@ footer a:hover{color:var(--paper)}
         <div>
           <h5 style="display:block; margin-bottom:0.8rem; font-family:'Space Mono'; color:var(--spray-yellow);">Follow</h5>
           <ul>
-            <li><a href="#" target="_blank">Instagram</a></li>
-            <li><a href="#" target="_blank">TikTok</a></li>
+            <li><a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+            <li><a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer">TikTok</a></li>
           </ul>
         </div>
       </div>
@@ -2459,6 +2459,19 @@ async function loadPdpStockForCurrentProduct(product) {
 
     const rows = Array.isArray(variants) ? variants : [];
     currentProduct.stockVariants = rows;
+    // Merge authoritative live variant sizes into the catalogue so newly added
+    // sizes (for example XXL) appear on the PDP without requiring a hardcoded list.
+    const liveSizes = rows.map(v => String(v.size || '').trim()).filter(Boolean);
+    if (liveSizes.length) {
+      const existingSizes = Array.isArray(currentProduct.sizes) ? currentProduct.sizes.map(String) : [];
+      const merged = [...existingSizes];
+      liveSizes.forEach(sz => {
+        if (!merged.some(x => x.trim().toLowerCase() === sz.toLowerCase())) merged.push(sz);
+      });
+      const order = ['XS','S','M','L','XL','XXL','3XL','4XL','5XL'];
+      merged.sort((a,b) => { const ai=order.indexOf(a.toUpperCase()), bi=order.indexOf(b.toUpperCase()); return (ai<0?999:ai)-(bi<0?999:bi); });
+      currentProduct.sizes = merged;
+    }
 
     // A blank color in the database is the current/default color model.
     // In that case stock is size-based and applies to the selected catalogue color.
@@ -2496,6 +2509,22 @@ async function loadPdpStockForCurrentProduct(product) {
         });
     };
 
+    // Add any newly discovered live sizes to the PDP selector.
+    const sizeContainer = document.getElementById('pdp-size-selector');
+    if (sizeContainer) {
+      const existing = new Set([...sizeContainer.querySelectorAll('.size-btn')].map(b => String(b.innerText || '').trim().toLowerCase()));
+      (currentProduct.sizes || []).forEach(sz => {
+        const key = String(sz).trim().toLowerCase();
+        if (!key || existing.has(key)) return;
+        const sBtn = document.createElement('button');
+        sBtn.type = 'button';
+        sBtn.className = 'size-btn';
+        sBtn.innerText = sz;
+        sBtn.onclick = () => { if (!sBtn.disabled) selectSize(sBtn, sz); };
+        sizeContainer.appendChild(sBtn);
+      });
+    }
+    if (!currentProduct.sizes.includes(selectedSize)) selectedSize = currentProduct.sizes[0] || 'S';
     updatePdpSelectionStatus();
   } catch (err) {
     console.warn('Live PDP stock load failed:', err);
@@ -2572,7 +2601,7 @@ function updatePdpSelectionStatus() {
 
   if (countBadge) {
     countBadge.innerText = hasLiveStock && !currentProduct.stockLoadFailed
-      ? `${availableSizes.length} size${availableSizes.length === 1 ? '' : 's'} available`
+      ? (selectedStock > 0 ? `${selectedStock} available` : 'Out of stock')
       : 'Checking stock';
   }
 
@@ -2800,8 +2829,7 @@ function toggleFaq(btn) {
 function updateCartBadge() {
   const currentCart = Array.isArray(cart) ? cart : [];
   const totalItems = currentCart.reduce((sum, item) => sum + Number(item.qty || 0), 0);
-  const cartCountEl = document.getElementById('cart-count');
-  if (cartCountEl) cartCountEl.innerText = totalItems;
+  document.querySelectorAll('#cart-count-header, #cart-count-drawer').forEach(el => { el.innerText = totalItems; });
 }
 
 function applyCoupon() {
@@ -5781,6 +5809,7 @@ if(typeof window!=='undefined'){window.openOffersPanel=openOffersPanel;window.cl
 
 
 
+<script id="rebel-fit-finder-js">
 /* ============================================================
    REBEL STORE — FIND MY T-SHIRT SIZE
    Frontend-only estimator using product garment chart + live stock.
@@ -5789,7 +5818,7 @@ if(typeof window!=='undefined'){window.openOffersPanel=openOffersPanel;window.cl
 let fitFinderPreference = 'regular';
 let fitFinderLastResult = null;
 
-function openFitFinder(){
+window.openFitFinder=function(){
   const modal=document.getElementById('fit-finder-modal');
   if(!modal) return;
   modal.style.display='flex';
@@ -5820,7 +5849,9 @@ function fitFinderChartForProduct(){
   if(Array.isArray(raw) && raw.length){
     return raw.map(x=>({size:String(x.size||''),chest:Number(x.chest||x.width||0),length:Number(x.length||0),shoulder:Number(x.shoulder||0)})).filter(x=>x.size&&x.chest);
   }
-  return fallback.filter(x=>!Array.isArray(currentProduct?.sizes)||currentProduct.sizes.length===0||currentProduct.sizes.map(String).includes(x.size));
+  const sizes = new Set((currentProduct?.sizes || []).map(x => String(x).trim().toUpperCase()));
+  if (Array.isArray(currentProduct?.stockVariants)) currentProduct.stockVariants.forEach(v => { const s=String(v.size||'').trim().toUpperCase(); if(s) sizes.add(s); });
+  return fallback.filter(x=>sizes.size===0 || sizes.has(x.size.toUpperCase()));
 }
 function fitFinderLiveStock(size){
   if(currentProduct && Array.isArray(currentProduct.stockVariants) && typeof currentProduct.getStockForSelection==='function' && !currentProduct.stockLoadFailed){
@@ -5883,7 +5914,23 @@ function useFitFinderSize(){
 }
 window.addEventListener('keydown',e=>{if(e.key==='Escape'){const m=document.getElementById('fit-finder-modal');if(m&&m.style.display==='flex')closeFitFinder();}});
 
-</body>
+/* Reliable click binding: avoids inline-handler/CSP/theme conflicts. */
+(function(){
+  function bindFitFinderButton(){
+    const btn=document.getElementById('fit-finder-open-btn');
+    if(!btn || btn.dataset.fitFinderBound==='1') return;
+    btn.dataset.fitFinderBound='1';
+    btn.addEventListener('click',function(e){
+      e.preventDefault(); e.stopPropagation();
+      if(typeof window.openFitFinder==='function') window.openFitFinder();
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bindFitFinderButton);
+  else bindFitFinderButton();
+})();
+
+</script>
+
 
 <script id="rebel-master-features-js">
 (function(){
@@ -5925,7 +5972,6 @@ window.addEventListener('keydown',e=>{if(e.key==='Escape'){const m=document.getE
 })();
 </script>
 
-</html>
 <script>document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSizeChart();});
 // PHASE 3 — CUSTOMER REVIEWS / RATINGS
 let selectedReviewRating = 0;
@@ -5968,3 +6014,6 @@ function submitProductReview(){
 }
 
 </script>
+
+</body>
+</html>
