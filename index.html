@@ -1854,7 +1854,8 @@ function updateUserBadgeDisplay() {
   if (!nameEl || !iconEl) return;
 
   if (loggedInUser && loggedInUser.avatarUrl) {
-    iconEl.innerHTML = `<img src="${loggedInUser.avatarUrl}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+    const avatarUrl = safeMediaUrl(loggedInUser.avatarUrl);
+    iconEl.innerHTML = avatarUrl ? `<img src="${escapeHtml(avatarUrl)}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">` : `👤`;
   } else {
     iconEl.innerHTML = `👤`;
   }
@@ -2075,9 +2076,9 @@ function updateCustomOrderGarmentDropdown() {
 
 function createProductCard(catName, prod, index) {
   const rawImages = (prod.images && prod.images.length > 0) ? prod.images.filter(img => img && img.trim() !== '') : [];
-  const firstImg = rawImages[0] || '';
-  const swatchStyle = firstImg ? `background-image: url('${firstImg}');` : '';
-  const swatchText = firstImg ? '' : prod.code;
+  const firstImg = safeMediaUrl(rawImages[0] || '');
+  const swatchStyle = firstImg ? `background-image: url('${escapeHtml(firstImg)}');` : '';
+  const swatchText = firstImg ? '' : escapeHtml(prod.code);
   const card = document.createElement('div');
   card.className = 'card';
   card.onclick = () => openProductByDetails(catName, prod.id);
@@ -2085,12 +2086,12 @@ function createProductCard(catName, prod, index) {
     <span class="card__tag">Drop 0${index+1} · In Stock</span>
     <div class="tee-swatch swatch-${(index%3)+1}" style="${swatchStyle}">${swatchText}</div>
     <div class="card-text-area">
-      <h3>${prod.title}</h3>
-      <p>${prod.desc}</p>
+      <h3>${escapeHtml(prod.title)}</h3>
+      <p>${escapeHtml(prod.desc)}</p>
     </div>
     <div class="price-box">
-      <span class="price-cut">ரூ ${prod.mrp}</span>
-      <span class="price-curr">ரூ ${prod.price}</span>
+      <span class="price-cut">ரூ ${Number(prod.mrp) || 0}</span>
+      <span class="price-curr">ரூ ${Number(prod.price) || 0}</span>
       <span class="badge-off">33% OFF</span>
     </div>
     <span class="card-click-hint">View Product →</span>
@@ -2351,14 +2352,14 @@ function openProductByDetails(catName, productId) {
   const validImages = rawImages.length > 0 ? rawImages : [''];
 
   validImages.forEach((imgUrl, idx) => {
-    const cleanUrl = imgUrl ? imgUrl.trim() : '';
+    const cleanUrl = safeMediaUrl(imgUrl);
 
     const slideDiv = document.createElement('div');
     slideDiv.className = 'slide-item';
     if (cleanUrl) {
-      slideDiv.innerHTML = `<img src="${cleanUrl}" alt="${foundProd.title}"><button type="button" class="pdp-zoom-btn" onclick="event.stopPropagation(); openProductImageZoom()">Zoom ↗</button>`;
+      slideDiv.innerHTML = `<img src="${escapeHtml(cleanUrl)}" alt="${escapeHtml(foundProd.title)}"><button type="button" class="pdp-zoom-btn" onclick="event.stopPropagation(); openProductImageZoom()">Zoom ↗</button>`;
     } else {
-      slideDiv.innerHTML = `<div class="big-preview-text">${foundProd.code} [${idx+1}]</div>`;
+      slideDiv.innerHTML = `<div class="big-preview-text">${escapeHtml(foundProd.code)} [${idx+1}]</div>`;
     }
     sliderTrack.appendChild(slideDiv);
 
@@ -2367,7 +2368,7 @@ function openProductByDetails(catName, productId) {
     thumbDiv.onclick = () => goToSlide(idx);
     
     if (cleanUrl) {
-      thumbDiv.innerHTML = `<img src="${cleanUrl}" alt="Thumb ${idx+1}">`;
+      thumbDiv.innerHTML = `<img src="${escapeHtml(cleanUrl)}" alt="Thumb ${idx+1}">`;
     } else {
       thumbDiv.innerHTML = `<span class="thumb-title">0${idx+1}</span>`;
     }
@@ -3601,15 +3602,15 @@ async function loadAdminWishlistFromSupabase() {
     data.forEach(item => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td><strong>${item.user_id}</strong></td>
-        <td>${item.customer_name || 'Customer'}</td>
+        <td><strong>${escapeHtml(item.user_id)}</strong></td>
+        <td>${escapeHtml(item.customer_name || 'Customer')}</td>
         <td>
           <div style="display:flex; align-items:center; gap:8px;">
-            ${item.product_image ? `<img src="${item.product_image}" style="width:35px; height:35px; object-fit:contain; background:#111; border:1px solid #333;">` : ''}
-            <span>${item.product_name}</span>
+            ${safeMediaUrl(item.product_image) ? `<img src="${escapeHtml(safeMediaUrl(item.product_image))}" style="width:35px; height:35px; object-fit:contain; background:#111; border:1px solid #333;">` : ''}
+            <span>${escapeHtml(item.product_name)}</span>
           </div>
         </td>
-        <td style="color:var(--spray-yellow);">ரூ ${item.product_price}</td>
+        <td style="color:var(--spray-yellow);">ரூ ${Number(item.product_price) || 0}</td>
         <td>${item.created_at ? new Date(item.created_at).toLocaleString() : 'N/A'}</td>
       `;
       tbody.appendChild(tr);
@@ -3693,10 +3694,10 @@ function renderTrashBinTable() {
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td><strong>${ord.id}</strong><br><span style="font-size:0.7rem; color:var(--grey);">Placed: ${ord.date}</span></td>
-      <td>${ord.billing.name}</td>
-      <td style="color:var(--spray-yellow);">ரூ ${ord.totalAmount}</td>
-      <td style="font-size:0.75rem; color:var(--rebel-red);">${ord.deletedAt ? ord.deletedAt.split('T')[0] : 'N/A'}<br><strong>(${daysLeft})</strong></td>
+      <td><strong>${escapeHtml(ord.id)}</strong><br><span style="font-size:0.7rem; color:var(--grey);">Placed: ${escapeHtml(ord.date)}</span></td>
+      <td>${escapeHtml(ord.billing?.name || 'Customer')}</td>
+      <td style="color:var(--spray-yellow);">ரூ ${Number(ord.totalAmount) || 0}</td>
+      <td style="font-size:0.75rem; color:var(--rebel-red);">${escapeHtml(ord.deletedAt ? ord.deletedAt.split('T')[0] : 'N/A')}<br><strong>(${escapeHtml(daysLeft)})</strong></td>
       <td>
         <button class="preview-link-btn" style="background:#22c55e; color:#fff; margin-right:4px;" onclick="restoreOrderFromTrash('${ord.id}')">Restore ♻️</button>
         <button class="preview-link-btn" style="background:var(--rebel-red); color:#fff;" onclick="permanentlyDeleteOrder('${ord.id}')">Delete ❌</button>
@@ -3776,11 +3777,11 @@ async function loadAdminDataFromSupabase() {
         usersData.forEach(u => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
-            <td>${u.created_at ? u.created_at.split('T')[0] : 'N/A'}</td>
-            <td><strong>${u.name || 'User'}</strong></td>
-            <td>${u.email || '-'}</td>
-            <td>${u.phone || 'Not Provided'}</td>
-            <td style="color:var(--spray-yellow);">@${u.username || 'customer'}</td>
+            <td>${escapeHtml(u.created_at ? u.created_at.split('T')[0] : 'N/A')}</td>
+            <td><strong>${escapeHtml(u.name || 'User')}</strong></td>
+            <td>${escapeHtml(u.email || '-')}</td>
+            <td>${escapeHtml(u.phone || 'Not Provided')}</td>
+            <td style="color:var(--spray-yellow);">@${escapeHtml(u.username || 'customer')}</td>
           `;
           custTbody.appendChild(tr);
         });
@@ -3930,7 +3931,8 @@ function renderAdminPanels(filterDate = '') {
       
       if (ord.items && Array.isArray(ord.items)) {
         ord.items.forEach((it, itIdx) => {
-          let imgHtml = it.image ? `<img src="${it.image}" style="width:40px; height:40px; object-fit:contain; background:#111; border:1px solid #333; border-radius:2px; display:inline-block; vertical-align:middle; margin-right:8px;">` : '';
+          let safeItemImage = safeMediaUrl(it.image);
+          let imgHtml = safeItemImage ? `<img src="${escapeHtml(safeItemImage)}" style="width:40px; height:40px; object-fit:contain; background:#111; border:1px solid #333; border-radius:2px; display:inline-block; vertical-align:middle; margin-right:8px;">` : '';
           let printSpec = it.isCustom ? '<span style="color:var(--spray-yellow); font-size:0.7rem;">[Custom Order]</span>' : '';
           let st = it.stockStatus || { available: true, notes: '' };
 
@@ -3939,8 +3941,8 @@ function renderAdminPanels(filterDate = '') {
               <div style="display:flex; align-items:center; gap:8px;">
                 ${imgHtml}
                 <div>
-                  <strong>${it.title}</strong> ${printSpec}<br>
-                  <span style="font-size:0.75rem; color:var(--grey);">Size: <strong style="color:var(--spray-yellow);">${it.size}</strong> | Qty: ${it.qty} | Price: ரூ ${it.price}</span>
+                  <strong>${escapeHtml(it.title || 'Product')}</strong> ${printSpec}<br>
+                  <span style="font-size:0.75rem; color:var(--grey);">Size: <strong style="color:var(--spray-yellow);">${escapeHtml(it.size || '-')}</strong> | Qty: ${Number(it.qty) || 0} | Price: ரூ ${Number(it.price) || 0}</span>
                 </div>
               </div>
               <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin-left:48px;">
@@ -3988,16 +3990,16 @@ function renderAdminPanels(filterDate = '') {
       tr.style.cursor = 'pointer';
       tr.onclick = (e) => toggleOrderExpand(e, ord.id);
       tr.innerHTML = `
-        <td><strong>${ord.id}</strong><br><span style="font-size:0.7rem; color:var(--grey);">${ord.date}</span></td>
-        <td><strong>${ord.billing.name}</strong><br>${ord.billing.phone}</td>
+        <td><strong>${escapeHtml(ord.id)}</strong><br><span style="font-size:0.7rem; color:var(--grey);">${escapeHtml(ord.date)}</span></td>
+        <td><strong>${escapeHtml(ord.billing?.name || 'Customer')}</strong><br>${escapeHtml(ord.billing?.phone || '')}</td>
         <td>
           ${itemsSummaryHtml} <span style="font-size:0.7rem; color:var(--spray-yellow);">(Click row to expand)</span>
           <div id="order-detail-${ord.id}" style="display:none; margin-top:10px; background:#18181b; padding:12px; border:1px solid rgba(242,240,234,0.2);">
-            <div style="font-size:0.75rem; color:var(--spray-yellow); margin-bottom:8px;"><strong>Full Address:</strong> ${ord.billing.address}</div>
+            <div style="font-size:0.75rem; color:var(--spray-yellow); margin-bottom:8px;"><strong>Full Address:</strong> ${escapeHtml(ord.billing?.address || '')}</div>
             <div>${itemsDetailedHtml}</div>
           </div>
         </td>
-        <td style="color:var(--spray-yellow); font-weight:bold;">ரூ ${ord.totalAmount}<br><span style="background:rgba(34,197,94,0.2); color:#22c55e; padding:1px 5px; font-size:0.65rem; border-radius:2px;">${ord.paymentStatus}</span></td>
+        <td style="color:var(--spray-yellow); font-weight:bold;">ரூ ${ord.totalAmount}<br><span style="background:rgba(34,197,94,0.2); color:#22c55e; padding:1px 5px; font-size:0.65rem; border-radius:2px;">${escapeHtml(ord.paymentStatus || 'paid')}</span></td>
         <td>${actionColHtml}</td>
       `;
       chartTbody.appendChild(tr);
@@ -4134,7 +4136,7 @@ function renderAdminCategoriesMainGrid() {
     card.draggable = true;
     card.dataset.index = index;
     card.innerHTML = `
-      <h3 onclick="openAdminCategoryProducts('${cat.name}')">${cat.name}</h3>
+      <h3 onclick="openAdminCategoryProducts('${escapeHtml(cat.name)}')">${escapeHtml(cat.name)}</h3>
       <div class="drag-handle">☰ Drag to Reorder</div>
     `;
     card.addEventListener('dragstart', (e) => {
@@ -5391,6 +5393,18 @@ function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+function safeMediaUrl(value) {
+  const raw = String(value ?? '').trim();
+  if (!raw) return '';
+  try {
+    const u = new URL(raw, window.location.href);
+    const allowed = u.protocol === 'https:' || u.protocol === 'http:';
+    return allowed ? u.href : '';
+  } catch (_) {
+    return '';
+  }
+}
+
 async function loadCustomerOrdersFromSupabase() {
   if (!supabaseClient) return;
   try {
@@ -5904,7 +5918,7 @@ function calculateFitFinder(){
   document.getElementById('fit-finder-result-copy').innerText=`Based on ${h} cm / ${w} kg, ${build} build and a ${fitFinderPreference} preference, we target about ${targetChest.toFixed(1)}" of garment chest. ${chestCm>0?'Your chest measurement was used directly.':'Chest was estimated because you did not enter a chest measurement.'}`;
   const warning=document.getElementById('fit-finder-result-warning');
   warning.innerText=rec?.available ? (exactIdeal?'This is an in-stock match.':'This is the closest in-stock match to your profile.') : 'Your closest size is currently out of stock. Choose another available size from the table or use Notify Me.';
-  const body=document.getElementById('fit-finder-chart-body'); body.innerHTML=available.map(r=>`<tr class="${r.size===rec?.size?'recommended':''}"><td>${r.size}</td><td>${r.chest}"</td><td>${r.length}"</td><td>${r.stock>0?r.stock+' left':'Out'}</td></tr>`).join('');
+  const body=document.getElementById('fit-finder-chart-body'); body.innerHTML=available.map(r=>`<tr class="${r.size===rec?.size?'recommended':''}"><td>${escapeHtml(r.size)}</td><td>${Number(r.chest)}"</td><td>${Number(r.length)}"</td><td>${r.stock>0?r.stock+' left':'Out'}</td></tr>`).join('');
 }
 function useFitFinderSize(){
   const size=fitFinderLastResult?.rec?.size; if(!size||!currentProduct) return;
