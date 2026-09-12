@@ -429,6 +429,42 @@ footer a:hover{color:var(--paper)}
 @media(max-width:520px){.master-modal{padding:8px}.master-modal-card{padding:16px}.master-grid,.master-membership,.master-admin-grid{grid-template-columns:1fr}.master-title{font-size:.95rem}}
 </style>
 
+
+<style id="rebel-fit-finder-css">
+.fit-finder-btn{margin-top:.7rem;border:1px solid var(--spray-yellow);background:transparent;color:#fff;padding:.75rem 1rem;font-family:'Space Mono',monospace;font-size:.72rem;font-weight:700;cursor:pointer;box-shadow:3px 3px 0 var(--spray-yellow);text-transform:uppercase}
+.fit-finder-btn:hover{background:var(--spray-yellow);color:#111}
+.fit-finder-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:10020;align-items:center;justify-content:center;padding:18px}
+.fit-finder-box{width:min(760px,96vw);max-height:92vh;overflow:auto;background:#17171a;border:1px solid #555;box-shadow:8px 8px 0 var(--spray-yellow);padding:24px;color:#fff}
+.fit-finder-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-bottom:1px solid #333;padding-bottom:14px;margin-bottom:18px}
+.fit-finder-head h3{margin:0;font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.06em}
+.fit-finder-step{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--spray-yellow);white-space:nowrap}
+.fit-finder-close{border:1px solid #777;background:#111;color:#fff;font-size:1.4rem;width:38px;height:38px;cursor:pointer}
+.fit-finder-intro{font-family:'Space Mono',monospace;font-size:.78rem;line-height:1.6;color:#bbb;margin-bottom:18px}
+.fit-finder-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fit-finder-field{border:1px solid #333;background:#101012;padding:14px}
+.fit-finder-field.full{grid-column:1/-1}
+.fit-finder-label{display:block;font-family:'Space Mono',monospace;font-size:.72rem;font-weight:700;color:var(--spray-yellow);margin-bottom:8px;text-transform:uppercase}
+.fit-finder-field input,.fit-finder-field select{width:100%;box-sizing:border-box;background:#18181b;color:#fff;border:1px solid #555;padding:12px;font-family:'Space Mono',monospace;font-size:.85rem}
+.fit-finder-help{font-family:'Space Mono',monospace;color:#888;font-size:.66rem;line-height:1.5;margin-top:7px}
+.fit-finder-options{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.fit-finder-option{border:1px solid #555;background:#111;color:#fff;padding:12px 8px;cursor:pointer;font-family:'Space Mono',monospace;font-size:.7rem;font-weight:700;text-align:center}
+.fit-finder-option.active{background:var(--spray-yellow);color:#111;border-color:var(--spray-yellow);box-shadow:3px 3px 0 #fff}
+.fit-finder-actions{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
+.fit-finder-primary,.fit-finder-secondary{border:1px solid var(--spray-yellow);padding:12px 18px;font-family:'Space Mono',monospace;font-weight:700;cursor:pointer}
+.fit-finder-primary{background:var(--spray-yellow);color:#111}.fit-finder-secondary{background:transparent;color:#fff}
+.fit-finder-result{display:none;border:1px solid var(--spray-yellow);background:#101012;padding:18px;margin-top:18px}
+.fit-finder-result.show{display:block}
+.fit-finder-result-kicker{font-family:'Space Mono',monospace;color:var(--spray-yellow);font-size:.7rem}
+.fit-finder-result-size{font-family:'Bebas Neue',sans-serif;font-size:4rem;line-height:1;margin:5px 0}
+.fit-finder-result-title{font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;margin-bottom:12px}
+.fit-finder-result-copy{font-family:'Space Mono',monospace;color:#bbb;font-size:.72rem;line-height:1.7}
+.fit-finder-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+.fit-finder-metric{border:1px solid #333;padding:10px}.fit-finder-metric b{display:block;color:#fff;font-family:'Space Mono',monospace;font-size:.78rem}.fit-finder-metric span{color:#888;font-family:'Space Mono',monospace;font-size:.62rem}
+.fit-finder-warning{color:#ffd500;border-left:3px solid #ffd500;padding-left:10px;margin-top:12px}
+.fit-finder-chart{width:100%;border-collapse:collapse;margin-top:16px;font-family:'Space Mono',monospace;font-size:.68rem}.fit-finder-chart th,.fit-finder-chart td{border:1px solid #333;padding:9px;text-align:left}.fit-finder-chart th{color:var(--spray-yellow)}.fit-finder-chart tr.recommended{background:rgba(255,213,0,.13)}
+@media(max-width:650px){.fit-finder-grid{grid-template-columns:1fr}.fit-finder-field.full{grid-column:auto}.fit-finder-options{grid-template-columns:1fr 1fr}.fit-finder-metrics{grid-template-columns:1fr}.fit-finder-box{padding:16px}.fit-finder-result-size{font-size:3.2rem}}
+</style>
+
 </head>
 <body>
 
@@ -647,6 +683,7 @@ footer a:hover{color:var(--paper)}
         <div class="pdp-size-guide">
           <div class="pdp-size-guide-text"><strong>Not sure about your size?</strong>Check the measurements before ordering.</div>
           <button type="button" class="size-chart-btn" onclick="openSizeChart()">Size Chart ↗</button>
+          <button type="button" class="fit-finder-btn" onclick="openFitFinder()">👕 Find My T-Shirt Size</button>
         </div>
         <span class="option-label">Select Color (Default: Yellow & White)</span>
         <div class="size-selector" id="pdp-color-selector"></div>
@@ -698,6 +735,64 @@ footer a:hover{color:var(--paper)}
         </tbody>
       </table>
       <div class="fit-guide"><strong>Fit Guide:</strong> Chest = armpit-to-armpit × 2. Length = highest shoulder point to bottom hem. If you are between two sizes, choose the larger size for a relaxed fit.</div>
+    </div>
+  </div>
+
+
+  <!-- FIT FINDER -->
+  <div class="fit-finder-modal" id="fit-finder-modal" onclick="if(event.target===this) closeFitFinder()">
+    <div class="fit-finder-box" role="dialog" aria-modal="true" aria-labelledby="fit-finder-title">
+      <div class="fit-finder-head">
+        <div><h3 id="fit-finder-title">FIND MY T-SHIRT SIZE</h3><div class="fit-finder-step" id="fit-finder-step">STEP 1 OF 2</div></div>
+        <button type="button" class="fit-finder-close" onclick="closeFitFinder()" aria-label="Close">×</button>
+      </div>
+      <div id="fit-finder-form">
+        <p class="fit-finder-intro">Tell us a few details and how you want the tee to sit. We’ll compare your profile with this product’s size chart and live in-stock sizes.</p>
+        <div class="fit-finder-grid">
+          <div class="fit-finder-field">
+            <label class="fit-finder-label" for="fit-height">Height (cm)</label>
+            <input id="fit-height" type="number" min="120" max="230" step="1" placeholder="e.g. 172">
+          </div>
+          <div class="fit-finder-field">
+            <label class="fit-finder-label" for="fit-weight">Weight (kg)</label>
+            <input id="fit-weight" type="number" min="30" max="180" step="0.5" placeholder="e.g. 72">
+          </div>
+          <div class="fit-finder-field">
+            <label class="fit-finder-label" for="fit-chest">Chest (cm) — optional</label>
+            <input id="fit-chest" type="number" min="60" max="180" step="1" placeholder="More accurate if you know it">
+            <div class="fit-finder-help">Measure around the fullest part of your chest, tape level and relaxed.</div>
+          </div>
+          <div class="fit-finder-field">
+            <label class="fit-finder-label" for="fit-build">Body build</label>
+            <select id="fit-build"><option value="slim">Slim</option><option value="average" selected>Average</option><option value="broad">Broad / Athletic</option><option value="plus">Larger build</option></select>
+          </div>
+          <div class="fit-finder-field full">
+            <span class="fit-finder-label">How do you want it to fit?</span>
+            <div class="fit-finder-options" id="fit-finder-fit-options">
+              <button type="button" class="fit-finder-option active" data-fit="regular" onclick="selectFitPreference('regular')">Regular</button>
+              <button type="button" class="fit-finder-option" data-fit="loose" onclick="selectFitPreference('loose')">Loose</button>
+              <button type="button" class="fit-finder-option" data-fit="oversized" onclick="selectFitPreference('oversized')">Oversized</button>
+              <button type="button" class="fit-finder-option" data-fit="boxy" onclick="selectFitPreference('boxy')">Boxy</button>
+            </div>
+            <div class="fit-finder-help">Regular = closer to body · Loose = relaxed · Oversized = extra room · Boxy = wider body with a shorter-looking proportion.</div>
+          </div>
+        </div>
+        <div class="fit-finder-actions"><button type="button" class="fit-finder-secondary" onclick="closeFitFinder()">CANCEL</button><button type="button" class="fit-finder-primary" onclick="calculateFitFinder()">FIND MY SIZE →</button></div>
+      </div>
+      <div class="fit-finder-result" id="fit-finder-result">
+        <div class="fit-finder-result-kicker">OUR RECOMMENDATION FOR THIS PRODUCT</div>
+        <div class="fit-finder-result-size" id="fit-finder-result-size">M</div>
+        <div class="fit-finder-result-title" id="fit-finder-result-title">Recommended size</div>
+        <div class="fit-finder-metrics">
+          <div class="fit-finder-metric"><b id="fit-result-stock">—</b><span>LIVE STOCK</span></div>
+          <div class="fit-finder-metric"><b id="fit-result-chest">—</b><span>GARMENT CHEST</span></div>
+          <div class="fit-finder-metric"><b id="fit-result-length">—</b><span>GARMENT LENGTH</span></div>
+        </div>
+        <div class="fit-finder-result-copy" id="fit-finder-result-copy"></div>
+        <div class="fit-finder-result-copy fit-finder-warning" id="fit-finder-result-warning"></div>
+        <table class="fit-finder-chart"><thead><tr><th>Size</th><th>Chest</th><th>Length</th><th>Stock</th></tr></thead><tbody id="fit-finder-chart-body"></tbody></table>
+        <div class="fit-finder-actions"><button type="button" class="fit-finder-secondary" onclick="resetFitFinder()">TRY AGAIN</button><button type="button" class="fit-finder-primary" onclick="useFitFinderSize()">USE THIS SIZE →</button></div>
+      </div>
     </div>
   </div>
 
@@ -1632,7 +1727,7 @@ let DEFAULT_CATEGORIES = [
     id: 'cat-oversized',
     name: 'Oversized Tee',
     products: [
-      { id: 'o1', code: 'RIOT', title: 'The Riot Oversized Tee', desc: 'Acid Yellow & Distressed Grunge Graphic. 240 GSM.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
+      { id: 'o1', code: 'RIOT', title: 'The Riot Oversized Tee', desc: 'Acid Yellow & Distressed Grunge Graphic. 240 GSM.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
       { id: 'o2', code: 'VOLT', title: 'The Volt Oversized Tee', desc: 'Stealth Black with High-Voltage Neon Typography.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
       { id: 'o3', code: 'VOID', title: 'The Void Acid Tee', desc: 'Acid wash dark grey streetwear style.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['M', 'L', 'XL'] },
       { id: 'o4', code: 'REB1', title: 'Rebel Heavyweight Tee 01', desc: '240 GSM heavy combed cotton.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
@@ -1645,11 +1740,11 @@ let DEFAULT_CATEGORIES = [
     name: 'Hoodie',
     products: [
       { id: 'h1', code: 'HOD1', title: 'The Bone Neutral Hoodie', desc: 'Vintage Washed Off-White heavyweight hoodie.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['M', 'L', 'XL', 'XXL'] },
-      { id: 'h2', code: 'HOD2', title: 'Dark Cyber Hoodie 01', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
-      { id: 'h3', code: 'HOD3', title: 'Dark Cyber Hoodie 02', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
-      { id: 'h4', code: 'HOD4', title: 'Street Riot Hoodie 01', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
-      { id: 'h5', code: 'HOD5', title: 'Street Riot Hoodie 02', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
-      { id: 'h6', code: 'HOD6', title: 'Urban Dissent Hoodie', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL', 'XXL'] }
+      { id: 'h2', code: 'HOD2', title: 'Dark Cyber Hoodie 01', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
+      { id: 'h3', code: 'HOD3', title: 'Dark Cyber Hoodie 02', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
+      { id: 'h4', code: 'HOD4', title: 'Street Riot Hoodie 01', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
+      { id: 'h5', code: 'HOD5', title: 'Street Riot Hoodie 02', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
+      { id: 'h6', code: 'HOD6', title: 'Urban Dissent Hoodie', desc: 'Heavy fleece cotton.', mrp: 1899, price: 1299, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] }
     ]
   }
 ];
@@ -2200,7 +2295,7 @@ function openProductByDetails(catName, productId) {
   sizeContainer.innerHTML = '';
 
   const prodColors = (foundProd.colors && foundProd.colors.length > 0) ? foundProd.colors : ['Yellow', 'White'];
-  const prodSizes = (foundProd.sizes && foundProd.sizes.length > 0) ? foundProd.sizes : ['S', 'M', 'L', 'XL', 'XXL'];
+  const prodSizes = (foundProd.sizes && foundProd.sizes.length > 0) ? foundProd.sizes : ['S', 'M', 'L', 'XL'];
 
   const availableColors = Array.isArray(foundProd.availableColors) ? foundProd.availableColors : prodColors;
   const availableSizes = Array.isArray(foundProd.availableSizes) ? foundProd.availableSizes : prodSizes;
@@ -2364,11 +2459,6 @@ async function loadPdpStockForCurrentProduct(product) {
 
     const rows = Array.isArray(variants) ? variants : [];
     currentProduct.stockVariants = rows;
-    currentProduct.stockLoadFailed = false;
-
-    // Rebuild the PDP size buttons from the catalogue + authoritative DB
-    // variants so Admin-added sizes (for example XXL) are never hidden.
-    syncPdpSizeButtonsFromLiveStock();
 
     // A blank color in the database is the current/default color model.
     // In that case stock is size-based and applies to the selected catalogue color.
@@ -2413,61 +2503,8 @@ async function loadPdpStockForCurrentProduct(product) {
     // cannot be read. Keep the product order button disabled until stock loads.
     currentProduct.stockVariants = [];
     currentProduct.stockLoadFailed = true;
-    syncPdpSizeButtonsFromLiveStock();
     updatePdpSelectionStatus();
   }
-}
-
-
-function syncPdpSizeButtonsFromLiveStock() {
-  if (!currentProduct) return;
-  const container = document.getElementById('pdp-size-selector');
-  if (!container) return;
-
-  const catalogSizes = Array.isArray(currentProduct.sizes) && currentProduct.sizes.length
-    ? currentProduct.sizes.map(v => String(v).trim()).filter(Boolean)
-    : ['S','M','L','XL','XXL'];
-
-  const liveSizes = Array.isArray(currentProduct.stockVariants)
-    ? currentProduct.stockVariants.map(v => String(v.size || '').trim()).filter(Boolean)
-    : [];
-
-  const order = ['S','M','L','XL','XXL'];
-  const merged = [...new Set([...catalogSizes, ...liveSizes])].sort((a,b) => {
-    const ai = order.findIndex(x => x.toLowerCase() === a.toLowerCase());
-    const bi = order.findIndex(x => x.toLowerCase() === b.toLowerCase());
-    if (ai !== -1 && bi !== -1) return ai - bi;
-    if (ai !== -1) return -1;
-    if (bi !== -1) return 1;
-    return a.localeCompare(b, undefined, {numeric:true});
-  });
-
-  container.innerHTML = '';
-
-  merged.forEach(sz => {
-    const stock = typeof currentProduct.getStockForSelection === 'function'
-      ? currentProduct.getStockForSelection(sz, selectedColor)
-      : 0;
-    const available = !currentProduct.stockLoadFailed && stock > 0;
-
-    const sBtn = document.createElement('button');
-    sBtn.type = 'button';
-    sBtn.className = `size-btn ${sz.toLowerCase() === String(selectedSize || '').toLowerCase() && available ? 'selected' : ''} ${available ? '' : 'is-unavailable'}`;
-    sBtn.innerText = sz;
-    sBtn.disabled = !available;
-    sBtn.title = available ? `${sz}: ${stock} available` : `${sz}: Out of stock`;
-    sBtn.onclick = () => {
-      if (sBtn.disabled) return;
-      selectedSize = sz;
-      selectedQty = 1;
-      const qtyEl = document.getElementById('pdp-qty');
-      if (qtyEl) qtyEl.innerText = '1';
-      document.querySelectorAll('#pdp-size-selector .size-btn').forEach(b => b.classList.remove('selected'));
-      sBtn.classList.add('selected');
-      updatePdpSelectionStatus();
-    };
-    container.appendChild(sBtn);
-  });
 }
 
 function updatePdpSizeButtons() {
@@ -2518,9 +2555,7 @@ function updatePdpSelectionStatus() {
   } else if (currentProduct.stockLoadFailed) {
     stockText.innerText = 'Stock unavailable · Please refresh';
   } else if (available) {
-    stockText.innerText = selectedStock <= 3
-      ? `Only ${selectedStock} left · Ready to Order`
-      : `In Stock · ${selectedStock} available · Ready to Order`;
+    stockText.innerText = selectedStock <= 3 ? `Only ${selectedStock} left · Ready to Order` : 'In Stock · Ready to Order';
   } else {
     stockText.innerText = 'Currently Unavailable';
   }
@@ -2537,7 +2572,7 @@ function updatePdpSelectionStatus() {
 
   if (countBadge) {
     countBadge.innerText = hasLiveStock && !currentProduct.stockLoadFailed
-      ? (available ? `${selectedStock} available` : '0 available')
+      ? `${availableSizes.length} size${availableSizes.length === 1 ? '' : 's'} available`
       : 'Checking stock';
   }
 
@@ -4174,7 +4209,7 @@ function addNewCategory() {
     id: 'cat-' + Date.now(),
     name: name,
     products: [
-      { id: 'p' + Date.now(), code: 'NEW1', title: `New ${name} 01`, desc: 'Heavyweight cotton drop.', mrp: 1200, price: 800, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL', 'XXL'] }
+      { id: 'p' + Date.now(), code: 'NEW1', title: `New ${name} 01`, desc: 'Heavyweight cotton drop.', mrp: 1200, price: 800, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] }
     ]
   });
   document.getElementById('new-category-input').value = '';
@@ -5743,6 +5778,110 @@ if(typeof window!=='undefined'){window.openOffersPanel=openOffersPanel;window.cl
     </section>
   </div>
 </div>
+
+
+
+/* ============================================================
+   REBEL STORE — FIND MY T-SHIRT SIZE
+   Frontend-only estimator using product garment chart + live stock.
+   Height/weight/build are an estimate; chest measurement is preferred.
+   ============================================================ */
+let fitFinderPreference = 'regular';
+let fitFinderLastResult = null;
+
+function openFitFinder(){
+  const modal=document.getElementById('fit-finder-modal');
+  if(!modal) return;
+  modal.style.display='flex';
+  document.body.style.overflow='hidden';
+  const step=document.getElementById('fit-finder-step'); if(step) step.innerText='STEP 1 OF 2';
+  const result=document.getElementById('fit-finder-result'); if(result) result.classList.remove('show');
+  const form=document.getElementById('fit-finder-form'); if(form) form.style.display='block';
+}
+function closeFitFinder(){
+  const modal=document.getElementById('fit-finder-modal'); if(!modal) return;
+  modal.style.display='none'; document.body.style.overflow='';
+}
+function resetFitFinder(){
+  fitFinderLastResult=null;
+  const result=document.getElementById('fit-finder-result'); if(result) result.classList.remove('show');
+  const form=document.getElementById('fit-finder-form'); if(form) form.style.display='block';
+  const step=document.getElementById('fit-finder-step'); if(step) step.innerText='STEP 1 OF 2';
+}
+function selectFitPreference(pref){
+  fitFinderPreference=pref;
+  document.querySelectorAll('#fit-finder-fit-options .fit-finder-option').forEach(b=>b.classList.toggle('active',b.dataset.fit===pref));
+}
+function fitFinderChartForProduct(){
+  const fallback=[
+    {size:'S',chest:38,length:27,shoulder:17},{size:'M',chest:40,length:28,shoulder:18},{size:'L',chest:42,length:29,shoulder:19},{size:'XL',chest:44,length:30,shoulder:20},{size:'XXL',chest:46,length:31,shoulder:21}
+  ];
+  const raw=currentProduct?.sizeChart || currentProduct?.size_chart;
+  if(Array.isArray(raw) && raw.length){
+    return raw.map(x=>({size:String(x.size||''),chest:Number(x.chest||x.width||0),length:Number(x.length||0),shoulder:Number(x.shoulder||0)})).filter(x=>x.size&&x.chest);
+  }
+  return fallback.filter(x=>!Array.isArray(currentProduct?.sizes)||currentProduct.sizes.length===0||currentProduct.sizes.map(String).includes(x.size));
+}
+function fitFinderLiveStock(size){
+  if(currentProduct && Array.isArray(currentProduct.stockVariants) && typeof currentProduct.getStockForSelection==='function' && !currentProduct.stockLoadFailed){
+    return Number(currentProduct.getStockForSelection(size, selectedColor)||0);
+  }
+  return 0;
+}
+function estimateChestInches(heightCm, weightKg, build, suppliedChestCm){
+  if(suppliedChestCm && suppliedChestCm>0) return suppliedChestCm/2.54;
+  /* Estimate only when chest is not supplied. This is intentionally conservative. */
+  const base=0.50*heightCm + 0.09*weightKg - 18;
+  const adjustment={slim:-1.0,average:0,broad:1.5,plus:3.0}[build]||0;
+  return Math.max(30,Math.min(58,base+adjustment));
+}
+function fitEaseForPreference(pref){ return {regular:2.5,loose:4.5,oversized:6.5,boxy:5.5}[pref] || 2.5; }
+function fitTargetLengthFactor(pref){ return {regular:.395,loose:.405,oversized:.415,boxy:.395}[pref] || .395; }
+function calculateFitFinder(){
+  if(!currentProduct){showToast('Open a product first.');return;}
+  const h=Number(document.getElementById('fit-height')?.value||0);
+  const w=Number(document.getElementById('fit-weight')?.value||0);
+  const chestCm=Number(document.getElementById('fit-chest')?.value||0);
+  const build=document.getElementById('fit-build')?.value||'average';
+  if(h<120||h>230||w<30||w>180){showToast('Please enter a valid height and weight.');return;}
+  const chart=fitFinderChartForProduct();
+  if(!chart.length){showToast('Size chart is not available for this product.');return;}
+  const bodyChest=estimateChestInches(h,w,build,chestCm);
+  const ease=fitEaseForPreference(fitFinderPreference);
+  const targetChest=bodyChest+ease;
+  const targetLengthCm=h*fitTargetLengthFactor(fitFinderPreference);
+  const targetLengthIn=targetLengthCm/2.54;
+  const available=chart.map(row=>({...row,stock:fitFinderLiveStock(row.size),available:fitFinderLiveStock(row.size)>0}));
+  const inStock=available.filter(x=>x.available);
+  const pool=inStock.length?inStock:available;
+  const scored=pool.map(row=>{
+    const chestPenalty=Math.abs(row.chest-targetChest)*5;
+    const lengthPenalty=Math.abs(row.length-targetLengthIn)*1.5;
+    const sizeOrder=Math.max(0, chart.findIndex(x=>x.size===row.size))*0.05;
+    return {...row,score:chestPenalty+lengthPenalty+sizeOrder};
+  }).sort((a,b)=>a.score-b.score);
+  const rec=scored[0];
+  const exactIdeal=rec && rec.chest>=targetChest-0.01;
+  fitFinderLastResult={rec,chart,bodyChest,targetChest,fitFinderPreference,hasChest:chestCm>0,inStockCount:inStock.length};
+  const result=document.getElementById('fit-finder-result'); const form=document.getElementById('fit-finder-form'); const step=document.getElementById('fit-finder-step');
+  if(form) form.style.display='none'; if(result) result.classList.add('show'); if(step) step.innerText='STEP 2 OF 2';
+  document.getElementById('fit-finder-result-size').innerText=rec?.size||'—';
+  document.getElementById('fit-finder-result-title').innerText=rec?.available ? `${fitFinderPreference.charAt(0).toUpperCase()+fitFinderPreference.slice(1)} fit recommendation` : 'Closest match — currently out of stock';
+  document.getElementById('fit-result-stock').innerText=rec?.stock>0?`${rec.stock} left`:'OUT OF STOCK';
+  document.getElementById('fit-result-chest').innerText=rec?.chest?`${rec.chest}"`: '—';
+  document.getElementById('fit-result-length').innerText=rec?.length?`${rec.length}"`:'—';
+  document.getElementById('fit-finder-result-copy').innerText=`Based on ${h} cm / ${w} kg, ${build} build and a ${fitFinderPreference} preference, we target about ${targetChest.toFixed(1)}" of garment chest. ${chestCm>0?'Your chest measurement was used directly.':'Chest was estimated because you did not enter a chest measurement.'}`;
+  const warning=document.getElementById('fit-finder-result-warning');
+  warning.innerText=rec?.available ? (exactIdeal?'This is an in-stock match.':'This is the closest in-stock match to your profile.') : 'Your closest size is currently out of stock. Choose another available size from the table or use Notify Me.';
+  const body=document.getElementById('fit-finder-chart-body'); body.innerHTML=available.map(r=>`<tr class="${r.size===rec?.size?'recommended':''}"><td>${r.size}</td><td>${r.chest}"</td><td>${r.length}"</td><td>${r.stock>0?r.stock+' left':'Out'}</td></tr>`).join('');
+}
+function useFitFinderSize(){
+  const size=fitFinderLastResult?.rec?.size; if(!size||!currentProduct) return;
+  const btn=[...document.querySelectorAll('#pdp-size-selector .size-btn')].find(b=>String(b.innerText||'').trim().toLowerCase()===String(size).toLowerCase());
+  if(btn && !btn.disabled){ selectSize(btn,size); closeFitFinder(); showToast(`${size} selected based on your fit profile.`); }
+  else { showToast(`${size} is currently unavailable. Please choose an in-stock size.`); }
+}
+window.addEventListener('keydown',e=>{if(e.key==='Escape'){const m=document.getElementById('fit-finder-modal');if(m&&m.style.display==='flex')closeFitFinder();}});
 
 </body>
 
