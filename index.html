@@ -369,6 +369,46 @@ footer a:hover{color:var(--paper)}
 .address-actions button.danger{color:var(--rebel-red);border-color:var(--rebel-red)}
 @media(max-width:600px){.account-grid{grid-template-columns:1fr}}
 
+
+/* ACCOUNT PAGE REDESIGN — profile / orders / saved address only */
+.profile-account-modal{padding:0!important;background:rgba(7,7,8,.97)!important;backdrop-filter:blur(4px)!important;align-items:stretch!important;justify-content:stretch!important;z-index:260!important}
+.profile-account-page{width:100%;height:100%;min-height:100vh;background:#0b0b0c;color:var(--paper);overflow:auto;position:relative}
+.profile-account-topbar{height:66px;border-bottom:1px solid rgba(242,240,234,.14);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;background:#0b0b0c;z-index:3}
+.profile-account-topbar-title{font-family:'Anton',sans-serif;font-size:1.45rem;text-transform:uppercase;color:var(--spray-yellow);letter-spacing:.04em}
+.profile-account-topbar-sub{font-family:'Space Mono',monospace;font-size:.66rem;color:var(--grey);margin-left:.65rem}
+.profile-account-close{background:transparent;border:1px solid rgba(242,240,234,.25);color:var(--paper);font-family:'Space Mono',monospace;font-size:.7rem;padding:.5rem .75rem;cursor:pointer}
+.profile-account-close:hover{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow)}
+.profile-account-layout{max-width:1180px;margin:0 auto;padding:2rem;display:grid;grid-template-columns:255px minmax(0,1fr);gap:2rem;align-items:start}
+.profile-account-sidebar{position:sticky;top:90px}
+.profile-account-usercard{background:linear-gradient(110deg,#241d2b,#162328,#2b1d2c);border:1px solid rgba(242,240,234,.16);padding:1.25rem;margin-bottom:1rem}
+.profile-account-avatar{width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--spray-yellow);display:block;margin-bottom:.8rem;background:#222}
+.profile-account-avatar-fallback{display:flex;align-items:center;justify-content:center;font-size:1.6rem}
+.profile-account-username{font-family:'Archivo Black',sans-serif;font-size:1rem;margin-bottom:.25rem}
+.profile-account-email{font-family:'Space Mono',monospace;font-size:.66rem;color:var(--grey);word-break:break-word}
+.profile-account-member{font-family:'Space Mono',monospace;font-size:.62rem;color:var(--spray-yellow);margin-top:.5rem;text-transform:uppercase}
+.profile-account-nav{border:1px solid rgba(242,240,234,.14);background:#111113}
+.profile-account-nav button{display:block;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid rgba(242,240,234,.09);color:var(--paper);padding:.9rem 1rem;font-family:'Space Mono',monospace;font-size:.72rem;cursor:pointer}
+.profile-account-nav button:last-child{border-bottom:0}
+.profile-account-nav button:hover,.profile-account-nav button.active{background:var(--spray-yellow);color:var(--ink)}
+.profile-account-sidebar-actions{margin-top:1rem;border-top:1px solid rgba(242,240,234,.14);padding-top:1rem}
+.profile-account-sidebar-actions button{width:100%;background:transparent;color:var(--rebel-red);border:1px solid var(--rebel-red);padding:.72rem;font-family:'Space Mono',monospace;font-size:.68rem;cursor:pointer}
+.profile-account-main{min-width:0}
+.profile-account-heading{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:1.65rem;color:var(--spray-yellow);margin:0 0 .35rem}
+.profile-account-subheading{font-family:'Space Mono',monospace;font-size:.68rem;color:var(--grey);margin:0 0 1.2rem}
+.profile-account-panel{background:#141416;border:1px solid rgba(242,240,234,.14);padding:1.35rem}
+.profile-account-panel .account-field input::placeholder,.profile-account-panel .account-field select::placeholder{color:transparent!important;opacity:0!important}
+.profile-account-panel input[placeholder],.profile-account-panel textarea[placeholder]{color:var(--paper)}
+.profile-account-form-note{font-family:'Space Mono',monospace;font-size:.65rem;color:var(--grey);line-height:1.6;margin:.3rem 0 1rem}
+.profile-account-address-add{display:flex;align-items:center;justify-content:space-between;gap:1rem;border:1px solid rgba(242,240,234,.16);background:#111113;padding:1rem;margin-bottom:1rem;cursor:pointer}
+.profile-account-address-add:hover{border-color:var(--spray-yellow)}
+.profile-account-address-add strong{font-family:'Space Mono',monospace;font-size:.72rem;color:var(--paper)}
+.profile-account-address-add span{font-family:'Space Mono',monospace;font-size:1rem;color:var(--spray-yellow)}
+.profile-account-address-form{border:1px solid rgba(242,240,234,.14);background:#111113;padding:1rem;margin-bottom:1rem}
+.profile-account-address-form .account-grid{margin-top:.8rem}
+.profile-account-address-form .account-field input,.profile-account-address-form .account-field select{background:#18181b}
+.profile-account-orders-empty,.profile-account-address-empty{font-family:'Space Mono',monospace;font-size:.72rem;color:var(--grey);text-align:center;padding:2rem 1rem}
+@media(max-width:800px){.profile-account-layout{grid-template-columns:1fr;padding:1rem;gap:1rem}.profile-account-sidebar{position:static}.profile-account-topbar{padding:0 1rem}.profile-account-topbar-sub{display:none}.profile-account-nav{display:grid;grid-template-columns:1fr 1fr}.profile-account-nav button{border-right:1px solid rgba(242,240,234,.09)}.profile-account-sidebar-actions{margin-top:.8rem}.profile-account-usercard{margin-bottom:.8rem}}
+
 /* PHASE 3 — ORDER TRACKING + DELIVERY ESTIMATE */
 .order-track-panel{margin-top:.8rem;padding:1rem;background:#111113;border:1px solid rgba(242,240,234,.14);}
 .order-track-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;margin:1rem 0 .7rem;}
@@ -1002,12 +1042,14 @@ footer a:hover{color:var(--paper)}
     </div>
   </div>
 
-  <!-- PROFILE MODAL WITH DIRECT CLICK-TO-UPLOAD AVATAR & 1:1 SQUARE CROPPING -->
-  <div class="auth-modal" id="profile-modal">
-    <div class="profile-modal-box">
-      <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeProfileModal()">×</button>
-      <h3>User Profile</h3>
-      <div id="profile-content-area" style="margin-top:1rem;"></div>
+  <!-- PROFILE / ACCOUNT PAGE -->
+  <div class="auth-modal profile-account-modal" id="profile-modal">
+    <div class="profile-account-page">
+      <div class="profile-account-topbar">
+        <div><span class="profile-account-topbar-title">Rebel Store</span><span class="profile-account-topbar-sub">MY ACCOUNT</span></div>
+        <button class="profile-account-close" type="button" onclick="closeProfileModal()">← Back to Shop</button>
+      </div>
+      <div id="profile-content-area"></div>
     </div>
   </div>
 
@@ -5282,48 +5324,70 @@ function openAccountTab(tab) {
   if (tab === 'addresses') renderAddressesInsideProfile();
 }
 
-async function openProfileModal() {
+async function openProfileModal(initialTab = 'profile') {
   if (!loggedInUser || !supabaseClient) return;
   await refreshCurrentProfile();
   const area = document.getElementById('profile-content-area');
   croppedAvatarBlob = null;
 
-  const avatarDisplay = loggedInUser.avatarUrl
-    ? `<img id="profile-avatar-preview" src="${escapeHtml(loggedInUser.avatarUrl)}" style="width:85px;height:85px;border-radius:50%;object-fit:cover;margin:0 auto 10px;border:2px solid var(--spray-yellow);cursor:pointer;">`
-    : `<div id="profile-avatar-preview" style="width:85px;height:85px;border-radius:50%;background:#222;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:2rem;border:2px dashed var(--spray-yellow);cursor:pointer;">👤</div>`;
+  const avatarHtml = loggedInUser.avatarUrl
+    ? `<img class="profile-account-avatar" id="profile-avatar-preview" src="${escapeHtml(loggedInUser.avatarUrl)}" alt="Profile photo">`
+    : `<div class="profile-account-avatar profile-account-avatar-fallback" id="profile-avatar-preview">👤</div>`;
 
   area.innerHTML = `
-    <div id="profile-account-tabs" class="account-tabs">
-      <button class="account-tab active" data-tab="profile" onclick="openAccountTab('profile')">Profile</button>
-      <button class="account-tab" data-tab="orders" onclick="openAccountTab('orders')">My Orders</button>
-      <button class="account-tab" data-tab="addresses" onclick="openAccountTab('addresses')">Saved Address</button>
-    </div>
+    <div class="profile-account-layout">
+      <aside class="profile-account-sidebar">
+        <div class="profile-account-usercard">
+          <div style="cursor:pointer" onclick="document.getElementById('hidden-avatar-input').click()">
+            ${avatarHtml}
+          </div>
+          <input type="file" id="hidden-avatar-input" accept="image/*" style="display:none;" onchange="previewAndCropAvatar(event)">
+          <div class="profile-account-username">${escapeHtml(loggedInUser.name || loggedInUser.username || 'User')}</div>
+          <div class="profile-account-email">${escapeHtml(loggedInUser.email || '')}</div>
+          <div class="profile-account-member">Member Account</div>
+        </div>
 
-    <div id="profile-tab-content">
-      <div style="text-align:center;margin-bottom:1rem;">
-        <div style="cursor:pointer;" onclick="document.getElementById('hidden-avatar-input').click()">${avatarDisplay}</div>
-        <input type="file" id="hidden-avatar-input" accept="image/*" style="display:none;" onchange="previewAndCropAvatar(event)">
-        <span style="font-family:'Space Mono';font-size:.68rem;color:var(--spray-yellow);">Click photo to change · Max 1MB</span>
-      </div>
-      <div class="account-grid">
-        <div class="account-field"><label>Email ID · Locked</label><input type="email" value="${escapeHtml(loggedInUser.email || '')}" disabled></div>
-        <div class="account-field"><label>Username · Locked</label><input type="text" value="${escapeHtml(loggedInUser.username || '')}" disabled></div>
-        <div class="account-field"><label>First Name / Full Name *</label><input id="edit-profile-name" type="text" value="${escapeHtml(loggedInUser.name || '')}"></div>
-        <div class="account-field"><label>Mobile Number</label><input id="edit-profile-phone" type="tel" value="${escapeHtml(loggedInUser.phone || '')}"></div>
-        <div class="account-field"><label>Date of Birth</label><input id="edit-profile-dob" type="date" value="${escapeHtml(loggedInUser.dateOfBirth || '')}"></div>
-        <div class="account-field"><label>Gender</label><select id="edit-profile-gender"><option value="">Select</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select></div>
-      </div>
-      <div style="font-family:'Space Mono';font-size:.68rem;color:var(--grey);margin:.3rem 0 1rem;">Google login automatically supplies your Google name, email and profile photo. Phone, date of birth and gender stay editable here.</div>
-      <button class="btn btn--solid" style="width:100%;justify-content:center;" onclick="saveUserProfileEdits()">Save Profile Changes</button>
-    </div>
+        <nav class="profile-account-nav" id="profile-account-tabs">
+          <button type="button" class="account-tab" data-tab="profile" onclick="openAccountTab('profile')">👤 Profile</button>
+          <button type="button" class="account-tab" data-tab="orders" onclick="openAccountTab('orders')">📦 Orders</button>
+          <button type="button" class="account-tab" data-tab="addresses" onclick="openAccountTab('addresses')">📍 Saved Address</button>
+        </nav>
 
-    <div id="profile-orders-tab-content" style="display:none;"></div>
-    <div id="profile-address-tab-content" style="display:none;"></div>
-  `;
+        <div class="profile-account-sidebar-actions">
+          <button type="button" onclick="logoutUser()">Logout</button>
+        </div>
+      </aside>
+
+      <main class="profile-account-main">
+        <section id="profile-tab-content" class="profile-account-panel">
+          <h2 class="profile-account-heading">My Profile</h2>
+          <p class="profile-account-subheading">Manage your account details and personal information.</p>
+          <div style="text-align:center;margin:0 0 1.2rem;">
+            <div style="cursor:pointer;display:inline-block;" onclick="document.getElementById('hidden-avatar-input').click()">${loggedInUser.avatarUrl ? `<img id="profile-avatar-preview-main" src="${escapeHtml(loggedInUser.avatarUrl)}" alt="Profile photo" style="width:88px;height:88px;border-radius:50%;object-fit:cover;border:2px solid var(--spray-yellow);">` : `<div id="profile-avatar-preview-main" class="profile-account-avatar profile-account-avatar-fallback" style="margin:0 auto;">👤</div>`}</div>
+            <div style="font-family:'Space Mono';font-size:.64rem;color:var(--spray-yellow);margin-top:.45rem;">Click photo to change · Max 1MB</div>
+          </div>
+          <div class="account-grid">
+            <div class="account-field"><label>Email ID · Locked</label><input type="email" value="${escapeHtml(loggedInUser.email || '')}" disabled autocomplete="email"></div>
+            <div class="account-field"><label>Username · Locked</label><input type="text" value="${escapeHtml(loggedInUser.username || '')}" disabled autocomplete="username"></div>
+            <div class="account-field"><label>First Name / Full Name *</label><input id="edit-profile-name" type="text" value="${escapeHtml(loggedInUser.name || '')}" autocomplete="name"></div>
+            <div class="account-field"><label>Mobile Number</label><input id="edit-profile-phone" type="tel" value="${escapeHtml(loggedInUser.phone || '')}" autocomplete="tel"></div>
+            <div class="account-field"><label>Date of Birth</label><input id="edit-profile-dob" type="date" value="${escapeHtml(loggedInUser.dateOfBirth || '')}"></div>
+            <div class="account-field"><label>Gender</label><select id="edit-profile-gender"><option value="">Select</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select></div>
+          </div>
+          <p class="profile-account-form-note">Google login automatically supplies your Google name, email and profile photo. Phone, date of birth and gender stay editable here.</p>
+          <button class="btn btn--solid" style="width:100%;justify-content:center;" type="button" onclick="saveUserProfileEdits()">Save Profile Changes</button>
+        </section>
+
+        <section id="profile-orders-tab-content" class="profile-account-panel" style="display:none;"></section>
+        <section id="profile-address-tab-content" class="profile-account-panel" style="display:none;"></section>
+      </main>
+    </div>`;
 
   const gender = document.getElementById('edit-profile-gender');
   if (gender) gender.value = loggedInUser.gender || '';
   document.getElementById('profile-modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  openAccountTab(initialTab);
 }
 
 async function refreshCurrentProfile() {
@@ -5333,7 +5397,7 @@ async function refreshCurrentProfile() {
   await hydrateLoggedInUserFromSupabase(user, false);
 }
 
-function closeProfileModal() { document.getElementById('profile-modal').style.display = 'none'; }
+function closeProfileModal() { document.getElementById('profile-modal').style.display = 'none'; document.body.style.overflow = ''; }
 
 let croppedAvatarBlob = null;
 
@@ -5356,7 +5420,10 @@ function previewAndCropAvatar(event) {
         const previewUrl = URL.createObjectURL(blob);
         const prevEl = document.getElementById('profile-avatar-preview');
         if (prevEl?.tagName === 'IMG') prevEl.src = previewUrl;
-        else if (prevEl) prevEl.outerHTML = `<img id="profile-avatar-preview" src="${previewUrl}" style="width:85px;height:85px;border-radius:50%;object-fit:cover;margin:0 auto 10px;border:2px solid var(--spray-yellow);cursor:pointer;">`;
+        else if (prevEl) prevEl.outerHTML = `<img id="profile-avatar-preview" src="${previewUrl}" class="profile-account-avatar" alt="Profile photo">`;
+        const mainPrevEl = document.getElementById('profile-avatar-preview-main');
+        if (mainPrevEl?.tagName === 'IMG') mainPrevEl.src = previewUrl;
+        else if (mainPrevEl) mainPrevEl.outerHTML = `<img id="profile-avatar-preview-main" src="${previewUrl}" alt="Profile photo" style="width:88px;height:88px;border-radius:50%;object-fit:cover;border:2px solid var(--spray-yellow);">`;
         showToast('Image cropped 1:1 successfully!');
       }, 'image/jpeg', 0.9);
     };
@@ -5512,22 +5579,49 @@ function submitOrderServiceRequest(){
 async function renderAddressesInsideProfile() {
   const area = document.getElementById('profile-address-tab-content');
   if (!area) return;
-  if (!supabaseClient) { area.innerHTML = '<div style="color:var(--grey);">Supabase not connected.</div>'; return; }
-  area.innerHTML = `<div style="font-family:'Space Mono';color:var(--grey);padding:1rem;text-align:center;">Loading saved addresses...</div>`;
-  const { data: { user } } = await supabaseClient.auth.getUser();
-  if (!user) return;
-  const { data, error } = await supabaseClient.from('user_addresses').select('*').eq('user_id', user.id).order('is_default', { ascending:false }).order('created_at', { ascending:false });
-  if (error) { area.innerHTML = `<div style="font-family:'Space Mono';color:var(--rebel-red);font-size:.72rem;">Saved addresses table is not ready: ${escapeHtml(error.message)}</div>`; return; }
-  area.innerHTML = `<button class="btn btn--solid" style="width:100%;justify-content:center;margin-bottom:1rem;" onclick="openSavedAddressesModal()">Manage Saved Addresses</button>` + ((data||[]).map(a => `<div class="address-card ${a.is_default?'default':''}"><div class="address-card-head"><strong class="address-label">${escapeHtml(a.label || 'Other')}</strong>${a.is_default?`<span style="font-family:'Space Mono';font-size:.64rem;color:var(--success-green);">DEFAULT</span>`:''}</div><div class="address-meta"><strong>${escapeHtml(a.recipient_name || '')}</strong><br>${escapeHtml(a.address1 || '')}${a.address2 ? ', '+escapeHtml(a.address2):''}<br>${escapeHtml(a.district || '')}${a.state ? ', '+escapeHtml(a.state):''} - ${escapeHtml(a.pincode || '')}<br>${escapeHtml(a.phone || '')}</div></div>`).join('') || `<div style="font-family:'Space Mono';color:var(--grey);text-align:center;padding:1rem;">No saved addresses yet.</div>`);
+  if (!supabaseClient) { area.innerHTML = '<div class="profile-account-address-empty">Supabase not connected.</div>'; return; }
+  area.innerHTML = `
+    <h2 class="profile-account-heading">Saved Address</h2>
+    <p class="profile-account-subheading">Save and manage your delivery addresses.</p>
+    <div class="profile-account-address-add" onclick="toggleProfileAddressForm(true)"><strong>＋ Add New Address</strong><span>+</span></div>
+    <div id="saved-address-list" style="margin-bottom:1rem;"></div>
+    <div id="profile-address-form-wrap" class="profile-account-address-form" style="display:none;">
+      <h4 id="address-form-title" style="font-family:'Anton',sans-serif;color:var(--spray-yellow);text-transform:uppercase;margin-bottom:.2rem;">Add New Address</h4>
+      <p class="profile-account-form-note">Enter your address details below. No placeholder/sample text is used in the fields.</p>
+      <input type="hidden" id="address-edit-id">
+      <div class="account-grid">
+        <div class="account-field"><label>Save Address As</label><select id="address-label"><option>Home</option><option>Work</option><option>Other</option></select></div>
+        <div class="account-field"><label>Recipient Name *</label><input id="address-recipient-name" type="text" autocomplete="name"></div>
+        <div class="account-field"><label>Mobile Number</label><input id="address-phone" type="tel" autocomplete="tel"></div>
+        <div class="account-field"><label>Pincode *</label><input id="address-pincode" type="text" maxlength="6" inputmode="numeric" autocomplete="postal-code"></div>
+        <div class="account-field"><label>Address Line 1 *</label><input id="address-line1" type="text" autocomplete="address-line1"></div>
+        <div class="account-field"><label>Address Line 2</label><input id="address-line2" type="text" autocomplete="address-line2"></div>
+        <div class="account-field"><label>State</label><select id="address-state"></select></div>
+        <div class="account-field"><label>District</label><select id="address-district"></select></div>
+      </div>
+      <label style="display:flex;align-items:center;gap:.5rem;font-family:'Space Mono';font-size:.72rem;color:var(--paper);margin:.5rem 0 1rem;">
+        <input type="checkbox" id="address-is-default"> Set as Default Address
+      </label>
+      <div style="display:flex;gap:.6rem;justify-content:flex-end;flex-wrap:wrap;">
+        <button class="btn btn--ghost" id="address-cancel-btn" type="button" style="display:none;" onclick="resetAddressForm();toggleProfileAddressForm(false)">Cancel</button>
+        <button class="btn btn--solid" type="button" onclick="saveSavedAddress()">Save Address</button>
+      </div>
+    </div>`;
+  populateAddressStateSelect();
+  resetAddressForm();
+  await loadSavedAddresses();
+}
+
+function toggleProfileAddressForm(show) {
+  const wrap = document.getElementById('profile-address-form-wrap');
+  if (!wrap) return;
+  wrap.style.display = show ? 'block' : 'none';
+  if (show) setTimeout(() => document.getElementById('address-recipient-name')?.focus(), 0);
 }
 
 async function openSavedAddressesModal() {
   if (!loggedInUser || !supabaseClient) { showToast('Please login first.'); return; }
-  document.getElementById('saved-address-modal').style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-  populateAddressStateSelect();
-  resetAddressForm();
-  await loadSavedAddresses();
+  await openProfileModal('addresses');
 }
 
 function closeSavedAddressesModal() {
@@ -5599,6 +5693,7 @@ async function saveSavedAddress() {
     if(error){showToast('Address save failed: '+error.message);return;}
   }
   resetAddressForm();
+  toggleProfileAddressForm(false);
   await loadSavedAddresses();
   showToast('Address saved successfully!');
 }
@@ -5620,6 +5715,7 @@ async function editSavedAddress(id) {
   document.getElementById('address-is-default').checked=!!data.is_default;
   document.getElementById('address-form-title').innerText='Edit Address';
   document.getElementById('address-cancel-btn').style.display='inline-flex';
+  toggleProfileAddressForm(true);
 }
 
 async function setDefaultSavedAddress(id) {
@@ -5638,6 +5734,7 @@ async function deleteSavedAddress(id) {
   const {error}=await supabaseClient.from('user_addresses').delete().eq('id',id).eq('user_id',user.id);
   if(error){showToast('Delete failed: '+error.message);return;}
   resetAddressForm();
+  toggleProfileAddressForm(false);
   await loadSavedAddresses();
   showToast('Address deleted.');
 }
