@@ -2032,10 +2032,15 @@ function renderStorefront() {
     rowBlock.className = 'category-row-block';
     const rowTitle = document.createElement('div');
     rowTitle.className = 'category-row-title';
-    rowTitle.innerHTML = `
-      <span>${cat.name}</span>
-      <button class="view-more-btn" onclick="openCategoryDedicatedPage('${cat.name}')">View More →</button>
-    `;
+    const rowTitleText = document.createElement('span');
+    rowTitleText.textContent = cat.name || '';
+    const viewMoreBtn = document.createElement('button');
+    viewMoreBtn.type = 'button';
+    viewMoreBtn.className = 'view-more-btn';
+    viewMoreBtn.textContent = 'View More →';
+    viewMoreBtn.addEventListener('click', () => openCategoryDedicatedPage(cat.name));
+    rowTitle.appendChild(rowTitleText);
+    rowTitle.appendChild(viewMoreBtn);
     rowBlock.appendChild(rowTitle);
     const scrollWrap = document.createElement('div');
     scrollWrap.className = 'scroll-container-wrap';
@@ -2757,19 +2762,29 @@ function openWishlistModal() {
     let html = '';
     wishlist.forEach((item, idx) => {
       html += `
-        <div style="background:#1a1a1d; border:1px solid rgba(242,240,234,0.15); padding:1rem; margin-bottom:1rem; border-radius:4px; display:flex; justify-content:space-between; align-items:center;">
-          <div style="display:flex; gap:10px; align-items:center; cursor:pointer;" onclick="closeWishlistModal(); openProductByDetails('', '${item.id}')">
-            ${item.image ? `<img src="${escapeHtml(item.image)}" style="width:45px; height:45px; object-fit:contain; background:#111; border:1px solid #333;">` : ''}
+        <div class="wishlist-render-item" data-wishlist-index="${idx}" style="background:#1a1a1d; border:1px solid rgba(242,240,234,0.15); padding:1rem; margin-bottom:1rem; border-radius:4px; display:flex; justify-content:space-between; align-items:center;">
+          <div class="wishlist-render-main" style="display:flex; gap:10px; align-items:center; cursor:pointer;">
+            ${item.image ? `<img src="${escapeHtml(safeMediaUrl(item.image))}" style="width:45px; height:45px; object-fit:contain; background:#111; border:1px solid #333;">` : ''}
             <div>
               <h5 style="font-family:'Archivo Black'; font-size:0.9rem; text-transform:uppercase; color:var(--paper);">${escapeHtml(item.title)}</h5>
-              <div style="font-family:'Space Mono'; font-size:0.8rem; color:var(--spray-yellow);">ரூ ${item.price} <span style="font-size:0.65rem; color:var(--grey);">(Click to View)</span></div>
+              <div style="font-family:'Space Mono'; font-size:0.8rem; color:var(--spray-yellow);">ரூ ${escapeHtml(item.price)} <span style="font-size:0.65rem; color:var(--grey);">(Click to View)</span></div>
             </div>
           </div>
-          <button class="cart-item-remove" onclick="removeFromWishlist(event, ${idx})">Remove</button>
+          <button type="button" class="cart-item-remove wishlist-remove-btn">Remove</button>
         </div>
       `;
     });
     area.innerHTML = html;
+    area.querySelectorAll('.wishlist-render-item').forEach((card) => {
+      const idx = Number(card.dataset.wishlistIndex);
+      card.querySelector('.wishlist-render-main')?.addEventListener('click', () => {
+        const item = wishlist[idx];
+        if (!item) return;
+        closeWishlistModal();
+        openProductByDetails('', item.id);
+      });
+      card.querySelector('.wishlist-remove-btn')?.addEventListener('click', (event) => removeFromWishlist(event, idx));
+    });
   }
   modal.style.display = 'flex';
 }
@@ -3478,7 +3493,7 @@ function showOrderSuccessCelebration(orderId, paymentId) {
   const successMsg = document.getElementById('success-order-msg');
   
   if (successMsg) {
-    successMsg.innerHTML = `Order ID: <strong>${orderId}</strong><br>Payment Ref: <strong>${paymentId}</strong><br><br>Thank you! Your payment was verified and order has been confirmed.`;
+    successMsg.innerHTML = `Order ID: <strong>${escapeHtml(orderId)}</strong><br>Payment Ref: <strong>${escapeHtml(paymentId)}</strong><br><br>Thank you! Your payment was verified and order has been confirmed.`;
   }
   
   successModal.style.display = 'flex';
