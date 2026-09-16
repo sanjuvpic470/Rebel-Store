@@ -376,6 +376,9 @@ footer a:hover{color:var(--paper)}
 .profile-account-topbar{height:66px;border-bottom:1px solid rgba(242,240,234,.14);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;background:#0b0b0c;z-index:3}
 .profile-account-topbar-title{font-family:'Anton',sans-serif;font-size:1.45rem;text-transform:uppercase;color:var(--spray-yellow);letter-spacing:.04em}
 .profile-account-topbar-sub{font-family:'Space Mono',monospace;font-size:.66rem;color:var(--grey);margin-left:.65rem}
+.profile-account-logo-link{display:flex;align-items:center;gap:.65rem;background:transparent;border:0;padding:0;cursor:pointer;color:inherit}
+.profile-account-logo-link img{width:118px;height:44px;object-fit:contain;object-position:left center;display:block}
+
 .profile-account-close{background:transparent;border:1px solid rgba(242,240,234,.25);color:var(--paper);font-family:'Space Mono',monospace;font-size:.7rem;padding:.5rem .75rem;cursor:pointer}
 .profile-account-close:hover{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow)}
 .profile-account-layout{max-width:1180px;margin:0 auto;padding:2rem;display:grid;grid-template-columns:255px minmax(0,1fr);gap:2rem;align-items:start}
@@ -407,6 +410,20 @@ footer a:hover{color:var(--paper)}
 .profile-account-address-form .account-grid{margin-top:.8rem}
 .profile-account-address-form .account-field input,.profile-account-address-form .account-field select{background:#18181b}
 .profile-account-orders-empty,.profile-account-address-empty{font-family:'Space Mono',monospace;font-size:.72rem;color:var(--grey);text-align:center;padding:2rem 1rem}
+.billing-saved-addresses{border:1px solid rgba(242,240,234,.14);background:#111113;padding:1rem;margin-bottom:1.25rem}
+.billing-saved-addresses-title{font-family:'Anton',sans-serif;color:var(--spray-yellow);text-transform:uppercase;font-size:1.15rem;margin-bottom:.25rem}
+.billing-saved-addresses-sub{font-family:'Space Mono',monospace;color:var(--grey);font-size:.65rem;margin-bottom:.8rem}
+.billing-saved-address-list{display:grid;gap:.65rem}
+.billing-saved-address-card{width:100%;text-align:left;background:#18181b;color:var(--paper);border:1px solid rgba(242,240,234,.16);padding:.85rem;cursor:pointer;font:inherit}
+.billing-saved-address-card:hover,.billing-saved-address-card.selected{border-color:var(--spray-yellow);box-shadow:3px 3px 0 var(--paper)}
+.billing-saved-address-card-head{display:flex;justify-content:space-between;gap:.5rem;align-items:center}
+.billing-saved-address-card-label{font-family:'Anton',sans-serif;color:var(--spray-yellow);font-size:.9rem;text-transform:uppercase}
+.billing-saved-address-card-default{font-family:'Space Mono',monospace;color:var(--success-green);font-size:.6rem}
+.billing-saved-address-card-body{font-family:'Space Mono',monospace;color:var(--paper);font-size:.68rem;line-height:1.55;margin-top:.35rem}
+.billing-new-address-btn{width:100%;margin-top:.7rem;background:transparent;color:var(--paper);border:1px solid var(--spray-yellow);padding:.75rem;font-family:'Space Mono',monospace;font-size:.68rem;cursor:pointer}
+.billing-new-address-btn:hover{background:var(--spray-yellow);color:var(--ink)}
+.billing-address-status{font-family:'Space Mono',monospace;color:var(--spray-yellow);font-size:.62rem;margin-top:.25rem;min-height:1em}
+
 @media(max-width:800px){.profile-account-layout{grid-template-columns:1fr;padding:1rem;gap:1rem}.profile-account-sidebar{position:static}.profile-account-topbar{padding:0 1rem}.profile-account-topbar-sub{display:none}.profile-account-nav{display:grid;grid-template-columns:1fr 1fr}.profile-account-nav button{border-right:1px solid rgba(242,240,234,.09)}.profile-account-sidebar-actions{margin-top:.8rem}.profile-account-usercard{margin-bottom:.8rem}}
 
 /* PHASE 3 — ORDER TRACKING + DELIVERY ESTIMATE */
@@ -891,16 +908,23 @@ footer a:hover{color:var(--paper)}
     <button class="back-btn" onclick="goBackFromShipping()">← Back</button>
     <div class="billing-form-box">
       <h2>📍 Shipping & Billing Address</h2>
+
+      <div class="billing-saved-addresses">
+        <div class="billing-saved-addresses-title">Saved Addresses</div>
+        <div class="billing-saved-addresses-sub">Select an address already saved to your Rebel Store account.</div>
+        <div id="billing-saved-address-list" class="billing-saved-address-list"></div>
+        <button type="button" class="billing-new-address-btn" onclick="startNewBillingAddress()">＋ Add New Address</button>
+      </div>
       
       <div class="b-field">
         <label>Full Name *</label>
-        <input type="text" id="b-name" placeholder="John Doe" required autocomplete="name">
+        <input type="text" id="b-name" required autocomplete="name">
       </div>
 
       <div class="b-row">
         <div class="b-field">
           <label>Mobile Number *</label>
-          <input type="tel" id="b-phone" placeholder="9876543210" required autocomplete="tel">
+          <input type="tel" id="b-phone" required autocomplete="tel">
         </div>
         <div class="b-field">
           <label>Alternate Mobile</label>
@@ -910,24 +934,24 @@ footer a:hover{color:var(--paper)}
 
       <div class="b-field">
         <label>Email Address *</label>
-        <input type="email" id="b-email" placeholder="john@example.com" required autocomplete="email">
+        <input type="email" id="b-email" required autocomplete="email">
       </div>
 
       <div class="b-field">
         <label>Address Line 1 *</label>
-        <input type="text" id="b-address1" placeholder="Door No, Building, Street, Area" required autocomplete="address-line1">
+        <input type="text" id="b-address1" required autocomplete="address-line1">
       </div>
 
       <div class="b-field">
         <label>Address Line 2 (Optional)</label>
-        <input type="text" id="b-address2" placeholder="Landmark, Apartment Name, Floor" autocomplete="address-line2">
+        <input type="text" id="b-address2" autocomplete="address-line2">
       </div>
 
       <div class="b-row">
         <div class="b-field">
           <label>Pincode *</label>
-          <input type="text" id="b-pincode" placeholder="6-digit Pincode (e.g. 600001)" maxlength="6" oninput="handlePincodeLookup(this.value)" required autocomplete="postal-code">
-          <span class="b-hint" id="pincode-status-text"></span>
+          <input type="text" id="b-pincode" maxlength="6" oninput="handlePincodeLookup(this.value)" required autocomplete="postal-code">
+          <span class="billing-address-status" id="pincode-status-text"></span>
         </div>
         <div class="b-field">
           <label>State *</label>
@@ -1046,7 +1070,10 @@ footer a:hover{color:var(--paper)}
   <div class="auth-modal profile-account-modal" id="profile-modal">
     <div class="profile-account-page">
       <div class="profile-account-topbar">
-        <div><span class="profile-account-topbar-title">Rebel Store</span><span class="profile-account-topbar-sub">MY ACCOUNT</span></div>
+        <button type="button" class="profile-account-logo-link" onclick="closeProfileModal();showHomeView()" aria-label="Rebel Store Home">
+          <img src="https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20Favicon4.png" alt="Rebel Store Logo">
+          <span class="profile-account-topbar-sub">MY ACCOUNT</span>
+        </button>
         <button class="profile-account-close" type="button" onclick="closeProfileModal()">← Back to Shop</button>
       </div>
       <div id="profile-content-area"></div>
@@ -2985,6 +3012,7 @@ async function showShippingFormView() {
   document.getElementById('shipping-billing-page').style.display = 'block';
 
   initStatesDropdown();
+  await renderBillingSavedAddresses();
 
   if (loggedInUser) {
     if (loggedInUser.name) document.getElementById('b-name').value = loggedInUser.name;
@@ -3017,6 +3045,149 @@ async function showShippingFormView() {
 
   window.location.hash = '#shipping';
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+
+async function renderBillingSavedAddresses(selectedId = '') {
+  const list = document.getElementById('billing-saved-address-list');
+  if (!list || !supabaseClient) return;
+
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) {
+    list.innerHTML = '<div class="billing-saved-addresses-sub">Please login to use saved addresses.</div>';
+    return;
+  }
+
+  const { data, error } = await supabaseClient
+    .from('user_addresses')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('is_default', { ascending: false })
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.warn('Billing saved address load failed:', error.message);
+    list.innerHTML = '<div class="billing-saved-addresses-sub">Saved addresses could not be loaded. You can add a new address below.</div>';
+    return;
+  }
+
+  if (!Array.isArray(data) || data.length === 0) {
+    list.innerHTML = '<div class="billing-saved-addresses-sub">No saved address yet. Add a new address below.</div>';
+    return;
+  }
+
+  const currentDefault = data.find(a => a.is_default);
+  const activeId = String(selectedId || currentDefault?.id || '');
+
+  list.innerHTML = data.map(a => {
+    const id = String(a.id || '');
+    const addressText = `${a.address1 || ''}${a.address2 ? ', ' + a.address2 : ''}, ${a.district || ''}, ${a.state || ''} - ${a.pincode || ''}`;
+    return `<button type="button" class="billing-saved-address-card ${id === activeId ? 'selected' : ''}" onclick="selectSavedBillingAddress('${escapeHtml(id)}')">
+      <div class="billing-saved-address-card-head">
+        <span class="billing-saved-address-card-label">${escapeHtml(a.label || 'Other')}</span>
+        ${a.is_default ? '<span class="billing-saved-address-card-default">DEFAULT</span>' : ''}
+      </div>
+      <div class="billing-saved-address-card-body">
+        <strong>${escapeHtml(a.recipient_name || '')}</strong><br>
+        ${escapeHtml(addressText)}<br>
+        ${escapeHtml(a.phone || '')}
+      </div>
+    </button>`;
+  }).join('');
+}
+
+async function selectSavedBillingAddress(id) {
+  if (!supabaseClient) return;
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) { showToast('Please login first.'); return; }
+
+  const { data, error } = await supabaseClient
+    .from('user_addresses')
+    .select('*')
+    .eq('id', id)
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (error || !data) {
+    showToast('Saved address could not be loaded.');
+    return;
+  }
+
+  fillBillingFromAddress(data);
+  await renderBillingSavedAddresses(id);
+  showToast('Saved address selected.');
+}
+
+function startNewBillingAddress() {
+  ['b-address1','b-address2','b-pincode'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  const state = document.getElementById('b-state');
+  const district = document.getElementById('b-district');
+  if (state) state.value = '';
+  if (district) district.innerHTML = '<option value="">Select District</option>';
+  const hint = document.getElementById('pincode-status-text');
+  if (hint) hint.textContent = '';
+  document.querySelectorAll('#billing-saved-address-list .billing-saved-address-card').forEach(card => card.classList.remove('selected'));
+  document.getElementById('b-address1')?.focus();
+}
+
+async function handleSavedAddressPincodeLookup(pincode) {
+  const statusHint = document.getElementById('address-pincode-status');
+  const stateSelect = document.getElementById('address-state');
+  const districtSelect = document.getElementById('address-district');
+  pincode = String(pincode || '').trim();
+
+  if (statusHint) statusHint.textContent = '';
+  if (!stateSelect || !districtSelect) return;
+  if (pincode.length !== 6 || !/^\d{6}$/.test(pincode)) return;
+
+  if (statusHint) statusHint.textContent = 'Detecting state & district...';
+
+  try {
+    const res = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+    const data = await res.json();
+
+    if (!(data && data[0] && data[0].Status === 'Success' && data[0].PostOffice?.length)) {
+      if (statusHint) statusHint.textContent = 'Pincode not found. Please choose State & District manually.';
+      return;
+    }
+
+    const postOffice = data[0].PostOffice[0];
+    const apiState = String(postOffice.State || '');
+    const apiDistrict = String(postOffice.District || '');
+
+    let matchedState = Object.keys(INDIA_LOCATIONS).find(s => s.toLowerCase() === apiState.toLowerCase());
+    if (!matchedState) {
+      const opt = document.createElement('option');
+      opt.value = apiState;
+      opt.textContent = apiState;
+      stateSelect.appendChild(opt);
+      matchedState = apiState;
+    }
+
+    stateSelect.value = matchedState;
+    stateSelect.dispatchEvent(new Event('change'));
+
+    const matchedDistrict = Array.from(districtSelect.options).find(
+      o => o.value.toLowerCase() === apiDistrict.toLowerCase()
+    );
+
+    if (matchedDistrict) {
+      districtSelect.value = matchedDistrict.value;
+    } else if (apiDistrict) {
+      const opt = document.createElement('option');
+      opt.value = apiDistrict;
+      opt.textContent = apiDistrict;
+      opt.selected = true;
+      districtSelect.appendChild(opt);
+    }
+
+    if (statusHint) statusHint.textContent = `✓ Detected: ${apiDistrict}, ${apiState}`;
+  } catch (err) {
+    if (statusHint) statusHint.textContent = 'Auto-detect offline. Please choose State & District.';
+  }
 }
 
 function fillBillingFromAddress(address) {
@@ -5593,7 +5764,7 @@ async function renderAddressesInsideProfile() {
         <div class="account-field"><label>Save Address As</label><select id="address-label"><option>Home</option><option>Work</option><option>Other</option></select></div>
         <div class="account-field"><label>Recipient Name *</label><input id="address-recipient-name" type="text" autocomplete="name"></div>
         <div class="account-field"><label>Mobile Number</label><input id="address-phone" type="tel" autocomplete="tel"></div>
-        <div class="account-field"><label>Pincode *</label><input id="address-pincode" type="text" maxlength="6" inputmode="numeric" autocomplete="postal-code"></div>
+        <div class="account-field"><label>Pincode *</label><input id="address-pincode" type="text" maxlength="6" inputmode="numeric" autocomplete="postal-code" oninput="handleSavedAddressPincodeLookup(this.value)"><div id="address-pincode-status" class="billing-address-status"></div></div>
         <div class="account-field"><label>Address Line 1 *</label><input id="address-line1" type="text" autocomplete="address-line1"></div>
         <div class="account-field"><label>Address Line 2</label><input id="address-line2" type="text" autocomplete="address-line2"></div>
         <div class="account-field"><label>State</label><select id="address-state"></select></div>
@@ -5649,6 +5820,7 @@ function resetAddressForm() {
   const cancel=document.getElementById('address-cancel-btn'); if(cancel) cancel.style.display='none';
   const state=document.getElementById('address-state'); if(state) state.value='';
   const district=document.getElementById('address-district'); if(district) district.innerHTML='<option value="">Select District</option>';
+  const pinStatus=document.getElementById('address-pincode-status'); if(pinStatus) pinStatus.textContent='';
 }
 
 async function loadSavedAddresses() {
