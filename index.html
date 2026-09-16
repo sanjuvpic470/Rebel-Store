@@ -2867,7 +2867,7 @@ function applyCoupon() {
 
 function renderCartDrawer() {
   const list = document.getElementById('cart-items-list');
-  const countEl = document.getElementById('cart-count');
+  const countEl = document.getElementById('cart-count-drawer') || document.getElementById('cart-count');
   const totalEl = document.getElementById('cart-total-price');
   if (!list) return;
   list.innerHTML = '';
