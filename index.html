@@ -310,6 +310,58 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .admin-order-toolbar{display:flex;justify-content:space-between;align-items:center;gap:.7rem;flex-wrap:wrap;margin-bottom:.7rem}.admin-status-pills{display:flex;gap:.35rem;flex-wrap:wrap}.admin-status-pills button{border:1px solid rgba(242,240,234,.14);background:#151518;color:var(--paper);padding:.42rem .55rem;font-family:'Space Mono',monospace;font-size:.55rem;cursor:pointer}.admin-status-pills button:hover,.admin-status-pills button.active{border-color:var(--spray-yellow);background:var(--spray-yellow);color:var(--ink)}.admin-status-pills button b{font-size:.55rem;margin-left:.2rem}.admin-order-search{width:210px!important;margin:0!important}
 .admin-orders-table{font-size:.68rem}.admin-orders-table th{font-size:.57rem;padding:.6rem}.admin-orders-table td{padding:.65rem;vertical-align:top}.admin-orders-table td:last-child{min-width:210px}.admin-chart-total{font-family:'Anton',sans-serif;color:var(--spray-yellow);font-size:1.2rem}
 .admin-order-action-box{background:#101013;border:1px solid rgba(242,240,234,.12);padding:.6rem;margin-top:.4rem}.admin-order-action-box .admin-tracking-fields{margin:0}.admin-next-btn{width:100%;margin-top:.4rem;padding:.48rem!important;font-size:.6rem!important}.admin-note-input{width:100%;min-height:48px;resize:vertical;background:#111;border:1px solid rgba(242,240,234,.22);color:var(--paper);font-family:'Space Mono',monospace;font-size:.6rem;padding:.45rem}.admin-note-input:focus{outline:none;border-color:var(--spray-yellow)}
+
+/* V14 ADMIN INNER UI REDESIGN */
+.admin-sub-page{background:transparent;border:0;padding:0;border-radius:0}
+.admin-sub-page.active{animation:adminPageIn .18s ease-out}
+@keyframes adminPageIn{from{opacity:.35;transform:translateY(4px)}to{opacity:1;transform:none}}
+.sub-page-header{background:linear-gradient(180deg,#18181c,#131316);border:1px solid rgba(242,240,234,.12);border-radius:10px;padding:.9rem 1rem;margin-bottom:.8rem;min-height:58px;box-sizing:border-box;box-shadow:0 8px 24px rgba(0,0,0,.16)}
+.sub-page-header h2{font-family:'Anton',sans-serif;font-size:1.28rem;text-transform:uppercase;color:var(--paper);margin:0;letter-spacing:.01em}
+.sub-page-header p{font-family:'Space Mono',monospace;color:var(--grey);font-size:.58rem;margin:.25rem 0 0}
+.sub-page-header .admin-mini-label{font-size:.5rem}
+.admin-inner-card{background:#151518;border:1px solid rgba(242,240,234,.1);border-radius:9px;padding:.9rem;margin-bottom:.75rem}
+.admin-table-wrap{background:#151518;border:1px solid rgba(242,240,234,.1);border-radius:9px;padding:.15rem;overflow-x:auto;margin-bottom:.8rem}
+.admin-table-wrap .date-chart-table{background:#151518}
+.date-chart-table th{background:#101013;color:#aaa;font-size:.52rem;letter-spacing:.05em;padding:.65rem;border-bottom:1px solid rgba(242,240,234,.1)}
+.date-chart-table td{padding:.7rem;border-bottom:1px solid rgba(242,240,234,.06);font-size:.66rem}
+.date-chart-table tbody tr:hover{background:#1b1b1f}
+.admin-sub-page .admin-input-full,.admin-sub-page .admin-input-small,.admin-sub-page .cal-dropdown{border-radius:6px;background:#0f0f12;border-color:rgba(242,240,234,.14)}
+.admin-sub-page .btn{border-radius:6px}
+.admin-sub-page .back-btn{border:1px solid rgba(242,240,234,.18);background:#101013;color:var(--paper);padding:.45rem .7rem;border-radius:6px;font-family:'Space Mono',monospace;font-size:.58rem;cursor:pointer}
+.admin-sub-page .back-btn:hover{border-color:var(--spray-yellow);color:var(--spray-yellow)}
+.admin-order-guide{background:#101013;border-radius:9px;padding:.55rem .65rem;margin-bottom:.65rem;box-shadow:inset 0 0 0 1px rgba(242,240,234,.05)}
+.admin-order-toolbar{background:#151518;border:1px solid rgba(242,240,234,.1);border-radius:9px;padding:.55rem;margin-bottom:.65rem;position:sticky;top:8px;z-index:5;backdrop-filter:blur(8px)}
+.admin-status-pills{gap:.25rem}
+.admin-status-pills button{border-radius:999px;padding:.38rem .6rem;background:#101013;font-size:.52rem}
+.admin-status-pills button.active{box-shadow:0 0 0 2px rgba(255,213,0,.12)}
+.admin-order-search{border-radius:999px!important;padding:.5rem .7rem!important}
+.admin-orders-table td:last-child{min-width:240px}
+.admin-order-action-box{background:#0f0f12;border:1px solid rgba(242,240,234,.1);border-radius:8px;padding:.55rem}
+.admin-order-action-box select{border-radius:6px!important;background:#17171b!important;border:1px solid rgba(242,240,234,.15)!important;color:var(--paper)!important}
+.admin-next-btn{border-radius:6px!important}
+.admin-dispatch-box{margin-top:.55rem;padding:.65rem;background:linear-gradient(180deg,#171711,#101013);border:1px solid rgba(255,213,0,.24);border-radius:8px}
+.admin-dispatch-head{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.45rem}
+.admin-dispatch-title{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:.8rem;color:var(--spray-yellow)}
+.admin-dispatch-state{font-family:'Space Mono',monospace;font-size:.5rem;color:var(--grey)}
+.admin-dispatch-grid{display:grid;grid-template-columns:1fr 1fr;gap:.45rem}
+.admin-dispatch-grid input{width:100%;box-sizing:border-box;background:#0b0b0d;border:1px solid rgba(242,240,234,.18);color:var(--paper);padding:.48rem .55rem;border-radius:5px;font-family:'Space Mono',monospace;font-size:.58rem}
+.admin-dispatch-grid input:focus{outline:none;border-color:var(--spray-yellow)}
+.admin-dispatch-grid input.required-missing{border-color:var(--rebel-red)}
+.admin-dispatch-save{grid-column:1/-1;width:100%;padding:.5rem!important;font-size:.6rem!important}
+.admin-dispatch-hint{font-family:'Space Mono',monospace;font-size:.5rem;color:#888;margin-top:.4rem;line-height:1.4}
+.admin-tracking-link{font-family:'Space Mono',monospace;font-size:.5rem;color:var(--success-green);margin-top:.35rem;word-break:break-word}
+.admin-delivery-box{margin-top:.5rem;padding:.5rem .6rem;border-radius:7px;background:#111;border:1px dashed rgba(242,240,234,.14);font-family:'Space Mono',monospace;font-size:.52rem;color:#aaa;line-height:1.45}
+.admin-delivery-box strong{color:var(--paper)}
+.admin-quick-action-row{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.5rem}
+.admin-quick-action-row .btn{padding:4px 7px;font-size:.55rem}
+.calendar-section-box,.graph-container{background:#151518;border:1px solid rgba(242,240,234,.1);border-radius:9px;padding:1rem;margin-bottom:.75rem}
+.admin-category-grid{gap:.65rem!important}
+.admin-category-grid > *{border-radius:9px!important}
+#subpage-content-cms>div:not(.sub-page-header),#subpage-offers>div:not(.sub-page-header),#subpage-staff>div:not(.sub-page-header){background:#151518!important;border:1px solid rgba(242,240,234,.1)!important;border-radius:9px!important;padding:1rem!important}
+#subpage-products>div:not(.sub-page-header),#subpage-products #admin-category-detail-view{border-radius:9px!important}
+#subpage-products #admin-category-main-grid{margin-bottom:.7rem}
+@media(max-width:650px){.admin-dispatch-grid{grid-template-columns:1fr}.admin-order-toolbar{position:static}.sub-page-header{padding:.75rem}.sub-page-header h2{font-size:1.1rem}}
+
 @media(max-width:1050px){.admin-nav-grid-new{grid-template-columns:repeat(3,minmax(0,1fr))}.admin-kpi-grid{grid-template-columns:repeat(2,1fr)}.admin-dashboard-grid{grid-template-columns:1fr}}
 @media(max-width:650px){.admin-nav-grid-new{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-kpi-grid{grid-template-columns:1fr 1fr}.admin-kpi-card{padding:.7rem}.admin-kpi-card strong{font-size:1.25rem}.admin-status-grid{grid-template-columns:repeat(2,1fr)}.admin-order-search{width:100%!important}.admin-order-toolbar{align-items:stretch}.admin-orders-table{min-width:820px}.admin-order-guide{overflow-x:auto;flex-wrap:nowrap}.admin-graph-foot{font-size:.5rem}}
 
@@ -1294,7 +1346,6 @@ footer a:hover{color:var(--paper)}
         <div class="admin-status-grid" id="admin-status-overview">
           <button onclick="openAdminSubPage('subpage-orders');filterOrdersByStatus('New',document.querySelector('#order-status-tabs button[data-status=New]'))"><span>🆕</span><b id="dash-new">0</b><small>New</small></button>
           <button onclick="openAdminSubPage('subpage-orders');filterOrdersByStatus('Processing',document.querySelector('#order-status-tabs button[data-status=Processing]'))"><span>⚙️</span><b id="dash-processing">0</b><small>Processing</small></button>
-          <button onclick="openAdminSubPage('subpage-orders');filterOrdersByStatus('Printing',document.querySelector('#order-status-tabs button[data-status=Printing]'))"><span>🖨️</span><b id="dash-printing">0</b><small>Printing</small></button>
           <button onclick="openAdminSubPage('subpage-orders');filterOrdersByStatus('Ready',document.querySelector('#order-status-tabs button[data-status=Ready]'))"><span>📦</span><b id="dash-ready">0</b><small>Ready</small></button>
           <button onclick="openAdminSubPage('subpage-orders');filterOrdersByStatus('Shipping',document.querySelector('#order-status-tabs button[data-status=Shipping]'))"><span>🚚</span><b id="dash-shipping">0</b><small>Shipping</small></button>
           <button onclick="openAdminSubPage('subpage-orders');filterOrdersByStatus('Delivered',document.querySelector('#order-status-tabs button[data-status=Delivered]'))"><span>✓</span><b id="dash-delivered">0</b><small>Delivered</small></button>
@@ -1475,19 +1526,18 @@ footer a:hover{color:var(--paper)}
       </div>
 
       <div class="admin-order-guide">
-        <span>🆕 New</span><i>→</i><span>⚙️ Processing</span><i>→</i><span>🖨️ Printing</span><i>→</i><span>📦 Ready</span><i>→</i><span>🚚 Dispatched</span><i>→</i><span>🏠 Out</span><i>→</i><span>✓ Delivered</span>
+        <span>🆕 New</span><i>→</i><span>⚙️ Processing</span><i>→</i><span>📦 Ready</span><i>→</i><span>🚚 Shipping</span><i>→</i><span>✓ Delivered</span><small style="margin-left:auto;color:#777;">Production steps stay inside the order.</small>
       </div>
 
       <div class="admin-order-toolbar">
         <div class="admin-status-pills" id="order-status-tabs">
           <button data-status="New" class="active" onclick="filterOrdersByStatus('New', this)">🆕 New <b id="cnt-new">0</b></button>
-          <button data-status="All" onclick="filterOrdersByStatus('All', this)">All <b id="cnt-all">0</b></button>
-          <button data-status="Processing" onclick="filterOrdersByStatus('Processing', this)">⚙️ Process <b id="cnt-processing">0</b></button>
-          <button data-status="Printing" onclick="filterOrdersByStatus('Printing', this)">🖨️ Print <b id="cnt-printing">0</b></button>
+          <button data-status="Processing" onclick="filterOrdersByStatus('Processing', this)">⚙️ Processing <b id="cnt-processing">0</b></button>
           <button data-status="Ready" onclick="filterOrdersByStatus('Ready', this)">📦 Ready <b id="cnt-ready">0</b></button>
-          <button data-status="Shipping" onclick="filterOrdersByStatus('Shipping', this)">🚚 Ship <b id="cnt-shipping">0</b></button>
+          <button data-status="Shipping" onclick="filterOrdersByStatus('Shipping', this)">🚚 Shipping <b id="cnt-shipping">0</b></button>
           <button data-status="Delivered" onclick="filterOrdersByStatus('Delivered', this)">✓ Delivered <b id="cnt-delivered">0</b></button>
           <button data-status="Returned" onclick="filterOrdersByStatus('Returned', this)">↩ Returned <b id="cnt-returned">0</b></button>
+          <button data-status="All" onclick="filterOrdersByStatus('All', this)">All <b id="cnt-all">0</b></button>
         </div>
         <input type="text" id="order-search-input" class="admin-input-small admin-order-search" placeholder="🔎 Order / customer / phone" oninput="handleOrderSearch(this.value)" autocomplete="off">
       </div>
@@ -4229,9 +4279,59 @@ async function acceptNewOrder(orderId) {
   await updateOrderStatusInSupabase(orderId, 'Processing');
 }
 
-async function updateOrderStatusInSupabase(orderId, newStatus) {
+function buildTrackingUrl(courierName, trackingId) {
+  const courier = String(courierName || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+  const tracking = String(trackingId || '').trim();
+  if (!tracking) return '';
+  const enc = encodeURIComponent(tracking);
+  if (courier.includes('delhivery')) return `https://www.delhivery.com/track/package/${enc}`;
+  if (courier.includes('bluedart')) return `https://www.bluedart.com/tracking?trackFor=0&trackNo=${enc}`;
+  if (courier.includes('dtdc')) return `https://www.dtdc.in/tracking/tracking_results.asp?Ttype=awb_no&strCnno=${enc}`;
+  if (courier.includes('xpressbees')) return `https://www.xpressbees.com/shipment/tracking?awbNo=${enc}`;
+  if (courier.includes('ecom')) return `https://ecomexpress.in/tracking/?awb_field=${enc}`;
+  if (courier.includes('indiapost') || courier.includes('india post')) return `https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx?consignment=${enc}`;
+  if (courier.includes('shiprocket')) return `https://www.shiprocket.in/shipment-tracking/${enc}`;
+  return '';
+}
+
+function focusDispatchFields(orderId) {
+  const box = document.getElementById(`dispatch-box-${orderId}`);
+  const input = document.getElementById(`tracking-${orderId}`);
+  if (box) box.scrollIntoView({behavior:'smooth', block:'center'});
+  if (input) setTimeout(() => input.focus(), 250);
+}
+
+async function saveAndDispatchOrder(orderId) {
+  const courierInput = document.getElementById(`courier-${orderId}`);
+  const trackingInput = document.getElementById(`tracking-${orderId}`);
+  const courierName = String(courierInput?.value || '').trim();
+  const trackingId = String(trackingInput?.value || '').trim();
+  if (!trackingId) {
+    if (trackingInput) trackingInput.classList.add('required-missing');
+    showToast('Tracking ID / AWB is required before dispatch.');
+    trackingInput?.focus();
+    return;
+  }
+  if (!courierName) {
+    showToast('Enter the courier / delivery partner name.');
+    courierInput?.focus();
+    return;
+  }
+  if (trackingInput) trackingInput.classList.remove('required-missing');
+  const saved = await updateOrderTrackingDetails(orderId, courierName, trackingId, true);
+  if (!saved) return;
+  await updateOrderStatusInSupabase(orderId, 'Dispatched', { allowDispatch: true });
+}
+
+async function updateOrderStatusInSupabase(orderId, newStatus, options = {}) {
   const found = ordersHistory.find(o => o.id === orderId);
   if (!found || !supabaseClient) return;
+
+  if (newStatus === 'Dispatched' && !options.allowDispatch) {
+    showToast('Use Dispatch Order and enter the Tracking ID / AWB first.');
+    focusDispatchFields(orderId);
+    return;
+  }
 
   const { error } = await supabaseClient
     .from('orders')
@@ -4250,32 +4350,39 @@ async function updateOrderStatusInSupabase(orderId, newStatus) {
   renderAdminPanels(currentSelectedDateFilter);
 }
 
-async function updateOrderTrackingDetails(orderId, courierName, trackingId) {
+async function updateOrderTrackingDetails(orderId, courierName, trackingId, silent = false) {
   const found = ordersHistory.find(o => o.id === orderId);
-  if (!found || !supabaseClient) return;
+  if (!found || !supabaseClient) return false;
 
   courierName = String(courierName || '').trim().slice(0, 100);
   trackingId = String(trackingId || '').trim().slice(0, 100);
+  if (!trackingId) {
+    showToast('Tracking ID / AWB is required.');
+    return false;
+  }
 
   const { error } = await supabaseClient
     .from('orders')
     .update({
       courier_name: courierName || null,
-      tracking_id: trackingId || null
+      tracking_id: trackingId
     })
     .eq('order_id', orderId);
 
   if (error) {
     console.error('Tracking update error:', error);
     showToast('Tracking update failed: ' + error.message);
-    return;
+    return false;
   }
 
   found.courierName = courierName;
   found.trackingId = trackingId;
   localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
-  showToast(`Tracking details saved for ${orderId}.`);
-  renderAdminPanels(currentSelectedDateFilter);
+  if (!silent) {
+    showToast(`Tracking details saved for ${orderId}.`);
+    renderAdminPanels(currentSelectedDateFilter);
+  }
+  return true;
 }
 
 async function updateItemStockMeta(orderId, itemIndex, field, val) {
@@ -4342,29 +4449,37 @@ function renderAdminPanels(filterDate = '') {
   Object.entries(queue).forEach(([k,v]) => setText('dash-'+k, v));
 
   const baseOrdersForCounts = filterDate ? ordersHistory.filter(o => o.date === filterDate) : ordersHistory;
+  const getOrderBucket = (status) => {
+    const st = String(status || 'New');
+    if (st === 'New') return 'New';
+    if (['Processing','Pending Print','Go For Print','Print Received'].includes(st)) return 'Processing';
+    if (['Product Ready','Packaged'].includes(st)) return 'Ready';
+    if (['Dispatched','Shipped','Out for Delivery'].includes(st)) return 'Shipping';
+    if (['Delivered','Completed'].includes(st)) return 'Delivered';
+    if (st === 'Returned') return 'Returned';
+    return 'Processing';
+  };
   const counts = {
-    'cnt-new': baseOrdersForCounts.filter(o => o.orderStatus === 'New').length,
-    'cnt-all': baseOrdersForCounts.filter(o => !['Delivered','Completed'].includes(o.orderStatus)).length,
-    'cnt-processing': baseOrdersForCounts.filter(o => o.orderStatus === 'Processing').length,
-    'cnt-printing': baseOrdersForCounts.filter(o => ['Pending Print','Go For Print','Print Received'].includes(o.orderStatus)).length,
-    'cnt-ready': baseOrdersForCounts.filter(o => ['Product Ready','Packaged'].includes(o.orderStatus)).length,
-    'cnt-shipping': baseOrdersForCounts.filter(o => ['Dispatched','Shipped','Out for Delivery'].includes(o.orderStatus)).length,
-    'cnt-delivered': baseOrdersForCounts.filter(o => ['Delivered','Completed'].includes(o.orderStatus)).length,
-    'cnt-returned': baseOrdersForCounts.filter(o => o.orderStatus === 'Returned').length
+    'cnt-new': baseOrdersForCounts.filter(o => getOrderBucket(o.orderStatus) === 'New').length,
+    'cnt-processing': baseOrdersForCounts.filter(o => getOrderBucket(o.orderStatus) === 'Processing').length,
+    'cnt-ready': baseOrdersForCounts.filter(o => getOrderBucket(o.orderStatus) === 'Ready').length,
+    'cnt-shipping': baseOrdersForCounts.filter(o => getOrderBucket(o.orderStatus) === 'Shipping').length,
+    'cnt-delivered': baseOrdersForCounts.filter(o => getOrderBucket(o.orderStatus) === 'Delivered').length,
+    'cnt-returned': baseOrdersForCounts.filter(o => getOrderBucket(o.orderStatus) === 'Returned').length,
+    'cnt-all': baseOrdersForCounts.length
   };
   Object.entries(counts).forEach(([id,v]) => setText(id, v));
-  const completed = baseOrdersForCounts.filter(o => ['Delivered','Completed'].includes(o.orderStatus)).length;
+  const completed = baseOrdersForCounts.filter(o => getOrderBucket(o.orderStatus) === 'Delivered').length;
   setText('cnt-completed', completed);
 
   const statusAliases = {
-    New: o => o.orderStatus === 'New',
-    All: o => !['Delivered','Completed'].includes(o.orderStatus),
-    Processing: o => o.orderStatus === 'Processing',
-    Printing: o => ['Pending Print','Go For Print','Print Received'].includes(o.orderStatus),
-    Ready: o => ['Product Ready','Packaged'].includes(o.orderStatus),
-    Shipping: o => ['Dispatched','Shipped','Out for Delivery'].includes(o.orderStatus),
-    Delivered: o => ['Delivered','Completed'].includes(o.orderStatus),
-    Returned: o => o.orderStatus === 'Returned'
+    New: o => getOrderBucket(o.orderStatus) === 'New',
+    Processing: o => getOrderBucket(o.orderStatus) === 'Processing',
+    Ready: o => getOrderBucket(o.orderStatus) === 'Ready',
+    Shipping: o => getOrderBucket(o.orderStatus) === 'Shipping',
+    Delivered: o => getOrderBucket(o.orderStatus) === 'Delivered',
+    Returned: o => getOrderBucket(o.orderStatus) === 'Returned',
+    All: o => true
   };
 
   const chartTbody = document.getElementById('date-chart-tbody');
@@ -4409,22 +4524,35 @@ function renderAdminPanels(filterDate = '') {
         const statusOptionsHtml = statusList.map(st => `<option value="${escapeHtml(st)}" ${ord.orderStatus === st ? 'selected' : ''}>${escapeHtml(st)}</option>`).join('');
         const next = getNextOrderStatus(ord.orderStatus);
         const statusBadge = escapeHtml(ord.orderStatus || 'New');
+        const canDispatch = ['Product Ready','Packaged'].includes(String(ord.orderStatus || ''));
+        const dispatched = ['Dispatched','Shipped','Out for Delivery','Delivered','Completed'].includes(String(ord.orderStatus || ''));
+        const trackingUrl = buildTrackingUrl(ord.courierName, ord.trackingId);
+        const dispatchButtonHtml = canDispatch ? `<button class="btn btn--solid admin-next-btn" type="button" onclick="event.stopPropagation();focusDispatchFields('${escapeHtml(ord.id)}')">🚚 Dispatch Order</button>` : '';
+        const nextButtonHtml = next && !['Delivered','Completed','Returned','Dispatched'].includes(String(ord.orderStatus || '')) ? `<button class="btn btn--solid admin-next-btn" type="button" onclick="event.stopPropagation();updateOrderStatusInSupabase('${escapeHtml(ord.id)}','${escapeHtml(next)}')">Next → ${escapeHtml(next)}</button>` : '';
         const actionColHtml = `
           <div class="admin-order-action-box" onclick="event.stopPropagation()">
-            ${ord.orderStatus === 'New' ? `<button class="btn btn--solid admin-next-btn" type="button" onclick="acceptNewOrder('${escapeHtml(ord.id)}')">✓ Accept → Processing</button>` : ''}
-            <div style="font-family:'Space Mono';font-size:.55rem;color:var(--grey);margin-bottom:.25rem;text-transform:uppercase;">Status · ${statusBadge}</div>
-            <select class="cal-dropdown" style="width:100%;font-size:.68rem;padding:.42rem;margin-bottom:.45rem;" onchange="updateOrderStatusInSupabase('${escapeHtml(ord.id)}', this.value)" onclick="event.stopPropagation()"><option value="New" ${ord.orderStatus === 'New' ? 'selected' : ''}>New</option>${statusOptionsHtml}</select>
-            ${next && ord.orderStatus !== 'Delivered' && ord.orderStatus !== 'Completed' && ord.orderStatus !== 'Returned' ? `<button class="btn btn--solid admin-next-btn" type="button" onclick="event.stopPropagation();updateOrderStatusInSupabase('${escapeHtml(ord.id)}','${escapeHtml(next)}')">Next → ${escapeHtml(next)}</button>` : ''}
-            <div class="admin-tracking-fields" style="margin-top:.45rem;" onclick="event.stopPropagation()">
-              <input type="text" maxlength="100" value="${escapeHtml(ord.courierName || '')}" placeholder="Courier / delivery partner" id="courier-${escapeHtml(ord.id)}">
-              <input type="text" maxlength="100" value="${escapeHtml(ord.trackingId || '')}" placeholder="Tracking ID / AWB" id="tracking-${escapeHtml(ord.id)}">
-              <button class="btn btn--ghost" style="grid-column:1/-1;padding:5px 8px;font-size:.6rem;min-height:auto;" type="button" onclick="event.stopPropagation();updateOrderTrackingDetails('${escapeHtml(ord.id)}',document.getElementById('courier-${escapeHtml(ord.id)}')?.value,document.getElementById('tracking-${escapeHtml(ord.id)}')?.value)">💾 Save Courier + ID</button>
-            </div>
-            ${ord.trackingId ? `<div style="font-family:'Space Mono';font-size:.55rem;color:var(--success-green);margin-top:.35rem;">✓ Tracking saved: ${escapeHtml(ord.trackingId)}</div>` : ''}
-            <div style="display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.45rem;">
-              <button class="btn btn--ghost" style="padding:4px 7px;font-size:.55rem;" type="button" onclick="event.stopPropagation();downloadCourierLabelPDF('${escapeHtml(ord.id)}')">📄 Label</button>
-              <button class="btn btn--ghost" style="padding:4px 7px;font-size:.55rem;" type="button" onclick="event.stopPropagation();generateZohoInvoice('${escapeHtml(ord.id)}')">🧾 Invoice</button>
-              <button class="btn btn--ghost" style="padding:4px 7px;font-size:.55rem;color:var(--rebel-red);border-color:var(--rebel-red);" type="button" onclick="event.stopPropagation();deleteOrderToTrash('${escapeHtml(ord.id)}')">🗑️ Trash</button>
+            ${ord.orderStatus === 'New' ? `<button class="btn btn--solid admin-next-btn" type="button" onclick="event.stopPropagation();acceptNewOrder('${escapeHtml(ord.id)}')">✓ Accept Order</button>` : ''}
+            <div style="font-family:'Space Mono';font-size:.5rem;color:var(--grey);margin:.45rem 0 .25rem;text-transform:uppercase;">Current stage · ${statusBadge}</div>
+            <select class="cal-dropdown" style="width:100%;font-size:.62rem;padding:.42rem;margin-bottom:.35rem;" onchange="updateOrderStatusInSupabase('${escapeHtml(ord.id)}', this.value)" onclick="event.stopPropagation()"><option value="New" ${ord.orderStatus === 'New' ? 'selected' : ''}>New</option>${statusOptionsHtml}</select>
+            ${nextButtonHtml}
+            ${dispatchButtonHtml}
+            ${canDispatch || dispatched ? `
+              <div class="admin-dispatch-box" id="dispatch-box-${escapeHtml(ord.id)}">
+                <div class="admin-dispatch-head"><span class="admin-dispatch-title">🚚 Dispatch</span><span class="admin-dispatch-state">${ord.trackingId ? 'Tracking saved' : 'Tracking required'}</span></div>
+                <div class="admin-dispatch-grid">
+                  <input type="text" maxlength="100" value="${escapeHtml(ord.courierName || '')}" placeholder="Courier / partner" id="courier-${escapeHtml(ord.id)}">
+                  <input type="text" maxlength="100" value="${escapeHtml(ord.trackingId || '')}" placeholder="Tracking ID / AWB *" id="tracking-${escapeHtml(ord.id)}">
+                  <button class="btn btn--solid admin-dispatch-save" type="button" onclick="event.stopPropagation();saveAndDispatchOrder('${escapeHtml(ord.id)}')">${dispatched ? '💾 Update Tracking' : '✓ Save & Dispatch'}</button>
+                </div>
+                <div class="admin-dispatch-hint">Tracking ID is required. Saving this dispatches the order and makes the tracking option visible to the customer.</div>
+                ${trackingUrl ? `<div class="admin-tracking-link">↗ Customer tracking: ${escapeHtml(trackingUrl)}</div>` : ''}
+              </div>` : ''}
+            ${ord.orderStatus === 'Out for Delivery' ? `<div class="admin-delivery-box"><strong>Delivery check:</strong> This store currently uses manual delivery confirmation. When the courier confirms delivery, use <b>Mark Delivered</b>.</div><button class="btn btn--solid admin-next-btn" type="button" onclick="event.stopPropagation();updateOrderStatusInSupabase('${escapeHtml(ord.id)}','Delivered')">✓ Mark Delivered</button>` : ''}
+            ${ord.orderStatus === 'Delivered' || ord.orderStatus === 'Completed' ? `<div class="admin-delivery-box"><strong>✓ Delivered</strong><br>Marked delivered on this order.</div>` : ''}
+            <div class="admin-quick-action-row">
+              <button class="btn btn--ghost" type="button" onclick="event.stopPropagation();downloadCourierLabelPDF('${escapeHtml(ord.id)}')">📄 Label</button>
+              <button class="btn btn--ghost" type="button" onclick="event.stopPropagation();generateZohoInvoice('${escapeHtml(ord.id)}')">🧾 Invoice</button>
+              <button class="btn btn--ghost" style="color:var(--rebel-red);border-color:var(--rebel-red);" type="button" onclick="event.stopPropagation();deleteOrderToTrash('${escapeHtml(ord.id)}')">🗑️ Trash</button>
             </div>
           </div>`;
 
@@ -6193,8 +6321,9 @@ function openCustomerOrderDetails(orderId) {
 
   const label = getCustomerOrderStatusLabel(order.orderStatus);
   const trackingVisible = Boolean(order.courierName || order.trackingId);
+  const customerTrackingUrl = buildTrackingUrl(order.courierName, order.trackingId);
   const trackingHtml = trackingVisible
-    ? `<div class="order-courier-box"><strong>Courier:</strong> ${escapeHtml(order.courierName || 'Not assigned')}<br><strong>Tracking ID:</strong> ${escapeHtml(order.trackingId || 'Not assigned')}</div>`
+    ? `<div class="order-courier-box"><strong>Courier:</strong> ${escapeHtml(order.courierName || 'Not assigned')}<br><strong>Tracking ID:</strong> ${escapeHtml(order.trackingId || 'Not assigned')}${customerTrackingUrl ? `<br><a href="${escapeHtml(customerTrackingUrl)}" target="_blank" rel="noopener noreferrer" class="preview-link-btn" style="display:inline-block;margin-top:8px;text-decoration:none;">Track Shipment ↗</a>` : ''}</div>`
     : `<div class="order-courier-box">Courier and tracking details will appear here once your order is shipped.</div>`;
   const deliveredHtml = label === 'Delivered' ? `<div class="order-delivered-note">✓ Your order has been marked as delivered.</div>` : '';
 
