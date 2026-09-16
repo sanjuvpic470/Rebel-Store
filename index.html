@@ -426,17 +426,6 @@ footer a:hover{color:var(--paper)}
 
 @media(max-width:800px){.profile-account-layout{grid-template-columns:1fr;padding:1rem;gap:1rem}.profile-account-sidebar{position:static}.profile-account-topbar{padding:0 1rem}.profile-account-topbar-sub{display:none}.profile-account-nav{display:grid;grid-template-columns:1fr 1fr}.profile-account-nav button{border-right:1px solid rgba(242,240,234,.09)}.profile-account-sidebar-actions{margin-top:.8rem}.profile-account-usercard{margin-bottom:.8rem}}
 
-/* PHASE 3 — ORDER TRACKING + DELIVERY ESTIMATE */
-.order-track-panel{margin-top:.8rem;padding:1rem;background:#111113;border:1px solid rgba(242,240,234,.14);}
-.order-track-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;margin:1rem 0 .7rem;}
-.order-track-step{text-align:center;font-family:'Space Mono',monospace;font-size:.58rem;text-transform:uppercase;color:var(--grey);position:relative;}
-.order-track-dot{width:12px;height:12px;border:2px solid rgba(242,240,234,.25);border-radius:50%;margin:0 auto .35rem;background:#18181b;}
-.order-track-step.active{color:var(--paper);}.order-track-step.active .order-track-dot{background:var(--spray-yellow);border-color:var(--spray-yellow);}
-.order-track-step.done .order-track-dot{background:var(--success-green);border-color:var(--success-green);}
-.delivery-estimator{display:flex;gap:.5rem;align-items:center;margin-top:.8rem;flex-wrap:wrap;}
-.delivery-estimator input{flex:1;min-width:150px;background:#18181b;border:1px solid rgba(242,240,234,.2);color:var(--paper);padding:.65rem;font-family:'Space Mono',monospace;}
-.delivery-result{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--grey);margin-top:.55rem;}
-@media(max-width:600px){.order-track-steps{grid-template-columns:repeat(2,1fr);row-gap:.8rem;}}
 
 
 /* PHASE 3 V4 - Wishlist improvements + FAQ */
@@ -530,6 +519,76 @@ footer a:hover{color:var(--paper)}
 .customer-tracking-box{margin-top:.7rem;padding:.7rem;background:#111113;border-left:3px solid var(--spray-yellow);font-family:'Space Mono',monospace;font-size:.68rem;line-height:1.6}
 .customer-tracking-box strong{color:var(--paper)}
 @media(max-width:600px){.admin-tracking-fields{grid-template-columns:1fr}}
+</style>
+
+
+<style id="rebel-orderflow-v2-css">
+#new-address-checkout-page{display:none;max-width:800px;margin:0 auto;padding:2rem var(--gap) 4rem}
+.checkout-new-address-box{background:var(--card-bg);border:2px solid var(--spray-yellow);padding:2rem;box-shadow:8px 8px 0 var(--paper)}
+.checkout-new-address-box h2{font-family:'Anton',sans-serif;font-size:2rem;text-transform:uppercase;margin-bottom:.4rem;color:var(--spray-yellow)}
+.checkout-new-address-note{font-family:'Space Mono',monospace;font-size:.66rem;color:var(--grey);line-height:1.6;margin-bottom:1.4rem}
+.checkout-email-locked{background:#101012!important;color:var(--grey)!important;cursor:not-allowed}
+.billing-selected-summary{display:none;margin-top:1rem;padding:.9rem;background:#18181b;border:1px solid var(--spray-yellow);font-family:'Space Mono',monospace;font-size:.68rem;line-height:1.6}
+.billing-selected-summary strong{color:var(--spray-yellow)}
+.billing-no-address{padding:.9rem;border:1px dashed rgba(242,240,234,.22);font-family:'Space Mono';font-size:.68rem;color:var(--grey)}
+.order-list-page{background:#141416;border:1px solid rgba(242,240,234,.14);padding:0}
+.order-list-header{padding:1rem 1.2rem;border-bottom:1px solid rgba(242,240,234,.12);font-family:'Anton',sans-serif;text-transform:uppercase;color:var(--spray-yellow);font-size:1.5rem}
+.customer-order-row{display:grid;grid-template-columns:1fr auto;gap:1rem;padding:1.1rem 1.2rem;border-bottom:1px solid rgba(242,240,234,.12);cursor:pointer;background:#141416;transition:background .15s ease}
+.customer-order-row:last-child{border-bottom:0}
+.customer-order-row:hover{background:#1b1b1e}
+.customer-order-products{min-width:0}
+.customer-order-product{display:grid;grid-template-columns:92px minmax(0,1fr) auto;gap:1rem;align-items:center;padding:.2rem 0}
+.customer-order-product+.customer-order-product{border-top:1px dashed rgba(242,240,234,.1);margin-top:.7rem;padding-top:.7rem}
+.customer-order-product-image{width:92px;height:92px;background:#202023;border:1px solid rgba(242,240,234,.14);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.customer-order-product-image img{width:100%;height:100%;object-fit:cover;display:block}
+.customer-order-product-placeholder{font-family:'Anton',sans-serif;color:var(--spray-yellow);font-size:1rem;text-align:center;padding:.4rem}
+.customer-order-product-name{font-family:'Archivo Black',sans-serif;color:var(--paper);font-size:.9rem;line-height:1.25}
+.customer-order-product-meta{font-family:'Space Mono',monospace;color:var(--grey);font-size:.65rem;line-height:1.6;margin-top:.3rem}
+.customer-order-status{font-family:'Space Mono',monospace;font-size:.66rem;font-weight:700;margin-top:.45rem}
+.customer-order-status .status-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--spray-yellow);margin-right:.35rem}
+.customer-order-status.status-delivered .status-dot{background:var(--success-green)}
+.customer-order-status.status-cancelled .status-dot{background:var(--rebel-red)}
+.customer-order-arrow{align-self:center;font-size:1.7rem;color:var(--grey)}
+.customer-order-arrow:hover{color:var(--spray-yellow)}
+.customer-order-topline{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding-bottom:.8rem;margin-bottom:.7rem;border-bottom:1px solid rgba(242,240,234,.08);font-family:'Space Mono',monospace;font-size:.65rem}
+.customer-order-topline strong{color:var(--paper)}
+.order-details-page{background:#141416;border:1px solid rgba(242,240,234,.14)}
+.order-details-top{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;padding:1rem 1.2rem;border-bottom:1px solid rgba(242,240,234,.12)}
+.order-details-back{background:transparent;border:0;color:var(--paper);font-family:'Space Mono',monospace;font-size:.7rem;cursor:pointer}
+.order-details-back:hover{color:var(--spray-yellow)}
+.order-details-title{font-family:'Anton',sans-serif;text-transform:uppercase;color:var(--spray-yellow);font-size:1.35rem}
+.order-details-body{padding:1.2rem}
+.order-detail-item{display:grid;grid-template-columns:130px minmax(0,1fr);gap:1.2rem;padding:1rem 0;border-bottom:1px solid rgba(242,240,234,.1)}
+.order-detail-item:first-child{padding-top:0}
+.order-detail-item:last-child{border-bottom:0}
+.order-detail-image{width:130px;height:130px;background:#202023;border:1px solid rgba(242,240,234,.14);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.order-detail-image img{width:100%;height:100%;object-fit:cover}
+.order-detail-name{font-family:'Archivo Black',sans-serif;font-size:1rem;color:var(--paper);margin-bottom:.4rem}
+.order-detail-meta{font-family:'Space Mono',monospace;font-size:.68rem;color:var(--grey);line-height:1.7}
+.order-detail-price{font-family:'Space Mono',monospace;font-size:.75rem;color:var(--spray-yellow);font-weight:700;margin-top:.5rem}
+.order-status-card{margin-top:1.2rem;padding:1rem;background:#111113;border:1px solid rgba(242,240,234,.14)}
+.order-status-heading{font-family:'Anton',sans-serif;color:var(--spray-yellow);text-transform:uppercase;font-size:1.1rem;margin-bottom:.7rem}
+.order-status-timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem}
+.order-status-step{text-align:center;font-family:'Space Mono',monospace;font-size:.58rem;text-transform:uppercase;color:var(--grey)}
+.order-status-dot{width:13px;height:13px;border:2px solid rgba(242,240,234,.25);border-radius:50%;margin:0 auto .4rem;background:#18181b}
+.order-status-step.done .order-status-dot,.order-status-step.active .order-status-dot{background:var(--spray-yellow);border-color:var(--spray-yellow)}
+.order-status-step.done{color:var(--paper)}
+.order-status-step.active{color:var(--paper);font-weight:700}
+.order-status-current{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--paper);margin-bottom:.8rem}
+.order-courier-box{margin-top:1rem;padding:.8rem;background:#18181b;border-left:3px solid var(--spray-yellow);font-family:'Space Mono',monospace;font-size:.68rem;line-height:1.7}
+.order-delivered-note{margin-top:.8rem;color:var(--success-green);font-weight:700}
+.order-shipping-box{margin-top:1rem;padding:.9rem;background:#111113;border:1px solid rgba(242,240,234,.12);font-family:'Space Mono',monospace;font-size:.68rem;line-height:1.7}
+.order-shipping-box h4{font-family:'Anton',sans-serif;color:var(--spray-yellow);font-size:1rem;margin-bottom:.35rem}
+@media(max-width:650px){
+  .checkout-new-address-box{padding:1.2rem}
+  .customer-order-product{grid-template-columns:72px minmax(0,1fr);gap:.7rem}
+  .customer-order-product-image{width:72px;height:72px}
+  .customer-order-product .customer-order-price{grid-column:2}
+  .customer-order-arrow{font-size:1.35rem}
+  .order-detail-item{grid-template-columns:88px minmax(0,1fr);gap:.8rem}
+  .order-detail-image{width:88px;height:88px}
+  .order-status-timeline{grid-template-columns:repeat(2,1fr);row-gap:.8rem}
+}
 </style>
 
 </head>
@@ -913,59 +972,69 @@ footer a:hover{color:var(--paper)}
     <button class="btn to-shipping-btn" onclick="goToShippingPage()">Shipping and Billing Address →</button>
   </aside>
 
-  <!-- SHIPPING & BILLING ADDRESS FORM -->
+  <!-- SHIPPING & BILLING ADDRESS — SELECT SAVED ADDRESS -->
   <section id="shipping-billing-page">
     <button class="back-btn" onclick="goBackFromShipping()">← Back</button>
     <div class="billing-form-box">
       <h2>📍 Shipping & Billing Address</h2>
-
       <div class="billing-saved-addresses">
-        <div class="billing-saved-addresses-title">Saved Addresses</div>
-        <div class="billing-saved-addresses-sub">Select an address already saved to your Rebel Store account.</div>
+        <div class="billing-saved-addresses-title">Select Delivery Address</div>
+        <div class="billing-saved-addresses-sub">Choose one of your saved addresses. Your account email is fixed and cannot be changed at checkout.</div>
         <div id="billing-saved-address-list" class="billing-saved-address-list"></div>
+        <div id="billing-selected-summary" class="billing-selected-summary"></div>
         <button type="button" class="billing-new-address-btn" onclick="startNewBillingAddress()">＋ Add New Address</button>
       </div>
-      
+      <button class="btn btn--solid" id="pay-submit-btn" style="width:100%;justify-content:center;margin-top:1.2rem;" onclick="proceedToPayment()">Proceed to Payment →</button>
+    </div>
+  </section>
+
+  <!-- ADD NEW ADDRESS — CHECKOUT PAGE -->
+  <section id="new-address-checkout-page">
+    <button class="back-btn" onclick="backToShippingAddressSelection()">← Back to Addresses</button>
+    <div class="checkout-new-address-box">
+      <h2>＋ Add New Address</h2>
+      <p class="checkout-new-address-note">Enter the delivery details below. Your account email is locked to the email used to create this account and cannot be changed.</p>
+
       <div class="b-field">
         <label>Full Name *</label>
-        <input type="text" id="b-name" required autocomplete="name">
+        <input type="text" id="new-b-name" required autocomplete="name">
+      </div>
+
+      <div class="b-field">
+        <label>Email Address · Locked</label>
+        <input type="email" id="new-b-email" class="checkout-email-locked" readonly disabled autocomplete="email">
       </div>
 
       <div class="b-row">
         <div class="b-field">
           <label>Mobile Number *</label>
-          <input type="tel" id="b-phone" required autocomplete="tel">
+          <input type="tel" id="new-b-phone" required autocomplete="tel">
         </div>
         <div class="b-field">
           <label>Alternate Mobile</label>
-          <input type="tel" id="b-alt-phone" autocomplete="tel">
+          <input type="tel" id="new-b-alt-phone" autocomplete="tel">
         </div>
-      </div>
-
-      <div class="b-field">
-        <label>Email Address *</label>
-        <input type="email" id="b-email" required autocomplete="email">
       </div>
 
       <div class="b-field">
         <label>Address Line 1 *</label>
-        <input type="text" id="b-address1" required autocomplete="address-line1">
+        <input type="text" id="new-b-address1" required autocomplete="address-line1">
       </div>
 
       <div class="b-field">
-        <label>Address Line 2 (Optional)</label>
-        <input type="text" id="b-address2" autocomplete="address-line2">
+        <label>Address Line 2</label>
+        <input type="text" id="new-b-address2" autocomplete="address-line2">
       </div>
 
       <div class="b-row">
         <div class="b-field">
           <label>Pincode *</label>
-          <input type="text" id="b-pincode" maxlength="6" oninput="handlePincodeLookup(this.value)" required autocomplete="postal-code">
-          <span class="billing-address-status" id="pincode-status-text"></span>
+          <input type="text" id="new-b-pincode" maxlength="6" inputmode="numeric" oninput="handleNewCheckoutPincodeLookup(this.value)" required autocomplete="postal-code">
+          <span class="billing-address-status" id="new-b-pincode-status"></span>
         </div>
         <div class="b-field">
           <label>State *</label>
-          <select id="b-state" class="form-control" onchange="onStateSelectChange()" required autocomplete="address-level1">
+          <select id="new-b-state" class="form-control" onchange="onNewCheckoutStateChange()" required autocomplete="address-level1">
             <option value="">Select State</option>
           </select>
         </div>
@@ -973,12 +1042,12 @@ footer a:hover{color:var(--paper)}
 
       <div class="b-field">
         <label>District *</label>
-        <select id="b-district" class="form-control" required autocomplete="address-level2">
+        <select id="new-b-district" class="form-control" required autocomplete="address-level2">
           <option value="">Select District</option>
         </select>
       </div>
 
-      <button class="btn btn--solid" id="pay-submit-btn" style="width:100%; justify-content:center; margin-top:1.5rem;" onclick="proceedToPayment()">Proceed to Payment →</button>
+      <button class="btn btn--solid" id="save-new-address-btn" style="width:100%;justify-content:center;margin-top:1rem;" onclick="saveNewCheckoutAddress()">Save & Continue →</button>
     </div>
   </section>
 
@@ -1130,22 +1199,6 @@ footer a:hover{color:var(--paper)}
       </div>
     </div>
   </div>
-
-  <!-- ORDER SERVICE MODAL -->
-  <div class="cart-overlay" id="order-service-modal" style="display:none;z-index:1200;">
-    <div class="cart-drawer" style="max-width:520px;width:92%;height:auto;max-height:90vh;overflow:auto;">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:1rem;">
-        <div><div class="section-kicker">ORDER SERVICE</div><h3 id="order-service-title" style="margin:.2rem 0 0">Request</h3></div>
-        <button class="cart-close-btn" onclick="closeOrderServiceModal()">×</button>
-      </div>
-      <div id="order-service-order" style="font-family:'Space Mono';font-size:.7rem;color:var(--grey);margin-bottom:.8rem"></div>
-      <label class="admin-field-label">Reason</label>
-      <select id="order-service-reason" class="admin-input-full"></select>
-      <label class="admin-field-label" style="margin-top:.7rem">Additional note</label>
-      <textarea id="order-service-note" class="admin-input-full" rows="4" maxlength="500" placeholder="Tell us briefly what happened..."></textarea>
-      <button class="btn btn--solid" style="width:100%;justify-content:center;margin-top:.8rem" onclick="submitOrderServiceRequest()">Submit Request</button>
-      <div id="order-service-status" style="font-family:'Space Mono';font-size:.68rem;margin-top:.7rem;color:var(--grey)"></div>
-    </div>
   </div>
 
   <!-- ADMIN AUTH MODAL -->
@@ -3002,6 +3055,9 @@ function toggleCartDrawer(open) {
   }
 }
 
+let selectedBillingAddressId = '';
+let selectedBillingAddressData = null;
+
 function goToShippingPage() {
   if (cart.length === 0) { showToast("Your bag is empty!"); return; }
   toggleCartDrawer(false);
@@ -3013,58 +3069,45 @@ function goToShippingPage() {
   showShippingFormView();
 }
 
-async function showShippingFormView() {
+async function showShippingFormView(selectedId = '') {
   document.getElementById('home-view').style.display = 'none';
   document.getElementById('product-page').style.display = 'none';
   document.getElementById('custom-order-page').style.display = 'none';
   document.getElementById('category-page').style.display = 'none';
   document.getElementById('admin-view').style.display = 'none';
+  document.getElementById('new-address-checkout-page').style.display = 'none';
   document.getElementById('shipping-billing-page').style.display = 'block';
 
   initStatesDropdown();
-  await renderBillingSavedAddresses();
+  selectedBillingAddressId = String(selectedId || selectedBillingAddressId || '');
+  await renderBillingSavedAddresses(selectedBillingAddressId);
 
-  if (loggedInUser) {
-    if (loggedInUser.name) document.getElementById('b-name').value = loggedInUser.name;
-    if (loggedInUser.phone) document.getElementById('b-phone').value = loggedInUser.phone;
-    if (loggedInUser.altPhone) document.getElementById('b-alt-phone').value = loggedInUser.altPhone;
-    if (loggedInUser.email) document.getElementById('b-email').value = loggedInUser.email;
+  if (!selectedBillingAddressData && selectedBillingAddressId) {
+    await selectSavedBillingAddress(selectedBillingAddressId, false);
   }
 
-  // Always load the cloud default address for the signed-in customer.
-  try {
+  if (!selectedBillingAddressData) {
     const defaultAddress = await getDefaultSavedAddress();
     if (defaultAddress) {
-      fillBillingFromAddress(defaultAddress);
-    } else {
-      if (loggedInUser?.address1) document.getElementById('b-address1').value = loggedInUser.address1;
-      if (loggedInUser?.address2) document.getElementById('b-address2').value = loggedInUser.address2;
-      if (loggedInUser?.pincode) {
-        document.getElementById('b-pincode').value = loggedInUser.pincode;
-        await handlePincodeLookup(loggedInUser.pincode);
-        if (loggedInUser.state) {
-          document.getElementById('b-state').value = loggedInUser.state;
-          onStateSelectChange(loggedInUser.district || '');
-          if (loggedInUser.district) document.getElementById('b-district').value = loggedInUser.district;
-        }
-      }
+      selectedBillingAddressId = String(defaultAddress.id);
+      selectedBillingAddressData = defaultAddress;
+      await renderBillingSavedAddresses(selectedBillingAddressId);
     }
-  } catch (err) {
-    console.warn('Default address load skipped:', err);
   }
 
   window.location.hash = '#shipping';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-
 async function renderBillingSavedAddresses(selectedId = '') {
   const list = document.getElementById('billing-saved-address-list');
+  const payBtn = document.getElementById('pay-submit-btn');
   if (!list || !supabaseClient) return;
 
   const { data: { user } } = await supabaseClient.auth.getUser();
   if (!user) {
-    list.innerHTML = '<div class="billing-saved-addresses-sub">Please login to use saved addresses.</div>';
+    list.innerHTML = '<div class="billing-no-address">Please login to use saved addresses.</div>';
+    if (payBtn) payBtn.disabled = true;
     return;
   }
 
@@ -3077,22 +3120,31 @@ async function renderBillingSavedAddresses(selectedId = '') {
 
   if (error) {
     console.warn('Billing saved address load failed:', error.message);
-    list.innerHTML = '<div class="billing-saved-addresses-sub">Saved addresses could not be loaded. You can add a new address below.</div>';
+    list.innerHTML = '<div class="billing-no-address">Saved addresses could not be loaded. Please try again.</div>';
+    if (payBtn) payBtn.disabled = true;
     return;
   }
 
   if (!Array.isArray(data) || data.length === 0) {
-    list.innerHTML = '<div class="billing-saved-addresses-sub">No saved address yet. Add a new address below.</div>';
+    selectedBillingAddressId = '';
+    selectedBillingAddressData = null;
+    list.innerHTML = '<div class="billing-no-address">No saved address yet. Click “Add New Address” to continue.</div>';
+    renderSelectedBillingSummary(null);
+    if (payBtn) payBtn.disabled = true;
     return;
   }
 
   const currentDefault = data.find(a => a.is_default);
   const activeId = String(selectedId || currentDefault?.id || '');
+  if (!selectedBillingAddressData || String(selectedBillingAddressData.id) !== activeId) {
+    selectedBillingAddressData = data.find(a => String(a.id) === activeId) || currentDefault || data[0];
+    selectedBillingAddressId = String(selectedBillingAddressData?.id || '');
+  }
 
   list.innerHTML = data.map(a => {
     const id = String(a.id || '');
     const addressText = `${a.address1 || ''}${a.address2 ? ', ' + a.address2 : ''}, ${a.district || ''}, ${a.state || ''} - ${a.pincode || ''}`;
-    return `<button type="button" class="billing-saved-address-card ${id === activeId ? 'selected' : ''}" onclick="selectSavedBillingAddress('${escapeHtml(id)}')">
+    return `<button type="button" class="billing-saved-address-card ${id === selectedBillingAddressId ? 'selected' : ''}" onclick="selectSavedBillingAddress('${escapeHtml(id)}')">
       <div class="billing-saved-address-card-head">
         <span class="billing-saved-address-card-label">${escapeHtml(a.label || 'Other')}</span>
         ${a.is_default ? '<span class="billing-saved-address-card-default">DEFAULT</span>' : ''}
@@ -3104,9 +3156,25 @@ async function renderBillingSavedAddresses(selectedId = '') {
       </div>
     </button>`;
   }).join('');
+
+  renderSelectedBillingSummary(selectedBillingAddressData);
+  if (payBtn) payBtn.disabled = !selectedBillingAddressData;
 }
 
-async function selectSavedBillingAddress(id) {
+function renderSelectedBillingSummary(address) {
+  const box = document.getElementById('billing-selected-summary');
+  if (!box) return;
+  if (!address) {
+    box.style.display = 'none';
+    box.innerHTML = '';
+    return;
+  }
+  box.style.display = 'block';
+  const addressText = `${address.address1 || ''}${address.address2 ? ', ' + address.address2 : ''}, ${address.district || ''}, ${address.state || ''} - ${address.pincode || ''}`;
+  box.innerHTML = `<strong>Selected Address</strong><br>${escapeHtml(address.recipient_name || '')}<br>${escapeHtml(addressText)}<br>${escapeHtml(address.phone || '')}`;
+}
+
+async function selectSavedBillingAddress(id, rerender = true) {
   if (!supabaseClient) return;
   const { data: { user } } = await supabaseClient.auth.getUser();
   if (!user) { showToast('Please login first.'); return; }
@@ -3123,51 +3191,73 @@ async function selectSavedBillingAddress(id) {
     return;
   }
 
-  fillBillingFromAddress(data);
-  await renderBillingSavedAddresses(id);
-  showToast('Saved address selected.');
+  selectedBillingAddressId = String(data.id);
+  selectedBillingAddressData = data;
+  if (rerender) await renderBillingSavedAddresses(selectedBillingAddressId);
+  else renderSelectedBillingSummary(data);
+  if (rerender) showToast('Delivery address selected.');
 }
 
 function startNewBillingAddress() {
-  ['b-address1','b-address2','b-pincode'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-  const state = document.getElementById('b-state');
-  const district = document.getElementById('b-district');
-  if (state) state.value = '';
-  if (district) district.innerHTML = '<option value="">Select District</option>';
-  const hint = document.getElementById('pincode-status-text');
-  if (hint) hint.textContent = '';
-  document.querySelectorAll('#billing-saved-address-list .billing-saved-address-card').forEach(card => card.classList.remove('selected'));
-  document.getElementById('b-address1')?.focus();
+  if (!loggedInUser || !supabaseClient) {
+    showToast('Please login first.');
+    return;
+  }
+
+  document.getElementById('shipping-billing-page').style.display = 'none';
+  document.getElementById('new-address-checkout-page').style.display = 'block';
+
+  document.getElementById('new-b-name').value = loggedInUser.name || '';
+  document.getElementById('new-b-email').value = loggedInUser.email || '';
+  document.getElementById('new-b-phone').value = loggedInUser.phone || '';
+  document.getElementById('new-b-alt-phone').value = loggedInUser.altPhone || '';
+  document.getElementById('new-b-address1').value = '';
+  document.getElementById('new-b-address2').value = '';
+  document.getElementById('new-b-pincode').value = '';
+  document.getElementById('new-b-state').value = '';
+  document.getElementById('new-b-district').innerHTML = '<option value="">Select District</option>';
+  document.getElementById('new-b-pincode-status').textContent = '';
+
+  window.location.hash = '#new-address';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.getElementById('new-b-name')?.focus();
 }
 
-async function handleSavedAddressPincodeLookup(pincode) {
-  const statusHint = document.getElementById('address-pincode-status');
-  const stateSelect = document.getElementById('address-state');
-  const districtSelect = document.getElementById('address-district');
-  pincode = String(pincode || '').trim();
+function backToShippingAddressSelection() {
+  document.getElementById('new-address-checkout-page').style.display = 'none';
+  document.getElementById('shipping-billing-page').style.display = 'block';
+  window.location.hash = '#shipping';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
+function onNewCheckoutStateChange(district = '') {
+  const stateEl = document.getElementById('new-b-state');
+  const districtEl = document.getElementById('new-b-district');
+  if (!stateEl || !districtEl) return;
+  const selectedState = stateEl.value;
+  districtEl.innerHTML = '<option value="">Select District</option>' + (INDIA_LOCATIONS[selectedState] || []).map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
+  if (district) districtEl.value = district;
+}
+
+async function handleNewCheckoutPincodeLookup(pincode) {
+  const statusHint = document.getElementById('new-b-pincode-status');
+  const stateSelect = document.getElementById('new-b-state');
+  const districtSelect = document.getElementById('new-b-district');
+  pincode = String(pincode || '').trim();
   if (statusHint) statusHint.textContent = '';
-  if (!stateSelect || !districtSelect) return;
-  if (pincode.length !== 6 || !/^\d{6}$/.test(pincode)) return;
+  if (!stateSelect || !districtSelect || pincode.length !== 6 || !/^\d{6}$/.test(pincode)) return;
 
   if (statusHint) statusHint.textContent = 'Detecting state & district...';
-
   try {
     const res = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
     const data = await res.json();
-
     if (!(data && data[0] && data[0].Status === 'Success' && data[0].PostOffice?.length)) {
       if (statusHint) statusHint.textContent = 'Pincode not found. Please choose State & District manually.';
       return;
     }
-
     const postOffice = data[0].PostOffice[0];
     const apiState = String(postOffice.State || '');
     const apiDistrict = String(postOffice.District || '');
-
     let matchedState = Object.keys(INDIA_LOCATIONS).find(s => s.toLowerCase() === apiState.toLowerCase());
     if (!matchedState) {
       const opt = document.createElement('option');
@@ -3176,14 +3266,9 @@ async function handleSavedAddressPincodeLookup(pincode) {
       stateSelect.appendChild(opt);
       matchedState = apiState;
     }
-
     stateSelect.value = matchedState;
-    stateSelect.dispatchEvent(new Event('change'));
-
-    const matchedDistrict = Array.from(districtSelect.options).find(
-      o => o.value.toLowerCase() === apiDistrict.toLowerCase()
-    );
-
+    onNewCheckoutStateChange();
+    const matchedDistrict = Array.from(districtSelect.options).find(o => o.value.toLowerCase() === apiDistrict.toLowerCase());
     if (matchedDistrict) {
       districtSelect.value = matchedDistrict.value;
     } else if (apiDistrict) {
@@ -3193,27 +3278,90 @@ async function handleSavedAddressPincodeLookup(pincode) {
       opt.selected = true;
       districtSelect.appendChild(opt);
     }
-
     if (statusHint) statusHint.textContent = `✓ Detected: ${apiDistrict}, ${apiState}`;
-  } catch (err) {
+  } catch (_) {
     if (statusHint) statusHint.textContent = 'Auto-detect offline. Please choose State & District.';
   }
 }
 
+async function saveNewCheckoutAddress() {
+  if (!supabaseClient || !loggedInUser) {
+    showToast('Please login first.');
+    return;
+  }
+
+  const btn = document.getElementById('save-new-address-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving Address...'; }
+
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) throw new Error('Your login session has expired. Please login again.');
+
+    const name = document.getElementById('new-b-name').value.trim();
+    const phone = document.getElementById('new-b-phone').value.trim();
+    const altPhone = document.getElementById('new-b-alt-phone').value.trim();
+    const address1 = document.getElementById('new-b-address1').value.trim();
+    const address2 = document.getElementById('new-b-address2').value.trim();
+    const pincode = document.getElementById('new-b-pincode').value.trim();
+    const state = document.getElementById('new-b-state').value;
+    const district = document.getElementById('new-b-district').value;
+
+    if (!name || !phone || !address1 || !/^\d{6}$/.test(pincode) || !state || !district) {
+      throw new Error('Please complete Name, Mobile, Address, Pincode, State and District.');
+    }
+
+    const payload = {
+      user_id: user.id,
+      label: 'Other',
+      recipient_name: name,
+      phone,
+      alt_phone: altPhone || null,
+      address1,
+      address2: address2 || null,
+      district,
+      state,
+      pincode,
+      is_default: false
+    };
+
+    const { data: savedAddress, error } = await supabaseClient
+      .from('user_addresses')
+      .insert(payload)
+      .select('*')
+      .single();
+
+    if (error) throw error;
+    if (!savedAddress || String(savedAddress.user_id) !== String(user.id)) {
+      throw new Error('Address save verification failed. Please try again.');
+    }
+
+    selectedBillingAddressId = String(savedAddress.id);
+    selectedBillingAddressData = savedAddress;
+
+    document.getElementById('new-address-checkout-page').style.display = 'none';
+    document.getElementById('shipping-billing-page').style.display = 'block';
+    window.location.hash = '#shipping';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    await renderBillingSavedAddresses(selectedBillingAddressId);
+    showToast('New address saved. Select it and continue to payment.');
+  } catch (err) {
+    console.error('Checkout address save failed:', err);
+    showToast(err?.message || 'Address could not be saved.');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Save & Continue →'; }
+  }
+}
+
 function fillBillingFromAddress(address) {
-  if (!address) return;
-  const set = (id, value) => { const el = document.getElementById(id); if (el && value != null) el.value = value; };
-  set('b-name', address.recipient_name || loggedInUser?.name || '');
-  set('b-phone', address.phone || loggedInUser?.phone || '');
-  set('b-address1', address.address1 || '');
-  set('b-address2', address.address2 || '');
-  set('b-pincode', address.pincode || '');
-  if (address.state) { set('b-state', address.state); onStateSelectChange(address.district || ''); }
-  if (address.district) set('b-district', address.district);
+  selectedBillingAddressData = address || null;
+  selectedBillingAddressId = String(address?.id || '');
+  renderSelectedBillingSummary(address || null);
 }
 
 function goBackFromShipping() {
   document.getElementById('shipping-billing-page').style.display = 'none';
+  document.getElementById('new-address-checkout-page').style.display = 'none';
   if (lastViewedProductId) {
     openProductByDetails('', lastViewedProductId);
   } else {
@@ -3222,36 +3370,41 @@ function goBackFromShipping() {
 }
 
 function validateBillingForm() {
-  const name = document.getElementById('b-name').value.trim();
-  const phone = document.getElementById('b-phone').value.trim();
-  const email = document.getElementById('b-email').value.trim();
-  const address1 = document.getElementById('b-address1').value.trim();
-  const address2 = document.getElementById('b-address2').value.trim();
-  const pincode = document.getElementById('b-pincode').value.trim();
-  const state = document.getElementById('b-state').value;
-  const district = document.getElementById('b-district').value;
-
-  if (!name || !phone || !email || !address1 || !pincode || !state || !district) {
-    showToast('Please fill out Address Line 1, Pincode, State & District!');
+  const address = selectedBillingAddressData;
+  if (!address) {
+    showToast('Please select a saved delivery address.');
     return false;
   }
-  
-  loggedInUser.address1 = address1;
-  loggedInUser.address2 = address2;
-  loggedInUser.pincode = pincode;
-  loggedInUser.state = state;
-  loggedInUser.district = district;
-  sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
+
+  const lockedEmail = String(loggedInUser?.email || '').trim().toLowerCase();
+  if (!lockedEmail) {
+    showToast('Your account email could not be verified. Please login again.');
+    return false;
+  }
+
+  const name = String(address.recipient_name || '').trim();
+  const phone = String(address.phone || '').trim();
+  const altPhone = String(address.alt_phone || '').trim();
+  const address1 = String(address.address1 || '').trim();
+  const address2 = String(address.address2 || '').trim();
+  const pincode = String(address.pincode || '').trim();
+  const state = String(address.state || '').trim();
+  const district = String(address.district || '').trim();
+
+  if (!name || !phone || !address1 || !/^\d{6}$/.test(pincode) || !state || !district) {
+    showToast('Selected address is incomplete. Please edit it in Saved Address and try again.');
+    return false;
+  }
 
   return {
-    name, 
-    phone, 
-    altPhone: document.getElementById('b-alt-phone').value.trim(),
-    email, 
-    address1, 
-    address2, 
-    pincode, 
-    state, 
+    name,
+    phone,
+    altPhone,
+    email: lockedEmail,
+    address1,
+    address2,
+    pincode,
+    state,
     district,
     address: `${address1}${address2 ? ', ' + address2 : ''}, ${district}, ${state} - ${pincode}`
   };
@@ -4036,21 +4189,7 @@ async function loadAdminDataFromSupabase() {
 }
 
 async function acceptNewOrder(orderId) {
-  const found = ordersHistory.find(o => o.id === orderId);
-  if (found) found.orderStatus = 'Pending Print';
-
-  if (supabaseClient) {
-    try {
-      await supabaseClient
-        .from('orders')
-        .update({ order_status: 'Pending Print' })
-        .eq('order_id', orderId);
-    } catch (err) {
-      console.error("Accept order error:", err);
-    }
-  }
-  showToast(`Order ${orderId} accepted into active tracker!`);
-  renderAdminPanels(currentSelectedDateFilter);
+  await updateOrderStatusInSupabase(orderId, 'Processing');
 }
 
 async function updateOrderStatusInSupabase(orderId, newStatus) {
@@ -4070,7 +4209,7 @@ async function updateOrderStatusInSupabase(orderId, newStatus) {
 
   found.orderStatus = newStatus;
   localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
-  showToast(`Order ${orderId} status updated to ${newStatus}!`);
+  showToast(newStatus === 'Delivered' ? `Order ${orderId} marked as Delivered ✓` : `Order ${orderId} status updated to ${newStatus}!`);
   renderAdminPanels(currentSelectedDateFilter);
 }
 
@@ -4230,7 +4369,7 @@ function renderAdminPanels(filterDate = '') {
         });
       }
 
-      const statuses = ['Pending Print', 'Go For Print', 'Print Received', 'Product Ready', 'Delivered', 'Completed', 'Returned'];
+      const statuses = ['Processing', 'Shipped', 'Delivered', 'Completed', 'Returned'];
       let statusOptionsHtml = '';
       statuses.forEach(st => {
         statusOptionsHtml += `<option value="${st}" ${ord.orderStatus === st ? 'selected' : ''}>${st}</option>`;
@@ -5572,9 +5711,9 @@ async function openProfileModal(initialTab = 'profile') {
         </div>
 
         <nav class="profile-account-nav" id="profile-account-tabs">
-          <button type="button" class="account-tab" data-tab="profile" onclick="openAccountTab('profile')">👤 Profile</button>
-          <button type="button" class="account-tab" data-tab="orders" onclick="openAccountTab('orders')">📦 Orders</button>
-          <button type="button" class="account-tab" data-tab="addresses" onclick="openAccountTab('addresses')">📍 Saved Address</button>
+          <button type="button" class="account-tab" data-tab="profile" onclick="openProfileModal('profile')">👤 Profile</button>
+          <button type="button" class="account-tab" data-tab="orders" onclick="openProfileModal('orders')">📦 Orders</button>
+          <button type="button" class="account-tab" data-tab="addresses" onclick="openProfileModal('addresses')">📍 Saved Address</button>
         </nav>
 
         <div class="profile-account-sidebar-actions">
@@ -5727,6 +5866,11 @@ async function loadCustomerOrdersFromSupabase() {
       return;
     }
 
+    const previousOrders = Array.isArray(ordersHistory) ? [...ordersHistory] : [];
+    const deliveredOrderIds = data
+      .filter(o => String(o.order_status || '').toLowerCase().includes('deliver'))
+      .map(o => String(o.order_id));
+
     const cloudOrders = data.map(o => ({
       id: o.order_id,
       date: o.created_at ? o.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
@@ -5734,6 +5878,8 @@ async function loadCustomerOrdersFromSupabase() {
       billing: {
         name: o.customer_name,
         phone: o.customer_phone,
+        altPhone: o.customer_alt_phone || '',
+        email: o.customer_email,
         address: o.customer_address
       },
       totalQty: Number(o.total_qty || 0),
@@ -5751,306 +5897,225 @@ async function loadCustomerOrdersFromSupabase() {
     );
     ordersHistory = [...cloudOrders, ...localOnly];
     localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
+
+    const newlyDelivered = deliveredOrderIds.find(id => {
+      const previous = previousOrders.find(o => String(o.id || o.orderId) === id);
+      const previousLabel = previous ? getCustomerOrderStatusLabel(previous.orderStatus) : '';
+      return previous && previousLabel !== 'Delivered';
+    });
+    if (newlyDelivered) showToast(`Order ${newlyDelivered} has been marked as Delivered ✓`);
   } catch (err) {
     console.warn('Customer order sync failed:', err);
   }
+}
+
+function getCustomerOrderStatusLabel(status) {
+  const st = String(status || 'New').toLowerCase();
+  if (st.includes('cancel')) return 'Cancelled';
+  if (st.includes('return')) return 'Returned';
+  if (st.includes('deliver') || st.includes('complete')) return 'Delivered';
+  if (st.includes('ship') || st.includes('dispatch') || st.includes('transit')) return 'Shipped';
+  if (st === 'new' || st.includes('order')) return 'Order Placed';
+  return 'Processing';
+}
+
+function getOrderTrackingStage(status) {
+  const label = getCustomerOrderStatusLabel(status);
+  if (label === 'Order Placed') return 0;
+  if (label === 'Processing') return 1;
+  if (label === 'Shipped') return 2;
+  if (label === 'Delivered') return 3;
+  return 0;
+}
+
+function formatCustomerOrderDate(value) {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return String(value || '');
+  return d.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+}
+
+function findOrderProduct(item) {
+  if (!item) return null;
+  const id = String(item.product_id || item.id || '').trim();
+  const code = String(item.product_code || item.code || '').trim().toUpperCase();
+  for (const cat of (Array.isArray(CATEGORIES) ? CATEGORIES : [])) {
+    const product = (cat.products || []).find(p =>
+      (id && String(p.id) === id) ||
+      (code && String(p.code || p.product_code || '').toUpperCase() === code)
+    );
+    if (product) return product;
+  }
+  return null;
+}
+
+function getOrderItemImage(item) {
+  const product = findOrderProduct(item);
+  const candidates = [item?.image, item?.product_image, item?.image_url, product?.images?.[0]];
+  for (const candidate of candidates) {
+    const safe = safeMediaUrl(candidate);
+    if (safe) return safe;
+  }
+  return '';
+}
+
+function getOrderItemName(item) {
+  const product = findOrderProduct(item);
+  return String(item?.title || item?.name || product?.title || item?.garment || 'Rebel Store Product');
+}
+
+function getOrderItemPrice(item) {
+  const unit = Number(item?.discounted_unit_price ?? item?.price ?? item?.unit_price ?? item?.rate ?? findOrderProduct(item)?.price ?? 0);
+  const qty = Number(item?.qty ?? item?.quantity ?? 1);
+  return { unit: Number.isFinite(unit) ? unit : 0, qty: Number.isFinite(qty) && qty > 0 ? qty : 1 };
+}
+
+function buildOrderStatusTimeline(status) {
+  const label = getCustomerOrderStatusLabel(status);
+  if (label === 'Cancelled') {
+    return `<div class="order-status-timeline"><div class="order-status-step done"><div class="order-status-dot"></div>Order Placed</div><div class="order-status-step active"><div class="order-status-dot" style="background:var(--rebel-red);border-color:var(--rebel-red)"></div>Cancelled</div></div>`;
+  }
+  if (label === 'Returned') {
+    return `<div class="order-status-timeline"><div class="order-status-step done"><div class="order-status-dot"></div>Order Placed</div><div class="order-status-step done"><div class="order-status-dot"></div>Processing</div><div class="order-status-step done"><div class="order-status-dot"></div>Shipped</div><div class="order-status-step active"><div class="order-status-dot"></div>Returned</div></div>`;
+  }
+  const stage = getOrderTrackingStage(status);
+  const labels = ['Order Placed','Processing','Shipped','Delivered'];
+  return `<div class="order-status-timeline">${labels.map((x, i) => {
+    const stateClass = i < stage ? 'done' : (i === stage ? 'active' : '');
+    return `<div class="order-status-step ${stateClass}"><div class="order-status-dot"></div>${x}</div>`;
+  }).join('')}</div>`;
+}
+
+function openCustomerOrderDetails(orderId) {
+  if (!loggedInUser) return;
+  const order = ordersHistory.find(o => String(o.id || o.orderId) === String(orderId));
+  if (!order) { showToast('Order details could not be found.'); return; }
+
+  const area = document.getElementById('profile-content-area');
+  if (!area) return;
+
+  const items = Array.isArray(order.items) ? order.items : [];
+  const itemHtml = items.map(item => {
+    const img = getOrderItemImage(item);
+    const { unit, qty } = getOrderItemPrice(item);
+    const title = getOrderItemName(item);
+    return `<div class="order-detail-item">
+      <div class="order-detail-image">${img ? `<img src="${escapeHtml(img)}" alt="${escapeHtml(title)}">` : `<div class="customer-order-product-placeholder">REBEL<br>STORE</div>`}</div>
+      <div>
+        <div class="order-detail-name">${escapeHtml(title)}</div>
+        <div class="order-detail-meta">
+          ${item?.color ? `Color: ${escapeHtml(item.color)}<br>` : ''}
+          ${item?.size ? `Size: ${escapeHtml(item.size)}<br>` : ''}
+          Quantity: ${escapeHtml(qty)}<br>
+          Order Item: ${escapeHtml(String(item?.product_code || item?.code || item?.garment || 'Standard'))}
+        </div>
+        <div class="order-detail-price">₹${(unit * qty).toFixed(0)}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const label = getCustomerOrderStatusLabel(order.orderStatus);
+  const trackingVisible = Boolean(order.courierName || order.trackingId);
+  const trackingHtml = trackingVisible
+    ? `<div class="order-courier-box"><strong>Courier:</strong> ${escapeHtml(order.courierName || 'Not assigned')}<br><strong>Tracking ID:</strong> ${escapeHtml(order.trackingId || 'Not assigned')}</div>`
+    : `<div class="order-courier-box">Courier and tracking details will appear here once your order is shipped.</div>`;
+  const deliveredHtml = label === 'Delivered' ? `<div class="order-delivered-note">✓ Your order has been marked as delivered.</div>` : '';
+
+  area.innerHTML = `
+    <div class="profile-account-layout">
+      <aside class="profile-account-sidebar">
+        <div class="profile-account-usercard">
+          ${loggedInUser.avatarUrl ? `<img class="profile-account-avatar" src="${escapeHtml(loggedInUser.avatarUrl)}" alt="Profile photo">` : `<div class="profile-account-avatar profile-account-avatar-fallback">👤</div>`}
+          <div class="profile-account-username">${escapeHtml(loggedInUser.name || loggedInUser.username || 'User')}</div>
+          <div class="profile-account-email">${escapeHtml(loggedInUser.email || '')}</div>
+          <div class="profile-account-member">Member Account</div>
+        </div>
+        <nav class="profile-account-nav">
+          <button type="button" onclick="openProfileModal('profile')">👤 Profile</button>
+          <button type="button" class="active" onclick="openProfileModal('orders')">📦 Orders</button>
+          <button type="button" onclick="openProfileModal('addresses')">📍 Saved Address</button>
+        </nav>
+        <div class="profile-account-sidebar-actions"><button type="button" onclick="logoutUser()">Logout</button></div>
+      </aside>
+      <main class="profile-account-main">
+        <div class="order-details-page">
+          <div class="order-details-top">
+            <div>
+              <button class="order-details-back" type="button" onclick="openProfileModal('orders')">← MY ORDERS</button>
+              <div class="order-details-title">Order Details</div>
+            </div>
+            <div style="font-family:'Space Mono';font-size:.68rem;color:var(--grey);text-align:right;">Order ID: <strong style="color:var(--paper)">${escapeHtml(order.id || order.orderId || '')}</strong><br>${escapeHtml(formatCustomerOrderDate(order.date || ''))}</div>
+          </div>
+          <div class="order-details-body">
+            ${itemHtml || '<div class="profile-account-orders-empty">No product details available for this order.</div>'}
+            <div class="order-status-card">
+              <div class="order-status-heading">Order Status</div>
+              <div class="order-status-current">Current status: <strong>${escapeHtml(label)}</strong></div>
+              ${buildOrderStatusTimeline(order.orderStatus)}
+              ${trackingHtml}
+              ${deliveredHtml}
+            </div>
+            <div class="order-shipping-box">
+              <h4>Shipping Address</h4>
+              ${escapeHtml(order.billing?.name || '')}<br>
+              ${escapeHtml(order.billing?.address || '')}<br>
+              ${escapeHtml(order.billing?.phone || '')}
+            </div>
+            <div style="margin-top:1rem;font-family:'Space Mono';font-size:.7rem;color:var(--grey);">
+              Payment: <strong style="color:var(--paper)">${escapeHtml(order.paymentStatus || 'paid')}</strong>
+              ${order.paymentId && order.paymentId !== 'N/A' ? ` · Payment Ref: ${escapeHtml(order.paymentId)}` : ''}
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>`;
 }
 
 function renderOrdersInsideProfile() {
   const area = document.getElementById('profile-orders-tab-content');
   if (!area) return;
   const myOrders = ordersHistory.filter(o => o.userEmail === loggedInUser?.email || (o.billing && o.billing.email === loggedInUser?.email));
-  if (!myOrders.length) { area.innerHTML = `<div style="font-family:'Space Mono';color:var(--grey);padding:1rem;text-align:center;">No order history found.</div>`; return; }
-  area.innerHTML = myOrders.map(ord => {
-    const items = Array.isArray(ord.items) ? ord.items.map(it => `<div style="font-family:'Space Mono';font-size:.72rem;color:var(--paper);padding:.2rem 0;">• ${escapeHtml(it.title || it.name || 'Product')} · Size: ${escapeHtml(it.size || '-')} · Color: ${escapeHtml(it.color || '-')} · Qty: ${escapeHtml(it.qty || it.quantity || 1)} · ₹${Number((it.price || it.rate || 0) * (it.qty || it.quantity || 1)).toFixed(0)}</div>`).join('') : '';
-    return `<div class="address-card" onclick="toggleUserOrderExpand('${escapeHtml(ord.id)}')" style="cursor:pointer;">
-      <div class="address-card-head"><strong class="address-label">${escapeHtml(ord.id)}</strong><span style="font-family:'Space Mono';font-size:.68rem;color:var(--grey);">${escapeHtml(ord.date || '')}</span></div>
-      <div class="address-meta">Total: ₹${Number(ord.totalAmount || 0).toFixed(0)} · Payment: ${escapeHtml(ord.paymentStatus || 'paid')} · Status: ${escapeHtml(ord.orderStatus || 'New')}</div>
-      <div class="customer-tracking-box">
-        <div><strong>Courier:</strong> ${escapeHtml(ord.courierName || 'Not assigned yet')}</div>
-        <div><strong>Tracking ID:</strong> ${escapeHtml(ord.trackingId || 'Not assigned yet')}</div>
-      </div>
-      <div id="user-order-items-${escapeHtml(ord.id)}" style="display:none;margin-top:.7rem;border-top:1px dashed rgba(242,240,234,.18);padding-top:.6rem;">${items}<div style="font-family:'Space Mono';font-size:.7rem;color:var(--grey);margin-top:.4rem;"><strong>Shipping:</strong> ${escapeHtml(ord.billing?.address || '')}</div></div>
-    </div>`;
-  }).join('');
-}
-
-let activeOrderService = { id:null, type:null };
-function openOrderServiceModal(orderId, type){
-  activeOrderService={id:orderId,type:type};
-  const modal=document.getElementById('order-service-modal'); if(!modal)return;
-  document.getElementById('order-service-title').textContent=type==='cancel'?'Cancel Order':'Return / Exchange';
-  document.getElementById('order-service-order').textContent='Order: '+orderId;
-  const sel=document.getElementById('order-service-reason');
-  const opts=type==='cancel'?['Changed my mind','Ordered by mistake','Need to change order','Other']:['Wrong size / fit','Damaged / defective','Wrong item received','Exchange for another size','Other'];
-  sel.innerHTML=opts.map(x=>`<option>${escapeHtml(x)}</option>`).join('');
-  document.getElementById('order-service-note').value='';
-  document.getElementById('order-service-status').textContent='';
-  modal.style.display='flex';
-}
-function closeOrderServiceModal(){const m=document.getElementById('order-service-modal');if(m)m.style.display='none';activeOrderService={id:null,type:null};}
-function submitOrderServiceRequest(){
-  if(!activeOrderService.id)return;
-  const reason=document.getElementById('order-service-reason')?.value||'Other';
-  const note=(document.getElementById('order-service-note')?.value||'').trim();
-  const key='rebel_order_service_requests';
-  let requests=[]; try{requests=JSON.parse(localStorage.getItem(key)||'[]')}catch(e){}
-  requests.push({orderId:activeOrderService.id,type:activeOrderService.type,reason,note,createdAt:new Date().toISOString(),email:loggedInUser?.email||''});
-  localStorage.setItem(key,JSON.stringify(requests));
-  const status=document.getElementById('order-service-status');
-  if(status)status.textContent=activeOrderService.type==='cancel'?'Cancellation request submitted.':'Return / exchange request submitted.';
-  setTimeout(closeOrderServiceModal,900);
-}
-
-async function renderAddressesInsideProfile() {
-  const area = document.getElementById('profile-address-tab-content');
-  if (!area) return;
-  if (!supabaseClient) { area.innerHTML = '<div class="profile-account-address-empty">Supabase not connected.</div>'; return; }
-  area.innerHTML = `
-    <h2 class="profile-account-heading">Saved Address</h2>
-    <p class="profile-account-subheading">Save and manage your delivery addresses.</p>
-    <div class="profile-account-address-add" onclick="toggleProfileAddressForm(true)"><strong>＋ Add New Address</strong><span>+</span></div>
-    <div id="saved-address-list" style="margin-bottom:1rem;"></div>
-    <div id="profile-address-form-wrap" class="profile-account-address-form" style="display:none;">
-      <h4 id="address-form-title" style="font-family:'Anton',sans-serif;color:var(--spray-yellow);text-transform:uppercase;margin-bottom:.2rem;">Add New Address</h4>
-      <p class="profile-account-form-note">Enter your address details below. No placeholder/sample text is used in the fields.</p>
-      <input type="hidden" id="address-edit-id">
-      <div class="account-grid">
-        <div class="account-field"><label>Save Address As</label><select id="address-label"><option>Home</option><option>Work</option><option>Other</option></select></div>
-        <div class="account-field"><label>Recipient Name *</label><input id="address-recipient-name" type="text" autocomplete="name"></div>
-        <div class="account-field"><label>Mobile Number</label><input id="address-phone" type="tel" autocomplete="tel"></div>
-        <div class="account-field"><label>Pincode *</label><input id="address-pincode" type="text" maxlength="6" inputmode="numeric" autocomplete="postal-code" oninput="handleSavedAddressPincodeLookup(this.value)"><div id="address-pincode-status" class="billing-address-status"></div></div>
-        <div class="account-field"><label>Address Line 1 *</label><input id="address-line1" type="text" autocomplete="address-line1"></div>
-        <div class="account-field"><label>Address Line 2</label><input id="address-line2" type="text" autocomplete="address-line2"></div>
-        <div class="account-field"><label>State</label><select id="address-state"></select></div>
-        <div class="account-field"><label>District</label><select id="address-district"></select></div>
-      </div>
-      <label style="display:flex;align-items:center;gap:.5rem;font-family:'Space Mono';font-size:.72rem;color:var(--paper);margin:.5rem 0 1rem;">
-        <input type="checkbox" id="address-is-default"> Set as Default Address
-      </label>
-      <div style="display:flex;gap:.6rem;justify-content:flex-end;flex-wrap:wrap;">
-        <button class="btn btn--ghost" id="address-cancel-btn" type="button" style="display:none;" onclick="resetAddressForm();toggleProfileAddressForm(false)">Cancel</button>
-        <button class="btn btn--solid" type="button" onclick="saveSavedAddress()">Save Address</button>
-      </div>
-    </div>`;
-  populateAddressStateSelect();
-  resetAddressForm();
-  await loadSavedAddresses();
-}
-
-function toggleProfileAddressForm(show) {
-  const wrap = document.getElementById('profile-address-form-wrap');
-  if (!wrap) return;
-  wrap.style.display = show ? 'block' : 'none';
-  if (show) setTimeout(() => document.getElementById('address-recipient-name')?.focus(), 0);
-}
-
-async function openSavedAddressesModal() {
-  if (!loggedInUser || !supabaseClient) { showToast('Please login first.'); return; }
-  await openProfileModal('addresses');
-}
-
-function closeSavedAddressesModal() {
-  document.getElementById('saved-address-modal').style.display = 'none';
-  document.body.style.overflow = '';
-}
-
-function populateAddressStateSelect() {
-  const stateEl = document.getElementById('address-state');
-  if (!stateEl) return;
-  stateEl.innerHTML = '<option value="">Select State</option>' + Object.keys(INDIA_LOCATIONS).map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
-  stateEl.onchange = () => {
-    const districtEl = document.getElementById('address-district');
-    const state = stateEl.value;
-    districtEl.innerHTML = '<option value="">Select District</option>' + (INDIA_LOCATIONS[state] || []).map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
-  };
-}
-
-function resetAddressForm() {
-  const ids=['address-edit-id','address-recipient-name','address-phone','address-pincode','address-line1','address-line2'];
-  ids.forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
-  const label=document.getElementById('address-label'); if(label) label.value='Home';
-  const def=document.getElementById('address-is-default'); if(def) def.checked=false;
-  const title=document.getElementById('address-form-title'); if(title) title.innerText='Add New Address';
-  const cancel=document.getElementById('address-cancel-btn'); if(cancel) cancel.style.display='none';
-  const state=document.getElementById('address-state'); if(state) state.value='';
-  const district=document.getElementById('address-district'); if(district) district.innerHTML='<option value="">Select District</option>';
-  const pinStatus=document.getElementById('address-pincode-status'); if(pinStatus) pinStatus.textContent='';
-}
-
-async function loadSavedAddresses() {
-  const list=document.getElementById('saved-address-list');
-  if(!list || !supabaseClient) return;
-  const {data:{user}}=await supabaseClient.auth.getUser();
-  if(!user) return;
-  const {data,error}=await supabaseClient.from('user_addresses').select('*').eq('user_id',user.id).order('is_default',{ascending:false}).order('created_at',{ascending:false});
-  if(error){ list.innerHTML=`<div style="font-family:'Space Mono';color:var(--rebel-red);font-size:.72rem;">${escapeHtml(error.message)}<br><br>Create the <strong>user_addresses</strong> table in Supabase using the SQL provided with this update.</div>`; return; }
-  if(!data?.length){ list.innerHTML=`<div style="font-family:'Space Mono';color:var(--grey);font-size:.75rem;text-align:center;padding:1rem;">No saved addresses. Add your first address below.</div>`; return; }
-  list.innerHTML=data.map(a=>`<div class="address-card ${a.is_default?'default':''}">
-    <div class="address-card-head"><strong class="address-label">${escapeHtml(a.label||'Other')}</strong>${a.is_default?`<span style="font-family:'Space Mono';font-size:.64rem;color:var(--success-green);">DEFAULT</span>`:''}</div>
-    <div class="address-meta"><strong>${escapeHtml(a.recipient_name||'')}</strong><br>${escapeHtml(a.address1||'')}${a.address2?', '+escapeHtml(a.address2):''}<br>${escapeHtml(a.district||'')}${a.state?', '+escapeHtml(a.state):''} - ${escapeHtml(a.pincode||'')}<br>${escapeHtml(a.phone||'')}</div>
-    <div class="address-actions"><button onclick="editSavedAddress('${escapeHtml(a.id)}')">Edit</button>${!a.is_default?`<button class="primary" onclick="setDefaultSavedAddress('${escapeHtml(a.id)}')">Set as Default</button>`:'<button class="primary" disabled style="opacity:.6;cursor:default;">Default Address</button>'}<button class="danger" onclick="deleteSavedAddress('${escapeHtml(a.id)}')">Delete</button></div>
-  </div>`).join('');
-}
-
-async function saveSavedAddress() {
-  if(!supabaseClient) return;
-  const {data:{user}}=await supabaseClient.auth.getUser();
-  if(!user){showToast('Please login again.');return;}
-  const editId=document.getElementById('address-edit-id').value;
-  const payload={
-    user_id:user.id,
-    label:document.getElementById('address-label').value,
-    recipient_name:document.getElementById('address-recipient-name').value.trim(),
-    phone:document.getElementById('address-phone').value.trim(),
-    address1:document.getElementById('address-line1').value.trim(),
-    address2:document.getElementById('address-line2').value.trim(),
-    district:document.getElementById('address-district').value,
-    state:document.getElementById('address-state').value,
-    pincode:document.getElementById('address-pincode').value.trim(),
-    is_default:document.getElementById('address-is-default').checked
-  };
-  if(!payload.recipient_name||!payload.address1||!/^\d{6}$/.test(payload.pincode)){showToast('Enter recipient name, address line 1 and a valid 6-digit pincode.');return;}
-  if(payload.is_default) await supabaseClient.from('user_addresses').update({is_default:false}).eq('user_id',user.id);
-  if(editId){
-    const {error}=await supabaseClient.from('user_addresses').update({...payload,updated_at:new Date().toISOString()}).eq('id',editId).eq('user_id',user.id);
-    if(error){showToast('Address update failed: '+error.message);return;}
-  }else{
-    const {data:savedAddress,error}=await supabaseClient.from('user_addresses').insert(payload).select('*').single();
-    if(error){showToast('Address save failed: '+error.message);return;}
-    if(!savedAddress || String(savedAddress.user_id) !== String(user.id)){
-      showToast('Address save verification failed. Please try again.');
-      return;
-    }
-  }
-  resetAddressForm();
-  toggleProfileAddressForm(false);
-  await loadSavedAddresses();
-  showToast('Address saved successfully!');
-}
-
-async function editSavedAddress(id) {
-  const {data:{user}}=await supabaseClient.auth.getUser(); if(!user)return;
-  const {data,error}=await supabaseClient.from('user_addresses').select('*').eq('id',id).eq('user_id',user.id).maybeSingle();
-  if(error||!data){showToast('Address not found.');return;}
-  document.getElementById('address-edit-id').value=data.id;
-  document.getElementById('address-label').value=data.label||'Other';
-  document.getElementById('address-recipient-name').value=data.recipient_name||'';
-  document.getElementById('address-phone').value=data.phone||'';
-  document.getElementById('address-pincode').value=data.pincode||'';
-  document.getElementById('address-line1').value=data.address1||'';
-  document.getElementById('address-line2').value=data.address2||'';
-  document.getElementById('address-state').value=data.state||'';
-  document.getElementById('address-state').dispatchEvent(new Event('change'));
-  document.getElementById('address-district').value=data.district||'';
-  document.getElementById('address-is-default').checked=!!data.is_default;
-  document.getElementById('address-form-title').innerText='Edit Address';
-  document.getElementById('address-cancel-btn').style.display='inline-flex';
-  toggleProfileAddressForm(true);
-}
-
-async function setDefaultSavedAddress(id) {
-  const {data:{user}}=await supabaseClient.auth.getUser(); if(!user)return;
-  const {error}=await supabaseClient.from('user_addresses').update({is_default:false}).eq('user_id',user.id);
-  if(error){showToast('Could not update default address.');return;}
-  const {error:second}=await supabaseClient.from('user_addresses').update({is_default:true,updated_at:new Date().toISOString()}).eq('id',id).eq('user_id',user.id);
-  if(second){showToast('Could not set default address.');return;}
-  await loadSavedAddresses();
-  showToast('Default address updated!');
-}
-
-async function deleteSavedAddress(id) {
-  if(!confirm('Delete this saved address?')) return;
-  const {data:{user}}=await supabaseClient.auth.getUser(); if(!user)return;
-  const {error}=await supabaseClient.from('user_addresses').delete().eq('id',id).eq('user_id',user.id);
-  if(error){showToast('Delete failed: '+error.message);return;}
-  resetAddressForm();
-  toggleProfileAddressForm(false);
-  await loadSavedAddresses();
-  showToast('Address deleted.');
-}
-
-async function getDefaultSavedAddress(){
-  if(!supabaseClient)return null;
-  const {data:{user}}=await supabaseClient.auth.getUser(); if(!user)return null;
-  const {data,error}=await supabaseClient.from('user_addresses').select('*').eq('user_id',user.id).eq('is_default',true).maybeSingle();
-  if(error){console.warn('Default address query:',error.message);return null;}
-  return data||null;
-}
-
-
-function getOrderTrackingStage(status) {
-  const st = String(status || 'New').toLowerCase();
-  if (st.includes('deliver')) return 3;
-  if (st.includes('ship') || st.includes('dispatch') || st.includes('transit')) return 2;
-  if (st.includes('process') || st.includes('confirm') || st.includes('new') || st.includes('paid')) return 1;
-  if (st.includes('cancel') || st.includes('return')) return 0;
-  return 1;
-}
-
-function formatDeliveryDate(date) {
-  return date.toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'});
-}
-
-function calculateDeliveryEstimate(orderId) {
-  const input = document.getElementById(`pincode-${CSS.escape(String(orderId))}`);
-  const result = document.getElementById(`delivery-result-${CSS.escape(String(orderId))}`);
-  if (!input || !result) return;
-  const pin = input.value.trim();
-  if (!/^\d{6}$/.test(pin)) {
-    result.textContent = 'Enter a valid 6-digit pincode.';
-    result.style.color = '#ff6b6b';
+  if (!myOrders.length) {
+    area.innerHTML = `<div class="profile-account-orders-empty">No order history found.</div>`;
     return;
   }
-  const first = Number(pin.charAt(0));
-  const days = (first >= 6 && first <= 7) ? 3 : (first === 5 || first === 4 ? 5 : 7);
-  const from = new Date();
-  from.setDate(from.getDate() + days);
-  const to = new Date(from);
-  to.setDate(to.getDate() + 2);
-  result.style.color = 'var(--success-green)';
-  result.textContent = `Estimated delivery: ${formatDeliveryDate(from)} – ${formatDeliveryDate(to)}. Final ETA may vary by courier.`;
-}
 
-function openOrderTracking(orderId) {
-  const panel = document.getElementById(`order-track-${CSS.escape(String(orderId))}`);
-  if (panel) panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  area.innerHTML = `
+    <div class="order-list-page">
+      <div class="order-list-header">My Orders</div>
+      ${myOrders.map(ord => {
+        const status = getCustomerOrderStatusLabel(ord.orderStatus);
+        const statusClass = status === 'Delivered' ? 'status-delivered' : (status === 'Cancelled' ? 'status-cancelled' : '');
+        const items = Array.isArray(ord.items) ? ord.items : [];
+        const productsHtml = items.map(item => {
+          const img = getOrderItemImage(item);
+          const { qty } = getOrderItemPrice(item);
+          const title = getOrderItemName(item);
+          return `<div class="customer-order-product">
+            <div class="customer-order-product-image">${img ? `<img src="${escapeHtml(img)}" alt="${escapeHtml(title)}">` : `<div class="customer-order-product-placeholder">REBEL<br>STORE</div>`}</div>
+            <div>
+              <div class="customer-order-product-name">${escapeHtml(title)}</div>
+              <div class="customer-order-product-meta">Size: ${escapeHtml(item?.size || '-')} · Qty: ${escapeHtml(qty)}</div>
+              <div class="customer-order-status ${statusClass}"><span class="status-dot"></span>${escapeHtml(status)}</div>
+            </div>
+          </div>`;
+        }).join('');
+
+        return `<div class="customer-order-row" onclick="openCustomerOrderDetails('${escapeHtml(ord.id || ord.orderId || '')}')">
+          <div class="customer-order-products">
+            <div class="customer-order-topline">
+              <span>Order ID: <strong>${escapeHtml(ord.id || ord.orderId || '')}</strong></span>
+              <span>${escapeHtml(formatCustomerOrderDate(ord.date || ''))}</span>
+            </div>
+            ${productsHtml || '<div class="profile-account-orders-empty">No product details available.</div>'}
+          </div>
+          <button type="button" class="customer-order-arrow" aria-label="View order details" onclick="event.stopPropagation();openCustomerOrderDetails('${escapeHtml(ord.id || ord.orderId || '')}')">›</button>
+        </div>`;
+      }).join('')}
+    </div>`;
 }
 
 function openOrdersModal() {
-  if (!loggedInUser) return;
-  const area = document.getElementById('orders-content-area');
-  const myOrders = ordersHistory.filter(o => o.userEmail === loggedInUser.email || (o.billing && o.billing.email === loggedInUser.email));
-  if (!myOrders.length) {
-    area.innerHTML = `<div style="font-family:'Space Mono';color:var(--grey);padding:1rem;text-align:center;">No order history found.</div>`;
-  } else {
-    area.innerHTML = myOrders.map(ord => {
-      const stage = getOrderTrackingStage(ord.orderStatus);
-      const labels = ['Order Placed','Processing','Shipped','Delivered'];
-      const steps = labels.map((label,i) => `<div class="order-track-step ${i < stage ? 'done' : ''} ${i === stage ? 'active' : ''}"><div class="order-track-dot"></div>${label}</div>`).join('');
-      const itemsListHtml = Array.isArray(ord.items) ? ord.items.map(it => `<div style="font-size:.75rem;color:var(--paper);padding:2px 0;">• ${escapeHtml(it.title || it.name || 'Product')} (Size: ${escapeHtml(it.size || '-')}, Qty: ${escapeHtml(it.qty || it.quantity || 1)})</div>`).join('') : '';
-      const safeId = escapeHtml(String(ord.id || ''));
-      return `<div style="background:#1a1a1d;border:1px solid rgba(242,240,234,.15);padding:1rem;margin-bottom:1rem;border-radius:4px;">
-        <div style="display:flex;justify-content:space-between;gap:.5rem;flex-wrap:wrap;font-family:'Space Mono';font-size:.75rem;color:var(--spray-yellow);"><span>Order ID: ${safeId}</span><span>${escapeHtml(ord.date || '')}</span></div>
-        <div style="font-family:'Space Mono';font-size:.72rem;color:var(--paper);margin:.5rem 0;">Total: ₹${Number(ord.totalAmount || 0).toFixed(0)} · Status: <strong>${escapeHtml(ord.orderStatus || 'New')}</strong></div>
-        <div class="customer-tracking-box">
-          <div><strong>Courier:</strong> ${escapeHtml(ord.courierName || 'Not assigned yet')}</div>
-          <div><strong>Tracking ID:</strong> ${escapeHtml(ord.trackingId || 'Not assigned yet')}</div>
-        </div>
-        <div style="display:flex;gap:.5rem;flex-wrap:wrap;"><button class="btn btn--ghost" type="button" onclick="openOrderTracking('${safeId}')">📦 Track Order</button><button class="btn btn--ghost" type="button" onclick="toggleUserOrderExpand('${safeId}')">View Details</button></div>
-        <div id="order-track-${safeId}" class="order-track-panel" style="display:none;"><div style="font-family:'Space Mono';font-size:.68rem;color:var(--grey);text-transform:uppercase;">Current status: <strong style="color:var(--paper);">${escapeHtml(ord.orderStatus || 'New')}</strong></div><div class="order-track-steps">${steps}</div><div class="delivery-estimator"><input id="pincode-${safeId}" inputmode="numeric" maxlength="6" placeholder="Enter delivery pincode"><button class="btn btn--solid" type="button" onclick="calculateDeliveryEstimate('${safeId}')">Check ETA</button></div><div id="delivery-result-${safeId}" class="delivery-result">Enter your pincode to get an estimated delivery window.</div></div>
-        <div id="user-order-items-${safeId}" style="display:none;margin-top:.8rem;border-top:1px dashed rgba(242,240,234,.2);padding-top:.7rem;"><div style="font-size:.75rem;color:var(--spray-yellow);margin-bottom:4px;"><strong>Ordered Items:</strong></div>${itemsListHtml}<div style="font-size:.75rem;color:var(--grey);margin-top:5px;"><strong>Shipping Address:</strong> ${escapeHtml(ord.billing?.address || '')}</div></div>
-      </div>`;
-    }).join('');
-  }
-  document.getElementById('orders-modal').style.display = 'flex';
-}
-
-function toggleUserOrderExpand(orderId) {
-  const el = document.getElementById(`user-order-items-${orderId}`);
-  if (el) {
-    el.style.display = el.style.display === 'none' ? 'block' : 'none';
-  }
+  openProfileModal('orders');
 }
 
 function closeOrdersModal() {
