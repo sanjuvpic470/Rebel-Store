@@ -371,7 +371,9 @@ footer a:hover{color:var(--paper)}
 
 
 /* ACCOUNT PAGE REDESIGN — profile / orders / saved address only */
-.profile-account-modal{padding:0!important;background:rgba(7,7,8,.97)!important;backdrop-filter:blur(4px)!important;align-items:stretch!important;justify-content:stretch!important;z-index:260!important}
+.profile-account-modal{padding:0!important;background:transparent!important;backdrop-filter:none!important;align-items:flex-start!important;justify-content:stretch!important;z-index:80!important;overflow:hidden!important}
+.profile-account-page{width:100%;height:100vh;min-height:100vh;background:#0b0b0c;color:var(--paper);overflow:auto;position:relative;padding-top:104px}
+.profile-account-topbar{display:none!important}
 .profile-account-page{width:100%;height:100%;min-height:100vh;background:#0b0b0c;color:var(--paper);overflow:auto;position:relative}
 .profile-account-topbar{height:66px;border-bottom:1px solid rgba(242,240,234,.14);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;background:#0b0b0c;z-index:3}
 .profile-account-topbar-title{font-family:'Anton',sans-serif;font-size:1.45rem;text-transform:uppercase;color:var(--spray-yellow);letter-spacing:.04em}
@@ -422,7 +424,7 @@ footer a:hover{color:var(--paper)}
 .billing-saved-address-card-body{font-family:'Space Mono',monospace;color:var(--paper);font-size:.68rem;line-height:1.55;margin-top:.35rem}
 .billing-new-address-btn{width:100%;margin-top:.7rem;background:transparent;color:var(--paper);border:1px solid var(--spray-yellow);padding:.75rem;font-family:'Space Mono',monospace;font-size:.68rem;cursor:pointer}
 .billing-new-address-btn:hover{background:var(--spray-yellow);color:var(--ink)}
-.billing-address-status{font-family:'Space Mono',monospace;color:var(--spray-yellow);font-size:.62rem;margin-top:.25rem;min-height:1em}
+.billing-address-status{font-family:'Space Mono',monospace;color:var(--spray-yellow);font-size:.62rem;margin-top:.25rem;min-height:1em}.profile-address-card{background:#18181b;border:1px solid rgba(242,240,234,.14);padding:1rem;margin:.7rem 0;transition:opacity .2s,border-color .2s,box-shadow .2s}.profile-address-card.default{border-color:var(--spray-yellow);box-shadow:4px 4px 0 var(--paper);background:#1d1d20}.profile-address-card:not(.default){opacity:.76}.profile-address-card:hover{opacity:1;border-color:var(--spray-yellow)}.profile-address-card-head{display:flex;align-items:center;justify-content:space-between;gap:.6rem}.profile-address-card-label{font-family:'Anton',sans-serif;color:var(--spray-yellow);text-transform:uppercase;font-size:1rem}.profile-address-card-default{font-family:'Space Mono',monospace;color:var(--success-green);font-size:.6rem}.profile-address-card-body{font-family:'Space Mono',monospace;font-size:.68rem;line-height:1.65;margin-top:.45rem}.profile-address-actions,.billing-saved-address-actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem}.profile-address-actions button,.billing-saved-address-actions button{font-family:'Space Mono',monospace;font-size:.62rem;padding:.48rem .7rem;border:1px solid rgba(242,240,234,.28);background:transparent;color:var(--paper);cursor:pointer}.profile-address-actions button:hover,.billing-saved-address-actions button:hover{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow)}.profile-address-actions .default-btn,.billing-saved-address-actions .default-btn{border-color:var(--spray-yellow);color:var(--spray-yellow)}.profile-address-actions .danger,.billing-saved-address-actions .danger{border-color:var(--rebel-red);color:var(--rebel-red)}.profile-address-actions button:disabled,.billing-saved-address-actions button:disabled{opacity:.55;cursor:default}.billing-saved-address-card{opacity:.72}.billing-saved-address-card.selected{opacity:1;background:#1d1d20;box-shadow:4px 4px 0 var(--paper)}.billing-saved-address-card:not(.selected):hover{opacity:.92}
 
 @media(max-width:800px){.profile-account-layout{grid-template-columns:1fr;padding:1rem;gap:1rem}.profile-account-sidebar{position:static}.profile-account-topbar{padding:0 1rem}.profile-account-topbar-sub{display:none}.profile-account-nav{display:grid;grid-template-columns:1fr 1fr}.profile-account-nav button{border-right:1px solid rgba(242,240,234,.09)}.profile-account-sidebar-actions{margin-top:.8rem}.profile-account-usercard{margin-bottom:.8rem}}
 
@@ -3143,18 +3145,21 @@ async function renderBillingSavedAddresses(selectedId = '') {
 
   list.innerHTML = data.map(a => {
     const id = String(a.id || '');
+    const selected = id === selectedBillingAddressId;
     const addressText = `${a.address1 || ''}${a.address2 ? ', ' + a.address2 : ''}, ${a.district || ''}, ${a.state || ''} - ${a.pincode || ''}`;
-    return `<button type="button" class="billing-saved-address-card ${id === selectedBillingAddressId ? 'selected' : ''}" onclick="selectSavedBillingAddress('${escapeHtml(id)}')">
+    return `<div class="billing-saved-address-card ${selected ? 'selected' : ''}">
       <div class="billing-saved-address-card-head">
         <span class="billing-saved-address-card-label">${escapeHtml(a.label || 'Other')}</span>
         ${a.is_default ? '<span class="billing-saved-address-card-default">DEFAULT</span>' : ''}
       </div>
-      <div class="billing-saved-address-card-body">
-        <strong>${escapeHtml(a.recipient_name || '')}</strong><br>
-        ${escapeHtml(addressText)}<br>
-        ${escapeHtml(a.phone || '')}
+      <div class="billing-saved-address-card-body"><strong>${escapeHtml(a.recipient_name || '')}</strong><br>${escapeHtml(addressText)}<br>${escapeHtml(a.phone || '')}</div>
+      <div class="billing-saved-address-actions" onclick="event.stopPropagation()">
+        <button type="button" onclick="selectSavedBillingAddress('${escapeHtml(id)}')">${selected ? '✓ Selected' : 'Select Address'}</button>
+        <button type="button" onclick="editSavedAddressFromCheckout('${escapeHtml(id)}')">Edit</button>
+        ${a.is_default ? '<button type="button" class="default-btn" disabled>Default Address</button>' : `<button type="button" class="default-btn" onclick="setDefaultFromCheckout('${escapeHtml(id)}')">Make Default</button>`}
+        <button type="button" class="danger" onclick="deleteSavedAddressFromCheckout('${escapeHtml(id)}')">Delete</button>
       </div>
-    </button>`;
+    </div>`;
   }).join('');
 
   renderSelectedBillingSummary(selectedBillingAddressData);
@@ -3300,6 +3305,7 @@ async function saveNewCheckoutAddress() {
     const name = document.getElementById('new-b-name').value.trim();
     const phone = document.getElementById('new-b-phone').value.trim();
     const altPhone = document.getElementById('new-b-alt-phone').value.trim();
+    const editId = String(document.getElementById('save-new-address-btn')?.dataset.editId || '').trim();
     const address1 = document.getElementById('new-b-address1').value.trim();
     const address2 = document.getElementById('new-b-address2').value.trim();
     const pincode = document.getElementById('new-b-pincode').value.trim();
@@ -3324,19 +3330,23 @@ async function saveNewCheckoutAddress() {
       is_default: false
     };
 
-    const { data: savedAddress, error } = await supabaseClient
-      .from('user_addresses')
-      .insert(payload)
-      .select('*')
-      .single();
-
-    if (error) throw error;
-    if (!savedAddress || String(savedAddress.user_id) !== String(user.id)) {
-      throw new Error('Address save verification failed. Please try again.');
+    let savedAddress;
+    let error;
+    if (editId) {
+      const result = await supabaseClient.from('user_addresses').update({...payload, updated_at:new Date().toISOString()}).eq('id', editId).eq('user_id', user.id).select('*').single();
+      savedAddress = result.data;
+      error = result.error;
+    } else {
+      const result = await supabaseClient.from('user_addresses').insert(payload).select('*').single();
+      savedAddress = result.data;
+      error = result.error;
     }
+    if (error) throw error;
+    if (!savedAddress || String(savedAddress.user_id) !== String(user.id)) throw new Error('Address save verification failed. Please try again.');
 
     selectedBillingAddressId = String(savedAddress.id);
     selectedBillingAddressData = savedAddress;
+    delete document.getElementById('save-new-address-btn').dataset.editId;
 
     document.getElementById('new-address-checkout-page').style.display = 'none';
     document.getElementById('shipping-billing-page').style.display = 'block';
@@ -3344,7 +3354,7 @@ async function saveNewCheckoutAddress() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     await renderBillingSavedAddresses(selectedBillingAddressId);
-    showToast('New address saved. Select it and continue to payment.');
+    showToast(editId ? 'Address updated successfully.' : 'New address saved. Select it and continue to payment.');
   } catch (err) {
     console.error('Checkout address save failed:', err);
     showToast(err?.message || 'Address could not be saved.');
@@ -5672,6 +5682,48 @@ async function logoutUser() {
   showHomeView();
 }
 
+async function renderAddressesInsideProfile() {
+  const area = document.getElementById('profile-address-tab-content');
+  if (!area) return;
+  if (!supabaseClient) { area.innerHTML = '<div class="profile-account-address-empty">Supabase not connected.</div>'; return; }
+  area.innerHTML = `
+    <h2 class="profile-account-heading">Saved Address</h2>
+    <p class="profile-account-subheading">Save and manage your delivery addresses.</p>
+    <div class="profile-account-address-add" onclick="toggleProfileAddressForm(true)"><strong>＋ Add New Address</strong><span>+</span></div>
+    <div id="saved-address-list" style="margin-bottom:1rem;"></div>
+    <div id="profile-address-form-wrap" class="profile-account-address-form" style="display:none;">
+      <h4 id="address-form-title" style="font-family:'Anton',sans-serif;color:var(--spray-yellow);text-transform:uppercase;margin-bottom:.2rem;">Add New Address</h4>
+      <input type="hidden" id="address-edit-id">
+      <div class="account-grid">
+        <div class="account-field"><label>Save Address As</label><select id="address-label"><option>Home</option><option>Work</option><option>Other</option></select></div>
+        <div class="account-field"><label>Recipient Name *</label><input id="address-recipient-name" type="text" autocomplete="name"></div>
+        <div class="account-field"><label>Mobile Number *</label><input id="address-phone" type="tel" autocomplete="tel"></div>
+        <div class="account-field"><label>Pincode *</label><input id="address-pincode" type="text" maxlength="6" inputmode="numeric" autocomplete="postal-code" oninput="profileAddressPincodeLookup(this.value)"><span class="billing-address-status" id="profile-address-pincode-status"></span></div>
+        <div class="account-field"><label>Address Line 1 *</label><input id="address-line1" type="text" autocomplete="address-line1"></div>
+        <div class="account-field"><label>Address Line 2</label><input id="address-line2" type="text" autocomplete="address-line2"></div>
+        <div class="account-field"><label>State</label><select id="address-state"></select></div>
+        <div class="account-field"><label>District</label><select id="address-district"></select></div>
+      </div>
+      <label style="display:flex;align-items:center;gap:.5rem;font-family:'Space Mono';font-size:.72rem;color:var(--paper);margin:.5rem 0 1rem;"><input type="checkbox" id="address-is-default"> Set as Default Address</label>
+      <div style="display:flex;gap:.6rem;justify-content:flex-end;flex-wrap:wrap;"><button class="btn btn--ghost" id="address-cancel-btn" type="button" style="display:none;" onclick="resetAddressForm();toggleProfileAddressForm(false)">Cancel</button><button class="btn btn--solid" type="button" onclick="saveSavedAddress()">Save Address</button></div>
+    </div>`;
+  populateAddressStateSelect();
+  resetAddressForm();
+  await loadSavedAddresses();
+}
+function toggleProfileAddressForm(show){const wrap=document.getElementById('profile-address-form-wrap');if(!wrap)return;wrap.style.display=show?'block':'none';if(show)setTimeout(()=>document.getElementById('address-recipient-name')?.focus(),0)}
+function populateAddressStateSelect(){const el=document.getElementById('address-state');if(!el)return;el.innerHTML='<option value="">Select State</option>'+Object.keys(INDIA_LOCATIONS).map(s=>`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');el.onchange=()=>{const d=document.getElementById('address-district');if(d)d.innerHTML='<option value="">Select District</option>'+(INDIA_LOCATIONS[el.value]||[]).map(x=>`<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`).join('')}}
+function resetAddressForm(){['address-edit-id','address-recipient-name','address-phone','address-pincode','address-line1','address-line2'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});const l=document.getElementById('address-label');if(l)l.value='Home';const d=document.getElementById('address-is-default');if(d)d.checked=false;const t=document.getElementById('address-form-title');if(t)t.innerText='Add New Address';const c=document.getElementById('address-cancel-btn');if(c)c.style.display='none';const st=document.getElementById('address-state');if(st)st.value='';const di=document.getElementById('address-district');if(di)di.innerHTML='<option value="">Select District</option>';const ps=document.getElementById('profile-address-pincode-status');if(ps)ps.textContent=''}
+async function loadSavedAddresses(){const list=document.getElementById('saved-address-list');if(!list||!supabaseClient)return;const {data:{user}}=await supabaseClient.auth.getUser();if(!user){list.innerHTML='<div class="profile-account-address-empty">Please login again.</div>';return}const {data,error}=await supabaseClient.from('user_addresses').select('*').eq('user_id',user.id).order('is_default',{ascending:false}).order('created_at',{ascending:false});if(error){list.innerHTML=`<div class="profile-account-address-empty">${escapeHtml(error.message)}</div>`;return}if(!data?.length){list.innerHTML='<div class="profile-account-address-empty">No saved addresses yet. Add your first address.</div>';return}list.innerHTML=data.map(a=>{const id=String(a.id||'');const address=`${a.address1||''}${a.address2?', '+a.address2:''}, ${a.district||''}, ${a.state||''} - ${a.pincode||''}`;return `<div class="profile-address-card ${a.is_default?'default':''}"><div class="profile-address-card-head"><span class="profile-address-card-label">${escapeHtml(a.label||'Other')}</span>${a.is_default?'<span class="profile-address-card-default">DEFAULT</span>':''}</div><div class="profile-address-card-body"><strong>${escapeHtml(a.recipient_name||'')}</strong><br>${escapeHtml(address)}<br>${escapeHtml(a.phone||'')}</div><div class="profile-address-actions"><button type="button" onclick="editSavedAddress('${escapeHtml(id)}')">Edit</button>${a.is_default?'<button type="button" class="default-btn" disabled>Default Address</button>':`<button type="button" class="default-btn" onclick="setDefaultSavedAddress('${escapeHtml(id)}')">Make Default</button>`}<button type="button" class="danger" onclick="deleteSavedAddress('${escapeHtml(id)}')">Delete</button></div></div>`}).join('')}
+async function saveSavedAddress(){if(!supabaseClient)return;const {data:{user}}=await supabaseClient.auth.getUser();if(!user){showToast('Please login again.');return}const editId=document.getElementById('address-edit-id').value;const payload={user_id:user.id,label:document.getElementById('address-label').value,recipient_name:document.getElementById('address-recipient-name').value.trim(),phone:document.getElementById('address-phone').value.trim(),address1:document.getElementById('address-line1').value.trim(),address2:document.getElementById('address-line2').value.trim()||null,district:document.getElementById('address-district').value,state:document.getElementById('address-state').value,pincode:document.getElementById('address-pincode').value.trim(),is_default:document.getElementById('address-is-default').checked};if(!payload.recipient_name||!payload.phone||!payload.address1||!/^\d{6}$/.test(payload.pincode)||!payload.state||!payload.district){showToast('Please complete Name, Mobile, Address, Pincode, State and District.');return}if(payload.is_default){const {error}=await supabaseClient.from('user_addresses').update({is_default:false}).eq('user_id',user.id);if(error){showToast('Could not update default address.');return}}if(editId){const {data,error}=await supabaseClient.from('user_addresses').update({...payload,updated_at:new Date().toISOString()}).eq('id',editId).eq('user_id',user.id).select('*').single();if(error||!data||String(data.user_id)!==String(user.id)){showToast('Address update failed.');return}}else{const {data,error}=await supabaseClient.from('user_addresses').insert(payload).select('*').single();if(error||!data||String(data.user_id)!==String(user.id)){showToast('Address save failed.');return}}resetAddressForm();toggleProfileAddressForm(false);await loadSavedAddresses();showToast('Address saved successfully!')}
+async function editSavedAddress(id){const {data:{user}}=await supabaseClient.auth.getUser();if(!user)return;const {data,error}=await supabaseClient.from('user_addresses').select('*').eq('id',id).eq('user_id',user.id).maybeSingle();if(error||!data){showToast('Address not found.');return}document.getElementById('address-edit-id').value=data.id;document.getElementById('address-label').value=data.label||'Other';document.getElementById('address-recipient-name').value=data.recipient_name||'';document.getElementById('address-phone').value=data.phone||'';document.getElementById('address-pincode').value=data.pincode||'';document.getElementById('address-line1').value=data.address1||'';document.getElementById('address-line2').value=data.address2||'';document.getElementById('address-state').value=data.state||'';document.getElementById('address-state').dispatchEvent(new Event('change'));document.getElementById('address-district').value=data.district||'';document.getElementById('address-is-default').checked=!!data.is_default;document.getElementById('address-form-title').innerText='Edit Address';document.getElementById('address-cancel-btn').style.display='inline-flex';toggleProfileAddressForm(true)}
+async function setDefaultSavedAddress(id){const {data:{user}}=await supabaseClient.auth.getUser();if(!user)return;const {error:e1}=await supabaseClient.from('user_addresses').update({is_default:false}).eq('user_id',user.id);if(e1){showToast('Could not update default address.');return}const {error:e2}=await supabaseClient.from('user_addresses').update({is_default:true,updated_at:new Date().toISOString()}).eq('id',id).eq('user_id',user.id);if(e2){showToast('Could not set default address.');return}await loadSavedAddresses();showToast('Default address updated!')}
+async function deleteSavedAddress(id){if(!confirm('Delete this saved address?'))return;const {data:{user}}=await supabaseClient.auth.getUser();if(!user)return;const {error}=await supabaseClient.from('user_addresses').delete().eq('id',id).eq('user_id',user.id);if(error){showToast('Delete failed: '+error.message);return}if(String(selectedBillingAddressId)===String(id)){selectedBillingAddressId='';selectedBillingAddressData=null}await loadSavedAddresses();if(document.getElementById('billing-saved-address-list'))await renderBillingSavedAddresses('');showToast('Address deleted.')}
+async function editSavedAddressFromCheckout(id){const {data:{user}}=await supabaseClient.auth.getUser();if(!user)return;const {data,error}=await supabaseClient.from('user_addresses').select('*').eq('id',id).eq('user_id',user.id).maybeSingle();if(error||!data){showToast('Address not found.');return}document.getElementById('new-b-name').value=data.recipient_name||'';document.getElementById('new-b-email').value=loggedInUser?.email||'';document.getElementById('new-b-phone').value=data.phone||'';document.getElementById('new-b-alt-phone').value=data.alt_phone||'';document.getElementById('new-b-address1').value=data.address1||'';document.getElementById('new-b-address2').value=data.address2||'';document.getElementById('new-b-pincode').value=data.pincode||'';document.getElementById('new-b-state').value=data.state||'';onNewCheckoutStateChange(data.district||'');document.getElementById('new-b-pincode-status').textContent='';document.getElementById('save-new-address-btn').dataset.editId=String(id);document.getElementById('shipping-billing-page').style.display='none';document.getElementById('new-address-checkout-page').style.display='block';window.location.hash='#new-address';window.scrollTo({top:0,behavior:'smooth'})}
+async function setDefaultFromCheckout(id){await setDefaultSavedAddress(id);selectedBillingAddressId=String(id);selectedBillingAddressData=null;await renderBillingSavedAddresses(selectedBillingAddressId)}
+async function deleteSavedAddressFromCheckout(id){await deleteSavedAddress(id)}
+async function profileAddressPincodeLookup(pincode){const stateEl=document.getElementById('address-state'),districtEl=document.getElementById('address-district'),status=document.getElementById('profile-address-pincode-status');pincode=String(pincode||'').trim();if(status)status.textContent='';if(!stateEl||!districtEl||!/^[0-9]{6}$/.test(pincode))return;if(status)status.textContent='Detecting state & district...';try{const res=await fetch(`https://api.postalpincode.in/pincode/${pincode}`),data=await res.json();if(!(data?.[0]?.Status==='Success'&&data?.[0]?.PostOffice?.length)){if(status)status.textContent='Pincode not found. Please select manually.';return}const po=data[0].PostOffice[0],apiState=String(po.State||''),apiDistrict=String(po.District||'');const state=Object.keys(INDIA_LOCATIONS).find(x=>x.toLowerCase()===apiState.toLowerCase())||apiState;if(state&&!Array.from(stateEl.options).some(o=>o.value===state)){const opt=document.createElement('option');opt.value=state;opt.textContent=state;stateEl.appendChild(opt)}stateEl.value=state;stateEl.dispatchEvent(new Event('change'));const m=Array.from(districtEl.options).find(o=>o.value.toLowerCase()===apiDistrict.toLowerCase());if(m)districtEl.value=m.value;else if(apiDistrict){const opt=document.createElement('option');opt.value=apiDistrict;opt.textContent=apiDistrict;opt.selected=true;districtEl.appendChild(opt)}if(status)status.textContent=`✓ Detected: ${apiDistrict}, ${apiState}`}catch(_){if(status)status.textContent='Auto-detect offline. Please choose manually.'}}
+
 function openAccountTab(tab) {
   const profile = document.getElementById('profile-tab-content');
   const orders = document.getElementById('profile-orders-tab-content');
@@ -6168,7 +6220,7 @@ if(typeof window!=='undefined'){window.openOffersPanel=openOffersPanel;window.cl
     <section class="master-pane" id="master-pane-orders">
       <div class="master-grid">
         <div class="master-card"><span class="master-badge">PHASE 3</span><h4>Track My Order</h4><p>Order status timeline and tracking interface for customers.</p><button class="btn btn--ghost" onclick="openOrdersModal()">My Orders</button></div>
-        <div class="master-card"><span class="master-badge">PHASE 3</span><h4>Delivery Estimate</h4><p>Pincode-based delivery estimate interface.</p><button class="btn btn--ghost" onclick="showToast('Delivery estimate is available from the order/tracking area.')">Check Estimate</button></div>
+        
         <div class="master-card"><span class="master-badge">PHASE 3</span><h4>Returns / Exchange</h4><p>Frontend flow for requesting a return or exchange against an eligible order.</p><button class="btn btn--ghost" onclick="showToast('Select an eligible order to start a return or exchange.')">Start Request</button></div>
         <div class="master-card"><span class="master-badge">PHASE 3</span><h4>Reviews & Ratings</h4><p>Star rating, review submission and review display on product pages.</p><button class="btn btn--ghost" onclick="showToast('Open a product page to see Reviews & Ratings.')">View Reviews</button></div>
         <div class="master-card"><span class="master-badge">PHASE 3</span><h4>FAQ / Support</h4><p>Frequently asked questions and support entry points.</p><button class="btn btn--ghost" onclick="openFaqModal()">Open FAQ</button></div>
