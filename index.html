@@ -2261,15 +2261,29 @@ function openCategoryDedicatedPage(catName) {
 }
 
 function showHomeView() {
-  document.getElementById('product-page').style.display = 'none';
-  document.getElementById('custom-order-page').style.display = 'none';
-  document.getElementById('shipping-billing-page').style.display = 'none';
-  document.getElementById('category-page').style.display = 'none';
-  document.getElementById('admin-view').style.display = 'none';
-  document.getElementById('home-view').style.display = 'block';
+  // Close every account/overlay view first so the real homepage becomes clickable again.
+  ['profile-modal','orders-modal','saved-address-modal','saved-addresses-modal','address-editor-modal'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+  document.body.style.overflow = '';
+
+  ['product-page','custom-order-page','shipping-billing-page','category-page','admin-view'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+
+  const home = document.getElementById('home-view');
+  if (home) home.style.display = 'block';
   if (document.getElementById('shop-results-grid')) document.getElementById('shop-results-grid').style.display = 'none';
   if (document.getElementById('home-categories-container')) document.getElementById('home-categories-container').style.display = '';
-  window.location.hash = '#home';
+
+  // Home is a destination, not another account-history step.
+  try {
+    history.replaceState({ rebelRoute: 'home' }, '', '#home');
+  } catch (_) {
+    window.location.hash = '#home';
+  }
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -5194,6 +5208,12 @@ function handleRouteFromHash() {
   const hash = window.location.hash;
   if (!hash || hash === '#home') {
     showHomeView();
+  } else if (hash === '#profile') {
+    openProfileModal('profile', false);
+  } else if (hash === '#orders') {
+    openProfileModal('orders', false);
+  } else if (hash === '#saved-address') {
+    openProfileModal('addresses', false);
   } else if (hash === '#custom-order') {
     openCustomOrderPage();
   } else if (hash === '#shipping') {
@@ -5802,10 +5822,25 @@ function openAccountTab(tab) {
   if (tab === 'addresses') renderAddressesInsideProfile();
 }
 
-async function openProfileModal(initialTab = 'profile') {
+async function openProfileModal(initialTab = 'profile', syncHash = true) {
   if (!loggedInUser || !supabaseClient) return;
-  await refreshCurrentProfile();
+
+  const modal = document.getElementById('profile-modal');
   const area = document.getElementById('profile-content-area');
+  if (!modal || !area) return;
+
+  // If the account page is already open, do NOT rebuild the whole page.
+  // Rebuilding here was making the sidebar navigation feel like dead/dummy buttons.
+  if (modal.style.display === 'flex' && area.innerHTML.trim()) {
+    openAccountTab(initialTab);
+    if (syncHash) {
+      const routeHash = initialTab === 'orders' ? '#orders' : (initialTab === 'addresses' ? '#saved-address' : '#profile');
+      if (window.location.hash !== routeHash) window.location.hash = routeHash;
+    }
+    return;
+  }
+
+  await refreshCurrentProfile();
   croppedAvatarBlob = null;
 
   const avatarHtml = loggedInUser.avatarUrl
@@ -5863,9 +5898,14 @@ async function openProfileModal(initialTab = 'profile') {
 
   const gender = document.getElementById('edit-profile-gender');
   if (gender) gender.value = loggedInUser.gender || '';
-  document.getElementById('profile-modal').style.display = 'flex';
+  modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
   openAccountTab(initialTab);
+
+  if (syncHash) {
+    const routeHash = initialTab === 'orders' ? '#orders' : (initialTab === 'addresses' ? '#saved-address' : '#profile');
+    if (window.location.hash !== routeHash) window.location.hash = routeHash;
+  }
 }
 
 async function refreshCurrentProfile() {
@@ -5875,7 +5915,34 @@ async function refreshCurrentProfile() {
   await hydrateLoggedInUserFromSupabase(user, false);
 }
 
-function closeProfileModal() { document.getElementById('profile-modal').style.display = 'none'; document.body.style.overflow = ''; }
+function closeProfileModal() {
+  const modal = document.getElementById('profile-modal');
+  if (modal) modal.style.display = 'none';
+  ['orders-modal','saved-address-modal','saved-addresses-modal','address-editor-modal'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+  document.body.style.overflow = '';
+
+  // Closing the account area always returns to the actual store home.
+  if (window.location.hash !== '#home') {
+    try {
+      history.replaceState({ rebelRoute: 'home' }, '', '#home');
+    } catch (_) {
+      window.location.hash = '#home';
+    }
+  }
+}
+
+// Backward-compatible wrappers used by the homepage user menu.
+// The old standalone Saved Address modal was replaced by the account center;
+// these wrappers now open the same working account tabs instead of doing nothing.
+function openSavedAddressesModal() {
+  openProfileModal('addresses');
+}
+function closeSavedAddressesModal() {
+  closeProfileModal();
+}
 
 let croppedAvatarBlob = null;
 
