@@ -522,6 +522,16 @@ footer a:hover{color:var(--paper)}
 @media(max-width:650px){.fit-finder-grid{grid-template-columns:1fr}.fit-finder-field.full{grid-column:auto}.fit-finder-options{grid-template-columns:1fr 1fr}.fit-finder-metrics{grid-template-columns:1fr}.fit-finder-box{padding:16px}.fit-finder-result-size{font-size:3.2rem}}
 </style>
 
+
+<style id="orders-tracking-update-css">
+.admin-tracking-fields{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}
+.admin-tracking-fields input{width:100%;background:#111;border:1px solid rgba(242,240,234,.25);color:var(--paper);padding:7px 8px;font-family:'Space Mono',monospace;font-size:.68rem}
+.admin-tracking-fields input:focus{outline:none;border-color:var(--spray-yellow)}
+.customer-tracking-box{margin-top:.7rem;padding:.7rem;background:#111113;border-left:3px solid var(--spray-yellow);font-family:'Space Mono',monospace;font-size:.68rem;line-height:1.6}
+.customer-tracking-box strong{color:var(--paper)}
+@media(max-width:600px){.admin-tracking-fields{grid-template-columns:1fr}}
+</style>
+
 </head>
 <body>
 
@@ -928,7 +938,7 @@ footer a:hover{color:var(--paper)}
         </div>
         <div class="b-field">
           <label>Alternate Mobile</label>
-          <input type="tel" id="b-alt-phone" placeholder="Optional" autocomplete="tel">
+          <input type="tel" id="b-alt-phone" autocomplete="tel">
         </div>
       </div>
 
@@ -3962,7 +3972,9 @@ async function loadAdminDataFromSupabase() {
         })),
         paymentStatus: o.payment_status || 'paid',
         paymentId: o.razorpay_payment_id || 'N/A',
-        orderStatus: o.order_status || 'New'
+        orderStatus: o.order_status || 'New',
+        courierName: o.courier_name || '',
+        trackingId: o.tracking_id || ''
       }));
       localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
     }
@@ -4043,19 +4055,50 @@ async function acceptNewOrder(orderId) {
 
 async function updateOrderStatusInSupabase(orderId, newStatus) {
   const found = ordersHistory.find(o => o.id === orderId);
-  if (found) found.orderStatus = newStatus;
+  if (!found || !supabaseClient) return;
 
-  if (supabaseClient) {
-    try {
-      await supabaseClient
-        .from('orders')
-        .update({ order_status: newStatus })
-        .eq('order_id', orderId);
-    } catch (err) {
-      console.error("Status update error:", err);
-    }
+  const { error } = await supabaseClient
+    .from('orders')
+    .update({ order_status: newStatus })
+    .eq('order_id', orderId);
+
+  if (error) {
+    console.error('Status update error:', error);
+    showToast('Status update failed: ' + error.message);
+    return;
   }
+
+  found.orderStatus = newStatus;
+  localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
   showToast(`Order ${orderId} status updated to ${newStatus}!`);
+  renderAdminPanels(currentSelectedDateFilter);
+}
+
+async function updateOrderTrackingDetails(orderId, courierName, trackingId) {
+  const found = ordersHistory.find(o => o.id === orderId);
+  if (!found || !supabaseClient) return;
+
+  courierName = String(courierName || '').trim().slice(0, 100);
+  trackingId = String(trackingId || '').trim().slice(0, 100);
+
+  const { error } = await supabaseClient
+    .from('orders')
+    .update({
+      courier_name: courierName || null,
+      tracking_id: trackingId || null
+    })
+    .eq('order_id', orderId);
+
+  if (error) {
+    console.error('Tracking update error:', error);
+    showToast('Tracking update failed: ' + error.message);
+    return;
+  }
+
+  found.courierName = courierName;
+  found.trackingId = trackingId;
+  localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
+  showToast(`Tracking details saved for ${orderId}.`);
   renderAdminPanels(currentSelectedDateFilter);
 }
 
@@ -4196,6 +4239,11 @@ function renderAdminPanels(filterDate = '') {
       let actionColHtml = '';
       if (ord.orderStatus === 'New') {
         actionColHtml = `
+          <div class="admin-tracking-fields" onclick="event.stopPropagation()">
+            <input type="text" maxlength="100" value="${escapeHtml(ord.courierName || '')}" placeholder="Courier name" id="courier-${escapeHtml(ord.id)}">
+            <input type="text" maxlength="100" value="${escapeHtml(ord.trackingId || '')}" placeholder="Tracking ID" id="tracking-${escapeHtml(ord.id)}">
+            <button class="btn btn--solid" style="grid-column:1/-1;padding:5px 8px;font-size:.68rem;min-height:auto;" onclick="event.stopPropagation(); updateOrderTrackingDetails('${escapeHtml(ord.id)}', document.getElementById('courier-${escapeHtml(ord.id)}')?.value, document.getElementById('tracking-${escapeHtml(ord.id)}')?.value)">Save Tracking</button>
+          </div>
           <div style="display:flex; flex-direction:column; gap:6px;">
             <button class="btn btn--solid" style="padding:4px 10px; font-size:0.75rem; min-height:auto;" onclick="acceptNewOrder('${ord.id}')">Accept Order ✓</button>
             <button class="btn btn--ghost" style="padding:4px 8px; font-size:0.65rem; min-height:auto; color:var(--rebel-red); border-color:var(--rebel-red);" onclick="event.stopPropagation(); deleteOrderToTrash('${ord.id}')">Delete 🗑️</button>
@@ -4206,6 +4254,11 @@ function renderAdminPanels(filterDate = '') {
           <select class="cal-dropdown" style="font-size:0.78rem; padding:4px; margin-bottom:6px;" onchange="updateOrderStatusInSupabase('${ord.id}', this.value)" onclick="event.stopPropagation()">
             ${statusOptionsHtml}
           </select>
+          <div class="admin-tracking-fields" onclick="event.stopPropagation()">
+            <input type="text" maxlength="100" value="${escapeHtml(ord.courierName || '')}" placeholder="Courier name" id="courier-${escapeHtml(ord.id)}">
+            <input type="text" maxlength="100" value="${escapeHtml(ord.trackingId || '')}" placeholder="Tracking ID" id="tracking-${escapeHtml(ord.id)}">
+            <button class="btn btn--solid" style="grid-column:1/-1;padding:5px 8px;font-size:.68rem;min-height:auto;" onclick="event.stopPropagation(); updateOrderTrackingDetails('${escapeHtml(ord.id)}', document.getElementById('courier-${escapeHtml(ord.id)}')?.value, document.getElementById('tracking-${escapeHtml(ord.id)}')?.value)">Save Tracking</button>
+          </div>
           <div style="display:flex; flex-direction:column; gap:6px;">
             <button class="btn btn--ghost" style="padding:4px 8px; font-size:0.65rem; min-height:auto;" onclick="event.stopPropagation(); downloadCourierLabelPDF('${ord.id}')">📥 Shipping PDF</button>
             <button class="btn btn--solid" style="padding:4px 8px; font-size:0.65rem; min-height:auto;" onclick="event.stopPropagation(); generateZohoInvoice('${ord.id}')">🧾 Push to Zoho</button>
@@ -5688,7 +5741,9 @@ async function loadCustomerOrdersFromSupabase() {
       items: Array.isArray(o.items) ? o.items : [],
       paymentStatus: o.payment_status || 'paid',
       paymentId: o.razorpay_payment_id || 'N/A',
-      orderStatus: o.order_status || 'New'
+      orderStatus: o.order_status || 'New',
+      courierName: o.courier_name || '',
+      trackingId: o.tracking_id || ''
     }));
 
     const localOnly = ordersHistory.filter(local =>
@@ -5711,11 +5766,11 @@ function renderOrdersInsideProfile() {
     return `<div class="address-card" onclick="toggleUserOrderExpand('${escapeHtml(ord.id)}')" style="cursor:pointer;">
       <div class="address-card-head"><strong class="address-label">${escapeHtml(ord.id)}</strong><span style="font-family:'Space Mono';font-size:.68rem;color:var(--grey);">${escapeHtml(ord.date || '')}</span></div>
       <div class="address-meta">Total: ₹${Number(ord.totalAmount || 0).toFixed(0)} · Payment: ${escapeHtml(ord.paymentStatus || 'paid')} · Status: ${escapeHtml(ord.orderStatus || 'New')}</div>
-      <div id="user-order-items-${escapeHtml(ord.id)}" style="display:none;margin-top:.7rem;border-top:1px dashed rgba(242,240,234,.18);padding-top:.6rem;">${items}<div style="font-family:'Space Mono';font-size:.7rem;color:var(--grey);margin-top:.4rem;">Shipping: ${escapeHtml(ord.billing?.address || '')}</div></div>
-      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.7rem;" onclick="event.stopPropagation()">
-        ${['New','Processing','Confirmed'].includes(String(ord.orderStatus||'')) ? `<button class="btn btn--ghost" style="font-size:.68rem;padding:.45rem .7rem" onclick="openOrderServiceModal('${escapeHtml(ord.id)}','cancel')">Cancel Order</button>` : ''}
-        ${['Delivered','Completed'].includes(String(ord.orderStatus||'')) ? `<button class="btn btn--ghost" style="font-size:.68rem;padding:.45rem .7rem" onclick="openOrderServiceModal('${escapeHtml(ord.id)}','return')">Return / Exchange</button>` : ''}
+      <div class="customer-tracking-box">
+        <div><strong>Courier:</strong> ${escapeHtml(ord.courierName || 'Not assigned yet')}</div>
+        <div><strong>Tracking ID:</strong> ${escapeHtml(ord.trackingId || 'Not assigned yet')}</div>
       </div>
+      <div id="user-order-items-${escapeHtml(ord.id)}" style="display:none;margin-top:.7rem;border-top:1px dashed rgba(242,240,234,.18);padding-top:.6rem;">${items}<div style="font-family:'Space Mono';font-size:.7rem;color:var(--grey);margin-top:.4rem;"><strong>Shipping:</strong> ${escapeHtml(ord.billing?.address || '')}</div></div>
     </div>`;
   }).join('');
 }
@@ -5861,8 +5916,12 @@ async function saveSavedAddress() {
     const {error}=await supabaseClient.from('user_addresses').update({...payload,updated_at:new Date().toISOString()}).eq('id',editId).eq('user_id',user.id);
     if(error){showToast('Address update failed: '+error.message);return;}
   }else{
-    const {error}=await supabaseClient.from('user_addresses').insert(payload);
+    const {data:savedAddress,error}=await supabaseClient.from('user_addresses').insert(payload).select('*').single();
     if(error){showToast('Address save failed: '+error.message);return;}
+    if(!savedAddress || String(savedAddress.user_id) !== String(user.id)){
+      showToast('Address save verification failed. Please try again.');
+      return;
+    }
   }
   resetAddressForm();
   toggleProfileAddressForm(false);
@@ -5974,6 +6033,10 @@ function openOrdersModal() {
       return `<div style="background:#1a1a1d;border:1px solid rgba(242,240,234,.15);padding:1rem;margin-bottom:1rem;border-radius:4px;">
         <div style="display:flex;justify-content:space-between;gap:.5rem;flex-wrap:wrap;font-family:'Space Mono';font-size:.75rem;color:var(--spray-yellow);"><span>Order ID: ${safeId}</span><span>${escapeHtml(ord.date || '')}</span></div>
         <div style="font-family:'Space Mono';font-size:.72rem;color:var(--paper);margin:.5rem 0;">Total: ₹${Number(ord.totalAmount || 0).toFixed(0)} · Status: <strong>${escapeHtml(ord.orderStatus || 'New')}</strong></div>
+        <div class="customer-tracking-box">
+          <div><strong>Courier:</strong> ${escapeHtml(ord.courierName || 'Not assigned yet')}</div>
+          <div><strong>Tracking ID:</strong> ${escapeHtml(ord.trackingId || 'Not assigned yet')}</div>
+        </div>
         <div style="display:flex;gap:.5rem;flex-wrap:wrap;"><button class="btn btn--ghost" type="button" onclick="openOrderTracking('${safeId}')">📦 Track Order</button><button class="btn btn--ghost" type="button" onclick="toggleUserOrderExpand('${safeId}')">View Details</button></div>
         <div id="order-track-${safeId}" class="order-track-panel" style="display:none;"><div style="font-family:'Space Mono';font-size:.68rem;color:var(--grey);text-transform:uppercase;">Current status: <strong style="color:var(--paper);">${escapeHtml(ord.orderStatus || 'New')}</strong></div><div class="order-track-steps">${steps}</div><div class="delivery-estimator"><input id="pincode-${safeId}" inputmode="numeric" maxlength="6" placeholder="Enter delivery pincode"><button class="btn btn--solid" type="button" onclick="calculateDeliveryEstimate('${safeId}')">Check ETA</button></div><div id="delivery-result-${safeId}" class="delivery-result">Enter your pincode to get an estimated delivery window.</div></div>
         <div id="user-order-items-${safeId}" style="display:none;margin-top:.8rem;border-top:1px dashed rgba(242,240,234,.2);padding-top:.7rem;"><div style="font-size:.75rem;color:var(--spray-yellow);margin-bottom:4px;"><strong>Ordered Items:</strong></div>${itemsListHtml}<div style="font-size:.75rem;color:var(--grey);margin-top:5px;"><strong>Shipping Address:</strong> ${escapeHtml(ord.billing?.address || '')}</div></div>
@@ -6042,7 +6105,6 @@ if(typeof window!=='undefined'){window.openOffersPanel=openOffersPanel;window.cl
         <div class="master-card"><span class="master-badge">PHASE 3</span><h4>Track My Order</h4><p>Order status timeline and tracking interface for customers.</p><button class="btn btn--ghost" onclick="openOrdersModal()">My Orders</button></div>
         <div class="master-card"><span class="master-badge">PHASE 3</span><h4>Delivery Estimate</h4><p>Pincode-based delivery estimate interface.</p><button class="btn btn--ghost" onclick="showToast('Delivery estimate is available from the order/tracking area.')">Check Estimate</button></div>
         <div class="master-card"><span class="master-badge">PHASE 3</span><h4>Returns / Exchange</h4><p>Frontend flow for requesting a return or exchange against an eligible order.</p><button class="btn btn--ghost" onclick="showToast('Select an eligible order to start a return or exchange.')">Start Request</button></div>
-        <div class="master-card"><span class="master-badge">PHASE 3</span><h4>Cancellation</h4><p>Customer cancellation interface with order-status checks.</p><button class="btn btn--ghost" onclick="showToast('Cancellation is available on eligible orders.')">View Orders</button></div>
         <div class="master-card"><span class="master-badge">PHASE 3</span><h4>Reviews & Ratings</h4><p>Star rating, review submission and review display on product pages.</p><button class="btn btn--ghost" onclick="showToast('Open a product page to see Reviews & Ratings.')">View Reviews</button></div>
         <div class="master-card"><span class="master-badge">PHASE 3</span><h4>FAQ / Support</h4><p>Frequently asked questions and support entry points.</p><button class="btn btn--ghost" onclick="openFaqModal()">Open FAQ</button></div>
       </div>
