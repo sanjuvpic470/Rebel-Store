@@ -463,7 +463,7 @@ footer a:hover{color:var(--paper)}
 .profile-account-modal{padding:0!important;background:transparent!important;backdrop-filter:none!important;align-items:flex-start!important;justify-content:stretch!important;z-index:80!important;overflow:hidden!important}
 .profile-account-page{width:100%;height:100vh;min-height:100vh;background:#0b0b0c;color:var(--paper);overflow:auto;position:relative;padding-top:104px}
 .profile-account-topbar{display:none!important}
-.profile-account-page{width:100%;height:100%;min-height:100vh;background:#0b0b0c;color:var(--paper);overflow:auto;position:relative}
+.profile-account-page{width:100%;height:100%;min-height:100vh;background:#0b0b0c;color:var(--paper);overflow:auto;position:relative;scrollbar-gutter:stable}
 .profile-account-topbar{height:66px;border-bottom:1px solid rgba(242,240,234,.14);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;background:#0b0b0c;z-index:3}
 .profile-account-topbar-title{font-family:'Anton',sans-serif;font-size:1.45rem;text-transform:uppercase;color:var(--spray-yellow);letter-spacing:.04em}
 .profile-account-topbar-sub{font-family:'Space Mono',monospace;font-size:.66rem;color:var(--grey);margin-left:.65rem}
@@ -472,7 +472,7 @@ footer a:hover{color:var(--paper)}
 
 .profile-account-close{background:transparent;border:1px solid rgba(242,240,234,.25);color:var(--paper);font-family:'Space Mono',monospace;font-size:.7rem;padding:.5rem .75rem;cursor:pointer}
 .profile-account-close:hover{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow)}
-.profile-account-layout{max-width:1180px;margin:0 auto;padding:2rem;display:grid;grid-template-columns:255px minmax(0,1fr);gap:2rem;align-items:start}
+.profile-account-layout{width:min(1180px,calc(100% - 4rem));max-width:1180px;margin:0 auto;padding:2rem;box-sizing:border-box;display:grid;grid-template-columns:255px minmax(0,1fr);gap:2rem;align-items:start}
 .profile-account-sidebar{position:sticky;top:90px}
 .profile-account-usercard{background:linear-gradient(110deg,#241d2b,#162328,#2b1d2c);border:1px solid rgba(242,240,234,.16);padding:1.25rem;margin-bottom:1rem}
 .profile-account-avatar{width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--spray-yellow);display:block;margin-bottom:.8rem;background:#222}
