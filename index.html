@@ -1954,6 +1954,12 @@ let CATEGORIES = JSON.parse(localStorage.getItem('rebel_categories')) || DEFAULT
 let SITE_CONTENT = JSON.parse(localStorage.getItem('rebel_site_content')) || DEFAULT_SITE_CONTENT;
 let ordersHistory = JSON.parse(localStorage.getItem('rebel_orders_history')) || [];
 let trashOrdersHistory = JSON.parse(localStorage.getItem('rebel_trash_orders_history')) || [];
+let deletedOrderIds = JSON.parse(localStorage.getItem('rebel_deleted_order_ids') || '[]');
+if (!Array.isArray(deletedOrderIds)) deletedOrderIds = [];
+function saveDeletedOrderIds() { localStorage.setItem('rebel_deleted_order_ids', JSON.stringify([...new Set(deletedOrderIds.map(String))])); }
+function isOrderDeletedLocally(orderId) { return deletedOrderIds.includes(String(orderId || '')); }
+trashOrdersHistory.forEach(item => { if (item?.id && !deletedOrderIds.includes(String(item.id))) deletedOrderIds.push(String(item.id)); });
+saveDeletedOrderIds();
 let customOrdersHistory = JSON.parse(localStorage.getItem('rebel_custom_orders_history')) || [];
 let staffAccounts = [];
 try {
@@ -4358,6 +4364,8 @@ function deleteOrderToTrash(orderId) {
   if (index !== -1) {
     const deletedOrd = ordersHistory.splice(index, 1)[0];
     deletedOrd.deletedAt = new Date().toISOString();
+    if (!deletedOrderIds.includes(String(orderId))) deletedOrderIds.push(String(orderId));
+    saveDeletedOrderIds();
     trashOrdersHistory.unshift(deletedOrd);
     localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
     localStorage.setItem('rebel_trash_orders_history', JSON.stringify(trashOrdersHistory));
@@ -4372,6 +4380,8 @@ function restoreOrderFromTrash(orderId) {
   if (index !== -1) {
     const restoredOrd = trashOrdersHistory.splice(index, 1)[0];
     delete restoredOrd.deletedAt;
+    deletedOrderIds = deletedOrderIds.filter(id => String(id) !== String(orderId));
+    saveDeletedOrderIds();
     ordersHistory.unshift(restoredOrd);
     localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
     localStorage.setItem('rebel_trash_orders_history', JSON.stringify(trashOrdersHistory));
@@ -4449,7 +4459,7 @@ async function loadAdminDataFromSupabase() {
       .order('created_at', { ascending: false });
 
     if (!ordersError && ordersData && ordersData.length > 0) {
-      ordersHistory = ordersData.map(o => ({
+      ordersHistory = ordersData.filter(o => !isOrderDeletedLocally(o.order_id)).map(o => ({
         id: o.order_id,
         date: o.created_at ? o.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
         userEmail: o.customer_email,
@@ -6455,8 +6465,9 @@ async function loadCustomerOrdersFromSupabase() {
       .filter(o => String(o.order_status || '').toLowerCase().includes('deliver'))
       .map(o => String(o.order_id));
 
-    const cloudOrders = data.map(o => ({
+    const cloudOrders = data.filter(o => !isOrderDeletedLocally(o.order_id)).map(o => ({
       id: o.order_id,
+      userId: String(o.user_id || ''),
       date: o.created_at ? o.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
       userEmail: o.customer_email,
       billing: {
@@ -6477,6 +6488,7 @@ async function loadCustomerOrdersFromSupabase() {
     }));
 
     const localOnly = ordersHistory.filter(local =>
+      !isOrderDeletedLocally(local.id || local.orderId) &&
       !cloudOrders.some(cloud => String(cloud.id) === String(local.id || local.orderId))
     );
     ordersHistory = [...cloudOrders, ...localOnly];
@@ -6498,18 +6510,14 @@ function getCustomerOrderStatusLabel(status) {
   if (st.includes('cancel')) return 'Cancelled';
   if (st.includes('return')) return 'Returned';
   if (st.includes('deliver') || st.includes('complete')) return 'Delivered';
-  if (st.includes('out for delivery')) return 'Out for Delivery';
-  if (st.includes('dispatch') || st.includes('ship') || st.includes('transit')) return 'Dispatched';
-  if (st.includes('product ready') || st.includes('packaged')) return 'Ready';
-  if (st.includes('print received')) return 'Print Received';
-  if (st.includes('go for print') || st.includes('pending print')) return 'Printing';
+  if (st.includes('dispatch') || st.includes('ship') || st.includes('transit') || st.includes('out for delivery')) return 'Dispatched';
   if (st === 'new' || st.includes('order')) return 'Order Placed';
   return 'Processing';
 }
 
 function getOrderTrackingStage(status) {
   const label = getCustomerOrderStatusLabel(status);
-  const stages = ['Order Placed','Processing','Printing','Print Received','Ready','Dispatched','Out for Delivery','Delivered'];
+  const stages = ['Order Placed','Processing','Dispatched','Delivered'];
   const idx = stages.indexOf(label);
   if (idx >= 0) return idx;
   if (label === 'Cancelled' || label === 'Returned') return 0;
@@ -6563,11 +6571,11 @@ function buildOrderStatusTimeline(status) {
     return `<div class="order-status-timeline"><div class="order-status-step done"><div class="order-status-dot"></div>Order Placed</div><div class="order-status-step active"><div class="order-status-dot" style="background:var(--rebel-red);border-color:var(--rebel-red)"></div>Cancelled</div></div>`;
   }
   if (label === 'Returned') {
-    return `<div class="order-status-timeline"><div class="order-status-step done"><div class="order-status-dot"></div>Order Placed</div><div class="order-status-step done"><div class="order-status-dot"></div>Processing</div><div class="order-status-step done"><div class="order-status-dot"></div>Shipped</div><div class="order-status-step active"><div class="order-status-dot"></div>Returned</div></div>`;
+    return `<div class="order-status-timeline"><div class="order-status-step done"><div class="order-status-dot"></div>Order Placed</div><div class="order-status-step done"><div class="order-status-dot"></div>Processing</div><div class="order-status-step done"><div class="order-status-dot"></div>Dispatched</div><div class="order-status-step active"><div class="order-status-dot"></div>Returned</div></div>`;
   }
   const stage = getOrderTrackingStage(status);
-  const labels = ['Order Placed','Processing','Printing','Print Received','Ready','Dispatched','Out for Delivery','Delivered'];
-  return `<div class="order-status-timeline order-status-timeline-wide">${labels.map((x, i) => {
+  const labels = ['Order Placed','Processing','Dispatched','Delivered'];
+  return `<div class="order-status-timeline">${labels.map((x, i) => {
     const stateClass = i < stage ? 'done' : (i === stage ? 'active' : '');
     return `<div class="order-status-step ${stateClass}"><div class="order-status-dot"></div>${x}</div>`;
   }).join('')}</div>`;
@@ -6602,7 +6610,7 @@ function openCustomerOrderDetails(orderId) {
   }).join('');
 
   const label = getCustomerOrderStatusLabel(order.orderStatus);
-  const trackingVisible = Boolean(order.courierName || order.trackingId);
+  const trackingVisible = Boolean(order.trackingId && order.courierName && ['Dispatched','Shipped','Out for Delivery','Delivered','Completed'].includes(String(order.orderStatus || '')));
   const customerTrackingUrl = buildTrackingUrl(order.courierName, order.trackingId);
   const trackingHtml = trackingVisible
     ? `<div class="order-courier-box"><strong>Courier:</strong> ${escapeHtml(order.courierName || 'Not assigned')}<br><strong>Tracking ID:</strong> ${escapeHtml(order.trackingId || 'Not assigned')}${customerTrackingUrl ? `<br><a href="${escapeHtml(customerTrackingUrl)}" target="_blank" rel="noopener noreferrer" class="preview-link-btn" style="display:inline-block;margin-top:8px;text-decoration:none;">Track Shipment ↗</a>` : ''}</div>`
@@ -6619,9 +6627,9 @@ function openCustomerOrderDetails(orderId) {
           <div class="profile-account-member">Member Account</div>
         </div>
         <nav class="profile-account-nav">
-          <button type="button" onclick="openProfileModal('profile')">👤 Profile</button>
-          <button type="button" class="active" onclick="openProfileModal('orders')">📦 Orders</button>
-          <button type="button" onclick="openProfileModal('addresses')">📍 Saved Address</button>
+          <button type="button" onclick="openAccountTab('profile')">👤 Profile</button>
+          <button type="button" class="active" onclick="openAccountTab('orders')">📦 Orders</button>
+          <button type="button" onclick="openAccountTab('addresses')">📍 Saved Address</button>
         </nav>
         <div class="profile-account-sidebar-actions"><button type="button" onclick="logoutUser()">Logout</button></div>
       </aside>
@@ -6629,7 +6637,7 @@ function openCustomerOrderDetails(orderId) {
         <div class="order-details-page">
           <div class="order-details-top">
             <div>
-              <button class="order-details-back" type="button" onclick="openProfileModal('orders')">← MY ORDERS</button>
+              <button class="order-details-back" type="button" onclick="openAccountTab('orders')">← MY ORDERS</button>
               <div class="order-details-title">Order Details</div>
             </div>
             <div style="font-family:'Space Mono';font-size:.68rem;color:var(--grey);text-align:right;">Order ID: <strong style="color:var(--paper)">${escapeHtml(order.id || order.orderId || '')}</strong><br>${escapeHtml(formatCustomerOrderDate(order.date || ''))}</div>
@@ -6662,7 +6670,11 @@ function openCustomerOrderDetails(orderId) {
 function renderOrdersInsideProfile() {
   const area = document.getElementById('profile-orders-tab-content');
   if (!area) return;
-  const myOrders = ordersHistory.filter(o => o.userEmail === loggedInUser?.email || (o.billing && o.billing.email === loggedInUser?.email));
+  const myOrders = ordersHistory.filter(o =>
+    (o.userId && loggedInUser?.id && String(o.userId) === String(loggedInUser.id)) ||
+    o.userEmail === loggedInUser?.email ||
+    (o.billing && o.billing.email === loggedInUser?.email)
+  );
   if (!myOrders.length) {
     area.innerHTML = `<div class="profile-account-orders-empty">No order history found.</div>`;
     return;
