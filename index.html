@@ -1962,7 +1962,10 @@ try {
 
 let cart = JSON.parse(localStorage.getItem('rebel_cart')) || [];
 let cartCloudLoadPromise = null;
+let cartCloudLoadUserId = '';
 let cartCloudSyncPromise = Promise.resolve();
+let userHydrationPromise = null;
+let userHydrationUserId = '';
 let wishlist = JSON.parse(localStorage.getItem('rebel_wishlist')) || [];
 
 let currentRole = 'customer';
@@ -3000,6 +3003,7 @@ async function loadCartFromSupabase(userId) {
   // seeing an empty cloud cart and inserting the same local cart twice.
   if (cartCloudLoadPromise) return cartCloudLoadPromise;
 
+  cartCloudLoadUserId = String(userId);
   cartCloudLoadPromise = (async () => {
     try {
       const { data, error } = await supabaseClient
@@ -3036,13 +3040,12 @@ async function loadCartFromSupabase(userId) {
         };
       });
 
+      // Cloud is the source of truth after login. Do NOT write the loaded
+      // quantity back to Supabase here. A login/reload can trigger multiple
+      // auth lifecycle events; writing during every load can turn one cart
+      // quantity into 2x/4x/8x values.
       cart = mergeCartItems(cloudCart);
       localStorage.setItem('rebel_cart', JSON.stringify(cart));
-
-      // Normalize legacy duplicate cloud rows into one row per cart item.
-      // This runs through the serialized sync queue, so it cannot race with
-      // another auth/cart sync.
-      await syncCartToSupabase();
       updateCartBadge();
     } catch (error) {
       console.error('Cloud cart load error:', error);
@@ -3054,6 +3057,7 @@ async function loadCartFromSupabase(userId) {
     await cartCloudLoadPromise;
   } finally {
     cartCloudLoadPromise = null;
+    cartCloudLoadUserId = '';
   }
 }
 
@@ -5492,6 +5496,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       if (event === 'SIGNED_OUT') {
         cartCloudLoadPromise = null;
+        cartCloudLoadUserId = '';
+        userHydrationPromise = null;
+        userHydrationUserId = '';
         loggedInUser = null;
         wishlist = [];
         cart = [];
@@ -5526,6 +5533,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function hydrateLoggedInUserFromSupabase(authUser, closeModal = false) {
   if (!supabaseClient || !authUser) return;
+  const authUserId = String(authUser.id || '');
+  if (!authUserId) return;
+  if (userHydrationPromise && userHydrationUserId === authUserId) return userHydrationPromise;
+
+  userHydrationUserId = authUserId;
+  userHydrationPromise = (async () => {
 
   const metadata = authUser.user_metadata || {};
   const googleName = metadata.full_name || metadata.name || authUser.email?.split('@')[0] || 'Customer';
@@ -5578,8 +5591,16 @@ async function hydrateLoggedInUserFromSupabase(authUser, closeModal = false) {
   await loadCartFromSupabase(authUser.id);
   loadCustomerOrdersFromSupabase();
 
-  if (closeModal) {
-    closeAuthModal();
+    if (closeModal) {
+      closeAuthModal();
+    }
+  })();
+
+  try {
+    await userHydrationPromise;
+  } finally {
+    userHydrationPromise = null;
+    userHydrationUserId = '';
   }
 }
 
