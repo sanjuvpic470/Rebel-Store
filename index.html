@@ -311,6 +311,30 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .admin-orders-table{font-size:.68rem}.admin-orders-table th{font-size:.57rem;padding:.6rem}.admin-orders-table td{padding:.65rem;vertical-align:top}.admin-orders-table td:last-child{min-width:210px}.admin-chart-total{font-family:'Anton',sans-serif;color:var(--spray-yellow);font-size:1.2rem}
 .admin-order-action-box{background:#101013;border:1px solid rgba(242,240,234,.12);padding:.6rem;margin-top:.4rem}.admin-order-action-box .admin-tracking-fields{margin:0}.admin-next-btn{width:100%;margin-top:.4rem;padding:.48rem!important;font-size:.6rem!important}.admin-note-input{width:100%;min-height:48px;resize:vertical;background:#111;border:1px solid rgba(242,240,234,.22);color:var(--paper);font-family:'Space Mono',monospace;font-size:.6rem;padding:.45rem}.admin-note-input:focus{outline:none;border-color:var(--spray-yellow)}
 
+/* V15 COMPACT ORDER MANAGEMENT */
+.admin-orders-table th,.admin-orders-table td{vertical-align:middle}
+.admin-orders-table td:last-child{min-width:0;width:250px}
+.admin-order-action-box{background:transparent;border:0;padding:0;margin:0;display:block}
+.admin-order-current-stage,.admin-order-stage-line,.admin-dispatch-box,.admin-delivery-box{display:none!important}
+.admin-order-action-buttons{display:grid;grid-template-columns:minmax(118px,1.9fr) repeat(3,minmax(48px,.72fr));gap:4px;align-items:stretch}
+.admin-order-action-buttons .btn{min-width:0;width:100%;height:34px;padding:4px 7px!important;font-size:.52rem!important;line-height:1.1;white-space:nowrap}
+.admin-order-action-buttons .admin-next-btn{margin:0!important}
+.admin-order-action-buttons .admin-quick-action-row{display:contents}
+.admin-order-action-buttons .admin-quick-action-row .btn{margin:0}
+.admin-order-next-disabled{opacity:.5;cursor:default!important}
+.admin-order-item-preview{display:flex;align-items:center;gap:9px;min-width:0}
+.admin-order-item-preview-copy{display:flex;flex-direction:column;gap:3px;min-width:0}
+.admin-order-item-preview-copy strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px}
+.admin-order-expand-hint{display:block;margin-top:5px;font-family:'Space Mono',monospace;font-size:.5rem;color:var(--spray-yellow)}
+.admin-dispatch-modal{position:fixed;inset:0;background:rgba(0,0,0,.86);backdrop-filter:blur(7px);z-index:420;display:none;align-items:center;justify-content:center;padding:1rem}
+.admin-dispatch-modal-card{width:min(440px,100%);background:#151518;border:1px solid var(--spray-yellow);box-shadow:7px 7px 0 var(--paper);padding:1rem}
+.admin-dispatch-modal-card h3{font-family:'Anton',sans-serif;font-size:1.35rem;text-transform:uppercase;margin:0 0 .25rem;color:var(--paper)}
+.admin-dispatch-modal-card p{font-family:'Space Mono',monospace;font-size:.56rem;color:var(--grey);margin:0 0 .8rem;line-height:1.45}
+.admin-dispatch-modal-actions{display:flex;gap:.45rem;justify-content:flex-end;margin-top:.75rem}
+.admin-dispatch-modal-actions .btn{min-width:90px}
+@media(max-width:900px){.admin-orders-table td:last-child{width:225px}.admin-order-action-buttons{grid-template-columns:minmax(105px,1.7fr) repeat(3,minmax(45px,.7fr))}}
+@media(max-width:650px){.admin-order-action-buttons{grid-template-columns:1fr 1fr}.admin-order-action-buttons .btn{height:32px}.admin-orders-table td:last-child{width:205px}}
+
 /* V14 ADMIN INNER UI REDESIGN */
 .admin-sub-page{background:transparent;border:0;padding:0;border-radius:0}
 .admin-sub-page.active{animation:adminPageIn .18s ease-out}
@@ -546,6 +570,27 @@ footer a:hover{color:var(--paper)}
 .order-status-timeline-wide{grid-template-columns:repeat(4,1fr)!important}
 @media(max-width:700px){.order-status-timeline-wide{grid-template-columns:repeat(2,1fr)!important}}
 
+
+/* V16 FINAL — compact order rows and four-button management only */
+.admin-order-guide{display:none!important}
+.admin-orders-table-wrap{overflow-x:auto}
+.admin-orders-table{table-layout:fixed;width:100%;min-width:0!important}
+.admin-orders-table th,.admin-orders-table td{padding:.45rem .55rem!important;vertical-align:middle!important}
+.admin-orders-table th:nth-child(1),.admin-orders-table td:nth-child(1){width:25%}
+.admin-orders-table th:nth-child(2),.admin-orders-table td:nth-child(2){width:17%}
+.admin-orders-table th:nth-child(3),.admin-orders-table td:nth-child(3){width:25%}
+.admin-orders-table th:nth-child(4),.admin-orders-table td:nth-child(4){width:10%}
+.admin-orders-table th:nth-child(5),.admin-orders-table td:nth-child(5){width:23%}
+.admin-order-action-box{min-width:0!important;background:transparent!important;border:0!important;border-radius:0!important;padding:0!important;margin:0!important}
+.admin-order-current-stage,.admin-order-stage-line,.admin-dispatch-box,.admin-delivery-box{display:none!important}
+.admin-order-action-buttons{display:grid!important;grid-template-columns:1.45fr .72fr .78fr .5fr!important;gap:4px!important;align-items:center!important;width:100%!important}
+.admin-order-action-buttons .btn{width:100%!important;min-width:0!important;height:34px!important;margin:0!important;padding:4px 6px!important;font-size:.50rem!important;line-height:1!important;white-space:nowrap!important}
+.admin-order-action-buttons .admin-next-btn{width:100%!important;margin:0!important}
+.admin-order-item-preview{min-height:48px}
+.admin-order-item-thumb{width:42px!important;height:50px!important;object-fit:contain;background:#111;border:1px solid #333;border-radius:4px;flex:0 0 auto}
+.admin-order-item-preview-copy strong{max-width:150px;font-size:.68rem}
+.admin-order-expand-hint{font-size:.48rem;margin-top:3px}
+@media(max-width:900px){.admin-orders-table{min-width:900px!important}.admin-order-action-buttons{grid-template-columns:1.45fr .72fr .78fr .5fr!important}}
 </style>
 
 <style>
@@ -1175,6 +1220,23 @@ footer a:hover{color:var(--paper)}
     </div>
   </div>
 
+  <!-- Compact dispatch confirmation modal -->
+  <div class="admin-dispatch-modal" id="admin-dispatch-modal" aria-hidden="true">
+    <div class="admin-dispatch-modal-card" role="dialog" aria-modal="true" aria-labelledby="admin-dispatch-title">
+      <h3 id="admin-dispatch-title">Dispatch Order</h3>
+      <p>Enter the courier partner and tracking / AWB number. Both are required before this order can move to Dispatched.</p>
+      <input type="hidden" id="admin-dispatch-order-id">
+      <label class="admin-field-label" for="admin-dispatch-courier">Courier / Delivery Partner *</label>
+      <input type="text" id="admin-dispatch-courier" class="admin-input-full" maxlength="100" placeholder="e.g. Delhivery">
+      <label class="admin-field-label" for="admin-dispatch-tracking" style="margin-top:.55rem;">Tracking ID / AWB *</label>
+      <input type="text" id="admin-dispatch-tracking" class="admin-input-full" maxlength="100" placeholder="Enter tracking number">
+      <div class="admin-dispatch-modal-actions">
+        <button type="button" class="btn btn--ghost" onclick="closeDispatchModal()">Cancel</button>
+        <button type="button" class="btn btn--solid" onclick="confirmDispatchFromModal()">Save & Dispatch</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Success Celebration Modal -->
   <div class="success-modal" id="order-success-modal">
     <div class="success-card">
@@ -1547,10 +1609,6 @@ footer a:hover{color:var(--paper)}
       <div class="sub-page-header admin-sub-header-new">
         <div><span class="admin-mini-label">FULFILMENT</span><h2>🛍️ Orders</h2><p>Move every order from payment to delivery in a few clicks.</p></div>
         <button class="btn btn--ghost" style="padding:.4rem 1rem;font-size:.8rem;" onclick="closeAdminSubPages()">← Dashboard</button>
-      </div>
-
-      <div class="admin-order-guide">
-        <span>🆕 New</span><i>→</i><span>⚙️ Processing</span><i>→</i><span>🖨️ Printing</span><i>→</i><span>📦 Ready</span><i>→</i><span>🚚 Dispatched</span><i>→</i><span>✓ Delivered</span><small style="margin-left:auto;color:#777;">Click an order to open item details, stock & notes.</small>
       </div>
 
       <div class="admin-order-toolbar">
@@ -3927,83 +3985,236 @@ async function proceedToPayment() {
   }
 }
 
-async function generateZohoInvoice(orderId) {
-  const foundOrder = ordersHistory.find(o => o.id === orderId);
-  if (!foundOrder) return;
+const REBEL_STORE_LOGO_URL = 'https://rdqzslvgqtajhiwxwauo.supabase.co/storage/v1/object/public/site-assets/Rebel%20Store%20LOGO.png';
+const REBEL_STORE_RETURN_ADDRESS = 'Rebel Store Returns, Chennai, Tamil Nadu.'; // Replace with the exact registered return address when finalized.
 
-  // Zoho credentials must never be exposed in browser JavaScript.
-  // Invoice creation is handled server-side through the Zoho Edge Function.
-  showToast('Zoho Invoice is handled securely by the backend after payment verification.');
+async function ensureJsPDF() {
+  if (window.jspdf?.jsPDF) return true;
+  const sources = [
+    'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+    'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js'
+  ];
+  for (const src of sources) {
+    try {
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.async = true;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+      if (window.jspdf?.jsPDF) return true;
+    } catch (_) {}
+  }
+  return false;
 }
 
-function downloadCourierLabelPDF(orderId) {
+async function loadImageAsDataUrl(url) {
+  try {
+    const response = await fetch(url, { mode: 'cors', cache: 'force-cache' });
+    if (!response.ok) throw new Error(`Logo request failed: ${response.status}`);
+    const blob = await response.blob();
+    return await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ''));
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch (error) {
+    console.warn('Rebel Store logo image could not be embedded; using text logo fallback.', error);
+    return '';
+  }
+}
+
+function drawRebelStorePdfLogo(doc, x, y, align = 'left', width = 70) {
+  const centerX = align === 'center' ? x + width / 2 : x;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(20);
+  doc.setTextColor(0, 0, 0);
+  doc.text('REBEL STORE', centerX, y, null, null, align === 'center' ? 'center' : 'left');
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.5);
+  doc.text('Wear the Uprising, Not the Uniform.', centerX, y + 7, null, null, align === 'center' ? 'center' : 'left');
+}
+
+function pdfSafe(value) {
+  return String(value ?? '').replace(/[\r\n]+/g, ' ').trim();
+}
+
+async function downloadCourierLabelPDF(orderId) {
   const ord = ordersHistory.find(o => o.id === orderId);
   if (!ord) return;
+  if (!(await ensureJsPDF())) {
+    showToast('PDF generator could not load. Please check your internet connection and try again.');
+    return;
+  }
 
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({
-    orientation: "portrait",
-    unit: "mm",
-    format: "a5"
-  });
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
+  const logoData = await loadImageAsDataUrl(REBEL_STORE_LOGO_URL);
+
+  doc.setLineWidth(0.45);
+  doc.rect(5, 5, 138, 200);
+
+  if (logoData) {
+    try { doc.addImage(logoData, 'PNG', 40, 9, 68, 24, undefined, 'FAST'); }
+    catch (_) { drawRebelStorePdfLogo(doc, 74, 20, 'center', 68); }
+  } else {
+    drawRebelStorePdfLogo(doc, 74, 20, 'center', 68);
+  }
+
+  doc.line(5, 36, 143, 36);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(13);
+  doc.text('SHIPPING TO:', 10, 46);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10.5);
+  let y = 55;
+  doc.text(`Name: ${pdfSafe(ord.billing?.name || 'Customer')}`, 10, y); y += 7;
+  if (ord.billing?.phone) { doc.text(`Phone: ${pdfSafe(ord.billing.phone)}`, 10, y); y += 7; }
+  if (ord.billing?.altPhone) { doc.text(`Alt Phone: ${pdfSafe(ord.billing.altPhone)}`, 10, y); y += 7; }
+
+  const addressLines = doc.splitTextToSize(`Address: ${pdfSafe(ord.billing?.address || '')}`, 124);
+  addressLines.forEach(line => { doc.text(line, 10, y); y += 6; });
+  doc.line(5, y + 3, 143, y + 3);
+
+  y += 13;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12);
+  doc.text('ORDER DETAILS:', 10, y); y += 8;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9.5);
+  // Keep long order IDs on their own line so they can never overlap date/payment text.
+  const orderIdLines = doc.splitTextToSize(`Order ID: ${pdfSafe(ord.id)}`, 124);
+  doc.text(orderIdLines, 10, y);
+  y += Math.max(6, orderIdLines.length * 5.2);
+  doc.text(`Order Date: ${pdfSafe(ord.date)}`, 10, y); y += 6;
+  doc.text(`Total Items: ${Number(ord.totalQty || 0)} pcs`, 10, y);
+  doc.text(`Payment: ${pdfSafe(ord.paymentStatus || 'paid').toUpperCase()}`, 85, y);
+  y += 11;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9.5);
+  doc.text('PACKAGE:', 10, y);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Apparels / Clothing', 31, y);
+  y += 8;
+
+  doc.setFont('helvetica', 'bold');
+  doc.text('IF UNDELIVERED, RETURN TO:', 10, y); y += 6;
+  doc.setFont('helvetica', 'normal');
+  const returnLines = doc.splitTextToSize(REBEL_STORE_RETURN_ADDRESS, 124);
+  doc.text(returnLines, 10, y);
+
+  doc.save(`RebelStore_ShippingLabel_${pdfSafe(ord.id).replace(/[^a-zA-Z0-9_-]/g, '_')}.pdf`);
+  showToast('Shipping label PDF downloaded.');
+}
+
+async function downloadInvoicePDF(orderId) {
+  const ord = ordersHistory.find(o => o.id === orderId);
+  if (!ord) return;
+  if (!(await ensureJsPDF())) {
+    showToast('PDF generator could not load. Please check your internet connection and try again.');
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const logoData = await loadImageAsDataUrl(REBEL_STORE_LOGO_URL);
+  const pageW = 210;
+  const margin = 15;
 
   doc.setLineWidth(0.5);
-  doc.rect(5, 5, 138, 200);
-  
-  doc.setFontSize(22);
-  doc.setFont("helvetica", "bold");
-  doc.text("REBEL STORE", 74, 20, null, null, "center");
-  
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "normal");
-  doc.text("Wear the Uprising, Not the Uniform.", 74, 26, null, null, "center");
-  doc.line(5, 30, 143, 30);
+  doc.rect(margin, 12, pageW - margin * 2, 273);
 
-  doc.setFontSize(14);
-  doc.setFont("helvetica", "bold");
-  doc.text("SHIPPING TO:", 10, 42);
-
-  doc.setFontSize(12);
-  doc.setFont("helvetica", "normal");
-  doc.text(`Name: ${ord.billing.name}`, 10, 52);
-  doc.text(`Phone: ${ord.billing.phone}`, 10, 60);
-  if(ord.billing.altPhone) {
-    doc.text(`Alt Phone: ${ord.billing.altPhone}`, 10, 68);
+  if (logoData) {
+    try { doc.addImage(logoData, 'PNG', margin + 4, 17, 55, 20, undefined, 'FAST'); }
+    catch (_) { drawRebelStorePdfLogo(doc, margin + 4, 29, 'left', 55); }
+  } else {
+    drawRebelStorePdfLogo(doc, margin + 4, 29, 'left', 55);
   }
-  
-  const addressLines = doc.splitTextToSize(`Address: ${ord.billing.address}`, 120);
-  let yPos = 76;
-  addressLines.forEach(line => {
-    doc.text(line, 10, yPos);
-    yPos += 8;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(19);
+  doc.text('INVOICE', 195, 29, null, null, 'right');
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8.8);
+  const invoiceIdLines = doc.splitTextToSize(`Order ID: ${pdfSafe(ord.id)}`, 62);
+  doc.text(invoiceIdLines, 195, 36, null, null, 'right');
+  let headerY = 36 + Math.max(5, invoiceIdLines.length * 4.5);
+  doc.text(`Date: ${pdfSafe(ord.date)}`, 195, headerY, null, null, 'right');
+  headerY += 5.5;
+  doc.text(`Payment: ${pdfSafe(ord.paymentStatus || 'paid').toUpperCase()}`, 195, headerY, null, null, 'right');
+  doc.line(margin, 53, 195, 53);
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.text('BILL TO / SHIP TO', margin + 4, 63);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9.5);
+  let y = 70;
+  doc.text(pdfSafe(ord.billing?.name || 'Customer'), margin + 4, y); y += 5.5;
+  if (ord.billing?.phone) { doc.text(`Phone: ${pdfSafe(ord.billing.phone)}`, margin + 4, y); y += 5.5; }
+  if (ord.billing?.email) { doc.text(`Email: ${pdfSafe(ord.billing.email)}`, margin + 4, y); y += 5.5; }
+  const billAddress = doc.splitTextToSize(pdfSafe(ord.billing?.address || ''), 170);
+  doc.text(billAddress, margin + 4, y); y += billAddress.length * 5.2 + 7;
+
+  const tableX = margin + 4;
+  const tableW = pageW - margin * 2 - 8;
+  const cols = [0, 93, 119, 140, tableW];
+  const rowH = 9;
+  doc.setFillColor(20,20,20);
+  doc.setTextColor(255,255,255);
+  doc.rect(tableX, y, tableW, rowH, 'F');
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5);
+  doc.text('ITEM', tableX + 3, y + 6);
+  doc.text('SIZE', tableX + cols[1] + 3, y + 6);
+  doc.text('QTY', tableX + cols[2] + 3, y + 6);
+  doc.text('AMOUNT', tableX + cols[3] + 3, y + 6);
+  y += rowH;
+
+  doc.setTextColor(0,0,0);
+  const items = Array.isArray(ord.items) ? ord.items : [];
+  let subtotal = 0;
+  items.forEach(it => {
+    const title = pdfSafe(it.title || it.name || it.garment || 'Product');
+    const size = pdfSafe(it.size || '-');
+    const qty = Math.max(1, Number(it.qty ?? it.quantity ?? 1) || 1);
+    const unit = Number(it.discounted_unit_price ?? it.unit_price ?? it.price ?? 0) || 0;
+    const amount = Number(it.total_price ?? (unit * qty)) || 0;
+    subtotal += amount;
+    const titleLines = doc.splitTextToSize(title, 87);
+    const h = Math.max(rowH, titleLines.length * 4.5 + 5);
+    doc.rect(tableX, y, tableW, h);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
+    doc.text(titleLines, tableX + 3, y + 5.5);
+    doc.text(size, tableX + cols[1] + 3, y + 5.5);
+    doc.text(String(qty), tableX + cols[2] + 3, y + 5.5);
+    doc.text(`₹ ${amount.toLocaleString('en-IN')}`, tableX + cols[3] + 3, y + 5.5);
+    [cols[1], cols[2], cols[3]].forEach(cx => doc.line(tableX + cx, y, tableX + cx, y + h));
+    y += h;
   });
 
-  doc.line(5, yPos + 4, 143, yPos + 4);
+  y += 8;
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
+  doc.text(`TOTAL ITEMS: ${Number(ord.totalQty || 0)} pcs`, tableX, y);
+  doc.text(`TOTAL PAID: ₹ ${Number(ord.totalAmount || subtotal).toLocaleString('en-IN')}`, 195, y, null, null, 'right');
+  y += 12;
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
+  doc.text('Payment verified by Rebel Store checkout.', tableX, y);
+  doc.text('This invoice is generated for order record / printing.', tableX, y + 5);
 
-  yPos += 14;
-  doc.setFontSize(12);
-  doc.setFont("helvetica", "bold");
-  doc.text("ORDER DETAILS:", 10, yPos);
-  
-  yPos += 8;
-  doc.setFontSize(11);
-  doc.setFont("helvetica", "normal");
-  doc.text(`Order ID: ${ord.id}`, 10, yPos);
-  doc.text(`Order Date: ${ord.date}`, 80, yPos);
+  doc.save(`RebelStore_Invoice_${pdfSafe(ord.id).replace(/[^a-zA-Z0-9_-]/g, '_')}.pdf`);
+  showToast('Invoice PDF downloaded.');
+}
 
-  yPos += 8;
-  doc.text(`Total Items: ${ord.totalQty} pcs`, 10, yPos);
-  doc.text(`Payment: ${ord.paymentStatus.toUpperCase()}`, 80, yPos);
-
-  yPos += 15;
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "bold");
-  doc.text("Package Type: Apparels / Clothing", 10, yPos);
-  doc.text("If undelivered, return to:", 10, yPos + 8);
-  doc.setFont("helvetica", "normal");
-  doc.text("Rebel Store Returns, Chennai, Tamil Nadu.", 10, yPos + 14);
-
-  doc.save(`RebelStore_ShippingLabel_${ord.id}.pdf`);
+// Kept for compatibility with older button references. This now downloads the
+// printable invoice PDF locally instead of exposing or calling Zoho credentials.
+function generateZohoInvoice(orderId) {
+  return downloadInvoicePDF(orderId);
 }
 
 function showPaymentProcessing(title, message) {
@@ -4289,6 +4500,9 @@ function openAdminSubPage(subPageId) {
       renderInteractiveCalendar(currentSelectedDateFilter);
       renderGraphChart();
     }
+    if (subPageId === 'subpage-admin-dashboard') {
+      renderGraphChart();
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
@@ -4378,6 +4592,15 @@ async function loadAdminWishlistFromSupabase() {
   }
 }
 
+function confirmDeleteOrderToTrash(orderId) {
+  const ord = ordersHistory.find(o => o.id === orderId);
+  if (!ord) return;
+  const customer = String(ord.billing?.name || 'Customer');
+  const ok = window.confirm(`Move this order to Trash?\n\nOrder: ${orderId}\nCustomer: ${customer}\n\nThe order will not be permanently deleted and can be restored from Trash.`);
+  if (!ok) return;
+  deleteOrderToTrash(orderId);
+}
+
 function deleteOrderToTrash(orderId) {
   const index = ordersHistory.findIndex(o => o.id === orderId);
   if (index !== -1) {
@@ -4456,8 +4679,8 @@ function renderTrashBinTable() {
       <td style="color:var(--spray-yellow);">ரூ ${Number(ord.totalAmount) || 0}</td>
       <td style="font-size:0.75rem; color:var(--rebel-red);">${escapeHtml(ord.deletedAt ? ord.deletedAt.split('T')[0] : 'N/A')}<br><strong>(${escapeHtml(daysLeft)})</strong></td>
       <td>
-        <button class="preview-link-btn" style="background:#22c55e; color:#fff; margin-right:4px;" onclick="restoreOrderFromTrash('${ord.id}')">Restore ♻️</button>
-        <button class="preview-link-btn" style="background:var(--rebel-red); color:#fff;" onclick="permanentlyDeleteOrder('${ord.id}')">Delete ❌</button>
+        <button class="preview-link-btn" style="background:#22c55e; color:#fff; margin-right:4px;" onclick="restoreOrderFromTrash('${escapeHtml(ord.id)}')">Restore ♻️</button>
+        <button class="preview-link-btn" style="background:var(--rebel-red); color:#fff;" onclick="permanentlyDeleteOrder('${escapeHtml(ord.id)}')">Delete ❌</button>
       </td>
     `;
     tbody.appendChild(tr);
@@ -4510,11 +4733,14 @@ async function loadAdminDataFromSupabase() {
     if (!ordersError && ordersData && ordersData.length > 0) {
       ordersHistory = ordersData.map(o => ({
         id: o.order_id,
+        createdAt: o.created_at || '',
         date: getStoreDateKey(o.created_at || new Date()),
         userEmail: o.customer_email,
         billing: {
           name: o.customer_name,
+          email: o.customer_email,
           phone: o.customer_phone,
+          altPhone: o.customer_alt_phone || '',
           address: o.customer_address
         },
         totalQty: o.total_qty,
@@ -4530,6 +4756,7 @@ async function loadAdminDataFromSupabase() {
         trackingId: o.tracking_id || ''
       }));
       localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
+      renderGraphChart();
     }
 
     const { data: customData } = await supabaseClient
@@ -4614,35 +4841,80 @@ function focusDispatchFields(orderId) {
   if (input) setTimeout(() => input.focus(), 250);
 }
 
-async function saveAndDispatchOrder(orderId) {
-  const courierInput = document.getElementById(`courier-${orderId}`);
-  const trackingInput = document.getElementById(`tracking-${orderId}`);
-  const courierName = String(courierInput?.value || '').trim();
-  const trackingId = String(trackingInput?.value || '').trim();
-  if (!trackingId) {
-    if (trackingInput) trackingInput.classList.add('required-missing');
-    showToast('Tracking ID / AWB is required before dispatch.');
-    trackingInput?.focus();
-    return;
-  }
+function openDispatchModal(orderId) {
+  const ord = ordersHistory.find(o => o.id === orderId);
+  const modal = document.getElementById('admin-dispatch-modal');
+  if (!ord || !modal) return;
+  const idEl = document.getElementById('admin-dispatch-order-id');
+  const courierEl = document.getElementById('admin-dispatch-courier');
+  const trackingEl = document.getElementById('admin-dispatch-tracking');
+  if (idEl) idEl.value = String(orderId);
+  if (courierEl) courierEl.value = String(ord.courierName || '');
+  if (trackingEl) trackingEl.value = String(ord.trackingId || '');
+  modal.style.display = 'flex';
+  modal.setAttribute('aria-hidden', 'false');
+  setTimeout(() => (courierEl?.value ? trackingEl : courierEl)?.focus(), 30);
+}
+
+function closeDispatchModal() {
+  const modal = document.getElementById('admin-dispatch-modal');
+  if (!modal) return;
+  modal.style.display = 'none';
+  modal.setAttribute('aria-hidden', 'true');
+}
+
+async function confirmDispatchFromModal() {
+  const orderId = String(document.getElementById('admin-dispatch-order-id')?.value || '').trim();
+  const courierName = String(document.getElementById('admin-dispatch-courier')?.value || '').trim();
+  const trackingId = String(document.getElementById('admin-dispatch-tracking')?.value || '').trim();
+  if (!orderId) return;
   if (!courierName) {
     showToast('Enter the courier / delivery partner name.');
-    courierInput?.focus();
+    document.getElementById('admin-dispatch-courier')?.focus();
     return;
   }
-  if (trackingInput) trackingInput.classList.remove('required-missing');
+  if (!trackingId) {
+    showToast('Enter the Tracking ID / AWB.');
+    document.getElementById('admin-dispatch-tracking')?.focus();
+    return;
+  }
+
   const saved = await updateOrderTrackingDetails(orderId, courierName, trackingId, true);
   if (!saved) return;
+  closeDispatchModal();
   await updateOrderStatusInSupabase(orderId, 'Dispatched', { allowDispatch: true });
+}
+
+async function saveAndDispatchOrder(orderId) {
+  openDispatchModal(orderId);
 }
 
 async function updateOrderStatusInSupabase(orderId, newStatus, options = {}) {
   const found = ordersHistory.find(o => o.id === orderId);
   if (!found || !supabaseClient) return;
 
-  if (newStatus === 'Dispatched' && !options.allowDispatch) {
-    showToast('Use Dispatch Order and enter the Tracking ID / AWB first.');
-    focusDispatchFields(orderId);
+  if (newStatus === 'Dispatched') {
+    if (!options.allowDispatch) {
+      openDispatchModal(orderId);
+      return;
+    }
+    if (!String(found.trackingId || '').trim()) {
+      showToast('Tracking ID / AWB is required before dispatch.');
+      openDispatchModal(orderId);
+      return;
+    }
+  }
+
+  const allowedTransitions = {
+    New: 'Processing',
+    Processing: 'Printing',
+    Printing: 'Ready',
+    Ready: 'Dispatched',
+    Dispatched: 'Out for Delivery',
+    'Out for Delivery': 'Delivered'
+  };
+  if (!options.allowDispatch && allowedTransitions[String(found.orderStatus || 'New')] !== newStatus) {
+    showToast('Please use the Next button for the correct order stage.');
     return;
   }
 
@@ -4659,7 +4931,11 @@ async function updateOrderStatusInSupabase(orderId, newStatus, options = {}) {
 
   found.orderStatus = newStatus;
   localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
-  showToast(newStatus === 'Delivered' ? `Order ${orderId} marked as Delivered ✓` : `Order ${orderId} status updated to ${newStatus}!`);
+  currentStatusFilter = getAdminOrderStage(newStatus);
+  document.querySelectorAll('#order-status-tabs button').forEach(b => {
+    b.classList.toggle('active', String(b.dataset.status || '') === currentStatusFilter);
+  });
+  showToast(newStatus === 'Delivered' ? `Order ${orderId} marked as Delivered ✓` : `Order ${orderId} moved to ${newStatus}.`);
   renderAdminPanels(currentSelectedDateFilter);
 }
 
@@ -4764,7 +5040,7 @@ function renderAdminPanels(filterDate = '') {
   };
   Object.entries(queue).forEach(([k,v]) => setText('dash-'+k, v));
 
-  const baseOrdersForCounts = filterDate ? ordersHistory.filter(o => getStoreDateKey(o.date) === filterDate) : ordersHistory;
+  const baseOrdersForCounts = filterDate ? ordersHistory.filter(o => getStoreDateKey(o.createdAt || o.date) === filterDate) : ordersHistory;
   const statusAliases = {
     New: o => getAdminOrderStage(o.orderStatus) === 'New',
     Processing: o => getAdminOrderStage(o.orderStatus) === 'Processing',
@@ -4818,7 +5094,7 @@ function renderAdminPanels(filterDate = '') {
             ${itemPreviewHtml}
             <div class="admin-order-item-preview-copy">
               <strong>${escapeHtml(firstTitle)}</strong>
-              <span>Size: <b style="color:var(--spray-yellow);">${escapeHtml(firstSize)}</b> · Qty: <b>${firstQty}</b>${moreItems ? ` · +${moreItems} more` : ''}</span>
+              <span>Size: <b style="color:var(--spray-yellow);">${escapeHtml(firstSize)}</b> · Qty: <b>${firstQty}</b>${moreItems ? ` · +${moreItems} more item${moreItems > 1 ? 's' : ''}` : ''}</span>
             </div>
           </div>
           <span class="admin-order-expand-hint">Click to view full items + notes</span>`;
@@ -4846,49 +5122,32 @@ function renderAdminPanels(filterDate = '') {
         });
 
         const rawStatus = String(ord.orderStatus || 'New');
-        const stage = getAdminOrderStage(rawStatus);
         const next = getNextOrderStatus(rawStatus);
-        const statusBadge = escapeHtml(getAdminStageLabel(rawStatus));
-        const dispatched = ['Dispatched','Shipped','Out for Delivery','Delivered','Completed'].includes(rawStatus);
-        const canDispatch = ['Ready','Product Ready','Packaged'].includes(rawStatus);
-        const trackingUrl = buildTrackingUrl(ord.courierName, ord.trackingId);
-        const stageNames = ['New','Processing','Printing','Ready','Shipping','Delivered'];
-        const stageLineHtml = stageNames.map((name, idx) => {
-          const active = (name === stage) || (stage === 'Returned' && name === 'New');
-          const arrow = idx < stageNames.length - 1 ? '<i>›</i>' : '';
-          return `<span class="${active ? 'active' : ''}">${escapeHtml(name)}</span>${arrow}`;
-        }).join('');
-
-        const nextButtonHtml = next && !['Delivered','Completed','Returned'].includes(rawStatus)
-          ? `<button class="btn btn--solid admin-next-btn" type="button" onclick="event.stopPropagation();updateOrderStatusInSupabase('${escapeHtml(ord.id)}','${escapeHtml(next)}')">${rawStatus === 'New' ? '✓ Accept Order' : `Next → ${escapeHtml(next)}`}</button>`
-          : '';
-        const dispatchButtonHtml = canDispatch
-          ? `<button class="btn btn--solid admin-next-btn" type="button" onclick="event.stopPropagation();focusDispatchFields('${escapeHtml(ord.id)}')">🚚 Dispatch Order</button>`
+        const nextLabel = rawStatus === 'New'
+          ? '✓ Accept Order'
+          : next === 'Dispatched'
+            ? '→ Dispatch'
+            : next
+              ? `→ ${escapeHtml(next)}`
+              : rawStatus === 'Delivered'
+                ? '✓ Delivered'
+                : rawStatus === 'Returned'
+                  ? '↩ Returned'
+                  : '—';
+        const nextDisabled = !next;
+        const nextAction = next
+          ? (next === 'Dispatched'
+              ? `openDispatchModal('${escapeHtml(ord.id)}')`
+              : `updateOrderStatusInSupabase('${escapeHtml(ord.id)}','${escapeHtml(next)}')`)
           : '';
 
         const actionColHtml = `
           <div class="admin-order-action-box" onclick="event.stopPropagation()">
-            <div class="admin-order-current-stage"><small>Current stage</small><strong>${statusBadge}</strong></div>
-            <div class="admin-order-stage-line">${stageLineHtml}</div>
-            ${nextButtonHtml}
-            ${dispatchButtonHtml}
-            ${canDispatch || dispatched ? `
-              <div class="admin-dispatch-box" id="dispatch-box-${escapeHtml(ord.id)}">
-                <div class="admin-dispatch-head"><span class="admin-dispatch-title">🚚 Dispatch</span><span class="admin-dispatch-state">${ord.trackingId ? 'Tracking saved' : 'Tracking required'}</span></div>
-                <div class="admin-dispatch-grid">
-                  <input type="text" maxlength="100" value="${escapeHtml(ord.courierName || '')}" placeholder="Courier / partner" id="courier-${escapeHtml(ord.id)}">
-                  <input type="text" maxlength="100" value="${escapeHtml(ord.trackingId || '')}" placeholder="Tracking ID / AWB *" id="tracking-${escapeHtml(ord.id)}">
-                  <button class="btn btn--solid admin-dispatch-save" type="button" onclick="event.stopPropagation();saveAndDispatchOrder('${escapeHtml(ord.id)}')">${dispatched ? '💾 Update Tracking' : '✓ Save & Dispatch'}</button>
-                </div>
-                <div class="admin-dispatch-hint">Tracking ID is required. Save & Dispatch moves the order to Shipping and unlocks tracking for the customer.</div>
-                ${trackingUrl ? `<div class="admin-tracking-link">↗ Customer tracking: ${escapeHtml(trackingUrl)}</div>` : ''}
-              </div>` : ''}
-            ${rawStatus === 'Out for Delivery' ? `<div class="admin-delivery-box"><strong>Delivery check:</strong> Courier delivery is confirmed manually. Mark the order delivered after confirmation.</div><button class="btn btn--solid admin-next-btn" type="button" onclick="event.stopPropagation();updateOrderStatusInSupabase('${escapeHtml(ord.id)}','Delivered')">✓ Mark Delivered</button>` : ''}
-            ${rawStatus === 'Delivered' || rawStatus === 'Completed' ? `<div class="admin-delivery-box"><strong>✓ Delivered</strong><br>Marked delivered on this order.</div>` : ''}
-            <div class="admin-quick-action-row">
+            <div class="admin-order-action-buttons">
+              <button class="btn btn--solid admin-next-btn ${nextDisabled ? 'admin-order-next-disabled' : ''}" type="button" ${nextDisabled ? 'disabled' : ''} onclick="event.stopPropagation();${nextAction}">${nextLabel}</button>
               <button class="btn btn--ghost" type="button" onclick="event.stopPropagation();downloadCourierLabelPDF('${escapeHtml(ord.id)}')">📄 Label</button>
-              <button class="btn btn--ghost" type="button" onclick="event.stopPropagation();generateZohoInvoice('${escapeHtml(ord.id)}')">🧾 Invoice</button>
-              <button class="btn btn--ghost" style="color:var(--rebel-red);border-color:var(--rebel-red);" type="button" onclick="event.stopPropagation();deleteOrderToTrash('${escapeHtml(ord.id)}')">🗑️ Trash</button>
+              <button class="btn btn--ghost" type="button" onclick="event.stopPropagation();downloadInvoicePDF('${escapeHtml(ord.id)}')">🧾 Invoice</button>
+              <button class="btn btn--ghost" style="color:var(--rebel-red);border-color:var(--rebel-red);" type="button" onclick="event.stopPropagation();confirmDeleteOrderToTrash('${escapeHtml(ord.id)}')">🗑️ Trash</button>
             </div>
           </div>`;
 
@@ -5029,7 +5288,7 @@ function renderGraphChart() {
     const dayOrders = ordersHistory.filter(o => {
       const status = String(o.orderStatus || '');
       const payment = String(o.paymentStatus || 'paid').toLowerCase();
-      return getStoreDateKey(o.date) === dStr && payment === 'paid' && !['Cancelled','Returned'].includes(status);
+      return getStoreDateKey(o.createdAt || o.date) === dStr && payment === 'paid' && !['Cancelled','Returned'].includes(status);
     });
     const dayRev = dayOrders.reduce((sum,o) => sum + Number(o.totalAmount || 0),0);
     last7Days.push({label:d.toLocaleDateString('en-IN',{weekday:'short',timeZone:'Asia/Kolkata'}),rev:dayRev,count:dayOrders.length,dateStr:dStr});
