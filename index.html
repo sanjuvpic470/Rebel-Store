@@ -463,7 +463,7 @@ footer a:hover{color:var(--paper)}
 .profile-account-modal{padding:0!important;background:transparent!important;backdrop-filter:none!important;align-items:flex-start!important;justify-content:stretch!important;z-index:80!important;overflow:hidden!important}
 .profile-account-page{width:100%;height:100vh;min-height:100vh;background:#0b0b0c;color:var(--paper);overflow:auto;position:relative;padding-top:104px}
 .profile-account-topbar{display:none!important}
-.profile-account-page{width:100%;height:100%;min-height:100vh;background:#0b0b0c;color:var(--paper);overflow:auto;position:relative;scrollbar-gutter:stable}
+.profile-account-page{width:100%;height:100%;min-height:100vh;background:#0b0b0c;color:var(--paper);overflow:auto;position:relative}
 .profile-account-topbar{height:66px;border-bottom:1px solid rgba(242,240,234,.14);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;background:#0b0b0c;z-index:3}
 .profile-account-topbar-title{font-family:'Anton',sans-serif;font-size:1.45rem;text-transform:uppercase;color:var(--spray-yellow);letter-spacing:.04em}
 .profile-account-topbar-sub{font-family:'Space Mono',monospace;font-size:.66rem;color:var(--grey);margin-left:.65rem}
@@ -472,17 +472,17 @@ footer a:hover{color:var(--paper)}
 
 .profile-account-close{background:transparent;border:1px solid rgba(242,240,234,.25);color:var(--paper);font-family:'Space Mono',monospace;font-size:.7rem;padding:.5rem .75rem;cursor:pointer}
 .profile-account-close:hover{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow)}
-.profile-account-layout{width:min(1180px,calc(100% - 4rem));max-width:1180px;margin:0 auto;padding:2rem;box-sizing:border-box;display:grid;grid-template-columns:255px minmax(0,1fr);gap:2rem;align-items:start;min-width:0}
-.profile-account-sidebar{position:sticky;top:90px;min-width:0}
+.profile-account-layout{max-width:1180px;margin:0 auto;padding:2rem;display:grid;grid-template-columns:255px minmax(0,1fr);gap:2rem;align-items:start}
+.profile-account-sidebar{position:sticky;top:90px}
 .profile-account-usercard{background:linear-gradient(110deg,#241d2b,#162328,#2b1d2c);border:1px solid rgba(242,240,234,.16);padding:1.25rem;margin-bottom:1rem}
 .profile-account-avatar{width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--spray-yellow);display:block;margin-bottom:.8rem;background:#222}
 .profile-account-avatar-fallback{display:flex;align-items:center;justify-content:center;font-size:1.6rem}
 .profile-account-username{font-family:'Archivo Black',sans-serif;font-size:1rem;margin-bottom:.25rem}
 .profile-account-email{font-family:'Space Mono',monospace;font-size:.66rem;color:var(--grey);word-break:break-word}
 .profile-account-member{font-family:'Space Mono',monospace;font-size:.62rem;color:var(--spray-yellow);margin-top:.5rem;text-transform:uppercase}
-.profile-account-nav{border:1px solid rgba(242,240,234,.14);background:#111113;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;box-sizing:border-box;overflow:hidden}
-.profile-account-nav button{display:flex;width:100%;min-width:0;min-height:58px;align-items:center;justify-content:center;text-align:center;background:transparent;border:0;border-right:1px solid rgba(242,240,234,.09);color:var(--paper);padding:.65rem .45rem;box-sizing:border-box;font-family:'Space Mono',monospace;font-size:.66rem;line-height:1.25;cursor:pointer;white-space:normal;overflow-wrap:anywhere}
-.profile-account-nav button:last-child{border-right:0}
+.profile-account-nav{border:1px solid rgba(242,240,234,.14);background:#111113}
+.profile-account-nav button{display:block;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid rgba(242,240,234,.09);color:var(--paper);padding:.9rem 1rem;font-family:'Space Mono',monospace;font-size:.72rem;cursor:pointer}
+.profile-account-nav button:last-child{border-bottom:0}
 .profile-account-nav button:hover,.profile-account-nav button.active{background:var(--spray-yellow);color:var(--ink)}
 .profile-account-sidebar-actions{margin-top:1rem;border-top:1px solid rgba(242,240,234,.14);padding-top:1rem}
 .profile-account-sidebar-actions button{width:100%;background:transparent;color:var(--rebel-red);border:1px solid var(--rebel-red);padding:.72rem;font-family:'Space Mono',monospace;font-size:.68rem;cursor:pointer}
@@ -515,21 +515,37 @@ footer a:hover{color:var(--paper)}
 .billing-new-address-btn:hover{background:var(--spray-yellow);color:var(--ink)}
 .billing-address-status{font-family:'Space Mono',monospace;color:var(--spray-yellow);font-size:.62rem;margin-top:.25rem;min-height:1em}.profile-address-card{background:#18181b;border:1px solid rgba(242,240,234,.14);padding:1rem;margin:.7rem 0;transition:opacity .2s,border-color .2s,box-shadow .2s}.profile-address-card.default{border-color:var(--spray-yellow);box-shadow:4px 4px 0 var(--paper);background:#1d1d20}.profile-address-card:not(.default){opacity:.76}.profile-address-card:hover{opacity:1;border-color:var(--spray-yellow)}.profile-address-card-head{display:flex;align-items:center;justify-content:space-between;gap:.6rem}.profile-address-card-label{font-family:'Anton',sans-serif;color:var(--spray-yellow);text-transform:uppercase;font-size:1rem}.profile-address-card-default{font-family:'Space Mono',monospace;color:var(--success-green);font-size:.6rem}.profile-address-card-body{font-family:'Space Mono',monospace;font-size:.68rem;line-height:1.65;margin-top:.45rem}.profile-address-actions,.billing-saved-address-actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem}.profile-address-actions button,.billing-saved-address-actions button{font-family:'Space Mono',monospace;font-size:.62rem;padding:.48rem .7rem;border:1px solid rgba(242,240,234,.28);background:transparent;color:var(--paper);cursor:pointer}.profile-address-actions button:hover,.billing-saved-address-actions button:hover{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow)}.profile-address-actions .default-btn,.billing-saved-address-actions .default-btn{border-color:var(--spray-yellow);color:var(--spray-yellow)}.profile-address-actions .danger,.billing-saved-address-actions .danger{border-color:var(--rebel-red);color:var(--rebel-red)}.profile-address-actions button:disabled,.billing-saved-address-actions button:disabled{opacity:.55;cursor:default}.billing-saved-address-card{opacity:.72}.billing-saved-address-card.selected{opacity:1;background:#1d1d20;box-shadow:4px 4px 0 var(--paper)}.billing-saved-address-card:not(.selected):hover{opacity:.92}
 
-@media(max-width:800px){.profile-account-layout{grid-template-columns:1fr;padding:1rem;gap:1rem;width:100%;max-width:none}.profile-account-sidebar{position:static}.profile-account-topbar{padding:0 1rem}.profile-account-topbar-sub{display:none}.profile-account-nav{grid-template-columns:repeat(3,minmax(0,1fr));width:100%}.profile-account-nav button{border-right:1px solid rgba(242,240,234,.09);min-height:54px;padding:.55rem .3rem;font-size:.62rem}.profile-account-sidebar-actions{margin-top:.8rem}.profile-account-usercard{margin-bottom:.8rem}}
+@media(max-width:800px){.profile-account-layout{grid-template-columns:1fr;padding:1rem;gap:1rem}.profile-account-sidebar{position:static}.profile-account-topbar{padding:0 1rem}.profile-account-topbar-sub{display:none}.profile-account-nav{display:grid;grid-template-columns:1fr 1fr}.profile-account-nav button{border-right:1px solid rgba(242,240,234,.09)}.profile-account-sidebar-actions{margin-top:.8rem}.profile-account-usercard{margin-bottom:.8rem}}
 
 
 
 /* PHASE 3 V4 - Wishlist improvements + FAQ */
 .wl-toolbar{display:flex;gap:.5rem;justify-content:space-between;align-items:center;margin:.8rem 0 1rem;flex-wrap:wrap}.wl-count{font-family:'Space Mono';font-size:.72rem;color:var(--grey)}.wl-actions{display:flex;gap:.4rem}.wl-action{border:1px solid rgba(242,240,234,.2);background:transparent;color:var(--paper);padding:.5rem .7rem;font-family:'Space Mono';font-size:.68rem;cursor:pointer}.wl-action:hover{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow)}
 .faq-list{margin-top:1rem}.faq-item{border-bottom:1px solid rgba(242,240,234,.12)}.faq-q{width:100%;background:transparent;border:0;color:var(--paper);padding:1rem 0;text-align:left;font-family:'Archivo Black';font-size:.9rem;cursor:pointer;display:flex;justify-content:space-between;gap:1rem}.faq-a{display:none;color:var(--grey);font-family:'Space Mono';font-size:.76rem;line-height:1.65;padding:0 0 1rem}.faq-item.open .faq-a{display:block}.faq-item.open .faq-q span:last-child{transform:rotate(45deg)}
-/* ACCOUNT TAB STABILITY OVERRIDE — UI ONLY */
-.profile-account-modal{overflow:hidden!important}
-.profile-account-page{overflow-y:scroll!important;overflow-x:hidden!important;scrollbar-gutter:stable!important}
-.profile-account-layout{min-width:0!important}
-.profile-account-sidebar,.profile-account-main{min-width:0!important}
-.profile-account-nav{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;width:100%!important;min-width:0!important}
-.profile-account-nav button{width:100%!important;min-width:0!important;min-height:58px!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;white-space:normal!important}
-@media(max-width:800px){.profile-account-layout{width:100%!important;max-width:none!important}.profile-account-nav{grid-template-columns:repeat(3,minmax(0,1fr))!important}.profile-account-nav button{min-height:54px!important;font-size:.62rem!important;padding:.55rem .3rem!important}}
+
+/* ADMIN ORDER UX V2 — compact, clear, no status dropdown */
+.admin-order-current-stage{display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding:.45rem .55rem;margin:.35rem 0 .45rem;background:#17171a;border:1px solid rgba(242,240,234,.1);border-radius:5px}
+.admin-order-current-stage small{font-family:'Space Mono',monospace;font-size:.48rem;color:var(--grey);text-transform:uppercase}
+.admin-order-current-stage strong{font-family:'Anton',sans-serif;font-size:.78rem;color:var(--spray-yellow);text-transform:uppercase;letter-spacing:.03em}
+.admin-order-item-preview{display:flex;align-items:center;gap:.55rem;min-width:0}
+.admin-order-item-thumb{width:42px;height:50px;object-fit:contain;background:#111;border:1px solid rgba(242,240,234,.15);border-radius:4px;flex:0 0 auto}
+.admin-order-item-thumb-placeholder{width:42px;height:50px;display:flex;align-items:center;justify-content:center;background:#111;border:1px solid rgba(242,240,234,.15);border-radius:4px;color:#777;font:700 .42rem 'Space Mono';text-align:center;line-height:1.1;flex:0 0 auto}
+.admin-order-item-preview-copy{min-width:0}
+.admin-order-item-preview-copy strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:170px}
+.admin-order-item-preview-copy span{display:block;color:var(--grey);font:500 .55rem 'Space Mono';margin-top:3px}
+.admin-order-expand-hint{display:block;margin-top:5px;color:var(--spray-yellow);font:500 .5rem 'Space Mono'}
+.admin-order-stage-line{display:flex;align-items:center;gap:.22rem;flex-wrap:wrap;margin:.45rem 0 .55rem;font:500 .5rem 'Space Mono'}
+.admin-order-stage-line span{padding:.24rem .34rem;border:1px solid rgba(242,240,234,.1);color:#777;background:#151518;border-radius:3px}
+.admin-order-stage-line span.active{border-color:var(--spray-yellow);color:var(--ink);background:var(--spray-yellow);font-weight:700}
+.admin-order-stage-line i{color:#666;font-style:normal}
+.admin-order-action-box{min-width:180px}
+@media(max-width:650px){.admin-order-item-preview-copy strong{max-width:130px}.admin-order-action-box{min-width:160px}}
+
+
+/* Customer order timeline: exactly four public stages */
+.order-status-timeline-wide{grid-template-columns:repeat(4,1fr)!important}
+@media(max-width:700px){.order-status-timeline-wide{grid-template-columns:repeat(2,1fr)!important}}
+
 </style>
 
 <style>
@@ -1534,13 +1550,14 @@ footer a:hover{color:var(--paper)}
       </div>
 
       <div class="admin-order-guide">
-        <span>🆕 New</span><i>→</i><span>⚙️ Processing</span><i>→</i><span>📦 Ready</span><i>→</i><span>🚚 Shipping</span><i>→</i><span>✓ Delivered</span><small style="margin-left:auto;color:#777;">Production steps stay inside the order.</small>
+        <span>🆕 New</span><i>→</i><span>⚙️ Processing</span><i>→</i><span>🖨️ Printing</span><i>→</i><span>📦 Ready</span><i>→</i><span>🚚 Dispatched</span><i>→</i><span>✓ Delivered</span><small style="margin-left:auto;color:#777;">Click an order to open item details, stock & notes.</small>
       </div>
 
       <div class="admin-order-toolbar">
         <div class="admin-status-pills" id="order-status-tabs">
           <button data-status="New" class="active" onclick="filterOrdersByStatus('New', this)">🆕 New <b id="cnt-new">0</b></button>
           <button data-status="Processing" onclick="filterOrdersByStatus('Processing', this)">⚙️ Processing <b id="cnt-processing">0</b></button>
+          <button data-status="Printing" onclick="filterOrdersByStatus('Printing', this)">🖨️ Printing <b id="cnt-printing">0</b></button>
           <button data-status="Ready" onclick="filterOrdersByStatus('Ready', this)">📦 Ready <b id="cnt-ready">0</b></button>
           <button data-status="Shipping" onclick="filterOrdersByStatus('Shipping', this)">🚚 Shipping <b id="cnt-shipping">0</b></button>
           <button data-status="Delivered" onclick="filterOrdersByStatus('Delivered', this)">✓ Delivered <b id="cnt-delivered">0</b></button>
@@ -1962,12 +1979,6 @@ let CATEGORIES = JSON.parse(localStorage.getItem('rebel_categories')) || DEFAULT
 let SITE_CONTENT = JSON.parse(localStorage.getItem('rebel_site_content')) || DEFAULT_SITE_CONTENT;
 let ordersHistory = JSON.parse(localStorage.getItem('rebel_orders_history')) || [];
 let trashOrdersHistory = JSON.parse(localStorage.getItem('rebel_trash_orders_history')) || [];
-let deletedOrderIds = JSON.parse(localStorage.getItem('rebel_deleted_order_ids') || '[]');
-if (!Array.isArray(deletedOrderIds)) deletedOrderIds = [];
-function saveDeletedOrderIds() { localStorage.setItem('rebel_deleted_order_ids', JSON.stringify([...new Set(deletedOrderIds.map(String))])); }
-function isOrderDeletedLocally(orderId) { return deletedOrderIds.includes(String(orderId || '')); }
-trashOrdersHistory.forEach(item => { if (item?.id && !deletedOrderIds.includes(String(item.id))) deletedOrderIds.push(String(item.id)); });
-saveDeletedOrderIds();
 let customOrdersHistory = JSON.parse(localStorage.getItem('rebel_custom_orders_history')) || [];
 let staffAccounts = [];
 try {
@@ -4372,8 +4383,6 @@ function deleteOrderToTrash(orderId) {
   if (index !== -1) {
     const deletedOrd = ordersHistory.splice(index, 1)[0];
     deletedOrd.deletedAt = new Date().toISOString();
-    if (!deletedOrderIds.includes(String(orderId))) deletedOrderIds.push(String(orderId));
-    saveDeletedOrderIds();
     trashOrdersHistory.unshift(deletedOrd);
     localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
     localStorage.setItem('rebel_trash_orders_history', JSON.stringify(trashOrdersHistory));
@@ -4388,8 +4397,6 @@ function restoreOrderFromTrash(orderId) {
   if (index !== -1) {
     const restoredOrd = trashOrdersHistory.splice(index, 1)[0];
     delete restoredOrd.deletedAt;
-    deletedOrderIds = deletedOrderIds.filter(id => String(id) !== String(orderId));
-    saveDeletedOrderIds();
     ordersHistory.unshift(restoredOrd);
     localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
     localStorage.setItem('rebel_trash_orders_history', JSON.stringify(trashOrdersHistory));
@@ -4457,6 +4464,40 @@ function renderTrashBinTable() {
   });
 }
 
+function getStoreDateKey(value = new Date()) {
+  const raw = String(value || '').trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+  const parsed = value instanceof Date ? value : new Date(raw);
+  if (Number.isNaN(parsed.getTime())) {
+    const match = raw.match(/^(\d{4}-\d{2}-\d{2})/);
+    return match ? match[1] : '';
+  }
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit'
+  }).format(parsed);
+}
+
+function getStoreTodayDateKey() {
+  return getStoreDateKey(new Date());
+}
+
+function getAdminOrderStage(status) {
+  const st = String(status || 'New');
+  if (st === 'New') return 'New';
+  if (['Processing'].includes(st)) return 'Processing';
+  if (['Printing','Pending Print','Go For Print','Print Received'].includes(st)) return 'Printing';
+  if (['Ready','Product Ready','Packaged'].includes(st)) return 'Ready';
+  if (['Dispatched','Shipped','Out for Delivery'].includes(st)) return 'Shipping';
+  if (['Delivered','Completed'].includes(st)) return 'Delivered';
+  if (st === 'Returned') return 'Returned';
+  return 'Processing';
+}
+
+function getAdminStageLabel(status) {
+  const stage = getAdminOrderStage(status);
+  return stage === 'Shipping' ? 'Dispatched / Shipping' : stage;
+}
+
 async function loadAdminDataFromSupabase() {
   if (!supabaseClient) return;
 
@@ -4467,9 +4508,9 @@ async function loadAdminDataFromSupabase() {
       .order('created_at', { ascending: false });
 
     if (!ordersError && ordersData && ordersData.length > 0) {
-      ordersHistory = ordersData.filter(o => !isOrderDeletedLocally(o.order_id)).map(o => ({
+      ordersHistory = ordersData.map(o => ({
         id: o.order_id,
-        date: o.created_at ? o.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
+        date: getStoreDateKey(o.created_at || new Date()),
         userEmail: o.customer_email,
         billing: {
           name: o.customer_name,
@@ -4499,7 +4540,7 @@ async function loadAdminDataFromSupabase() {
     if (customData && customData.length > 0) {
       customOrdersHistory = customData.map(co => ({
         orderId: co.order_id,
-        date: co.created_at ? co.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
+        date: getStoreDateKey(co.created_at || new Date()),
         customer: {
           name: co.customer_name,
           phone: co.customer_phone,
@@ -4700,59 +4741,51 @@ function handleOrderSearch(query) {
 
 function renderAdminPanels(filterDate = '') {
   const setText = (id, value) => { const el = document.getElementById(id); if (el) el.innerText = value; };
-  const totalRev = ordersHistory.reduce((sum, o) => sum + Number(o.totalAmount || 0), 0);
   const paidOrders = ordersHistory.filter(o => String(o.paymentStatus || 'paid').toLowerCase() === 'paid');
+  const totalRev = paidOrders
+    .filter(o => !['Cancelled','Returned'].includes(String(o.orderStatus || '')))
+    .reduce((sum, o) => sum + Number(o.totalAmount || 0), 0);
   const deliveredCount = ordersHistory.filter(o => ['Delivered','Completed'].includes(String(o.orderStatus || ''))).length;
-  const actionStatuses = ['New','Processing','Pending Print','Go For Print','Print Received','Product Ready','Packaged','Dispatched','Out for Delivery'];
+  const actionStatuses = ['New','Processing','Printing','Pending Print','Go For Print','Print Received','Ready','Product Ready','Packaged','Dispatched','Shipped','Out for Delivery'];
   const actionCount = ordersHistory.filter(o => actionStatuses.includes(String(o.orderStatus || ''))).length;
+
   setText('adm-revenue', '₹ ' + totalRev.toLocaleString('en-IN'));
   setText('adm-orders-count', paidOrders.length);
   setText('adm-pending-count', actionCount);
   setText('adm-delivered-count', deliveredCount);
 
   const queue = {
-    new: ordersHistory.filter(o => o.orderStatus === 'New').length,
-    processing: ordersHistory.filter(o => o.orderStatus === 'Processing').length,
-    printing: ordersHistory.filter(o => ['Pending Print','Go For Print','Print Received'].includes(o.orderStatus)).length,
-    ready: ordersHistory.filter(o => ['Product Ready','Packaged'].includes(o.orderStatus)).length,
-    shipping: ordersHistory.filter(o => ['Dispatched','Shipped','Out for Delivery'].includes(o.orderStatus)).length,
+    new: ordersHistory.filter(o => getAdminOrderStage(o.orderStatus) === 'New').length,
+    processing: ordersHistory.filter(o => getAdminOrderStage(o.orderStatus) === 'Processing').length,
+    printing: ordersHistory.filter(o => getAdminOrderStage(o.orderStatus) === 'Printing').length,
+    ready: ordersHistory.filter(o => getAdminOrderStage(o.orderStatus) === 'Ready').length,
+    shipping: ordersHistory.filter(o => getAdminOrderStage(o.orderStatus) === 'Shipping').length,
     delivered: deliveredCount
   };
   Object.entries(queue).forEach(([k,v]) => setText('dash-'+k, v));
 
-  const baseOrdersForCounts = filterDate ? ordersHistory.filter(o => o.date === filterDate) : ordersHistory;
-  const getOrderBucket = (status) => {
-    const st = String(status || 'New');
-    if (st === 'New') return 'New';
-    if (['Processing','Pending Print','Go For Print','Print Received'].includes(st)) return 'Processing';
-    if (['Product Ready','Packaged'].includes(st)) return 'Ready';
-    if (['Dispatched','Shipped','Out for Delivery'].includes(st)) return 'Shipping';
-    if (['Delivered','Completed'].includes(st)) return 'Delivered';
-    if (st === 'Returned') return 'Returned';
-    return 'Processing';
+  const baseOrdersForCounts = filterDate ? ordersHistory.filter(o => getStoreDateKey(o.date) === filterDate) : ordersHistory;
+  const statusAliases = {
+    New: o => getAdminOrderStage(o.orderStatus) === 'New',
+    Processing: o => getAdminOrderStage(o.orderStatus) === 'Processing',
+    Printing: o => getAdminOrderStage(o.orderStatus) === 'Printing',
+    Ready: o => getAdminOrderStage(o.orderStatus) === 'Ready',
+    Shipping: o => getAdminOrderStage(o.orderStatus) === 'Shipping',
+    Delivered: o => getAdminOrderStage(o.orderStatus) === 'Delivered',
+    Returned: o => getAdminOrderStage(o.orderStatus) === 'Returned',
+    All: o => true
   };
   const counts = {
-    'cnt-new': baseOrdersForCounts.filter(o => getOrderBucket(o.orderStatus) === 'New').length,
-    'cnt-processing': baseOrdersForCounts.filter(o => getOrderBucket(o.orderStatus) === 'Processing').length,
-    'cnt-ready': baseOrdersForCounts.filter(o => getOrderBucket(o.orderStatus) === 'Ready').length,
-    'cnt-shipping': baseOrdersForCounts.filter(o => getOrderBucket(o.orderStatus) === 'Shipping').length,
-    'cnt-delivered': baseOrdersForCounts.filter(o => getOrderBucket(o.orderStatus) === 'Delivered').length,
-    'cnt-returned': baseOrdersForCounts.filter(o => getOrderBucket(o.orderStatus) === 'Returned').length,
+    'cnt-new': baseOrdersForCounts.filter(o => getAdminOrderStage(o.orderStatus) === 'New').length,
+    'cnt-processing': baseOrdersForCounts.filter(o => getAdminOrderStage(o.orderStatus) === 'Processing').length,
+    'cnt-printing': baseOrdersForCounts.filter(o => getAdminOrderStage(o.orderStatus) === 'Printing').length,
+    'cnt-ready': baseOrdersForCounts.filter(o => getAdminOrderStage(o.orderStatus) === 'Ready').length,
+    'cnt-shipping': baseOrdersForCounts.filter(o => getAdminOrderStage(o.orderStatus) === 'Shipping').length,
+    'cnt-delivered': baseOrdersForCounts.filter(o => getAdminOrderStage(o.orderStatus) === 'Delivered').length,
+    'cnt-returned': baseOrdersForCounts.filter(o => getAdminOrderStage(o.orderStatus) === 'Returned').length,
     'cnt-all': baseOrdersForCounts.length
   };
   Object.entries(counts).forEach(([id,v]) => setText(id, v));
-  const completed = baseOrdersForCounts.filter(o => getOrderBucket(o.orderStatus) === 'Delivered').length;
-  setText('cnt-completed', completed);
-
-  const statusAliases = {
-    New: o => getOrderBucket(o.orderStatus) === 'New',
-    Processing: o => getOrderBucket(o.orderStatus) === 'Processing',
-    Ready: o => getOrderBucket(o.orderStatus) === 'Ready',
-    Shipping: o => getOrderBucket(o.orderStatus) === 'Shipping',
-    Delivered: o => getOrderBucket(o.orderStatus) === 'Delivered',
-    Returned: o => getOrderBucket(o.orderStatus) === 'Returned',
-    All: o => true
-  };
 
   const chartTbody = document.getElementById('date-chart-tbody');
   if (chartTbody) {
@@ -4770,42 +4803,73 @@ function renderAdminPanels(filterDate = '') {
       chartTbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--grey);padding:2rem;">No matching orders.</td></tr>`;
     } else {
       filteredOrders.forEach((ord) => {
-        let itemsSummaryHtml = `Total: <strong>${Number(ord.totalQty || 0)} pcs</strong>`;
-        let itemsDetailedHtml = '';
-        if (Array.isArray(ord.items)) {
-          ord.items.forEach((it, itIdx) => {
-            const safeItemImage = safeMediaUrl(it.image);
-            const imgHtml = safeItemImage ? `<img src="${escapeHtml(safeItemImage)}" style="width:40px;height:40px;object-fit:contain;background:#111;border:1px solid #333;border-radius:2px;display:inline-block;vertical-align:middle;margin-right:8px;">` : '';
-            const printSpec = it.isCustom ? '<span style="color:var(--spray-yellow);font-size:.6rem;">CUSTOM</span>' : '';
-            const st = it.stockStatus || { available:true, notes:'' };
-            const note = String(it.production_note || '').replace(/\n/g,' ');
-            itemsDetailedHtml += `
-              <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:12px;border-bottom:1px dashed rgba(242,240,234,.15);padding-bottom:10px;">
-                <div style="display:flex;align-items:center;gap:8px;">${imgHtml}<div><strong>${escapeHtml(it.title || 'Product')}</strong> ${printSpec}<br><span style="font-size:.65rem;color:var(--grey);">Size: <strong style="color:var(--spray-yellow);">${escapeHtml(it.size || '-')}</strong> · Qty: ${Number(it.qty) || 0} · ₹ ${Number(it.price) || 0}</span></div></div>
-                <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-left:48px;">
-                  <label style="font-size:.62rem;cursor:pointer;display:flex;gap:4px;align-items:center;color:var(--success-green);font-weight:700;"><input type="radio" name="stock-${escapeHtml(ord.id)}-${itIdx}" ${st.available ? 'checked' : ''} onchange="updateItemStockMeta('${escapeHtml(ord.id)}',${itIdx},'available',true)"> Available</label>
-                  <label style="font-size:.62rem;cursor:pointer;display:flex;gap:4px;align-items:center;color:var(--rebel-red);font-weight:700;"><input type="radio" name="stock-${escapeHtml(ord.id)}-${itIdx}" ${!st.available ? 'checked' : ''} onchange="updateItemStockMeta('${escapeHtml(ord.id)}',${itIdx},'available',false)"> Unavailable</label>
-                  <input type="text" class="admin-input-small" placeholder="Stock note" value="${escapeHtml(st.notes || '')}" onchange="updateItemStockMeta('${escapeHtml(ord.id)}',${itIdx},'notes',this.value)" style="width:180px;margin:0;font-size:.62rem;padding:4px 7px;" onclick="event.stopPropagation()">
-                </div>
-                <textarea class="admin-note-input" placeholder="Production note — print / packaging / customer note" onchange="updateItemStockMeta('${escapeHtml(ord.id)}',${itIdx},'production_note',this.value)" onclick="event.stopPropagation()">${escapeHtml(note)}</textarea>
-              </div>`;
-          });
-        }
+        const items = Array.isArray(ord.items) ? ord.items : [];
+        const firstItem = items[0] || {};
+        const firstImage = safeMediaUrl(firstItem.image || firstItem.product_image || firstItem.image_url || getOrderItemImage(firstItem));
+        const firstTitle = firstItem.title || firstItem.name || firstItem.garment || 'Product';
+        const firstSize = firstItem.size || '-';
+        const firstQty = Number(firstItem.qty ?? firstItem.quantity ?? 0);
+        const moreItems = Math.max(0, items.length - 1);
+        const itemPreviewHtml = firstImage
+          ? `<img class="admin-order-item-thumb" src="${escapeHtml(firstImage)}" alt="${escapeHtml(firstTitle)}">`
+          : `<div class="admin-order-item-thumb-placeholder">NO<br>IMAGE</div>`;
+        const itemsSummaryHtml = `
+          <div class="admin-order-item-preview">
+            ${itemPreviewHtml}
+            <div class="admin-order-item-preview-copy">
+              <strong>${escapeHtml(firstTitle)}</strong>
+              <span>Size: <b style="color:var(--spray-yellow);">${escapeHtml(firstSize)}</b> · Qty: <b>${firstQty}</b>${moreItems ? ` · +${moreItems} more` : ''}</span>
+            </div>
+          </div>
+          <span class="admin-order-expand-hint">Click to view full items + notes</span>`;
 
-        const statusList = ['Processing','Pending Print','Go For Print','Print Received','Product Ready','Packaged','Dispatched','Out for Delivery','Delivered','Completed','Returned'];
-        const statusOptionsHtml = statusList.map(st => `<option value="${escapeHtml(st)}" ${ord.orderStatus === st ? 'selected' : ''}>${escapeHtml(st)}</option>`).join('');
-        const next = getNextOrderStatus(ord.orderStatus);
-        const statusBadge = escapeHtml(ord.orderStatus || 'New');
-        const canDispatch = ['Product Ready','Packaged'].includes(String(ord.orderStatus || ''));
-        const dispatched = ['Dispatched','Shipped','Out for Delivery','Delivered','Completed'].includes(String(ord.orderStatus || ''));
+        let itemsDetailedHtml = '';
+        items.forEach((it, itIdx) => {
+          const safeItemImage = safeMediaUrl(it.image || it.product_image || it.image_url || getOrderItemImage(it));
+          const imgHtml = safeItemImage ? `<img src="${escapeHtml(safeItemImage)}" alt="${escapeHtml(it.title || 'Product')}" style="width:54px;height:64px;object-fit:contain;background:#111;border:1px solid #333;border-radius:4px;flex:0 0 auto;">` : `<div class="admin-order-item-thumb-placeholder">NO<br>IMAGE</div>`;
+          const printSpec = it.isCustom ? '<span style="color:var(--spray-yellow);font-size:.6rem;">CUSTOM</span>' : '';
+          const st = it.stockStatus || { available:true, notes:'' };
+          const note = String(it.production_note || '').replace(/\n/g,' ');
+          itemsDetailedHtml += `
+            <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;border-bottom:1px dashed rgba(242,240,234,.15);padding-bottom:10px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                ${imgHtml}
+                <div><strong>${escapeHtml(it.title || 'Product')}</strong> ${printSpec}<br><span style="font-size:.65rem;color:var(--grey);">Size: <strong style="color:var(--spray-yellow);">${escapeHtml(it.size || '-')}</strong> · Qty: ${Number(it.qty ?? it.quantity) || 0} · ₹ ${Number(it.price ?? it.unit_price) || 0}</span></div>
+              </div>
+              <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-left:64px;">
+                <label style="font-size:.62rem;cursor:pointer;display:flex;gap:4px;align-items:center;color:var(--success-green);font-weight:700;"><input type="radio" name="stock-${escapeHtml(ord.id)}-${itIdx}" ${st.available ? 'checked' : ''} onchange="updateItemStockMeta('${escapeHtml(ord.id)}',${itIdx},'available',true)"> Available</label>
+                <label style="font-size:.62rem;cursor:pointer;display:flex;gap:4px;align-items:center;color:var(--rebel-red);font-weight:700;"><input type="radio" name="stock-${escapeHtml(ord.id)}-${itIdx}" ${!st.available ? 'checked' : ''} onchange="updateItemStockMeta('${escapeHtml(ord.id)}',${itIdx},'available',false)"> Unavailable</label>
+                <input type="text" class="admin-input-small" placeholder="Stock note" value="${escapeHtml(st.notes || '')}" onchange="updateItemStockMeta('${escapeHtml(ord.id)}',${itIdx},'notes',this.value)" style="width:180px;margin:0;font-size:.62rem;padding:4px 7px;" onclick="event.stopPropagation()">
+              </div>
+              <textarea class="admin-note-input" placeholder="Production note — print / packaging / customer note" onchange="updateItemStockMeta('${escapeHtml(ord.id)}',${itIdx},'production_note',this.value)" onclick="event.stopPropagation()">${escapeHtml(note)}</textarea>
+            </div>`;
+        });
+
+        const rawStatus = String(ord.orderStatus || 'New');
+        const stage = getAdminOrderStage(rawStatus);
+        const next = getNextOrderStatus(rawStatus);
+        const statusBadge = escapeHtml(getAdminStageLabel(rawStatus));
+        const dispatched = ['Dispatched','Shipped','Out for Delivery','Delivered','Completed'].includes(rawStatus);
+        const canDispatch = ['Ready','Product Ready','Packaged'].includes(rawStatus);
         const trackingUrl = buildTrackingUrl(ord.courierName, ord.trackingId);
-        const dispatchButtonHtml = canDispatch ? `<button class="btn btn--solid admin-next-btn" type="button" onclick="event.stopPropagation();focusDispatchFields('${escapeHtml(ord.id)}')">🚚 Dispatch Order</button>` : '';
-        const nextButtonHtml = next && !['Delivered','Completed','Returned','Dispatched'].includes(String(ord.orderStatus || '')) ? `<button class="btn btn--solid admin-next-btn" type="button" onclick="event.stopPropagation();updateOrderStatusInSupabase('${escapeHtml(ord.id)}','${escapeHtml(next)}')">Next → ${escapeHtml(next)}</button>` : '';
+        const stageNames = ['New','Processing','Printing','Ready','Shipping','Delivered'];
+        const stageLineHtml = stageNames.map((name, idx) => {
+          const active = (name === stage) || (stage === 'Returned' && name === 'New');
+          const arrow = idx < stageNames.length - 1 ? '<i>›</i>' : '';
+          return `<span class="${active ? 'active' : ''}">${escapeHtml(name)}</span>${arrow}`;
+        }).join('');
+
+        const nextButtonHtml = next && !['Delivered','Completed','Returned'].includes(rawStatus)
+          ? `<button class="btn btn--solid admin-next-btn" type="button" onclick="event.stopPropagation();updateOrderStatusInSupabase('${escapeHtml(ord.id)}','${escapeHtml(next)}')">${rawStatus === 'New' ? '✓ Accept Order' : `Next → ${escapeHtml(next)}`}</button>`
+          : '';
+        const dispatchButtonHtml = canDispatch
+          ? `<button class="btn btn--solid admin-next-btn" type="button" onclick="event.stopPropagation();focusDispatchFields('${escapeHtml(ord.id)}')">🚚 Dispatch Order</button>`
+          : '';
+
         const actionColHtml = `
           <div class="admin-order-action-box" onclick="event.stopPropagation()">
-            ${ord.orderStatus === 'New' ? `<button class="btn btn--solid admin-next-btn" type="button" onclick="event.stopPropagation();acceptNewOrder('${escapeHtml(ord.id)}')">✓ Accept Order</button>` : ''}
-            <div style="font-family:'Space Mono';font-size:.5rem;color:var(--grey);margin:.45rem 0 .25rem;text-transform:uppercase;">Current stage · ${statusBadge}</div>
-            <select class="cal-dropdown" style="width:100%;font-size:.62rem;padding:.42rem;margin-bottom:.35rem;" onchange="updateOrderStatusInSupabase('${escapeHtml(ord.id)}', this.value)" onclick="event.stopPropagation()"><option value="New" ${ord.orderStatus === 'New' ? 'selected' : ''}>New</option>${statusOptionsHtml}</select>
+            <div class="admin-order-current-stage"><small>Current stage</small><strong>${statusBadge}</strong></div>
+            <div class="admin-order-stage-line">${stageLineHtml}</div>
             ${nextButtonHtml}
             ${dispatchButtonHtml}
             ${canDispatch || dispatched ? `
@@ -4816,11 +4880,11 @@ function renderAdminPanels(filterDate = '') {
                   <input type="text" maxlength="100" value="${escapeHtml(ord.trackingId || '')}" placeholder="Tracking ID / AWB *" id="tracking-${escapeHtml(ord.id)}">
                   <button class="btn btn--solid admin-dispatch-save" type="button" onclick="event.stopPropagation();saveAndDispatchOrder('${escapeHtml(ord.id)}')">${dispatched ? '💾 Update Tracking' : '✓ Save & Dispatch'}</button>
                 </div>
-                <div class="admin-dispatch-hint">Tracking ID is required. Saving this dispatches the order and makes the tracking option visible to the customer.</div>
+                <div class="admin-dispatch-hint">Tracking ID is required. Save & Dispatch moves the order to Shipping and unlocks tracking for the customer.</div>
                 ${trackingUrl ? `<div class="admin-tracking-link">↗ Customer tracking: ${escapeHtml(trackingUrl)}</div>` : ''}
               </div>` : ''}
-            ${ord.orderStatus === 'Out for Delivery' ? `<div class="admin-delivery-box"><strong>Delivery check:</strong> This store currently uses manual delivery confirmation. When the courier confirms delivery, use <b>Mark Delivered</b>.</div><button class="btn btn--solid admin-next-btn" type="button" onclick="event.stopPropagation();updateOrderStatusInSupabase('${escapeHtml(ord.id)}','Delivered')">✓ Mark Delivered</button>` : ''}
-            ${ord.orderStatus === 'Delivered' || ord.orderStatus === 'Completed' ? `<div class="admin-delivery-box"><strong>✓ Delivered</strong><br>Marked delivered on this order.</div>` : ''}
+            ${rawStatus === 'Out for Delivery' ? `<div class="admin-delivery-box"><strong>Delivery check:</strong> Courier delivery is confirmed manually. Mark the order delivered after confirmation.</div><button class="btn btn--solid admin-next-btn" type="button" onclick="event.stopPropagation();updateOrderStatusInSupabase('${escapeHtml(ord.id)}','Delivered')">✓ Mark Delivered</button>` : ''}
+            ${rawStatus === 'Delivered' || rawStatus === 'Completed' ? `<div class="admin-delivery-box"><strong>✓ Delivered</strong><br>Marked delivered on this order.</div>` : ''}
             <div class="admin-quick-action-row">
               <button class="btn btn--ghost" type="button" onclick="event.stopPropagation();downloadCourierLabelPDF('${escapeHtml(ord.id)}')">📄 Label</button>
               <button class="btn btn--ghost" type="button" onclick="event.stopPropagation();generateZohoInvoice('${escapeHtml(ord.id)}')">🧾 Invoice</button>
@@ -4832,9 +4896,9 @@ function renderAdminPanels(filterDate = '') {
         tr.style.cursor = 'pointer';
         tr.onclick = (e) => toggleOrderExpand(e, ord.id);
         tr.innerHTML = `
-          <td><strong>${escapeHtml(ord.id)}</strong><br><span style="font-size:.6rem;color:var(--grey);">${escapeHtml(ord.date)}</span><br><span style="display:inline-block;margin-top:4px;padding:2px 5px;background:#242428;border:1px solid rgba(242,240,234,.1);font-size:.52rem;">${statusBadge}</span></td>
+          <td><strong>${escapeHtml(ord.id)}</strong><br><span style="font-size:.6rem;color:var(--grey);">${escapeHtml(ord.date)}</span></td>
           <td><strong>${escapeHtml(ord.billing?.name || 'Customer')}</strong><br><span style="font-size:.6rem;color:var(--grey);">${escapeHtml(ord.billing?.phone || '')}</span><div id="order-detail-${escapeHtml(ord.id)}" style="display:none;margin-top:8px;background:#18181b;padding:10px;border:1px solid rgba(242,240,234,.15);"><span style="font-size:.58rem;color:var(--spray-yellow);">ADDRESS</span><br>${escapeHtml(ord.billing?.address || '')}</div></td>
-          <td>${itemsSummaryHtml}<span style="font-size:.55rem;color:var(--spray-yellow);display:block;margin-top:3px;">Click to view items</span><div id="order-items-${escapeHtml(ord.id)}" style="display:none;margin-top:10px;background:#18181b;padding:10px;border:1px solid rgba(242,240,234,.15);">${itemsDetailedHtml || '<span style="color:var(--grey)">No item details</span>'}</div></td>
+          <td><div id="order-items-summary-${escapeHtml(ord.id)}">${itemsSummaryHtml}</div><div id="order-items-${escapeHtml(ord.id)}" style="display:none;margin-top:10px;background:#18181b;padding:10px;border:1px solid rgba(242,240,234,.15);">${itemsDetailedHtml || '<span style="color:var(--grey)">No item details</span>'}</div></td>
           <td style="color:var(--spray-yellow);font-weight:bold;white-space:nowrap;">₹ ${Number(ord.totalAmount || 0).toLocaleString('en-IN')}<br><span style="background:rgba(34,197,94,.15);color:#22c55e;padding:1px 5px;font-size:.52rem;">${escapeHtml(ord.paymentStatus || 'paid')}</span></td>
           <td>${actionColHtml}</td>`;
         chartTbody.appendChild(tr);
@@ -4848,16 +4912,27 @@ function renderAdminPanels(filterDate = '') {
 }
 
 function getNextOrderStatus(status) {
+  const st = String(status || 'New');
   const flow = {
-    'New':'Processing','Processing':'Pending Print','Pending Print':'Go For Print','Go For Print':'Print Received',
-    'Print Received':'Product Ready','Product Ready':'Packaged','Packaged':'Dispatched','Dispatched':'Out for Delivery',
-    'Shipped':'Out for Delivery','Out for Delivery':'Delivered','Delivered':'Completed'
+    'New':'Processing',
+    'Processing':'Printing',
+    'Printing':'Ready',
+    'Pending Print':'Ready',
+    'Go For Print':'Ready',
+    'Print Received':'Ready',
+    'Product Ready':'Dispatched',
+    'Ready':'Dispatched',
+    'Packaged':'Dispatched',
+    'Dispatched':'Out for Delivery',
+    'Shipped':'Out for Delivery',
+    'Out for Delivery':'Delivered'
   };
-  return flow[String(status || 'New')] || '';
+  return flow[st] || '';
 }
 
 function renderInteractiveCalendar(selectedDateStr = '') {
   const grid = document.getElementById('calendar-days-grid');
+  if (!grid) return;
   grid.innerHTML = '';
   const mSelect = document.getElementById('cal-month-select');
   const ySelect = document.getElementById('cal-year-select');
@@ -4870,16 +4945,16 @@ function renderInteractiveCalendar(selectedDateStr = '') {
     cell.className = 'calendar-cell blackout';
     grid.appendChild(cell);
   }
-  const today = new Date();
+  const todayKey = getStoreTodayDateKey();
+  const today = new Date(`${todayKey}T00:00:00+05:30`);
   for (let d = 1; d <= totalDays; d++) {
     const cell = document.createElement('div');
     cell.className = 'calendar-cell';
     const formattedD = String(d).padStart(2, '0');
     const formattedM = String(calCurrentMonth + 1).padStart(2, '0');
     const dateKey = `${calCurrentYear}-${formattedM}-${formattedD}`;
-    const thisDateObj = new Date(calCurrentYear, calCurrentMonth, d);
-    
-    const dateOrders = ordersHistory.filter(o => o.date === dateKey && o.orderStatus !== 'New');
+    const thisDateObj = new Date(`${dateKey}T00:00:00+05:30`);
+    const dateOrders = ordersHistory.filter(o => getStoreDateKey(o.date) === dateKey && !['Cancelled','Returned'].includes(String(o.orderStatus || '')));
     const dateOrderCount = dateOrders.length;
     const dateTotalItemsCount = dateOrders.reduce((sum, o) => sum + Number(o.totalQty || 0), 0);
 
@@ -4904,7 +4979,9 @@ function renderInteractiveCalendar(selectedDateStr = '') {
       if (dateKey === selectedDateStr) cell.classList.add('selected');
       cell.onclick = () => {
         currentSelectedDateFilter = dateKey;
-        document.getElementById('selected-cal-date-label').innerText = `Selected Date: ${dateKey} (${dateOrderCount} Orders, ${dateTotalItemsCount} Items)`;
+        const label = document.getElementById('selected-cal-date-label');
+        if (label) label.innerText = `Selected Date: ${dateKey} (${dateOrderCount} Orders, ${dateTotalItemsCount} Items)`;
+        openAdminSubPage('subpage-orders');
         renderAdminPanels(dateKey);
       };
     }
@@ -4934,20 +5011,28 @@ function changeCalendarMonth(direction) {
 
 function resetCalendarFilter() {
   currentSelectedDateFilter = '';
-  document.getElementById('selected-cal-date-label').innerText = 'Selected Date: None (Showing All)';
+  const label = document.getElementById('selected-cal-date-label');
+  if (label) label.innerText = 'Selected Date: None (Showing All)';
   renderAdminPanels();
 }
 
 function renderGraphChart() {
   const containers = [document.getElementById('admin-graph-bars'), document.getElementById('admin-dashboard-graph-bars')].filter(Boolean);
   if (!containers.length) return;
+  const todayKey = getStoreTodayDateKey();
+  const baseDate = new Date(`${todayKey}T00:00:00+05:30`);
   const last7Days = [];
   for (let i = 6; i >= 0; i--) {
-    const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - i);
-    const dStr = d.toISOString().split('T')[0];
-    const dayOrders = ordersHistory.filter(o => o.date === dStr && !['New','Cancelled'].includes(o.orderStatus));
+    const d = new Date(baseDate);
+    d.setDate(d.getDate() - i);
+    const dStr = getStoreDateKey(d);
+    const dayOrders = ordersHistory.filter(o => {
+      const status = String(o.orderStatus || '');
+      const payment = String(o.paymentStatus || 'paid').toLowerCase();
+      return getStoreDateKey(o.date) === dStr && payment === 'paid' && !['Cancelled','Returned'].includes(status);
+    });
     const dayRev = dayOrders.reduce((sum,o) => sum + Number(o.totalAmount || 0),0);
-    last7Days.push({label:d.toLocaleDateString('en-IN',{weekday:'short'}),rev:dayRev,count:dayOrders.length,dateStr:dStr});
+    last7Days.push({label:d.toLocaleDateString('en-IN',{weekday:'short',timeZone:'Asia/Kolkata'}),rev:dayRev,count:dayOrders.length,dateStr:dStr});
   }
   const maxRev = Math.max(...last7Days.map(x=>x.rev),1000);
   const total = last7Days.reduce((s,x)=>s+x.rev,0);
@@ -4960,7 +5045,7 @@ function renderGraphChart() {
       const heightPct=Math.max((item.rev/maxRev)*100,item.rev?8:2);
       const col=document.createElement('div'); col.className='graph-bar-col'; col.style.cursor='pointer'; col.title=`${item.dateStr}: ${item.count} orders · ₹${item.rev}`;
       col.onclick=()=>{currentSelectedDateFilter=item.dateStr;const label=document.getElementById('selected-cal-date-label');if(label)label.innerText=`Selected Date: ${item.dateStr} (${item.count} Orders)`;openAdminSubPage('subpage-orders');renderAdminPanels(item.dateStr);};
-      col.innerHTML=`<div style="font-family:'Space Mono';font-size:.5rem;color:var(--grey);margin-bottom:3px;">${item.count}</div><div class="graph-bar" style="height:${heightPct}%;min-height:${item.rev?'5px':'2px'}"></div><div class="graph-label">${item.label}</div>`;
+      col.innerHTML=`<div style="font-family:'Space Mono';font-size:.48rem;color:${item.rev ? 'var(--spray-yellow)' : 'var(--grey)'};margin-bottom:3px;line-height:1.15;">₹${Number(item.rev).toLocaleString('en-IN')}<br><span style="color:var(--grey);">${item.count} ${item.count === 1 ? 'order' : 'orders'}</span></div><div class="graph-bar" style="height:${heightPct}%;min-height:${item.rev?'5px':'2px'}"></div><div class="graph-label">${item.label}</div>`;
       barsContainer.appendChild(col);
     });
   });
@@ -6240,14 +6325,6 @@ function openAccountTab(tab) {
   tabs.forEach(el => { if (el.dataset.tab === tab) el.classList.add('active'); });
   if (tab === 'orders') renderOrdersInsideProfile();
   if (tab === 'addresses') renderAddressesInsideProfile();
-
-  // Keep the entire account sidebar anchored at the same viewport position.
-  // Switching between tabs changes the main content height; without resetting
-  // the account page scroll position, the sidebar appears to jump up/down.
-  requestAnimationFrame(() => {
-    const accountPage = document.querySelector('.profile-account-page');
-    if (accountPage) accountPage.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-  });
 }
 
 async function openProfileModal(initialTab = 'profile', syncHash = true) {
@@ -6259,7 +6336,7 @@ async function openProfileModal(initialTab = 'profile', syncHash = true) {
 
   // If the account page is already open, do NOT rebuild the whole page.
   // Rebuilding here was making the sidebar navigation feel like dead/dummy buttons.
-  if (modal.style.display === 'flex' && area.innerHTML.trim() && !document.getElementById('order-details-view')) {
+  if (modal.style.display === 'flex' && area.innerHTML.trim()) {
     openAccountTab(initialTab);
     if (syncHash) {
       const routeHash = initialTab === 'orders' ? '#orders' : (initialTab === 'addresses' ? '#saved-address' : '#profile');
@@ -6481,9 +6558,8 @@ async function loadCustomerOrdersFromSupabase() {
       .filter(o => String(o.order_status || '').toLowerCase().includes('deliver'))
       .map(o => String(o.order_id));
 
-    const cloudOrders = data.filter(o => !isOrderDeletedLocally(o.order_id)).map(o => ({
+    const cloudOrders = data.map(o => ({
       id: o.order_id,
-      userId: String(o.user_id || ''),
       date: o.created_at ? o.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
       userEmail: o.customer_email,
       billing: {
@@ -6504,7 +6580,6 @@ async function loadCustomerOrdersFromSupabase() {
     }));
 
     const localOnly = ordersHistory.filter(local =>
-      !isOrderDeletedLocally(local.id || local.orderId) &&
       !cloudOrders.some(cloud => String(cloud.id) === String(local.id || local.orderId))
     );
     ordersHistory = [...cloudOrders, ...localOnly];
@@ -6587,11 +6662,11 @@ function buildOrderStatusTimeline(status) {
     return `<div class="order-status-timeline"><div class="order-status-step done"><div class="order-status-dot"></div>Order Placed</div><div class="order-status-step active"><div class="order-status-dot" style="background:var(--rebel-red);border-color:var(--rebel-red)"></div>Cancelled</div></div>`;
   }
   if (label === 'Returned') {
-    return `<div class="order-status-timeline"><div class="order-status-step done"><div class="order-status-dot"></div>Order Placed</div><div class="order-status-step done"><div class="order-status-dot"></div>Processing</div><div class="order-status-step done"><div class="order-status-dot"></div>Dispatched</div><div class="order-status-step active"><div class="order-status-dot"></div>Returned</div></div>`;
+    return `<div class="order-status-timeline"><div class="order-status-step done"><div class="order-status-dot"></div>Order Placed</div><div class="order-status-step done"><div class="order-status-dot"></div>Processing</div><div class="order-status-step done"><div class="order-status-dot"></div>Shipped</div><div class="order-status-step active"><div class="order-status-dot"></div>Returned</div></div>`;
   }
   const stage = getOrderTrackingStage(status);
-  const labels = ['Order Placed','Processing','Dispatched','Delivered'];
-  return `<div class="order-status-timeline">${labels.map((x, i) => {
+  const labels = ['Order Placed','Processing','Printing','Print Received','Ready','Dispatched','Out for Delivery','Delivered'];
+  return `<div class="order-status-timeline order-status-timeline-wide">${labels.map((x, i) => {
     const stateClass = i < stage ? 'done' : (i === stage ? 'active' : '');
     return `<div class="order-status-step ${stateClass}"><div class="order-status-dot"></div>${x}</div>`;
   }).join('')}</div>`;
@@ -6626,7 +6701,7 @@ function openCustomerOrderDetails(orderId) {
   }).join('');
 
   const label = getCustomerOrderStatusLabel(order.orderStatus);
-  const trackingVisible = Boolean(order.trackingId && order.courierName && ['Dispatched','Shipped','Out for Delivery','Delivered','Completed'].includes(String(order.orderStatus || '')));
+  const trackingVisible = ['Dispatched','Shipped','Out for Delivery','Delivered','Completed'].includes(String(order.orderStatus || '')) && Boolean(order.courierName || order.trackingId);
   const customerTrackingUrl = buildTrackingUrl(order.courierName, order.trackingId);
   const trackingHtml = trackingVisible
     ? `<div class="order-courier-box"><strong>Courier:</strong> ${escapeHtml(order.courierName || 'Not assigned')}<br><strong>Tracking ID:</strong> ${escapeHtml(order.trackingId || 'Not assigned')}${customerTrackingUrl ? `<br><a href="${escapeHtml(customerTrackingUrl)}" target="_blank" rel="noopener noreferrer" class="preview-link-btn" style="display:inline-block;margin-top:8px;text-decoration:none;">Track Shipment ↗</a>` : ''}</div>`
@@ -6650,7 +6725,7 @@ function openCustomerOrderDetails(orderId) {
         <div class="profile-account-sidebar-actions"><button type="button" onclick="logoutUser()">Logout</button></div>
       </aside>
       <main class="profile-account-main">
-        <div class="order-details-page" id="order-details-view">
+        <div class="order-details-page">
           <div class="order-details-top">
             <div>
               <button class="order-details-back" type="button" onclick="openProfileModal('orders')">← MY ORDERS</button>
@@ -6686,11 +6761,7 @@ function openCustomerOrderDetails(orderId) {
 function renderOrdersInsideProfile() {
   const area = document.getElementById('profile-orders-tab-content');
   if (!area) return;
-  const myOrders = ordersHistory.filter(o =>
-    (o.userId && loggedInUser?.id && String(o.userId) === String(loggedInUser.id)) ||
-    o.userEmail === loggedInUser?.email ||
-    (o.billing && o.billing.email === loggedInUser?.email)
-  );
+  const myOrders = ordersHistory.filter(o => o.userEmail === loggedInUser?.email || (o.billing && o.billing.email === loggedInUser?.email));
   if (!myOrders.length) {
     area.innerHTML = `<div class="profile-account-orders-empty">No order history found.</div>`;
     return;
