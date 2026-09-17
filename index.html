@@ -4125,8 +4125,19 @@ async function handleOrderSuccessDirect(paymentData) {
     ordersHistory.unshift(displayOrder);
     localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
     localStorage.removeItem('rebel_pending_order');
+
+    // Payment is verified and the order is saved. Now clear the customer's
+    // cloud cart as well as the browser cart so the completed order cannot
+    // remain in the active bag after checkout.
     cart = [];
     localStorage.removeItem('rebel_cart');
+    try {
+      await syncCartToSupabase();
+    } catch (cartClearError) {
+      // Never turn a successful, verified payment into a failed order just
+      // because cart cleanup had a transient cloud error.
+      console.warn('Cloud cart cleanup after successful order failed:', cartClearError);
+    }
     updateCartBadge();
 
     hidePaymentProcessing();
