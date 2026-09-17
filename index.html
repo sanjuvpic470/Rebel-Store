@@ -591,6 +591,23 @@ footer a:hover{color:var(--paper)}
 .admin-order-item-preview-copy strong{max-width:150px;font-size:.68rem}
 .admin-order-expand-hint{font-size:.48rem;margin-top:3px}
 @media(max-width:900px){.admin-orders-table{min-width:900px!important}.admin-order-action-buttons{grid-template-columns:1.45fr .72fr .78fr .5fr!important}}
+@media(max-width:900px){.admin-orders-table{min-width:0!important}.admin-order-action-buttons{grid-template-columns:minmax(108px,1fr) 40px 40px 34px!important}}
+
+/* V17 — final compact order controls */
+.admin-orders-table{table-layout:fixed!important;width:100%!important;min-width:0!important}
+.admin-orders-table th:nth-child(1),.admin-orders-table td:nth-child(1){width:20%!important}
+.admin-orders-table th:nth-child(2),.admin-orders-table td:nth-child(2){width:17%!important}
+.admin-orders-table th:nth-child(3),.admin-orders-table td:nth-child(3){width:31%!important}
+.admin-orders-table th:nth-child(4),.admin-orders-table td:nth-child(4){width:10%!important}
+.admin-orders-table th:nth-child(5),.admin-orders-table td:nth-child(5){width:22%!important}
+.admin-order-action-buttons{display:grid!important;grid-template-columns:minmax(108px,1fr) 40px 40px 34px!important;gap:4px!important;align-items:center!important;width:100%!important}
+.admin-order-action-buttons .btn{height:34px!important;min-width:0!important;width:100%!important;margin:0!important;padding:4px 5px!important;font-size:.52rem!important;line-height:1!important;white-space:nowrap!important}
+.admin-order-action-buttons .admin-next-btn{overflow:hidden;text-overflow:ellipsis}
+.admin-order-action-buttons .admin-icon-action{font-size:.85rem!important;padding:3px!important;display:grid!important;place-items:center!important}
+.admin-order-action-buttons .admin-trash-action{font-size:.78rem!important}
+.admin-order-item-preview{min-height:46px!important}
+.admin-order-expand-hint{font-size:.46rem!important}
+@media(max-width:650px){.admin-orders-table{min-width:760px!important}.admin-order-action-buttons{grid-template-columns:minmax(105px,1fr) 38px 38px 34px!important}}
 </style>
 
 <style>
@@ -4113,108 +4130,61 @@ async function downloadCourierLabelPDF(orderId) {
   showToast('Shipping label PDF downloaded.');
 }
 
-async function downloadInvoicePDF(orderId) {
-  const ord = ordersHistory.find(o => o.id === orderId);
+async function downloadZohoInvoicePDF(orderId) {
+  const ord = ordersHistory.find(o => String(o.id || o.orderId || '') === String(orderId));
   if (!ord) return;
-  if (!(await ensureJsPDF())) {
-    showToast('PDF generator could not load. Please check your internet connection and try again.');
+  const token = await getAuthenticatedAccessToken();
+  if (!token) {
+    showToast('Please login again as store owner.');
     return;
   }
 
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-  const logoData = await loadImageAsDataUrl(REBEL_STORE_LOGO_URL);
-  const pageW = 210;
-  const margin = 15;
+  try {
+    const response = await fetch(EDGE_FUNCTION_VERIFY_PAYMENT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        action: 'download_zoho_invoice',
+        order_id: String(orderId)
+      })
+    });
 
-  doc.setLineWidth(0.5);
-  doc.rect(margin, 12, pageW - margin * 2, 273);
+    const contentType = String(response.headers.get('content-type') || '').toLowerCase();
+    if (!response.ok || !contentType.includes('application/pdf')) {
+      let message = 'Zoho invoice PDF could not be downloaded.';
+      try {
+        const data = await response.json();
+        if (data?.error) message = String(data.error);
+      } catch (_) {}
+      showToast(message);
+      return;
+    }
 
-  if (logoData) {
-    try { doc.addImage(logoData, 'PNG', margin + 4, 17, 55, 20, undefined, 'FAST'); }
-    catch (_) { drawRebelStorePdfLogo(doc, margin + 4, 29, 'left', 55); }
-  } else {
-    drawRebelStorePdfLogo(doc, margin + 4, 29, 'left', 55);
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `RebelStore_Zoho_Invoice_${pdfSafe(orderId).replace(/[^a-zA-Z0-9_-]/g, '_')}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  } catch (error) {
+    console.error('Zoho invoice PDF download failed:', error);
+    showToast('Zoho invoice PDF could not be downloaded. Please try again.');
   }
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(19);
-  doc.text('INVOICE', 195, 29, null, null, 'right');
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8.8);
-  const invoiceIdLines = doc.splitTextToSize(`Order ID: ${pdfSafe(ord.id)}`, 62);
-  doc.text(invoiceIdLines, 195, 36, null, null, 'right');
-  let headerY = 36 + Math.max(5, invoiceIdLines.length * 4.5);
-  doc.text(`Date: ${pdfSafe(ord.date)}`, 195, headerY, null, null, 'right');
-  headerY += 5.5;
-  doc.text(`Payment: ${pdfSafe(ord.paymentStatus || 'paid').toUpperCase()}`, 195, headerY, null, null, 'right');
-  doc.line(margin, 53, 195, 53);
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-  doc.text('BILL TO / SHIP TO', margin + 4, 63);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9.5);
-  let y = 70;
-  doc.text(pdfSafe(ord.billing?.name || 'Customer'), margin + 4, y); y += 5.5;
-  if (ord.billing?.phone) { doc.text(`Phone: ${pdfSafe(ord.billing.phone)}`, margin + 4, y); y += 5.5; }
-  if (ord.billing?.email) { doc.text(`Email: ${pdfSafe(ord.billing.email)}`, margin + 4, y); y += 5.5; }
-  const billAddress = doc.splitTextToSize(pdfSafe(ord.billing?.address || ''), 170);
-  doc.text(billAddress, margin + 4, y); y += billAddress.length * 5.2 + 7;
-
-  const tableX = margin + 4;
-  const tableW = pageW - margin * 2 - 8;
-  const cols = [0, 93, 119, 140, tableW];
-  const rowH = 9;
-  doc.setFillColor(20,20,20);
-  doc.setTextColor(255,255,255);
-  doc.rect(tableX, y, tableW, rowH, 'F');
-  doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5);
-  doc.text('ITEM', tableX + 3, y + 6);
-  doc.text('SIZE', tableX + cols[1] + 3, y + 6);
-  doc.text('QTY', tableX + cols[2] + 3, y + 6);
-  doc.text('AMOUNT', tableX + cols[3] + 3, y + 6);
-  y += rowH;
-
-  doc.setTextColor(0,0,0);
-  const items = Array.isArray(ord.items) ? ord.items : [];
-  let subtotal = 0;
-  items.forEach(it => {
-    const title = pdfSafe(it.title || it.name || it.garment || 'Product');
-    const size = pdfSafe(it.size || '-');
-    const qty = Math.max(1, Number(it.qty ?? it.quantity ?? 1) || 1);
-    const unit = Number(it.discounted_unit_price ?? it.unit_price ?? it.price ?? 0) || 0;
-    const amount = Number(it.total_price ?? (unit * qty)) || 0;
-    subtotal += amount;
-    const titleLines = doc.splitTextToSize(title, 87);
-    const h = Math.max(rowH, titleLines.length * 4.5 + 5);
-    doc.rect(tableX, y, tableW, h);
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
-    doc.text(titleLines, tableX + 3, y + 5.5);
-    doc.text(size, tableX + cols[1] + 3, y + 5.5);
-    doc.text(String(qty), tableX + cols[2] + 3, y + 5.5);
-    doc.text(`₹ ${amount.toLocaleString('en-IN')}`, tableX + cols[3] + 3, y + 5.5);
-    [cols[1], cols[2], cols[3]].forEach(cx => doc.line(tableX + cx, y, tableX + cx, y + h));
-    y += h;
-  });
-
-  y += 8;
-  doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
-  doc.text(`TOTAL ITEMS: ${Number(ord.totalQty || 0)} pcs`, tableX, y);
-  doc.text(`TOTAL PAID: ₹ ${Number(ord.totalAmount || subtotal).toLocaleString('en-IN')}`, 195, y, null, null, 'right');
-  y += 12;
-  doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
-  doc.text('Payment verified by Rebel Store checkout.', tableX, y);
-  doc.text('This invoice is generated for order record / printing.', tableX, y + 5);
-
-  doc.save(`RebelStore_Invoice_${pdfSafe(ord.id).replace(/[^a-zA-Z0-9_-]/g, '_')}.pdf`);
-  showToast('Invoice PDF downloaded.');
 }
 
-// Kept for compatibility with older button references. This now downloads the
-// printable invoice PDF locally instead of exposing or calling Zoho credentials.
+async function downloadInvoicePDF(orderId) {
+  return downloadZohoInvoicePDF(orderId);
+}
+
+// Compatibility alias: invoice buttons always download the real Zoho Invoice PDF.
 function generateZohoInvoice(orderId) {
-  return downloadInvoicePDF(orderId);
+  return downloadZohoInvoicePDF(orderId);
 }
 
 function showPaymentProcessing(title, message) {
@@ -4935,7 +4905,6 @@ async function updateOrderStatusInSupabase(orderId, newStatus, options = {}) {
   document.querySelectorAll('#order-status-tabs button').forEach(b => {
     b.classList.toggle('active', String(b.dataset.status || '') === currentStatusFilter);
   });
-  showToast(newStatus === 'Delivered' ? `Order ${orderId} marked as Delivered ✓` : `Order ${orderId} moved to ${newStatus}.`);
   renderAdminPanels(currentSelectedDateFilter);
 }
 
@@ -4993,14 +4962,17 @@ async function updateItemStockMeta(orderId, itemIndex, field, val) {
       console.error("Item meta update error:", err);
     }
   }
-  showToast(`Order ${orderId} item updated!`);
 }
 
 function toggleOrderExpand(event, rowId) {
   if (['SELECT','INPUT','LABEL','OPTION','BUTTON','RADIO','TEXTAREA'].includes(event.target.tagName)) return;
   const details = [document.getElementById(`order-detail-${rowId}`), document.getElementById(`order-items-${rowId}`)].filter(Boolean);
+  const summary = document.getElementById(`order-items-summary-${rowId}`);
   const shouldOpen = details.some(el => el.style.display === 'none');
   details.forEach(el => el.style.display = shouldOpen ? 'block' : 'none');
+  // Keep the compact preview only in the collapsed row. When expanded, show the
+  // full item detail once — never duplicate the same T-shirt preview.
+  if (summary) summary.style.display = shouldOpen ? 'none' : 'block';
 }
 
 function filterOrdersByStatus(status, btnElement) {
@@ -5097,7 +5069,7 @@ function renderAdminPanels(filterDate = '') {
               <span>Size: <b style="color:var(--spray-yellow);">${escapeHtml(firstSize)}</b> · Qty: <b>${firstQty}</b>${moreItems ? ` · +${moreItems} more item${moreItems > 1 ? 's' : ''}` : ''}</span>
             </div>
           </div>
-          <span class="admin-order-expand-hint">Click to view full items + notes</span>`;
+          <span class="admin-order-expand-hint">Click for full details</span>`;
 
         let itemsDetailedHtml = '';
         items.forEach((it, itIdx) => {
@@ -5145,9 +5117,9 @@ function renderAdminPanels(filterDate = '') {
           <div class="admin-order-action-box" onclick="event.stopPropagation()">
             <div class="admin-order-action-buttons">
               <button class="btn btn--solid admin-next-btn ${nextDisabled ? 'admin-order-next-disabled' : ''}" type="button" ${nextDisabled ? 'disabled' : ''} onclick="event.stopPropagation();${nextAction}">${nextLabel}</button>
-              <button class="btn btn--ghost" type="button" onclick="event.stopPropagation();downloadCourierLabelPDF('${escapeHtml(ord.id)}')">📄 Label</button>
-              <button class="btn btn--ghost" type="button" onclick="event.stopPropagation();downloadInvoicePDF('${escapeHtml(ord.id)}')">🧾 Invoice</button>
-              <button class="btn btn--ghost" style="color:var(--rebel-red);border-color:var(--rebel-red);" type="button" onclick="event.stopPropagation();confirmDeleteOrderToTrash('${escapeHtml(ord.id)}')">🗑️ Trash</button>
+              <button class="btn btn--ghost admin-icon-action" type="button" title="Download shipping label PDF" aria-label="Download shipping label PDF" onclick="event.stopPropagation();downloadCourierLabelPDF('${escapeHtml(ord.id)}')">🏷️</button>
+              <button class="btn btn--ghost admin-icon-action" type="button" title="Download Zoho invoice PDF" aria-label="Download Zoho invoice PDF" onclick="event.stopPropagation();downloadZohoInvoicePDF('${escapeHtml(ord.id)}')">🧾</button>
+              <button class="btn btn--ghost admin-icon-action admin-trash-action" title="Move order to Trash" aria-label="Move order to Trash" style="color:var(--rebel-red);border-color:var(--rebel-red);" type="button" onclick="event.stopPropagation();confirmDeleteOrderToTrash('${escapeHtml(ord.id)}')">🗑️</button>
             </div>
           </div>`;
 
