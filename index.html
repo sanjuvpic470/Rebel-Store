@@ -6243,7 +6243,7 @@ async function openProfileModal(initialTab = 'profile', syncHash = true) {
 
   // If the account page is already open, do NOT rebuild the whole page.
   // Rebuilding here was making the sidebar navigation feel like dead/dummy buttons.
-  if (modal.style.display === 'flex' && area.innerHTML.trim()) {
+  if (modal.style.display === 'flex' && area.innerHTML.trim() && !document.getElementById('order-details-view')) {
     openAccountTab(initialTab);
     if (syncHash) {
       const routeHash = initialTab === 'orders' ? '#orders' : (initialTab === 'addresses' ? '#saved-address' : '#profile');
@@ -6627,17 +6627,17 @@ function openCustomerOrderDetails(orderId) {
           <div class="profile-account-member">Member Account</div>
         </div>
         <nav class="profile-account-nav">
-          <button type="button" onclick="openAccountTab('profile')">👤 Profile</button>
-          <button type="button" class="active" onclick="openAccountTab('orders')">📦 Orders</button>
-          <button type="button" onclick="openAccountTab('addresses')">📍 Saved Address</button>
+          <button type="button" onclick="openProfileModal('profile')">👤 Profile</button>
+          <button type="button" class="active" onclick="openProfileModal('orders')">📦 Orders</button>
+          <button type="button" onclick="openProfileModal('addresses')">📍 Saved Address</button>
         </nav>
         <div class="profile-account-sidebar-actions"><button type="button" onclick="logoutUser()">Logout</button></div>
       </aside>
       <main class="profile-account-main">
-        <div class="order-details-page">
+        <div class="order-details-page" id="order-details-view">
           <div class="order-details-top">
             <div>
-              <button class="order-details-back" type="button" onclick="openAccountTab('orders')">← MY ORDERS</button>
+              <button class="order-details-back" type="button" onclick="openProfileModal('orders')">← MY ORDERS</button>
               <div class="order-details-title">Order Details</div>
             </div>
             <div style="font-family:'Space Mono';font-size:.68rem;color:var(--grey);text-align:right;">Order ID: <strong style="color:var(--paper)">${escapeHtml(order.id || order.orderId || '')}</strong><br>${escapeHtml(formatCustomerOrderDate(order.date || ''))}</div>
