@@ -1961,6 +1961,8 @@ try {
 } catch (e) {}
 
 let cart = JSON.parse(localStorage.getItem('rebel_cart')) || [];
+let cartCloudLoadPromise = null;
+let cartCloudSyncPromise = Promise.resolve();
 let wishlist = JSON.parse(localStorage.getItem('rebel_wishlist')) || [];
 
 let currentRole = 'customer';
@@ -2952,79 +2954,106 @@ function mergeCartItems(items) {
 }
 
 async function syncCartToSupabase() {
-  if (!supabaseClient) return;
-  const { data: { user } } = await supabaseClient.auth.getUser();
-  if (!user) return;
+  // Serialize cloud cart writes. Multiple auth events or rapid cart changes
+  // must never run delete+insert at the same time, otherwise duplicate rows
+  // can be created and then merged into 2x, 4x, 8x quantities on reload.
+  const runSync = async () => {
+    if (!supabaseClient) return;
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) return;
 
-  const cleanCart = mergeCartItems(cart);
-  cart = cleanCart;
-  localStorage.setItem('rebel_cart', JSON.stringify(cart));
+    const cleanCart = mergeCartItems(cart);
+    cart = cleanCart;
+    localStorage.setItem('rebel_cart', JSON.stringify(cart));
 
-  const { error: deleteError } = await supabaseClient
-    .from('cart_items')
-    .delete()
-    .eq('user_id', String(user.id));
-  if (deleteError) throw deleteError;
+    const { error: deleteError } = await supabaseClient
+      .from('cart_items')
+      .delete()
+      .eq('user_id', String(user.id));
+    if (deleteError) throw deleteError;
 
-  const rows = cart.map(item => ({
-    user_id: String(user.id),
-    product_name: getCartCloudProductName(item),
-    product_price: Number(item.price || 0),
-    product_image: String(item.image || ''),
-    quantity: Math.max(1, Number(item.qty || 1))
-  }));
+    const rows = cart.map(item => ({
+      user_id: String(user.id),
+      product_name: getCartCloudProductName(item),
+      product_price: Number(item.price || 0),
+      product_image: String(item.image || ''),
+      quantity: Math.max(1, Number(item.qty || 1))
+    }));
 
-  if (!rows.length) return;
-  const { error: insertError } = await supabaseClient.from('cart_items').insert(rows);
-  if (insertError) throw insertError;
+    if (!rows.length) return;
+    const { error: insertError } = await supabaseClient.from('cart_items').insert(rows);
+    if (insertError) throw insertError;
+  };
+
+  // Always queue behind the previous sync, while allowing a failed previous
+  // sync to recover on the next operation.
+  const nextSync = cartCloudSyncPromise.catch(() => {}).then(runSync);
+  cartCloudSyncPromise = nextSync;
+  return nextSync;
 }
 
 async function loadCartFromSupabase(userId) {
   if (!supabaseClient || !userId) return;
 
-  try {
-    const { data, error } = await supabaseClient
-      .from('cart_items')
-      .select('id, user_id, product_name, product_price, product_image, quantity, created_at')
-      .eq('user_id', String(userId))
-      .order('created_at', { ascending: true });
+  // Supabase can emit INITIAL_SESSION, SIGNED_IN and TOKEN_REFRESHED close
+  // together. Reusing the same in-flight load prevents two requests from both
+  // seeing an empty cloud cart and inserting the same local cart twice.
+  if (cartCloudLoadPromise) return cartCloudLoadPromise;
 
-    if (error) throw error;
+  cartCloudLoadPromise = (async () => {
+    try {
+      const { data, error } = await supabaseClient
+        .from('cart_items')
+        .select('id, user_id, product_name, product_price, product_image, quantity, created_at')
+        .eq('user_id', String(userId))
+        .order('created_at', { ascending: true });
 
-    const cloudRows = Array.isArray(data) ? data : [];
-    if (!cloudRows.length) {
-      // If a customer had a local guest cart before login, upload it once.
-      if (Array.isArray(cart) && cart.length) await syncCartToSupabase();
-      return;
+      if (error) throw error;
+
+      const cloudRows = Array.isArray(data) ? data : [];
+      if (!cloudRows.length) {
+        // If a customer had a local cart before login, upload it once.
+        if (Array.isArray(cart) && cart.length) await syncCartToSupabase();
+        return;
+      }
+
+      const cloudCart = cloudRows.map(item => {
+        const parsed = parseCartCloudProductName(item.product_name);
+        const baseTitle = parsed.title;
+        const catalogProduct = resolveRegularProductFromCatalogByTitle(
+          baseTitle.replace(/\s*\([^)]*\)\s*$/, '').trim()
+        );
+        return {
+          isCustom: false,
+          id: catalogProduct?.id || baseTitle,
+          product_code: catalogProduct?.code || '',
+          title: baseTitle,
+          size: parsed.size || catalogProduct?.sizes?.[0] || '',
+          price: Number(item.product_price || catalogProduct?.price || 0),
+          qty: Math.max(1, Number(item.quantity || 1)),
+          image: String(item.product_image || catalogProduct?.images?.[0] || ''),
+          stockStatus: { available: true, notes: '' }
+        };
+      });
+
+      cart = mergeCartItems(cloudCart);
+      localStorage.setItem('rebel_cart', JSON.stringify(cart));
+
+      // Normalize legacy duplicate cloud rows into one row per cart item.
+      // This runs through the serialized sync queue, so it cannot race with
+      // another auth/cart sync.
+      await syncCartToSupabase();
+      updateCartBadge();
+    } catch (error) {
+      console.error('Cloud cart load error:', error);
+      // Keep local cart visible if cloud loading fails.
     }
+  })();
 
-    const cloudCart = cloudRows.map(item => {
-      const parsed = parseCartCloudProductName(item.product_name);
-      const baseTitle = parsed.title;
-      const catalogProduct = resolveRegularProductFromCatalogByTitle(
-        baseTitle.replace(/\s*\([^)]*\)\s*$/, '').trim()
-      );
-      return {
-        isCustom: false,
-        id: catalogProduct?.id || baseTitle,
-        product_code: catalogProduct?.code || '',
-        title: baseTitle,
-        size: parsed.size || catalogProduct?.sizes?.[0] || '',
-        price: Number(item.product_price || catalogProduct?.price || 0),
-        qty: Math.max(1, Number(item.quantity || 1)),
-        image: String(item.product_image || catalogProduct?.images?.[0] || ''),
-        stockStatus: { available: true, notes: '' }
-      };
-    });
-
-    cart = mergeCartItems(cloudCart);
-    localStorage.setItem('rebel_cart', JSON.stringify(cart));
-    // Normalize any legacy duplicate cloud rows into the current merged cart shape.
-    await syncCartToSupabase();
-    updateCartBadge();
-  } catch (error) {
-    console.error('Cloud cart load error:', error);
-    // Keep local cart visible if cloud loading fails.
+  try {
+    await cartCloudLoadPromise;
+  } finally {
+    cartCloudLoadPromise = null;
   }
 }
 
@@ -5462,6 +5491,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (event === 'SIGNED_IN') closeAuthModal();
       }
       if (event === 'SIGNED_OUT') {
+        cartCloudLoadPromise = null;
         loggedInUser = null;
         wishlist = [];
         cart = [];
