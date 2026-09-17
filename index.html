@@ -3974,21 +3974,28 @@ async function proceedToPayment() {
             razorpay_signature: paymentResponse.razorpay_signature
           });
         } finally {
+          window.rebelPaymentCheckoutActive = false;
           payBtn.disabled = false;
           payBtn.innerText = 'Proceed to Payment →';
         }
       },
       modal: {
         ondismiss: function () {
+          window.rebelPaymentCheckoutActive = false;
           payBtn.disabled = false;
           payBtn.innerText = 'Proceed to Payment →';
         }
       }
     };
 
+    // Explicit payment-flow guard. Admin navigation/status actions must never
+    // be treated as a Razorpay callback.
+    window.rebelPaymentCheckoutActive = true;
+
     const rzp1 = new Razorpay(options);
     rzp1.on('payment.failed', function (response) {
       console.error('Razorpay payment failed:', response?.error || response);
+      window.rebelPaymentCheckoutActive = false;
       payBtn.disabled = false;
       payBtn.innerText = 'Proceed to Payment →';
       alert('Payment failed. Please try again.');
@@ -4208,6 +4215,14 @@ function hidePaymentProcessing() {
 }
 
 async function handleOrderSuccessDirect(paymentData) {
+  // This function is exclusively for an active customer checkout. Do not allow
+  // admin navigation, status changes, or stale SPA state to enter the payment
+  // verification flow.
+  if (window.rebelPaymentCheckoutActive !== true) {
+    console.warn('Ignored Razorpay callback outside active customer checkout.');
+    return false;
+  }
+
   const savedOrderRaw = localStorage.getItem('rebel_pending_order');
 
   if (!savedOrderRaw) {
@@ -4448,7 +4463,17 @@ function closeSuccessModalAndGoHome() {
   showHomeView();
 }
 
+function hideToast() {
+  const toast = document.getElementById('toast');
+  if (toast) {
+    toast.classList.remove('show');
+    toast.classList.remove('side-panel');
+  }
+}
+
 function openAdminSubPage(subPageId) {
+  // Never carry a customer checkout/payment toast into the admin portal.
+  hideToast();
   document.querySelectorAll('.admin-sub-page').forEach(p => p.classList.remove('active'));
   document.getElementById('admin-nav-grid').style.display = 'none';
   const target = document.getElementById(subPageId);
@@ -4478,6 +4503,7 @@ function openAdminSubPage(subPageId) {
 }
 
 function closeAdminSubPages() {
+  hideToast();
   document.querySelectorAll('.admin-sub-page').forEach(p => p.classList.remove('active'));
   document.getElementById('admin-nav-grid').style.display = 'grid';
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -7042,9 +7068,20 @@ function closeOrdersModal() {
 }
 
 function showToast(msg) {
+  const text = String(msg ?? '');
+  if (/razorpay.*verification.*incomplete/i.test(text) && window.rebelPaymentCheckoutActive !== true) {
+    console.warn('Suppressed stale Razorpay verification toast outside checkout.');
+    return;
+  }
+
   const toast = document.getElementById('toast');
-  toast.innerText = msg; toast.classList.add('show');
-  setTimeout(() => { toast.classList.remove('side-panel'); toast.classList.remove('show'); }, 3500);
+  if (!toast) return;
+  toast.innerText = text;
+  toast.classList.add('show');
+  setTimeout(() => {
+    toast.classList.remove('side-panel');
+    toast.classList.remove('show');
+  }, 3500);
 }
 </script>
 <div class="pdp-zoom-modal" id="pdp-zoom-modal" onclick="if(event.target===this) closeProductImageZoom()">
