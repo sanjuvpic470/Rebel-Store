@@ -2911,41 +2911,102 @@ function addToCart() {
   }
 }
 
+async function loadWishlistFromSupabase(userId) {
+  if (!supabaseClient || !userId) return;
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('wishlist_items')
+      .select('id, user_id, product_name, product_price, product_image, created_at')
+      .eq('user_id', String(userId))
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    const cloudItems = Array.isArray(data) ? data : [];
+    wishlist = cloudItems.map((item) => {
+      const productName = String(item.product_name || '');
+      const baseTitle = productName.replace(/\s*\([^)]*\)\s*$/, '').trim();
+      const catalogProduct = resolveRegularProductFromCatalogByTitle(baseTitle);
+      const colorMatch = productName.match(/\(([^()]*)\)\s*$/);
+      return {
+        id: catalogProduct?.id || baseTitle || String(item.id || ''),
+        title: productName || baseTitle || 'Wishlist Item',
+        price: Number(item.product_price || catalogProduct?.price || 0),
+        image: String(item.product_image || catalogProduct?.images?.[0] || ''),
+        date: item.created_at || new Date().toISOString(),
+        cloudId: item.id ? String(item.id) : '',
+        color: colorMatch ? colorMatch[1] : ''
+      };
+    });
+
+    localStorage.setItem('rebel_wishlist', JSON.stringify(wishlist));
+  } catch (error) {
+    console.error('Cloud wishlist load error:', error);
+    // Keep the existing local wishlist visible if cloud loading fails.
+  }
+}
+
+function resolveRegularProductFromCatalogByTitle(title) {
+  const target = String(title || '').trim().toLowerCase();
+  if (!target) return null;
+  for (const category of CATEGORIES || []) {
+    for (const product of (category.products || [])) {
+      if (String(product.title || '').trim().toLowerCase() === target) return product;
+    }
+  }
+  return null;
+}
+
 async function addToWishlist() {
   if (!currentProduct) return;
-  
+
   let productImg = '';
   if (currentProduct.images && currentProduct.images[0] && currentProduct.images[0].trim() !== '') {
     productImg = currentProduct.images[0].trim();
   }
 
+  const productName = `${currentProduct.title} (${selectedColor || 'Default'})`;
   const wishItem = {
     id: currentProduct.id,
-    title: `${currentProduct.title} (${selectedColor})`,
+    title: productName,
     price: currentProduct.price,
     image: productImg,
     date: new Date().toISOString()
   };
 
-  if (!wishlist.some(w => w.id === currentProduct.id)) {
-    wishlist.push(wishItem);
-    localStorage.setItem('rebel_wishlist', JSON.stringify(wishlist));
+  const alreadySaved = wishlist.some(w =>
+    String(w.id) === String(currentProduct.id) &&
+    String(w.title || '') === productName
+  );
+
+  if (alreadySaved) {
+    showToast('Already in Wishlist ❤️');
+    return;
   }
 
-  if (loggedInUser && supabaseClient) {
+  if (loggedInUser && supabaseClient && loggedInUser.id) {
     try {
-      await supabaseClient.from('wishlist_items').insert([{
-        user_id: loggedInUser.email || loggedInUser.username,
-        customer_name: loggedInUser.name || loggedInUser.username,
-        product_name: `${currentProduct.title} (${selectedColor})`,
-        product_price: currentProduct.price,
+      const { error } = await supabaseClient.from('wishlist_items').insert([{
+        user_id: String(loggedInUser.id),
+        product_name: productName,
+        product_price: Number(currentProduct.price || 0),
         product_image: productImg
       }]);
+
+      if (error) throw error;
     } catch (e) {
-      console.warn("Cloud wishlist sync note:", e);
+      console.error('Cloud wishlist save failed:', e);
+      showToast(`Wishlist could not be saved: ${e.message || 'Supabase error'}`);
+      return;
     }
+  } else if (loggedInUser && !loggedInUser.id) {
+    showToast('Please wait a moment and try again. Account ID is not ready.');
+    return;
   }
 
+  wishlist.push(wishItem);
+  localStorage.setItem('rebel_wishlist', JSON.stringify(wishlist));
   showToast(`Added to Wishlist! ❤️`);
 }
 
@@ -2993,16 +3054,45 @@ function closeWishlistModal() {
   document.getElementById('wishlist-modal').style.display = 'none';
 }
 
-function removeFromWishlist(e, idx) {
+async function removeFromWishlist(e, idx) {
   e.stopPropagation();
+  const item = wishlist[idx];
+  if (!item) return;
+
+  if (loggedInUser?.id && supabaseClient) {
+    const { error } = await supabaseClient
+      .from('wishlist_items')
+      .delete()
+      .eq('user_id', String(loggedInUser.id))
+      .eq('product_name', String(item.title || ''));
+    if (error) {
+      console.error('Cloud wishlist delete failed:', error);
+      showToast(`Wishlist could not be updated: ${error.message || 'Supabase error'}`);
+      return;
+    }
+  }
+
   wishlist.splice(idx, 1);
   localStorage.setItem('rebel_wishlist', JSON.stringify(wishlist));
   openWishlistModal();
   showToast('Removed from wishlist');
 }
 
-function clearWishlist() {
+async function clearWishlist() {
   if (!wishlist.length) { showToast('Wishlist is already empty'); return; }
+
+  if (loggedInUser?.id && supabaseClient) {
+    const { error } = await supabaseClient
+      .from('wishlist_items')
+      .delete()
+      .eq('user_id', String(loggedInUser.id));
+    if (error) {
+      console.error('Cloud wishlist clear failed:', error);
+      showToast(`Wishlist could not be cleared: ${error.message || 'Supabase error'}`);
+      return;
+    }
+  }
+
   wishlist = [];
   localStorage.setItem('rebel_wishlist', JSON.stringify(wishlist));
   openWishlistModal();
@@ -5242,6 +5332,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       if (event === 'SIGNED_OUT') {
         loggedInUser = null;
+        wishlist = [];
+        localStorage.removeItem('rebel_wishlist');
         sessionStorage.removeItem('rebel_user_session');
         updateUserBadgeDisplay();
       }
@@ -5287,6 +5379,7 @@ async function hydrateLoggedInUserFromSupabase(authUser, closeModal = false) {
 
   const merged = {
     ...loggedInUser,
+    id: authUser.id,
     name: dbProf?.name || googleName,
     username: dbProf?.username || googleUsername,
     email: authUser.email || dbProf?.email || '',
@@ -5317,6 +5410,7 @@ async function hydrateLoggedInUserFromSupabase(authUser, closeModal = false) {
   currentRole = dbProf?.role === 'owner' ? 'owner' : 'customer';
   sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
   updateUserBadgeDisplay();
+  await loadWishlistFromSupabase(authUser.id);
   loadCustomerOrdersFromSupabase();
 
   if (closeModal) {
@@ -5684,6 +5778,7 @@ async function registerNewAccount() {
   }
 
   try {
+    let newAuthUserId = '';
     if (supabaseClient) {
       const { data: authData, error: authError } = await supabaseClient.auth.signUp({
         email: email,
@@ -5702,6 +5797,7 @@ async function registerNewAccount() {
       if (authError) throw authError;
 
       if (authData && authData.user) {
+        newAuthUserId = authData.user.id;
         await supabaseClient.from('profiles').upsert({
           id: authData.user.id,
           name: name,
@@ -5712,7 +5808,7 @@ async function registerNewAccount() {
       }
     }
 
-    loggedInUser = { name, phone, altPhone, email, username, avatarUrl: '' };
+    loggedInUser = { name, phone, altPhone, email, username, avatarUrl: '', id: newAuthUserId };
     sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
 
     updateUserBadgeDisplay();
