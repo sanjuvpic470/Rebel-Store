@@ -6240,6 +6240,14 @@ function openAccountTab(tab) {
   tabs.forEach(el => { if (el.dataset.tab === tab) el.classList.add('active'); });
   if (tab === 'orders') renderOrdersInsideProfile();
   if (tab === 'addresses') renderAddressesInsideProfile();
+
+  // Keep the entire account sidebar anchored at the same viewport position.
+  // Switching between tabs changes the main content height; without resetting
+  // the account page scroll position, the sidebar appears to jump up/down.
+  requestAnimationFrame(() => {
+    const accountPage = document.querySelector('.profile-account-page');
+    if (accountPage) accountPage.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  });
 }
 
 async function openProfileModal(initialTab = 'profile', syncHash = true) {
