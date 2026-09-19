@@ -1875,6 +1875,9 @@ const SUPABASE_PROJECT_URL = 'https://rdqzslvgqtajhiwxwauo.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkcXpzbHZncXRhamhpd3h3YXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyMjYyMTYsImV4cCI6MjEwMjgwMjIxNn0.lSrbO0h57wBBqgu_z4D9fhffN8VawX-HcaDANOUOKok';
 const RAZORPAY_TEST_KEY_ID = 'rzp_test_TZPUNAP5rWwiSt';
 const EDGE_FUNCTION_VERIFY_PAYMENT_URL = SUPABASE_PROJECT_URL + '/functions/v1/verify-razorpay-payment';
+// Standalone admin-only Zoho Invoice PDF function.
+// IMPORTANT: this is intentionally separate from the working Razorpay verification function.
+const EDGE_FUNCTION_ADMIN_INVOICE_URL = SUPABASE_PROJECT_URL + '/functions/v1/admin-download-invoice';
 
 let supabaseClient = null;
 
@@ -4167,7 +4170,7 @@ async function downloadZohoInvoicePDF(orderId) {
   showToast('Downloading Zoho invoice PDF…');
 
   try {
-    const response = await fetch(EDGE_FUNCTION_VERIFY_PAYMENT_URL, {
+    const response = await fetch(EDGE_FUNCTION_ADMIN_INVOICE_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -4175,7 +4178,6 @@ async function downloadZohoInvoicePDF(orderId) {
         apikey: SUPABASE_ANON_KEY
       },
       body: JSON.stringify({
-        action: 'download_zoho_invoice',
         order_id: safeOrderId
       })
     });
