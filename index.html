@@ -4553,6 +4553,40 @@ function closeAdminSubPages() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+async function openCustomPrintFile(orderId, printKey) {
+  const co = customOrdersHistory.find(item => String(item?.orderId || '') === String(orderId || ''));
+  const file = co?.prints?.[printKey];
+  if (!file?.path) {
+    showToast('This print file is not available.');
+    return;
+  }
+
+  // Generate a fresh signed URL only when the admin clicks the file.
+  // This prevents old/expired signed URLs from being stored or reused.
+  let href = /^https?:\/\//i.test(String(file.path)) ? String(file.path) : '';
+  try {
+    if (!href) {
+      if (!supabaseClient) throw new Error('Supabase storage is unavailable.');
+      const { data, error } = await supabaseClient.storage
+        .from(file.bucket || 'custom-prints')
+        .createSignedUrl(file.path, 3600);
+      if (error) throw error;
+      href = String(data?.signedUrl || '');
+    }
+
+    if (!href) throw new Error('Print file URL was not generated.');
+
+    const popup = window.open(href, '_blank', 'noopener,noreferrer');
+    if (!popup) {
+      // Popup blockers can block window.open; fall back to the current tab.
+      window.location.href = href;
+    }
+  } catch (err) {
+    console.error('Custom print file open failed:', err);
+    showToast('Print file is unavailable. It may have been deleted from Storage.');
+  }
+}
+
 async function renderAdminCustomOrdersTable() {
   const customTbody = document.getElementById('admin-custom-orders-tbody');
   if (!customTbody) return;
@@ -4561,21 +4595,21 @@ async function renderAdminCustomOrdersTable() {
     customTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--grey);">No custom orders received yet.</td></tr>`;
     return;
   }
+
   for (const co of customOrdersHistory) {
     let printLinks = '';
+
     for (const [key, label] of [['front','Front Print'],['back','Back Print']]) {
       const file = co.prints?.[key];
       if (!file?.path) continue;
-      let href = /^https?:\/\//i.test(String(file.path)) ? String(file.path) : '';
-      if (!href && supabaseClient) {
-        try {
-          const { data, error } = await supabaseClient.storage.from(file.bucket || 'custom-prints').createSignedUrl(file.path, 3600);
-          if (!error) href = data?.signedUrl || '';
-        } catch (err) { console.warn('Signed print URL failed:', err); }
-      }
-      if (href) printLinks += `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer" download="${escapeHtml(file.name || label)}" class="preview-link-btn" style="margin:2px; display:inline-block;">📥 ${escapeHtml(label)}</a>`;
+
+      // Do not create a signed URL while rendering the table.
+      // The URL is generated fresh when the admin clicks the button.
+      printLinks += `<button type="button" class="preview-link-btn" style="margin:2px; display:inline-block;" onclick="event.stopPropagation();openCustomPrintFile('${escapeHtml(co.orderId)}','${escapeHtml(key)}')">📥 ${escapeHtml(label)}</button>`;
     }
-    if (!printLinks) printLinks = 'Files unavailable';
+
+    if (!printLinks) printLinks = '<span style="color:var(--grey);">Files unavailable</span>';
+
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td><strong>${escapeHtml(co.orderId)}</strong><br><span style="font-size:0.7rem; color:var(--grey);">${escapeHtml(co.date)}</span></td>
