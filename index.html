@@ -2047,7 +2047,7 @@ let DEFAULT_CATEGORIES = [
       { id: 'o3', code: 'VOID', title: 'The Void Acid Tee', desc: 'Acid wash dark grey streetwear style.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['M', 'L', 'XL'] },
       { id: 'o4', code: 'REB1', title: 'Rebel Heavyweight Tee 01', desc: '240 GSM heavy combed cotton.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
       { id: 'o5', code: 'REB2', title: 'Rebel Heavyweight Tee 02', desc: '240 GSM heavy combed cotton.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
-      { id: 'o6', code: 'REB3', title: 'Rebel Heavyweight Tee 03', desc: '240 GSM heavy combed cotton.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] }
+      { id: 'o6', code: 'REB3', title: 'Rebel Heavyweight Tee 03', desc: '240 GSM heavy combed cotton.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'], disabledSizes: [] }
     ]
   },
   {
@@ -2691,9 +2691,11 @@ function openProductByDetails(catName, productId) {
 
   const prodColors = (foundProd.colors && foundProd.colors.length > 0) ? foundProd.colors : ['Yellow', 'White'];
   const prodSizes = (foundProd.sizes && foundProd.sizes.length > 0) ? foundProd.sizes : ['S', 'M', 'L', 'XL'];
+  const disabledSizeKeys = new Set((Array.isArray(foundProd.disabledSizes) ? foundProd.disabledSizes : []).map(s => String(s).trim().toLowerCase()));
 
   const availableColors = Array.isArray(foundProd.availableColors) ? foundProd.availableColors : prodColors;
-  const availableSizes = Array.isArray(foundProd.availableSizes) ? foundProd.availableSizes : prodSizes;
+  const availableSizes = (Array.isArray(foundProd.availableSizes) ? foundProd.availableSizes : prodSizes)
+    .filter(size => !disabledSizeKeys.has(String(size).trim().toLowerCase()));
   selectedColor = availableColors.includes(prodColors[0]) ? prodColors[0] : (availableColors[0] || prodColors[0]);
   selectedSize = availableSizes.includes(prodSizes[1]) ? prodSizes[1] : (availableSizes[0] || prodSizes[0]);
 
@@ -2854,6 +2856,7 @@ async function loadPdpStockForCurrentProduct(product) {
 
     const rows = Array.isArray(variants) ? variants : [];
     currentProduct.stockVariants = rows;
+    currentProduct.disabledSizes = Array.isArray(currentProduct.disabledSizes) ? currentProduct.disabledSizes : [];
     // Merge authoritative live variant sizes into the catalogue so newly added
     // sizes (for example XXL) appear on the PDP without requiring a hardcoded list.
     const liveSizes = rows.map(v => String(v.size || '').trim()).filter(Boolean);
@@ -2889,7 +2892,9 @@ async function loadPdpStockForCurrentProduct(product) {
     currentProduct.getAvailableSizesForColor = (color) => {
       const wantedColor = String(color || '').trim().toLowerCase();
       const realColorRows = rows.filter(v => String(v.color || '').trim() !== '');
+      const disabledSizeKeys = new Set((Array.isArray(currentProduct.disabledSizes) ? currentProduct.disabledSizes : []).map(s => String(s).trim().toLowerCase()));
       return (Array.isArray(currentProduct.sizes) ? currentProduct.sizes : ['S','M','L','XL','XXL'])
+        .filter(size => !disabledSizeKeys.has(String(size).trim().toLowerCase()))
         .filter(size => {
           const exact = realColorRows.find(v =>
             String(v.size || '').trim().toLowerCase() === String(size).trim().toLowerCase() &&
@@ -2913,8 +2918,12 @@ async function loadPdpStockForCurrentProduct(product) {
         if (!key || existing.has(key)) return;
         const sBtn = document.createElement('button');
         sBtn.type = 'button';
-        sBtn.className = 'size-btn';
+        const disabled = (Array.isArray(currentProduct.disabledSizes) ? currentProduct.disabledSizes : [])
+          .some(v => String(v).trim().toLowerCase() === key);
+        sBtn.className = `size-btn ${disabled ? 'is-unavailable' : ''}`;
         sBtn.innerText = sz;
+        sBtn.disabled = disabled;
+        sBtn.title = disabled ? `${sz} unavailable` : `${sz} available`;
         sBtn.onclick = () => { if (!sBtn.disabled) selectSize(sBtn, sz); };
         sizeContainer.appendChild(sBtn);
       });
@@ -2938,12 +2947,14 @@ function updatePdpSizeButtons() {
   // When Stock Management is OFF, catalogue sizes are always selectable.
   // Do not let missing/disabled inventory data block a customer from ordering.
   if (!STOCK_MANAGEMENT_ENABLED) {
+    const disabledSizeKeys = new Set((Array.isArray(currentProduct.disabledSizes) ? currentProduct.disabledSizes : []).map(s => String(s).trim().toLowerCase()));
     buttons.forEach(btn => {
       const size = String(btn.innerText || '').trim();
-      btn.disabled = false;
-      btn.classList.remove('is-unavailable');
-      btn.classList.toggle('selected', size.toLowerCase() === String(selectedSize || '').toLowerCase());
-      btn.title = `${size} available`;
+      const disabled = disabledSizeKeys.has(size.toLowerCase());
+      btn.disabled = disabled;
+      btn.classList.toggle('is-unavailable', disabled);
+      btn.classList.toggle('selected', !disabled && size.toLowerCase() === String(selectedSize || '').toLowerCase());
+      btn.title = disabled ? `${size} unavailable` : `${size} available`;
     });
     return;
   }
@@ -2984,13 +2995,19 @@ function updatePdpSelectionStatus() {
   const availableSizes = hasLiveStock && !currentProduct.stockLoadFailed && typeof currentProduct.getAvailableSizesForColor === 'function'
     ? currentProduct.getAvailableSizesForColor(selectedColor)
     : [];
-  const available = !STOCK_MANAGEMENT_ENABLED
-    ? true
-    : (hasLiveStock && !currentProduct.stockLoadFailed && selectedStock > 0);
+  const disabledSizeKeys = new Set((Array.isArray(currentProduct.disabledSizes) ? currentProduct.disabledSizes : []).map(s => String(s).trim().toLowerCase()));
+  const selectedSizeDisabled = disabledSizeKeys.has(String(selectedSize || '').trim().toLowerCase());
+  const available = selectedSizeDisabled
+    ? false
+    : (!STOCK_MANAGEMENT_ENABLED
+      ? true
+      : (hasLiveStock && !currentProduct.stockLoadFailed && selectedStock > 0));
 
   updatePdpSizeButtons();
 
-  if (!STOCK_MANAGEMENT_ENABLED) {
+  if (selectedSizeDisabled) {
+    stockText.innerText = 'Selected Size Unavailable';
+  } else if (!STOCK_MANAGEMENT_ENABLED) {
     stockText.innerText = 'Available · Ready to Order';
   } else if (!hasLiveStock) {
     stockText.innerText = 'Checking live stock…';
@@ -3013,11 +3030,13 @@ function updatePdpSelectionStatus() {
   const countBadge = document.getElementById('pdp-stock-count');
 
   if (countBadge) {
-    countBadge.innerText = !STOCK_MANAGEMENT_ENABLED
-      ? 'Available'
-      : (hasLiveStock && !currentProduct.stockLoadFailed
-        ? (selectedStock > 0 ? `${selectedStock} available` : 'Out of stock')
-        : 'Checking stock');
+    countBadge.innerText = selectedSizeDisabled
+      ? 'Unavailable'
+      : (!STOCK_MANAGEMENT_ENABLED
+        ? 'Available'
+        : (hasLiveStock && !currentProduct.stockLoadFailed
+          ? (selectedStock > 0 ? `${selectedStock} available` : 'Out of stock')
+          : 'Checking stock'));
   }
 
   const qtyAllowed = !STOCK_MANAGEMENT_ENABLED || (available && selectedQty <= selectedStock);
@@ -3059,6 +3078,13 @@ function changeQty(amount) {
 
 function addToCart() {
   if (!currentProduct) return;
+
+  const disabledSizeKeys = new Set((Array.isArray(currentProduct.disabledSizes) ? currentProduct.disabledSizes : []).map(s => String(s).trim().toLowerCase()));
+  if (disabledSizeKeys.has(String(selectedSize || '').trim().toLowerCase())) {
+    showToast('Selected size is unavailable. Please choose another size.');
+    updatePdpSelectionStatus();
+    return;
+  }
 
   // Inventory is optional. When Stock Management is OFF, ordering is not blocked
   // by missing variant rows, inactive inventory records, or stock counts.
@@ -6061,6 +6087,7 @@ function renderAdminProductFormsForCategory(catName) {
   catObj.products.forEach((prod, pIndex) => {
     if(!prod.colors) prod.colors = ['Yellow', 'White'];
     if(!prod.sizes) prod.sizes = ['S', 'M', 'L', 'XL'];
+    if(!Array.isArray(prod.disabledSizes)) prod.disabledSizes = [];
 
     let urlsHtml = '';
     if (!prod.images || prod.images.length === 0) prod.images = [''];
@@ -6091,6 +6118,21 @@ function renderAdminProductFormsForCategory(catName) {
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:.8rem; margin-bottom:.5rem;">
         <div><label class="admin-field-label">Colors (Comma separated)</label><input type="text" id="prod-colors-${cIndex}-${pIndex}" class="admin-input-small" value="${prod.colors.join(', ')}"></div>
         <div><label class="admin-field-label">Sizes (Comma separated)</label><input type="text" id="prod-sizes-${cIndex}-${pIndex}" class="admin-input-small" value="${prod.sizes.join(', ')}"></div>
+      </div>
+      <div style="margin-bottom:.5rem;">
+        <label class="admin-field-label">Available / Disabled Sizes</label>
+        <div id="prod-size-toggle-wrap-${cIndex}-${pIndex}" style="display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.35rem;">
+          ${prod.sizes.map((size, sizeIndex) => {
+            const sizeKey = String(size).trim().toLowerCase();
+            const isDisabled = prod.disabledSizes.some(d => String(d).trim().toLowerCase() === sizeKey);
+            return `<label style="display:inline-flex;align-items:center;gap:.3rem;padding:.35rem .55rem;border:1px solid ${isDisabled ? 'rgba(255,80,80,.5)' : 'rgba(255,255,255,.16)'};background:${isDisabled ? 'rgba(255,80,80,.08)' : 'rgba(255,255,255,.03)'};font-family:'Space Mono';font-size:.62rem;cursor:pointer;">
+              <input type="checkbox" class="prod-size-toggle-${cIndex}-${pIndex}" data-size-index="${sizeIndex}" data-size="${escapeHtml(String(size))}" ${isDisabled ? '' : 'checked'} onchange="toggleAdminProductSize(${cIndex}, ${pIndex}, ${sizeIndex}, this.checked)">
+              <span>${escapeHtml(String(size))}</span>
+            </label>`;
+          }).join('')}
+        </div>
+        <input type="hidden" id="prod-disabled-sizes-${cIndex}-${pIndex}" value="${prod.disabledSizes.join(', ')}">
+        <div style="font-family:'Space Mono'; font-size:.62rem; color:#888; margin-top:.3rem; line-height:1.45;">Checked = available. Uncheck a size when it is out of stock; it stays visible on the website but appears crossed out and cannot be selected or ordered.</div>
       </div>
       <label class="admin-field-label">Supabase Image URLs</label>
       <div id="prod-urls-wrap-${cIndex}-${pIndex}" style="margin-bottom:.4rem;">${urlsHtml}</div>
@@ -6134,7 +6176,7 @@ function addProdToCurrentAdminCategory() {
       price: 713,
       images: [''],
       colors: ['Yellow', 'White'],
-      sizes: ['S', 'M', 'L', 'XL']
+      sizes: ['S', 'M', 'L', 'XL'], disabledSizes: []
     });
     renderAdminProductFormsForCategory(activeAdminEditingCategoryName);
   }
@@ -6166,6 +6208,29 @@ function removeProdImageUrl(cIndex, pIndex, imgIndex) {
   }
 }
 
+function toggleAdminProductSize(cIndex, pIndex, sizeIndex, isAvailable) {
+  const cat = CATEGORIES[cIndex];
+  const prod = cat?.products?.[pIndex];
+  if (!prod) return;
+  if (!Array.isArray(prod.sizes)) prod.sizes = [];
+  if (!Array.isArray(prod.disabledSizes)) prod.disabledSizes = [];
+  const size = String(prod.sizes[sizeIndex] ?? '').trim();
+  if (!size) return;
+  const key = size.toLowerCase();
+  if (isAvailable) {
+    prod.disabledSizes = prod.disabledSizes.filter(s => String(s).trim().toLowerCase() !== key);
+  } else if (!prod.disabledSizes.some(s => String(s).trim().toLowerCase() === key)) {
+    prod.disabledSizes.push(size);
+  }
+  const hidden = document.getElementById(`prod-disabled-sizes-${cIndex}-${pIndex}`);
+  if (hidden) hidden.value = prod.disabledSizes.join(', ');
+  const label = document.querySelector(`.prod-size-toggle-${cIndex}-${pIndex}[data-size-index="${sizeIndex}"]`)?.closest('label');
+  if (label) {
+    label.style.borderColor = isAvailable ? 'rgba(255,255,255,.16)' : 'rgba(255,80,80,.5)';
+    label.style.background = isAvailable ? 'rgba(255,255,255,.03)' : 'rgba(255,80,80,.08)';
+  }
+}
+
 function collectCategoryFormValues() {
   const catObj = CATEGORIES.find(c => c.name === activeAdminEditingCategoryName);
   if (!catObj) return;
@@ -6177,6 +6242,7 @@ function collectCategoryFormValues() {
     const priceInput = document.getElementById(`prod-price-${cIndex}-${pIndex}`);
     const colorsInput = document.getElementById(`prod-colors-${cIndex}-${pIndex}`);
     const sizesInput = document.getElementById(`prod-sizes-${cIndex}-${pIndex}`);
+    const disabledSizesInput = document.getElementById(`prod-disabled-sizes-${cIndex}-${pIndex}`);
 
     if (codeInput) prod.code = codeInput.value.trim().toUpperCase();
     if (titleInput) prod.title = titleInput.value.trim();
@@ -6184,6 +6250,19 @@ function collectCategoryFormValues() {
     if (priceInput) prod.price = parseInt(priceInput.value) || 713;
     if (colorsInput) prod.colors = colorsInput.value.split(',').map(s => s.trim()).filter(Boolean);
     if (sizesInput) prod.sizes = sizesInput.value.split(',').map(s => s.trim()).filter(Boolean);
+    const sizeToggleInputs = document.querySelectorAll(`.prod-size-toggle-${cIndex}-${pIndex}`);
+    if (sizeToggleInputs.length > 0) {
+      const disabledFromToggles = [];
+      sizeToggleInputs.forEach(input => {
+        if (!input.checked) disabledFromToggles.push(String(input.dataset.size || '').trim());
+      });
+      const validSizeKeys = new Set((prod.sizes || []).map(s => String(s).trim().toLowerCase()));
+      prod.disabledSizes = [...new Set(disabledFromToggles.filter(s => s && validSizeKeys.has(s.toLowerCase())))];
+    } else if (disabledSizesInput) {
+      const disabled = disabledSizesInput.value.split(',').map(s => s.trim()).filter(Boolean);
+      const validSizeKeys = new Set((prod.sizes || []).map(s => String(s).trim().toLowerCase()));
+      prod.disabledSizes = [...new Set(disabled.filter(s => validSizeKeys.has(String(s).trim().toLowerCase())))];
+    }
 
     const urlInputs = document.querySelectorAll(`.prod-url-${cIndex}-${pIndex}`);
     if (urlInputs.length > 0) {
