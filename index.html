@@ -5190,10 +5190,18 @@ async function loadAdminDataFromSupabase() {
       .order('created_at', { ascending: false });
 
     if (!ordersError && Array.isArray(ordersData)) {
-      // Supabase is the source of truth. Always replace the local order list,
-      // including when the backend returns zero rows. This prevents deleted
-      // orders from reappearing from localStorage after reload.
-      ordersHistory = ordersData.map(o => ({
+      // Supabase is the source of truth, while the local Trash Bin is the
+      // admin's intentional hide/delete state for this browser session.
+      // Always replace the local order list, including when the backend
+      // returns zero rows, so stale local orders cannot reappear.
+      const trashedOrderIds = new Set(
+        (Array.isArray(trashOrdersHistory) ? trashOrdersHistory : [])
+          .map(o => String(o?.id || o?.orderId || '').trim())
+          .filter(Boolean)
+      );
+      ordersHistory = ordersData
+        .filter(o => !trashedOrderIds.has(String(o?.order_id || '').trim()))
+        .map(o => ({
         id: o.order_id,
         createdAt: o.created_at || '',
         date: getStoreDateKey(o.created_at || new Date()),
@@ -5794,6 +5802,11 @@ function renderGraphChart() {
   if (!containers.length) return;
   const todayKey = getStoreTodayDateKey();
   const baseDate = new Date(`${todayKey}T00:00:00+05:30`);
+  const trashedOrderIds = new Set(
+    (Array.isArray(trashOrdersHistory) ? trashOrdersHistory : [])
+      .map(o => String(o?.id || o?.orderId || '').trim())
+      .filter(Boolean)
+  );
   const last7Days = [];
   for (let i = 6; i >= 0; i--) {
     const d = new Date(baseDate);
@@ -5802,7 +5815,11 @@ function renderGraphChart() {
     const dayOrders = ordersHistory.filter(o => {
       const status = String(o.orderStatus || '');
       const payment = String(o.paymentStatus || 'paid').toLowerCase();
-      return getStoreDateKey(o.createdAt || o.date) === dStr && payment === 'paid' && !['Cancelled','Returned'].includes(status);
+      const orderId = String(o?.id || o?.orderId || '').trim();
+      return !trashedOrderIds.has(orderId) &&
+        getStoreDateKey(o.createdAt || o.date) === dStr &&
+        payment === 'paid' &&
+        !['Cancelled','Returned'].includes(status);
     });
     const dayRev = dayOrders.reduce((sum,o) => sum + Number(o.totalAmount || 0),0);
     last7Days.push({label:d.toLocaleDateString('en-IN',{weekday:'short',timeZone:'Asia/Kolkata'}),rev:dayRev,count:dayOrders.length,dateStr:dStr});
@@ -7331,7 +7348,15 @@ async function loadCustomerOrdersFromSupabase() {
       .filter(o => String(o.order_status || '').toLowerCase().includes('deliver'))
       .map(o => String(o.order_id));
 
-    const cloudOrders = data.map(o => ({
+    const trashedOrderIds = new Set(
+      (Array.isArray(trashOrdersHistory) ? trashOrdersHistory : [])
+        .map(o => String(o?.id || o?.orderId || '').trim())
+        .filter(Boolean)
+    );
+
+    const cloudOrders = data
+      .filter(o => !trashedOrderIds.has(String(o?.order_id || '').trim()))
+      .map(o => ({
       id: o.order_id,
       date: o.created_at ? o.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
       userEmail: o.customer_email,
@@ -7352,11 +7377,11 @@ async function loadCustomerOrdersFromSupabase() {
       trackingId: o.tracking_id || ''
     }));
 
-    const localOnly = ordersHistory.filter(local =>
-      !cloudOrders.some(cloud => String(cloud.id) === String(local.id || local.orderId))
-    );
-    ordersHistory = [...cloudOrders, ...localOnly];
+    // Supabase is authoritative for customer orders. Do not merge stale
+    // local-only records back into the list after an order was deleted.
+    ordersHistory = cloudOrders;
     localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
+    renderGraphChart();
 
     const newlyDelivered = deliveredOrderIds.find(id => {
       const previous = previousOrders.find(o => String(o.id || o.orderId) === id);
