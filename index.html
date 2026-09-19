@@ -5669,7 +5669,7 @@ function renderAdminPanels(filterDate = '') {
         tr.style.cursor = 'pointer';
         tr.onclick = (e) => toggleOrderExpand(e, ord.id);
         tr.innerHTML = `
-          <td><strong>${escapeHtml(ord.id)}</strong><br><span style="font-size:.6rem;color:var(--grey);">${escapeHtml(ord.date)}</span></td>
+          <td><strong>${escapeHtml(ord.id)}</strong><br><span style="font-size:.6rem;color:var(--grey);">${escapeHtml(formatStoreDateTimeIndia(ord.createdAt || ord.date))}</span></td>
           <td><strong>${escapeHtml(ord.billing?.name || 'Customer')}</strong><br><span style="font-size:.6rem;color:var(--grey);">${escapeHtml(ord.billing?.phone || '')}</span><div id="order-detail-${escapeHtml(ord.id)}" style="display:none;margin-top:8px;background:#18181b;padding:10px;border:1px solid rgba(242,240,234,.15);"><span style="font-size:.58rem;color:var(--spray-yellow);">ADDRESS</span><br>${escapeHtml(ord.billing?.address || '')}</div></td>
           <td><div id="order-items-summary-${escapeHtml(ord.id)}">${itemsSummaryHtml}</div><div id="order-items-${escapeHtml(ord.id)}" style="display:none;margin-top:10px;background:#18181b;padding:10px;border:1px solid rgba(242,240,234,.15);">${itemsDetailedHtml || '<span style="color:var(--grey)">No item details</span>'}</div></td>
           <td style="color:var(--spray-yellow);font-weight:bold;white-space:nowrap;">₹ ${Number(ord.totalAmount || 0).toLocaleString('en-IN')}<br><span style="background:rgba(34,197,94,.15);color:#22c55e;padding:1px 5px;font-size:.52rem;">${escapeHtml(ord.paymentStatus || 'paid')}</span></td>
@@ -7386,6 +7386,22 @@ function getOrderTrackingStage(status) {
   if (idx >= 0) return idx;
   if (label === 'Cancelled' || label === 'Returned') return 0;
   return 1;
+}
+
+function formatStoreDateTimeIndia(value) {
+  if (!value) return 'N/A';
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return 'N/A';
+  return d.toLocaleString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  });
 }
 
 function formatCustomerOrderDate(value) {
