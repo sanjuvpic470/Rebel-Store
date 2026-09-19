@@ -699,6 +699,23 @@ footer a:hover{color:var(--paper)}
 @media(max-width:600px){.admin-tracking-fields{grid-template-columns:1fr}}
 </style>
 
+<style id="rebel-custom-orders-admin-v3-css">
+.custom-order-admin-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.7rem;margin-bottom:1rem}
+.custom-order-admin-kpi{background:#18181b;border:1px solid rgba(242,240,234,.14);padding:.8rem 1rem}
+.custom-order-admin-kpi small{display:block;font:700 .55rem "Space Mono",monospace;color:var(--grey);text-transform:uppercase;margin-bottom:.25rem}
+.custom-order-admin-kpi strong{font:700 1rem "Space Mono",monospace;color:var(--spray-yellow)}
+.custom-order-admin-row{vertical-align:top}
+.custom-order-admin-actions{display:flex;gap:.35rem;flex-wrap:wrap;align-items:center}
+.custom-order-admin-actions .btn{min-height:34px}
+.custom-order-status-select{min-width:145px;background:#111;color:#fff;border:1px solid rgba(242,240,234,.22);padding:.5rem .55rem;font:700 .62rem "Space Mono",monospace}
+.custom-order-detail-box{display:none;background:#111214;border:1px solid rgba(242,240,234,.13);padding:1rem;margin-top:.55rem}
+.custom-order-detail-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:1rem}
+.custom-order-print-grid{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.55rem}
+.custom-order-print-btn{font:700 .6rem "Space Mono",monospace;border:1px solid var(--spray-yellow);background:transparent;color:var(--spray-yellow);padding:.45rem .65rem;cursor:pointer}
+.custom-order-print-btn:hover{background:var(--spray-yellow);color:#111}
+.custom-order-muted{font:600 .62rem "Space Mono",monospace;color:var(--grey)}
+@media(max-width:800px){.custom-order-admin-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.custom-order-detail-grid{grid-template-columns:1fr}.custom-order-admin-actions{flex-direction:column;align-items:stretch}.custom-order-status-select{width:100%}}
+</style>
 
 <style id="rebel-orderflow-v2-css">
 #new-address-checkout-page{display:none;max-width:800px;margin:0 auto;padding:2rem var(--gap) 4rem}
@@ -1602,21 +1619,30 @@ footer a:hover{color:var(--paper)}
     <!-- CUSTOM PRINT ORDERS SUBPAGE -->
     <div class="admin-sub-page" id="subpage-custom-orders">
       <div class="sub-page-header">
-        <h2>⚡ Custom Print Orders</h2>
+        <div><span class="admin-mini-label">CUSTOM FULFILMENT</span><h2>⚡ Custom Orders</h2><p style="margin:.25rem 0 0;color:var(--grey);font-family:'Space Mono';font-size:.65rem;">Custom orders are managed here. Regular Orders excludes orders containing custom print items.</p></div>
         <button class="btn btn--ghost" style="padding:0.4rem 1rem; font-size:0.8rem;" onclick="closeAdminSubPages()">← Back to Dashboard</button>
+      </div>
+      <div class="custom-order-admin-summary">
+        <div class="custom-order-admin-kpi"><small>Total Custom</small><strong id="custom-admin-count">0</strong></div>
+        <div class="custom-order-admin-kpi"><small>Processing</small><strong id="custom-admin-processing">0</strong></div>
+        <div class="custom-order-admin-kpi"><small>Shipping</small><strong id="custom-admin-shipping">0</strong></div>
+        <div class="custom-order-admin-kpi"><small>Delivered</small><strong id="custom-admin-delivered">0</strong></div>
       </div>
       <div class="admin-table-wrap">
         <table class="date-chart-table">
           <thead>
             <tr>
-              <th>Order Date & ID</th>
-              <th>Customer & Phone</th>
-              <th>Garment, Color & Size</th>
-              <th>Uploaded Print Files</th>
+              <th>Order</th>
+              <th>Customer & Address</th>
+              <th>Custom Item / Print</th>
+              <th>Status</th>
+              <th>Courier / Tracking</th>
+              <th>Total</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody id="admin-custom-orders-tbody">
-            <tr><td colspan="4" style="text-align:center; color:var(--grey);">No custom orders received yet.</td></tr>
+            <tr><td colspan="7" style="text-align:center; color:var(--grey);">No custom orders received yet.</td></tr>
           </tbody>
         </table>
       </div>
@@ -4582,71 +4608,250 @@ function closeAdminSubPages() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-async function openCustomPrintFile(orderId, printKey) {
+function isCustomOrderRecord(order) {
+  return !!(order && Array.isArray(order.items) && order.items.some(item => item && (item.isCustom === true || String(item.isCustom || '').toLowerCase() === 'true')));
+}
+
+function getCustomParentOrderId(customRecord) {
+  const raw = String(customRecord?.orderId || '').trim();
+  if (!raw) return '';
+  const exact = ordersHistory.find(o => String(o?.id || '') === raw);
+  if (exact) return exact.id;
+  const activeParent = ordersHistory.find(o => raw.startsWith(String(o?.id || '') + '-C'));
+  if (activeParent) return activeParent.id;
+  const trashedParent = trashOrdersHistory.find(o => raw.startsWith(String(o?.id || '') + '-C'));
+  return trashedParent?.id || '';
+}
+
+function getCustomOrderParent(customRecord) {
+  const parentId = getCustomParentOrderId(customRecord);
+  return parentId ? ordersHistory.find(o => String(o?.id || '') === String(parentId)) || null : null;
+}
+
+async function getFreshCustomPrintUrl(orderId, printKey) {
   const co = customOrdersHistory.find(item => String(item?.orderId || '') === String(orderId || ''));
   const file = co?.prints?.[printKey];
-  if (!file?.path) {
-    showToast('This print file is not available.');
-    return;
-  }
-
-  // Generate a fresh signed URL only when the admin clicks the file.
-  // This prevents old/expired signed URLs from being stored or reused.
+  if (!file?.path) throw new Error('This print file is not available.');
   let href = /^https?:\/\//i.test(String(file.path)) ? String(file.path) : '';
+  if (!href) {
+    if (!supabaseClient) throw new Error('Supabase storage is unavailable.');
+    const { data, error } = await supabaseClient.storage.from(file.bucket || 'custom-prints').createSignedUrl(file.path, 3600);
+    if (error) throw error;
+    href = String(data?.signedUrl || '');
+  }
+  if (!href) throw new Error('Print file URL was not generated.');
+  return { href, file };
+}
+
+async function openCustomPrintFile(orderId, printKey) {
   try {
-    if (!href) {
-      if (!supabaseClient) throw new Error('Supabase storage is unavailable.');
-      const { data, error } = await supabaseClient.storage
-        .from(file.bucket || 'custom-prints')
-        .createSignedUrl(file.path, 3600);
-      if (error) throw error;
-      href = String(data?.signedUrl || '');
-    }
-
-    if (!href) throw new Error('Print file URL was not generated.');
-
+    const { href } = await getFreshCustomPrintUrl(orderId, printKey);
     const popup = window.open(href, '_blank', 'noopener,noreferrer');
-    if (!popup) {
-      // Popup blockers can block window.open; fall back to the current tab.
-      window.location.href = href;
-    }
+    if (!popup) window.location.href = href;
   } catch (err) {
     console.error('Custom print file open failed:', err);
-    showToast('Print file is unavailable. It may have been deleted from Storage.');
+    showToast(err?.message || 'Print file is unavailable.');
   }
+}
+
+async function downloadCustomPrintFile(orderId, printKey) {
+  try {
+    const { href, file } = await getFreshCustomPrintUrl(orderId, printKey);
+    showToast('Preparing print file download...');
+    const response = await fetch(href);
+    if (!response.ok) throw new Error('Print file download failed.');
+    const blob = await response.blob();
+    const safeName = String(file.name || `${printKey}-print`).replace(/[^a-zA-Z0-9._-]/g, '_');
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = safeName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 1500);
+    showToast(`${printKey === 'front' ? 'Front' : 'Back'} print downloaded.`);
+  } catch (err) {
+    console.error('Custom print download failed:', err);
+    showToast(err?.message || 'Print file download failed.');
+  }
+}
+
+function confirmDeleteCustomOrder(customOrderId) {
+  const co = customOrdersHistory.find(item => String(item?.orderId || '') === String(customOrderId || ''));
+  if (!co) return;
+  const parent = getCustomOrderParent(co);
+  const displayOrderId = parent?.id || customOrderId;
+  const customer = String(parent?.billing?.name || co.customer?.name || 'Customer');
+  const ok = window.confirm(`Move this custom order to Trash?\n\nOrder: ${displayOrderId}\nCustomer: ${customer}\n\nThe order will be removed from Custom Orders and can be restored from Trash.`);
+  if (!ok) return;
+  if (parent) {
+    deleteOrderToTrash(parent.id);
+  } else {
+    // Legacy/orphan custom records have no parent paid order. Remove the
+    // dedicated custom record after explicit confirmation.
+    deleteLegacyCustomOrder(customOrderId);
+  }
+}
+
+async function deleteLegacyCustomOrder(customOrderId) {
+  const id = String(customOrderId || '').trim();
+  if (!id) return;
+  try {
+    if (supabaseClient) {
+      const { error } = await supabaseClient.from('custom_orders').delete().eq('order_id', id);
+      if (error) throw error;
+    }
+    customOrdersHistory = customOrdersHistory.filter(co => String(co?.orderId || '') !== id);
+    localStorage.setItem('rebel_custom_orders_history', JSON.stringify(customOrdersHistory));
+    showToast(`Custom order ${id} deleted.`);
+    renderAdminCustomOrdersTable();
+  } catch (err) {
+    console.error('Legacy custom order delete failed:', err);
+    showToast('Custom order could not be deleted: ' + (err?.message || 'Unknown error'));
+  }
+}
+
+async function updateCustomOrderStatusFromSelect(selectEl, parentOrderId) {
+  const newStatus = String(selectEl?.value || '').trim();
+  const id = String(parentOrderId || '').trim();
+  if (!newStatus || !id) return;
+  const ord = ordersHistory.find(o => String(o?.id || '') === id);
+  if (!ord) return;
+  const current = String(ord.orderStatus || 'New');
+  if (newStatus === current) return;
+  if (newStatus === 'Dispatched') {
+    await updateOrderStatusInSupabase(id, 'Dispatched');
+    return;
+  }
+  await updateOrderStatusInSupabase(id, newStatus);
 }
 
 async function renderAdminCustomOrdersTable() {
   const customTbody = document.getElementById('admin-custom-orders-tbody');
   if (!customTbody) return;
+
+  const visible = customOrdersHistory
+    .map(co => ({ co, parent: getCustomOrderParent(co), parentId: getCustomParentOrderId(co) }))
+    .filter(entry => entry.parent && isCustomOrderRecord(entry.parent));
+
+  const countEl = document.getElementById('custom-admin-count');
+  const processingEl = document.getElementById('custom-admin-processing');
+  const shippingEl = document.getElementById('custom-admin-shipping');
+  const deliveredEl = document.getElementById('custom-admin-delivered');
+  const statusOf = entry => String(entry.parent?.orderStatus || 'New');
+  if (countEl) countEl.innerText = visible.length;
+  if (processingEl) processingEl.innerText = visible.filter(e => ['Processing','Printing','Pending Print','Go For Print','Print Received','Ready','Product Ready','Packaged'].includes(statusOf(e))).length;
+  if (shippingEl) processingEl && (shippingEl.innerText = visible.filter(e => ['Dispatched','Shipped','Out for Delivery'].includes(statusOf(e))).length);
+  if (deliveredEl) deliveredEl.innerText = visible.filter(e => ['Delivered','Completed'].includes(statusOf(e))).length;
+
   customTbody.innerHTML = '';
-  if (customOrdersHistory.length === 0) {
-    customTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--grey);">No custom orders received yet.</td></tr>`;
+  if (!visible.length) {
+    customTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--grey);padding:2rem;">No active custom orders found.</td></tr>`;
     return;
   }
 
-  for (const co of customOrdersHistory) {
-    let printLinks = '';
+  const statusOptions = ['New','Processing','Printing','Ready','Dispatched','Out for Delivery','Delivered','Returned'];
 
-    for (const [key, label] of [['front','Front Print'],['back','Back Print']]) {
-      const file = co.prints?.[key];
+  for (const entry of visible) {
+    const co = entry.co;
+    const ord = entry.parent;
+    const parentId = ord?.id || '';
+    const displayId = parentId || co.orderId;
+    const indexedItems = Array.isArray(ord?.items)
+      ? ord.items.map((item, originalIndex) => ({ item, originalIndex })).filter(entry => isCustomOrderRecordItem(entry.item))
+      : [];
+    const customItems = indexedItems.length
+      ? indexedItems.map(entry => entry.item)
+      : [{
+          isCustom: true, garment: co.title?.replace(/^Custom\s+/i,'') || '', color: co.color || 'Black', size: co.size || '-', qty: co.qty || 0, price: co.totalAmount && co.qty ? Number(co.totalAmount)/Number(co.qty) : 0, prints: co.prints || null
+        }];
+    const rawStatus = String(ord?.orderStatus || 'New');
+    const next = ord ? getNextOrderStatus(rawStatus) : '';
+    const customerName = ord?.billing?.name || co.customer?.name || 'Customer';
+    const customerPhone = ord?.billing?.phone || co.customer?.phone || '';
+    const address = ord?.billing?.address || co.customer?.address || '—';
+    const total = Number(ord?.totalAmount ?? co.totalAmount ?? 0);
+    const courier = ord?.courierName || '';
+    const tracking = ord?.trackingId || '';
+    const firstItem = customItems[0] || {};
+
+    let printButtons = '';
+    for (const [key, label] of [['front','Front'],['back','Back']]) {
+      const file = customItems.map(it => it?.prints?.[key]).find(Boolean) || (key === 'front' ? co.prints?.front : co.prints?.back);
       if (!file?.path) continue;
-
-      // Do not create a signed URL while rendering the table.
-      // The URL is generated fresh when the admin clicks the button.
-      printLinks += `<button type="button" class="preview-link-btn" style="margin:2px; display:inline-block;" onclick="event.stopPropagation();openCustomPrintFile('${escapeHtml(co.orderId)}','${escapeHtml(key)}')">📥 ${escapeHtml(label)}</button>`;
+      printButtons += `<button type="button" class="custom-order-print-btn" onclick="event.stopPropagation();downloadCustomPrintFile('${escapeHtml(co.orderId)}','${key}')">⬇ ${label} Print</button>`;
     }
+    if (!printButtons) printButtons = '<span class="custom-order-muted">No print file</span>';
 
-    if (!printLinks) printLinks = '<span style="color:var(--grey);">Files unavailable</span>';
+    let itemDetailHtml = '';
+    customItems.forEach((it, idx) => {
+      const originalItemIndex = indexedItems[idx]?.originalIndex ?? idx;
+      const note = String(it.production_note || '').replace(/\n/g,' ');
+      const st = it.stockStatus || {available:true,notes:''};
+      const printLinks = [];
+      for (const [key,label] of [['front','Front'],['back','Back']]) {
+        if (it?.prints?.[key]?.path) printLinks.push(`<button type="button" class="custom-order-print-btn" onclick="event.stopPropagation();downloadCustomPrintFile('${escapeHtml(co.orderId)}','${key}')">⬇ ${label}</button>`);
+      }
+      itemDetailHtml += `<div style="padding:.65rem 0;border-bottom:1px dashed rgba(242,240,234,.14);">
+        <div><strong>${escapeHtml(it.title || `Custom ${it.garment || 'Print'}`)}</strong> <span style="color:var(--spray-yellow);font-size:.6rem;">CUSTOM</span></div>
+        <div class="custom-order-muted">Garment: ${escapeHtml(it.garment || '-')} · Color: ${escapeHtml(it.color || '-')} · Size: ${escapeHtml(it.size || '-')} · Qty: ${Number(it.qty ?? it.quantity ?? 0)} · ₹ ${Number(it.price ?? it.unit_price ?? 0)}</div>
+        <div class="custom-order-print-grid">${printLinks.join('') || '<span class="custom-order-muted">No print files</span>'}</div>
+        ${ord ? `<div style="margin-top:.55rem;display:grid;gap:.45rem;">
+          <label style="font-size:.6rem;color:var(--grey);">Stock</label>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+            <label style="font-size:.6rem;color:var(--success-green);"><input type="radio" name="custom-stock-${escapeHtml(ord.id)}-${idx}" ${st.available ? 'checked' : ''} onchange="updateItemStockMeta('${escapeHtml(ord.id)}',${originalItemIndex},'available',true);event.stopPropagation()"> Available</label>
+            <label style="font-size:.6rem;color:var(--rebel-red);"><input type="radio" name="custom-stock-${escapeHtml(ord.id)}-${idx}" ${!st.available ? 'checked' : ''} onchange="updateItemStockMeta('${escapeHtml(ord.id)}',${originalItemIndex},'available',false);event.stopPropagation()"> Unavailable</label>
+            <input class="admin-input-small" style="margin:0;width:190px;font-size:.6rem;" value="${escapeHtml(st.notes || '')}" placeholder="Stock note" onchange="updateItemStockMeta('${escapeHtml(ord.id)}',${originalItemIndex},'notes',this.value)" onclick="event.stopPropagation()">
+          </div>
+          <textarea class="admin-note-input" style="min-height:55px;" placeholder="Production note — print / packaging / customer note" onchange="updateItemStockMeta('${escapeHtml(ord.id)}',${originalItemIndex},'production_note',this.value)" onclick="event.stopPropagation()">${escapeHtml(note)}</textarea>
+        </div>` : ''}
+      </div>`;
+    });
 
+    const statusSelect = ord ? `<select class="custom-order-status-select" onchange="event.stopPropagation();updateCustomOrderStatusFromSelect(this,'${escapeHtml(parentId)}')">${statusOptions.map(st => `<option value="${escapeHtml(st)}" ${rawStatus === st ? 'selected' : ''}>${escapeHtml(st)}</option>`).join('')}</select>` : `<span class="custom-order-muted">${escapeHtml(rawStatus)}</span>`;
+    const nextButton = ord && next && next !== 'Dispatched' ? `<button class="btn btn--solid" type="button" onclick="event.stopPropagation();updateOrderStatusInSupabase('${escapeHtml(parentId)}','${escapeHtml(next)}')">→ ${escapeHtml(next)}</button>` : ord && next === 'Dispatched' ? `<button class="btn btn--solid" type="button" onclick="event.stopPropagation();openDispatchModal('${escapeHtml(parentId)}')">→ Dispatch</button>` : '';
+    const actionButtons = ord ? `<div class="custom-order-admin-actions" onclick="event.stopPropagation()">
+      ${nextButton}
+      <button class="btn btn--ghost" type="button" title="Save Courier + Tracking" onclick="event.stopPropagation();openDispatchModal('${escapeHtml(parentId)}')">🚚 Tracking</button>
+      <button class="btn btn--ghost" type="button" title="Download shipping label PDF" onclick="event.stopPropagation();downloadCourierLabelPDF('${escapeHtml(parentId)}')">🏷️ Label</button>
+      <button class="btn btn--ghost" type="button" title="Download Zoho invoice PDF" onclick="event.stopPropagation();downloadZohoInvoicePDF('${escapeHtml(parentId)}')">🧾 Invoice</button>
+      <button class="btn btn--ghost admin-trash-action" type="button" title="Move custom order to Trash" style="color:var(--rebel-red);border-color:var(--rebel-red);" onclick="event.stopPropagation();confirmDeleteCustomOrder('${escapeHtml(co.orderId)}')">🗑️ Delete</button>
+    </div>` : `<button class="btn btn--ghost admin-trash-action" type="button" style="color:var(--rebel-red);border-color:var(--rebel-red);" onclick="event.stopPropagation();confirmDeleteCustomOrder('${escapeHtml(co.orderId)}')">🗑️ Delete</button>`;
+
+    const detailId = `custom-detail-${String(co.orderId).replace(/[^a-zA-Z0-9_-]/g,'_')}`;
     const tr = document.createElement('tr');
+    tr.className = 'custom-order-admin-row';
+    tr.style.cursor = 'pointer';
+    tr.onclick = (e) => {
+      if (['BUTTON','INPUT','SELECT','OPTION','TEXTAREA','LABEL'].includes(e.target.tagName)) return;
+      const detail = document.getElementById(detailId);
+      if (detail) detail.style.display = detail.style.display === 'block' ? 'none' : 'block';
+    };
     tr.innerHTML = `
-      <td><strong>${escapeHtml(co.orderId)}</strong><br><span style="font-size:0.7rem; color:var(--grey);">${escapeHtml(co.date)}</span></td>
-      <td><strong>${escapeHtml(co.customer?.name || '')}</strong><br>${escapeHtml(co.customer?.phone || '')}<br><span style="font-size:0.7rem; color:var(--grey);">${escapeHtml(co.customer?.address || '')}</span></td>
-      <td>${escapeHtml(co.title)}<br>Color: <strong style="color:var(--spray-yellow);">${escapeHtml(co.color || 'Black')}</strong> | Size: <strong>${escapeHtml(co.size)}</strong> (Qty: ${escapeHtml(co.qty)})<br><span style="color:var(--spray-yellow);">Amt: ரூ ${Number(co.totalAmount || 0)}</span></td>
-      <td>${printLinks}</td>`;
+      <td><strong>${escapeHtml(displayId)}</strong><br><span class="custom-order-muted">${escapeHtml(co.date || ord?.date || '')}</span>${co.orderId !== displayId ? `<br><span class="custom-order-muted">Custom Ref: ${escapeHtml(co.orderId)}</span>` : ''}</td>
+      <td><strong>${escapeHtml(customerName)}</strong><br><span class="custom-order-muted">${escapeHtml(customerPhone)}</span><div class="custom-order-detail-box" id="${detailId}"><span style="font-size:.58rem;color:var(--spray-yellow);">DELIVERY ADDRESS</span><br>${escapeHtml(address)}</div></td>
+      <td><strong>${escapeHtml(firstItem.garment || co.title || 'Custom Print')}</strong><br><span class="custom-order-muted">Color: ${escapeHtml(firstItem.color || co.color || '-')} · Size: ${escapeHtml(firstItem.size || co.size || '-')} · Qty: ${Number(firstItem.qty ?? firstItem.quantity ?? co.qty ?? 0)}</span><div class="custom-order-print-grid">${printButtons}</div><div class="custom-order-detail-box" id="${detailId}-items"><span style="font-size:.58rem;color:var(--spray-yellow);">CUSTOM DETAILS</span>${itemDetailHtml}</div></td>
+      <td>${statusSelect}<br><span class="custom-order-muted" style="display:inline-block;margin-top:.35rem;">Payment: ${escapeHtml(ord?.paymentStatus || 'paid')}</span></td>
+      <td><strong>${escapeHtml(courier || 'Not set')}</strong><br><span class="custom-order-muted">${escapeHtml(tracking || 'Tracking not added')}</span></td>
+      <td style="color:var(--spray-yellow);font-weight:bold;white-space:nowrap;">₹ ${total.toLocaleString('en-IN')}</td>
+      <td>${actionButtons}</td>`;
+
+    // Expand both address and custom details together.
+    tr.onclick = (e) => {
+      if (['BUTTON','INPUT','SELECT','OPTION','TEXTAREA','LABEL'].includes(e.target.tagName)) return;
+      const addressBox = document.getElementById(detailId);
+      const itemBox = document.getElementById(`${detailId}-items`);
+      const open = addressBox?.style.display !== 'block';
+      if (addressBox) addressBox.style.display = open ? 'block' : 'none';
+      if (itemBox) itemBox.style.display = open ? 'block' : 'none';
+    };
     customTbody.appendChild(tr);
   }
+}
+
+function isCustomOrderRecordItem(item) {
+  return !!(item && (item.isCustom === true || String(item.isCustom || '').toLowerCase() === 'true'));
 }
 
 async function loadAdminWishlistFromSupabase() {
@@ -5122,13 +5327,14 @@ function handleOrderSearch(query) {
 
 function renderAdminPanels(filterDate = '') {
   const setText = (id, value) => { const el = document.getElementById(id); if (el) el.innerText = value; };
-  const paidOrders = ordersHistory.filter(o => String(o.paymentStatus || 'paid').toLowerCase() === 'paid');
+  const regularOrdersHistory = ordersHistory.filter(o => !isCustomOrderRecord(o));
+  const paidOrders = regularOrdersHistory.filter(o => String(o.paymentStatus || 'paid').toLowerCase() === 'paid');
   const totalRev = paidOrders
     .filter(o => !['Cancelled','Returned'].includes(String(o.orderStatus || '')))
     .reduce((sum, o) => sum + Number(o.totalAmount || 0), 0);
-  const deliveredCount = ordersHistory.filter(o => ['Delivered','Completed'].includes(String(o.orderStatus || ''))).length;
+  const deliveredCount = regularOrdersHistory.filter(o => ['Delivered','Completed'].includes(String(o.orderStatus || ''))).length;
   const actionStatuses = ['New','Processing','Printing','Pending Print','Go For Print','Print Received','Ready','Product Ready','Packaged','Dispatched','Shipped','Out for Delivery'];
-  const actionCount = ordersHistory.filter(o => actionStatuses.includes(String(o.orderStatus || ''))).length;
+  const actionCount = regularOrdersHistory.filter(o => actionStatuses.includes(String(o.orderStatus || ''))).length;
 
   setText('adm-revenue', '₹ ' + totalRev.toLocaleString('en-IN'));
   setText('adm-orders-count', paidOrders.length);
@@ -5136,16 +5342,16 @@ function renderAdminPanels(filterDate = '') {
   setText('adm-delivered-count', deliveredCount);
 
   const queue = {
-    new: ordersHistory.filter(o => getAdminOrderStage(o.orderStatus) === 'New').length,
-    processing: ordersHistory.filter(o => getAdminOrderStage(o.orderStatus) === 'Processing').length,
-    printing: ordersHistory.filter(o => getAdminOrderStage(o.orderStatus) === 'Printing').length,
-    ready: ordersHistory.filter(o => getAdminOrderStage(o.orderStatus) === 'Ready').length,
-    shipping: ordersHistory.filter(o => getAdminOrderStage(o.orderStatus) === 'Shipping').length,
+    new: regularOrdersHistory.filter(o => getAdminOrderStage(o.orderStatus) === 'New').length,
+    processing: regularOrdersHistory.filter(o => getAdminOrderStage(o.orderStatus) === 'Processing').length,
+    printing: regularOrdersHistory.filter(o => getAdminOrderStage(o.orderStatus) === 'Printing').length,
+    ready: regularOrdersHistory.filter(o => getAdminOrderStage(o.orderStatus) === 'Ready').length,
+    shipping: regularOrdersHistory.filter(o => getAdminOrderStage(o.orderStatus) === 'Shipping').length,
     delivered: deliveredCount
   };
   Object.entries(queue).forEach(([k,v]) => setText('dash-'+k, v));
 
-  const baseOrdersForCounts = filterDate ? ordersHistory.filter(o => getStoreDateKey(o.createdAt || o.date) === filterDate) : ordersHistory;
+  const baseOrdersForCounts = filterDate ? regularOrdersHistory.filter(o => getStoreDateKey(o.createdAt || o.date) === filterDate) : regularOrdersHistory;
   const statusAliases = {
     New: o => getAdminOrderStage(o.orderStatus) === 'New',
     Processing: o => getAdminOrderStage(o.orderStatus) === 'Processing',
