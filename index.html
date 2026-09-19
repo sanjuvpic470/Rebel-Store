@@ -4628,17 +4628,68 @@ function getCustomOrderParent(customRecord) {
   return parentId ? ordersHistory.find(o => String(o?.id || '') === String(parentId)) || null : null;
 }
 
+function normalizeStoredPrintFile(file) {
+  if (!file || typeof file !== 'object') return null;
+  const bucket = String(file.bucket || 'custom-prints').trim() || 'custom-prints';
+  let path = String(file.path || '').trim();
+
+  // Older orders may have stored a temporary Supabase signed URL instead of
+  // the permanent storage path. Never reuse that expired URL. Extract the
+  // object path and generate a fresh signed URL below.
+  if ((!path || /^https?:\/\//i.test(path)) && file.url) {
+    path = String(file.url).trim();
+  }
+  if (/^https?:\/\//i.test(path)) {
+    try {
+      const u = new URL(path);
+      const marker = `/storage/v1/object/sign/${encodeURIComponent(bucket)}/`;
+      const marker2 = `/storage/v1/object/sign/${bucket}/`;
+      const publicMarker = `/storage/v1/object/public/${encodeURIComponent(bucket)}/`;
+      const publicMarker2 = `/storage/v1/object/public/${bucket}/`;
+      let extracted = '';
+      for (const m of [marker, marker2, publicMarker, publicMarker2]) {
+        const idx = u.pathname.indexOf(m);
+        if (idx !== -1) {
+          extracted = decodeURIComponent(u.pathname.slice(idx + m.length));
+          break;
+        }
+      }
+      if (extracted) path = extracted;
+    } catch (_) {}
+  }
+
+  if (!path || /^https?:\/\//i.test(path)) return null;
+  return { ...file, bucket, path };
+}
+
 async function getFreshCustomPrintUrl(orderId, printKey) {
   const co = customOrdersHistory.find(item => String(item?.orderId || '') === String(orderId || ''));
-  const file = co?.prints?.[printKey];
-  if (!file?.path) throw new Error('This print file is not available.');
-  let href = /^https?:\/\//i.test(String(file.path)) ? String(file.path) : '';
-  if (!href) {
-    if (!supabaseClient) throw new Error('Supabase storage is unavailable.');
-    const { data, error } = await supabaseClient.storage.from(file.bucket || 'custom-prints').createSignedUrl(file.path, 3600);
-    if (error) throw error;
-    href = String(data?.signedUrl || '');
+  if (!co) throw new Error('Custom order record not found.');
+
+  let file = normalizeStoredPrintFile(co?.prints?.[printKey]);
+
+  // Prefer the permanent file path from the paid parent order item. This is
+  // more reliable than an old custom_orders mirror/localStorage record.
+  const parentId = getCustomParentOrderId(co);
+  const parent = parentId ? ordersHistory.find(o => String(o?.id || '') === String(parentId)) : null;
+  const parentItems = Array.isArray(parent?.items) ? parent.items.filter(isCustomOrderRecordItem) : [];
+  const matchingParentFile = parentItems.map(it => normalizeStoredPrintFile(it?.prints?.[printKey])).find(Boolean);
+  if (matchingParentFile) file = matchingParentFile;
+
+  if (!file?.path) throw new Error('This print file is not available in Storage.');
+  if (!supabaseClient) throw new Error('Supabase storage is unavailable.');
+
+  // ALWAYS generate a fresh signed URL from the storage object path. Never
+  // reuse an old signed URL, which can expire or point to a deleted object.
+  const { data, error } = await supabaseClient.storage
+    .from(file.bucket)
+    .createSignedUrl(file.path, 3600);
+  if (error) {
+    console.error('Supabase print signed URL error:', { bucket: file.bucket, path: file.path, error });
+    throw new Error('Print file was not found in Supabase Storage.');
   }
+
+  const href = String(data?.signedUrl || '');
   if (!href) throw new Error('Print file URL was not generated.');
   return { href, file };
 }
