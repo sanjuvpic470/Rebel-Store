@@ -4792,9 +4792,12 @@ async function confirmDeleteCustomOrder(customOrderId) {
   if (!co) return;
 
   const parent = getCustomOrderParent(co);
-  let parentId = parent?.id || getCustomParentOrderId(co) || customOrderId;
-  // A fallback custom record can be represented as ORD-...-C1.
-  // The backend accepts either form, but normalize it here when possible.
+  let parentId =
+    parent?.id ||
+    co?.parentOrderId ||
+    getCustomParentOrderId(co) ||
+    customOrderId;
+  // Always send the public ORD-... parent reference when available.
   parentId = String(parentId || '').trim().replace(/-C\d+$/i, '');
   const customer = String(parent?.billing?.name || co.customer?.name || 'Customer');
 
