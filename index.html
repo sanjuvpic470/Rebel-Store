@@ -216,6 +216,11 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .size-selector{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1.4rem}
 .size-btn{min-width:48px;height:46px;background:#18181b;border:1.5px solid rgba(242,240,234,.2);color:var(--paper);font-family:'Space Mono',monospace;font-weight:700;font-size:.88rem;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0 .5rem}
 .size-btn.selected{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow);box-shadow:3px 3px 0 var(--paper)}
+#pdp-color-selector .color-swatch-btn{width:46px;min-width:46px;height:46px;padding:0;border-radius:50%;display:flex;align-items:center;justify-content:center;box-sizing:border-box;position:relative;overflow:hidden;border:2px solid rgba(242,240,234,.3);box-shadow:none;flex:0 0 46px}
+#pdp-color-selector .color-swatch-btn.selected{border-color:var(--spray-yellow);box-shadow:0 0 0 3px var(--ink),0 0 0 5px var(--spray-yellow);background:var(--swatch-color);color:transparent}
+#pdp-color-selector .color-swatch-btn.is-unavailable{opacity:.35;text-decoration:none;cursor:not-allowed}
+#pdp-color-selector .color-swatch-btn.is-unavailable::after{content:"";position:absolute;left:8%;right:8%;top:50%;border-top:2px solid rgba(255,255,255,.95);transform:rotate(-18deg)}
+#pdp-color-selector .color-swatch-btn:focus-visible{outline:2px solid var(--spray-yellow);outline-offset:3px}
 .qty-selector{display:inline-flex;align-items:center;border:1.5px solid rgba(242,240,234,.25);background:#18181b;margin-bottom:1.8rem}
 .qty-btn{width:46px;height:46px;background:transparent;border:none;color:var(--paper);font-family:'Space Mono',monospace;font-size:1.3rem;font-weight:700;cursor:pointer}
 .qty-val{min-width:45px;text-align:center;font-family:'Space Mono',monospace;font-weight:700;font-size:1rem}
@@ -2707,8 +2712,10 @@ function openProductByDetails(catName, productId) {
     const colorHex = (foundProd.colorMeta && typeof foundProd.colorMeta === 'object' && !Array.isArray(foundProd.colorMeta) && /^#[0-9a-f]{6}$/i.test(String(foundProd.colorMeta[colorKey] || ''))) ? foundProd.colorMeta[colorKey] : getAdminDefaultColorHex(col);
     const cBtn = document.createElement('button');
     cBtn.type = 'button';
-    cBtn.className = `size-btn ${col === selectedColor ? 'selected' : ''} ${isAvailable ? '' : 'is-unavailable'}`;
-    cBtn.innerHTML = `<span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:${escapeHtml(colorHex)};border:1px solid rgba(255,255,255,.35);vertical-align:middle;margin-right:6px;"></span>${escapeHtml(col)}`;
+    cBtn.className = `size-btn color-swatch-btn ${col === selectedColor ? 'selected' : ''} ${isAvailable ? '' : 'is-unavailable'}`;
+    cBtn.style.setProperty('--swatch-color', colorHex);
+    cBtn.innerHTML = '';
+    cBtn.setAttribute('aria-label', isAvailable ? `Select ${col}` : `${col} unavailable`);
     cBtn.disabled = !isAvailable;
     cBtn.title = isAvailable ? `${col} available` : `${col} unavailable`;
     cBtn.onclick = () => {
