@@ -99,9 +99,23 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .hero__art{position:relative;display:flex;justify-content:center}
 .stamp{position:absolute;top:-12px;right:-8px;width:85px;height:85px;border:2px dashed var(--spray-yellow);border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;font-family:'Space Mono',monospace;font-size:.58rem;letter-spacing:.05em;text-transform:uppercase;color:var(--spray-yellow);animation:spin 18s linear infinite;z-index:2}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-.hero-poster{width:100%;max-width:340px;aspect-ratio:1/1;background:var(--spray-yellow);border:3px solid var(--paper);box-shadow:8px 8px 0 var(--paper);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;text-align:center}
+.hero-poster{width:100%;max-width:340px;aspect-ratio:1/1;background:var(--spray-yellow);border:3px solid var(--paper);box-shadow:8px 8px 0 var(--paper);display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;padding:0;text-align:center;overflow:hidden;position:relative}
 .hero-poster svg{width:220px;height:auto}
 .hero-poster p{font-family:'Space Mono',monospace;font-size:.85rem;color:var(--ink);font-weight:700;margin-top:1rem}
+.hero-drop-media{width:100%;height:62%;background:#141416;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.hero-drop-media img{width:100%;height:100%;object-fit:cover;display:block}
+.hero-drop-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:1rem;box-sizing:border-box;background:var(--spray-yellow)}
+.hero-drop-placeholder svg{max-width:78%;max-height:78%}
+.hero-drop-copy{padding:.75rem .9rem .8rem;background:var(--spray-yellow);color:var(--ink);display:flex;flex-direction:column;align-items:center;gap:.18rem;flex:1;justify-content:center}
+.hero-drop-label{font-family:'Space Mono',monospace;font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.hero-drop-title{font-family:'Anton',sans-serif;font-size:1.3rem;line-height:1;text-transform:uppercase;letter-spacing:.02em}
+.hero-drop-price{font-family:'Space Mono',monospace;font-size:.7rem;font-weight:700}
+.hero-drop-launch{font-family:'Space Mono',monospace;font-size:.55rem;text-transform:uppercase;opacity:.75}
+.admin-drop-preview-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr);gap:1rem;align-items:start}
+.admin-drop-preview-card{background:#111113;border:1px solid rgba(242,240,234,.12);padding:1rem}
+.admin-drop-preview-thumb{width:100%;max-width:360px;aspect-ratio:1/1;background:#17171a;border:2px solid rgba(242,240,234,.15);display:flex;align-items:center;justify-content:center;overflow:hidden;margin:0 auto}
+.admin-drop-preview-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+@media(max-width:760px){.admin-drop-preview-grid{grid-template-columns:1fr}.hero-drop-title{font-size:1.1rem}}
 .section{padding:clamp(2.5rem,6vw,4.5rem) var(--gap);max-width:1200px;margin:0 auto}
 .section__head{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;margin-bottom:1.2rem;flex-wrap:wrap}
 .section__head h2{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(2rem,5vw,3rem);line-height:1}
@@ -848,20 +862,29 @@ footer a:hover{color:var(--paper)}
       </div>
       <div class="hero__art">
         <div class="stamp" id="hero-stamp-text">EST. 2026 · REBEL GANG</div>
-        <div class="hero-poster">
-          <svg viewBox="0 0 340 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M45 12C45 12 52 2 62 10C72 18 68 32 78 28C88 24 95 40 85 55C92 48 98 56 94 68C90 80 82 88 50 88C18 88 10 80 6 68C2 56 8 48 15 55C5 40 12 24 22 28C32 32 28 18 38 10C48 2 45 12 45 12Z" fill="#0b0b0c"/>
-            <path d="M16 48H84V84H16V48Z" fill="#ffd500" stroke="#0b0b0c" stroke-width="4"/>
-            <path d="M26 56L36 64M36 56L26 64" stroke="#ffd500" stroke-width="4" stroke-linecap="round"/>
-            <path d="M64 56L74 64M74 56L64 64" stroke="#ffd500" stroke-width="4" stroke-linecap="round"/>
-            <path d="M38 74H62V78H38V74Z" fill="#0b0b0c"/>
-            <rect x="52" y="74" width="6" height="7" fill="#e52521"/>
-            <text x="105" y="62" font-family="'Anton', sans-serif" font-size="52" font-weight="900" fill="#0b0b0c">REBEL</text>
-            <path d="M105 72H275" stroke="#0b0b0c" stroke-width="5" stroke-linecap="round"/>
-            <rect x="180" y="64" width="85" height="24" fill="#0b0b0c" rx="2"/>
-            <text x="190" y="81" font-family="'Archivo Black', sans-serif" font-size="15" font-weight="900" fill="#ffd500">STORE</text>
-          </svg>
-          <p id="hero-badge-price-text">LIMITED DROP · ரூ 713</p>
+        <div class="hero-poster" id="hero-drop-preview-card">
+          <div class="hero-drop-media" id="hero-drop-media">
+            <div class="hero-drop-placeholder" id="hero-drop-placeholder">
+              <svg viewBox="0 0 340 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M45 12C45 12 52 2 62 10C72 18 68 32 78 28C88 24 95 40 85 55C92 48 98 56 94 68C90 80 82 88 50 88C18 88 10 80 6 68C2 56 8 48 15 55C5 40 12 24 22 28C32 32 28 18 38 10C48 2 45 12 45 12Z" fill="#0b0b0c"/>
+                <path d="M16 48H84V84H16V48Z" fill="#ffd500" stroke="#0b0b0c" stroke-width="4"/>
+                <path d="M26 56L36 64M36 56L26 64" stroke="#ffd500" stroke-width="4" stroke-linecap="round"/>
+                <path d="M64 56L74 64M74 56L64 64" stroke="#ffd500" stroke-width="4" stroke-linecap="round"/>
+                <path d="M38 74H62V78H38V74Z" fill="#0b0b0c"/>
+                <rect x="52" y="74" width="6" height="7" fill="#e52521"/>
+                <text x="105" y="62" font-family="'Anton', sans-serif" font-size="52" font-weight="900" fill="#0b0b0c">REBEL</text>
+                <path d="M105 72H275" stroke="#0b0b0c" stroke-width="5" stroke-linecap="round"/>
+                <rect x="180" y="64" width="85" height="24" fill="#0b0b0c" rx="2"/>
+                <text x="190" y="81" font-family="'Archivo Black', sans-serif" font-size="15" font-weight="900" fill="#ffd500">STORE</text>
+              </svg>
+            </div>
+          </div>
+          <div class="hero-drop-copy">
+            <span class="hero-drop-label" id="hero-drop-label">NEXT DROP</span>
+            <strong class="hero-drop-title" id="hero-drop-title">Weekly Drop Preview</strong>
+            <span class="hero-drop-price" id="hero-drop-price">₹ 713</span>
+            <span class="hero-drop-launch" id="hero-drop-launch">Launching next week</span>
+          </div>
         </div>
       </div>
     </section>
@@ -1571,6 +1594,27 @@ footer a:hover{color:var(--paper)}
         <h2>✍️ Website Texts & Content Editor</h2>
         <button class="btn btn--ghost" style="padding:0.4rem 1rem; font-size:0.8rem;" onclick="closeAdminSubPages()">← Back to Dashboard</button>
       </div>
+      <div class="admin-drop-preview-card" style="margin-bottom:1rem;">
+        <h3 style="font-family:'Anton',sans-serif;color:var(--spray-yellow);font-size:1.35rem;margin:0 0 .35rem;">🔥 Weekly Drop Preview</h3>
+        <p style="font-family:'Space Mono',monospace;color:var(--grey);font-size:.62rem;line-height:1.6;margin:0 0 1rem;">Upload the next weekly T-shirt design and it will appear on the homepage hero for customers.</p>
+        <div class="admin-drop-preview-grid">
+          <div class="admin-drop-preview-card">
+            <div class="admin-drop-preview-thumb" id="admin-drop-preview-thumb"><span style="font-family:'Space Mono',monospace;color:var(--grey);font-size:.65rem;">No preview image uploaded</span></div>
+            <div style="margin-top:.8rem;">
+              <input type="file" id="admin-drop-image-file" accept="image/png,image/jpeg,image/webp" class="admin-input-full">
+              <button type="button" class="btn btn--ghost" id="admin-drop-upload-btn" style="width:100%;justify-content:center;margin-top:.55rem;" onclick="uploadWeeklyDropPreviewImage()">⬆ Upload Preview Image</button>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:.7rem;">
+            <div><label class="admin-field-label">Label</label><input type="text" id="cms-drop-label" class="admin-input-full" placeholder="NEXT DROP"></div>
+            <div><label class="admin-field-label">Design / Product Name</label><input type="text" id="cms-drop-title" class="admin-input-full" placeholder="New Rebel Drop"></div>
+            <div><label class="admin-field-label">Price</label><input type="text" id="cms-drop-price" class="admin-input-full" placeholder="₹ 699"></div>
+            <div><label class="admin-field-label">Launch Message</label><input type="text" id="cms-drop-launch" class="admin-input-full" placeholder="Launching next week"></div>
+            <small id="admin-drop-image-status" style="font-family:'Space Mono',monospace;color:var(--grey);font-size:.58rem;min-height:1em;"></small>
+          </div>
+        </div>
+      </div>
+
       <div style="display:flex; flex-direction:column; gap:1.2rem;">
         <div>
           <label class="admin-field-label">Top Banner Ticker Text</label>
@@ -2077,6 +2121,11 @@ let DEFAULT_SITE_CONTENT = {
   heroT3: "NOT THE UNIFORM",
   heroSub: "240 GSM premium combed cotton tees, high-definition DTF prints, zero compromises.",
   heroStamp: "EST. 2026 · REBEL GANG",
+  dropPreviewImage: "",
+  dropPreviewLabel: "NEXT DROP",
+  dropPreviewTitle: "Weekly Drop Preview",
+  dropPreviewPrice: "₹ 713",
+  dropPreviewLaunch: "Launching next week",
   feat1Title: "240GSM Heavyweight Cotton",
   feat1Desc: "Boxy fit, no shrink, no fade after wash 50.",
   feat2Title: "Small-Batch Drops",
@@ -2153,6 +2202,24 @@ function applySiteContentToDOM() {
     document.getElementById('hero-sub-text').innerHTML = `${escapeHtml(SITE_CONTENT.heroSub)} Use code <strong id="hero-coupon-display">${escapeHtml(activeOfferCode)}</strong> in bag for extra <strong id="hero-discount-display">${Number(activeDiscountPercent)}%</strong> off.`;
   }
   if (document.getElementById('hero-stamp-text')) document.getElementById('hero-stamp-text').innerText = SITE_CONTENT.heroStamp;
+  const dropLabelEl = document.getElementById('hero-drop-label');
+  const dropTitleEl = document.getElementById('hero-drop-title');
+  const dropPriceEl = document.getElementById('hero-drop-price');
+  const dropLaunchEl = document.getElementById('hero-drop-launch');
+  const dropMediaEl = document.getElementById('hero-drop-media');
+  const dropPlaceholderEl = document.getElementById('hero-drop-placeholder');
+  const dropImage = safeMediaUrl(SITE_CONTENT.dropPreviewImage || '');
+  if (dropLabelEl) dropLabelEl.innerText = SITE_CONTENT.dropPreviewLabel || 'NEXT DROP';
+  if (dropTitleEl) dropTitleEl.innerText = SITE_CONTENT.dropPreviewTitle || 'Weekly Drop Preview';
+  if (dropPriceEl) dropPriceEl.innerText = SITE_CONTENT.dropPreviewPrice || '';
+  if (dropLaunchEl) dropLaunchEl.innerText = SITE_CONTENT.dropPreviewLaunch || 'Launching next week';
+  if (dropMediaEl) {
+    if (dropImage) {
+      dropMediaEl.innerHTML = `<img src="${escapeHtml(dropImage)}" alt="${escapeHtml(SITE_CONTENT.dropPreviewTitle || 'Upcoming Rebel Store drop')}" loading="eager">`;
+    } else if (dropPlaceholderEl) {
+      dropMediaEl.innerHTML = dropPlaceholderEl.outerHTML;
+    }
+  }
   if (document.getElementById('feat-1-title')) document.getElementById('feat-1-title').innerText = SITE_CONTENT.feat1Title;
   if (document.getElementById('feat-1-desc')) document.getElementById('feat-1-desc').innerText = SITE_CONTENT.feat1Desc;
   if (document.getElementById('feat-2-title')) document.getElementById('feat-2-title').innerText = SITE_CONTENT.feat2Title;
@@ -2166,6 +2233,15 @@ function applySiteContentToDOM() {
   if (document.getElementById('cms-hero-t3')) document.getElementById('cms-hero-t3').value = SITE_CONTENT.heroT3;
   if (document.getElementById('cms-hero-sub')) document.getElementById('cms-hero-sub').value = SITE_CONTENT.heroSub;
   if (document.getElementById('cms-hero-stamp')) document.getElementById('cms-hero-stamp').value = SITE_CONTENT.heroStamp;
+  if (document.getElementById('cms-drop-label')) document.getElementById('cms-drop-label').value = SITE_CONTENT.dropPreviewLabel || 'NEXT DROP';
+  if (document.getElementById('cms-drop-title')) document.getElementById('cms-drop-title').value = SITE_CONTENT.dropPreviewTitle || 'Weekly Drop Preview';
+  if (document.getElementById('cms-drop-price')) document.getElementById('cms-drop-price').value = SITE_CONTENT.dropPreviewPrice || '';
+  if (document.getElementById('cms-drop-launch')) document.getElementById('cms-drop-launch').value = SITE_CONTENT.dropPreviewLaunch || 'Launching next week';
+  const adminDropThumb = document.getElementById('admin-drop-preview-thumb');
+  const adminDropImage = safeMediaUrl(SITE_CONTENT.dropPreviewImage || '');
+  if (adminDropThumb) {
+    adminDropThumb.innerHTML = adminDropImage ? `<img src="${escapeHtml(adminDropImage)}" alt="Weekly drop preview">` : `<span style="font-family:'Space Mono',monospace;color:var(--grey);font-size:.65rem;">No preview image uploaded</span>`;
+  }
   if (document.getElementById('cms-f1-title')) document.getElementById('cms-f1-title').value = SITE_CONTENT.feat1Title;
   if (document.getElementById('cms-f1-desc')) document.getElementById('cms-f1-desc').value = SITE_CONTENT.feat1Desc;
   if (document.getElementById('cms-f2-title')) document.getElementById('cms-f2-title').value = SITE_CONTENT.feat2Title;
@@ -2198,6 +2274,44 @@ function updateUserBadgeDisplay() {
   }
 }
 
+async function uploadWeeklyDropPreviewImage() {
+  const fileInput = document.getElementById('admin-drop-image-file');
+  const status = document.getElementById('admin-drop-image-status');
+  const button = document.getElementById('admin-drop-upload-btn');
+  const file = fileInput?.files?.[0];
+  if (currentRole !== 'owner') { showToast('Only the store owner can update the weekly drop preview.'); return; }
+  if (!supabaseClient) { showToast('Supabase is not connected.'); return; }
+  if (!file) { showToast('Choose a preview image first.'); return; }
+  const allowed = ['image/jpeg','image/png','image/webp'];
+  if (!allowed.includes(file.type)) { showToast('Use JPG, PNG or WebP.'); return; }
+  if (file.size > 8 * 1024 * 1024) { showToast('Preview image must be 8MB or smaller.'); return; }
+
+  if (button) { button.disabled = true; button.innerText = 'Uploading...'; }
+  if (status) status.textContent = 'Uploading preview image...';
+  try {
+    const safeName = String(file.name || 'drop-preview').replace(/[^a-zA-Z0-9._-]+/g, '_').slice(-100);
+    const filePath = `hero-drops/${Date.now()}-${crypto.randomUUID()}-${safeName}`;
+    const { error: uploadError } = await supabaseClient.storage
+      .from('site-assets')
+      .upload(filePath, file, { contentType: file.type, upsert: false, cacheControl: '3600' });
+    if (uploadError) throw uploadError;
+    const { data: publicData } = supabaseClient.storage.from('site-assets').getPublicUrl(filePath);
+    const publicUrl = String(publicData?.publicUrl || '').trim();
+    if (!publicUrl) throw new Error('Could not create the preview image URL.');
+    SITE_CONTENT.dropPreviewImage = publicUrl;
+    localStorage.setItem('rebel_site_content', JSON.stringify(SITE_CONTENT));
+    applySiteContentToDOM();
+    if (status) status.textContent = '✓ Image uploaded. Click Save Site Content to publish it.';
+    showToast('Weekly drop preview image uploaded. Save Site Content to publish.');
+  } catch (err) {
+    console.error('Weekly drop image upload failed:', err);
+    if (status) status.textContent = 'Upload failed. Check site-assets storage permissions.';
+    showToast('Preview image upload failed.');
+  } finally {
+    if (button) { button.disabled = false; button.innerText = '⬆ Upload Preview Image'; }
+  }
+}
+
 async function saveWebsiteContentCMS() {
   SITE_CONTENT.tickerMsg = document.getElementById('cms-ticker-msg').value.trim();
   SITE_CONTENT.heroEyebrow = document.getElementById('cms-hero-eyebrow').value.trim();
@@ -2206,6 +2320,10 @@ async function saveWebsiteContentCMS() {
   SITE_CONTENT.heroT3 = document.getElementById('cms-hero-t3').value.trim();
   SITE_CONTENT.heroSub = document.getElementById('cms-hero-sub').value.trim();
   SITE_CONTENT.heroStamp = document.getElementById('cms-hero-stamp').value.trim();
+  SITE_CONTENT.dropPreviewLabel = document.getElementById('cms-drop-label').value.trim() || 'NEXT DROP';
+  SITE_CONTENT.dropPreviewTitle = document.getElementById('cms-drop-title').value.trim() || 'Weekly Drop Preview';
+  SITE_CONTENT.dropPreviewPrice = document.getElementById('cms-drop-price').value.trim();
+  SITE_CONTENT.dropPreviewLaunch = document.getElementById('cms-drop-launch').value.trim() || 'Launching next week';
   SITE_CONTENT.feat1Title = document.getElementById('cms-f1-title').value.trim();
   SITE_CONTENT.feat1Desc = document.getElementById('cms-f1-desc').value.trim();
   SITE_CONTENT.feat2Title = document.getElementById('cms-f2-title').value.trim();
@@ -2219,13 +2337,19 @@ async function saveWebsiteContentCMS() {
   if (saveBtn) saveBtn.innerText = 'Saving...';
 
   if (supabaseClient) {
-    try {
-      await supabaseClient
-        .from('store_settings')
-        .upsert({ key: 'site_content', value: SITE_CONTENT }, { onConflict: 'key' });
-    } catch (err) {
-      console.warn('Cloud sync skipped:', err);
+    const { error: cloudError } = await supabaseClient
+      .from('store_settings')
+      .upsert({ key: 'site_content', value: SITE_CONTENT }, { onConflict: 'key' });
+    if (cloudError) {
+      console.error('Cloud content save failed:', cloudError);
+      showToast('Content could not be saved to the cloud.');
+      if (saveBtn) saveBtn.innerText = 'Save Site Content 💾 (Cloud Persistent)';
+      return;
     }
+  } else {
+    showToast('Supabase is not connected. Content was not published.');
+    if (saveBtn) saveBtn.innerText = 'Save Site Content 💾 (Cloud Persistent)';
+    return;
   }
   showToast('Website content saved successfully!');
   if (saveBtn) saveBtn.innerText = 'Save Site Content 💾 (Cloud Persistent)';
