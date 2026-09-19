@@ -4697,7 +4697,10 @@ async function getFreshCustomPrintUrl(orderId, printKey) {
   const co = customOrdersHistory.find(item => String(item?.orderId || '') === String(orderId || ''));
   if (!co) throw new Error('Custom order record not found.');
 
-  const parentId = getCustomParentOrderId(co);
+  let parentId = getCustomParentOrderId(co);
+  if (!parentId) {
+    parentId = String(co?.parentOrderId || co?.orderId || '').trim().replace(/-C\d+$/i, '');
+  }
   const parent = parentId
     ? ordersHistory.find(o => String(o?.id || '') === String(parentId))
     : null;
@@ -4724,7 +4727,7 @@ async function getFreshCustomPrintUrl(orderId, printKey) {
     },
     body: JSON.stringify({
       action: 'download_print',
-      order_id: parentId || orderId,
+      order_id: String(parentId || orderId).trim().replace(/-C\d+$/i, ''),
       print_key: printKey
     })
   });
@@ -4789,7 +4792,10 @@ async function confirmDeleteCustomOrder(customOrderId) {
   if (!co) return;
 
   const parent = getCustomOrderParent(co);
-  const parentId = parent?.id || getCustomParentOrderId(co) || customOrderId;
+  let parentId = parent?.id || getCustomParentOrderId(co) || customOrderId;
+  // A fallback custom record can be represented as ORD-...-C1.
+  // The backend accepts either form, but normalize it here when possible.
+  parentId = String(parentId || '').trim().replace(/-C\d+$/i, '');
   const customer = String(parent?.billing?.name || co.customer?.name || 'Customer');
 
   const ok = window.confirm(
