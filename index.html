@@ -3166,17 +3166,76 @@ function addToCart() {
   }
 }
 
+function encodeCloudCartCustomItem(item) {
+  try {
+    const json = JSON.stringify({
+      __rebelCustomCart: 1,
+      isCustom: true,
+      title: String(item?.title || '').slice(0, 200),
+      garment: String(item?.garment || '').slice(0, 80),
+      size: String(item?.size || '').slice(0, 30),
+      color: String(item?.color || '').slice(0, 60),
+      price: Number(item?.price || 0),
+      qty: Math.max(1, Number(item?.qty || item?.quantity || 1)),
+      image: String(item?.image || '').slice(0, 1000),
+      prints: item?.prints && typeof item.prints === 'object' ? item.prints : null,
+      stockStatus: item?.stockStatus || { available: true, notes: '' }
+    });
+    return `REBEL_CUSTOM_CART_V1:${btoa(unescape(encodeURIComponent(json)))}`;
+  } catch (_) {
+    return '';
+  }
+}
+
+function decodeCloudCartCustomItem(productName) {
+  const raw = String(productName || '').trim();
+  const prefix = 'REBEL_CUSTOM_CART_V1:';
+  if (!raw.startsWith(prefix)) return null;
+  try {
+    const json = decodeURIComponent(escape(atob(raw.slice(prefix.length))));
+    const parsed = JSON.parse(json);
+    if (!parsed || parsed.__rebelCustomCart !== 1) return null;
+    return {
+      isCustom: true,
+      title: String(parsed.title || '').trim(),
+      garment: String(parsed.garment || '').trim(),
+      size: String(parsed.size || '').trim(),
+      color: String(parsed.color || '').trim(),
+      price: Number(parsed.price || 0),
+      qty: Math.max(1, Number(parsed.qty || 1)),
+      image: String(parsed.image || ''),
+      prints: parsed.prints && typeof parsed.prints === 'object' ? parsed.prints : null,
+      stockStatus: parsed.stockStatus || { available: true, notes: '' }
+    };
+  } catch (_) {
+    return null;
+  }
+}
+
 function getCartCloudProductName(item) {
+  if (isCustomCartItem(item)) {
+    const encoded = encodeCloudCartCustomItem(item);
+    if (encoded) return encoded;
+  }
   const title = String(item?.title || item?.name || 'Product').trim();
   const size = String(item?.size || '').trim();
   return size ? `${title} — Size: ${size}` : title;
 }
 
 function parseCartCloudProductName(productName) {
+  const custom = decodeCloudCartCustomItem(productName);
+  if (custom) return custom;
   const raw = String(productName || '').trim();
   const match = raw.match(/^(.*?)\s*—\s*Size:\s*(.+)$/i);
   if (!match) return { title: raw, size: '' };
   return { title: String(match[1] || '').trim(), size: String(match[2] || '').trim() };
+}
+
+function getCustomPrintIdentity(item) {
+  if (!isCustomCartItem(item)) return '';
+  const front = String(item?.prints?.front?.path || item?.prints?.front?.name || '').trim().toLowerCase();
+  const back = String(item?.prints?.back?.path || item?.prints?.back?.name || '').trim().toLowerCase();
+  return `${front}|${back}`;
 }
 
 function mergeCartItems(items) {
@@ -3184,11 +3243,13 @@ function mergeCartItems(items) {
   const map = new Map();
   for (const item of (Array.isArray(items) ? items : [])) {
     if (!item) continue;
+    const custom = isCustomCartItem(item);
     const key = [
-      String(item.id || item.product_code || item.title || '').trim().toLowerCase(),
+      String(item.id || item.product_code || item.title || item.garment || '').trim().toLowerCase(),
       String(item.size || '').trim().toLowerCase(),
       String(item.title || '').trim().toLowerCase(),
-      String(item.color || '').trim().toLowerCase()
+      String(item.color || '').trim().toLowerCase(),
+      custom ? getCustomPrintIdentity(item) : ''
     ].join('|');
     if (map.has(key)) {
       const existing = map.get(key);
@@ -3269,6 +3330,14 @@ async function loadCartFromSupabase(userId) {
 
       const cloudCart = cloudRows.map(item => {
         const parsed = parseCartCloudProductName(item.product_name);
+        if (parsed && parsed.isCustom) {
+          return {
+            ...parsed,
+            qty: Math.max(1, Number(item.quantity || parsed.qty || 1)),
+            price: Number(item.product_price || parsed.price || 0),
+            image: String(item.product_image || parsed.image || '')
+          };
+        }
         const baseTitle = parsed.title;
         const catalogProduct = resolveRegularProductFromCatalogByTitle(
           baseTitle.replace(/\s*\([^)]*\)\s*$/, '').trim()
