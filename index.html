@@ -2451,12 +2451,41 @@ function showHomeView() {
 
 function openCustomOrderPage() {
   updateCustomOrderGarmentDropdown();
+
+  // Custom Order is a product-builder page only. Address selection belongs
+  // to the Cart -> Shipping & Billing step, not underneath this page.
+  // Always hide checkout/address views so an old address form cannot remain
+  // visible when switching accounts or returning from checkout.
   document.getElementById('home-view').style.display = 'none';
   document.getElementById('product-page').style.display = 'none';
   document.getElementById('shipping-billing-page').style.display = 'none';
+  document.getElementById('new-address-checkout-page').style.display = 'none';
   document.getElementById('category-page').style.display = 'none';
   document.getElementById('admin-view').style.display = 'none';
   document.getElementById('custom-order-page').style.display = 'block';
+
+  // Never carry a previously selected customer's local print files into a
+  // different login/session. The user must explicitly choose fresh files.
+  const frontInput = document.getElementById('cust-file-front');
+  const backInput = document.getElementById('cust-file-back');
+  if (frontInput) frontInput.value = '';
+  if (backInput) backInput.value = '';
+
+  // Reset the builder to its clean defaults whenever it is opened.
+  custQty = 2;
+  custSize = 'M';
+  custColor = 'Black';
+  const qtyEl = document.getElementById('cust-qty-val');
+  const priceEl = document.getElementById('cust-total-price-display');
+  if (qtyEl) qtyEl.innerText = '2';
+  if (priceEl) priceEl.innerText = 'ரூ ' + (custUnitPrice * 2);
+  document.querySelectorAll('#cust-size-selector .size-btn').forEach(btn => {
+    btn.classList.toggle('selected', btn.textContent.trim() === 'M');
+  });
+  document.querySelectorAll('#cust-color-selector .size-btn').forEach(btn => {
+    btn.classList.toggle('selected', btn.textContent.trim() === 'Black');
+  });
+
   window.location.hash = '#custom-order';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
