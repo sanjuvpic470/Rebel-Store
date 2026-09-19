@@ -1902,6 +1902,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const RAZORPAY_TEST_KEY_ID = 'rzp_test_TZPUNAP5rWwiSt';
 const EDGE_FUNCTION_VERIFY_PAYMENT_URL = SUPABASE_PROJECT_URL + '/functions/v1/verify-razorpay-payment';
 const EDGE_FUNCTION_CUSTOM_ORDER_ADMIN_URL = SUPABASE_PROJECT_URL + '/functions/v1/admin-custom-order';
+const EDGE_FUNCTION_CUSTOM_ORDER_ADMIN_VERSION = 'v4';
 // Standalone admin-only Zoho Invoice PDF function.
 // IMPORTANT: this is intentionally separate from the working Razorpay verification function.
 const EDGE_FUNCTION_ADMIN_INVOICE_URL = SUPABASE_PROJECT_URL + '/functions/v1/admin-download-invoice';
@@ -4827,7 +4828,17 @@ async function confirmDeleteCustomOrder(customOrderId) {
     try { data = await response.json(); } catch (_) {}
 
     if (!response.ok || !data?.success) {
-      throw new Error(data?.error || 'The custom order could not be deleted.');
+      const backendMessage = String(data?.error || '').trim();
+
+      // The Edge Function log proved that some old custom cards can be
+      // "ghost" records: the UI has them in localStorage, but the authoritative
+      // Supabase order is already gone. Treat that as an already-completed
+      // deletion and purge the stale UI record instead of blocking the admin.
+      if (/order not found/i.test(backendMessage)) {
+        console.warn('Custom order already absent from backend; removing stale local record:', parentId);
+      } else {
+        throw new Error(backendMessage || 'The custom order could not be deleted.');
+      }
     }
 
     ordersHistory = ordersHistory.filter(o => String(o?.id || '') !== String(parentId));
@@ -5178,7 +5189,10 @@ async function loadAdminDataFromSupabase() {
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (!ordersError && ordersData && ordersData.length > 0) {
+    if (!ordersError && Array.isArray(ordersData)) {
+      // Supabase is the source of truth. Always replace the local order list,
+      // including when the backend returns zero rows. This prevents deleted
+      // orders from reappearing from localStorage after reload.
       ordersHistory = ordersData.map(o => ({
         id: o.order_id,
         createdAt: o.created_at || '',
