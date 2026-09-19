@@ -2575,11 +2575,32 @@ async function addCustomOrderToCart() {
 
     if (!frontPrint && !backPrint) throw new Error('Please upload at least one print file (Front or Back)!');
 
-    cart.push({
+    const newCustomItem = {
       isCustom: true, title: `Custom ${garment} (${custColor})`, garment, size: custSize, color: custColor,
       price: custUnitPrice, qty: custQty, prints: { front: frontPrint, back: backPrint }, image: '',
       stockStatus: { available: true, notes: '' }
+    };
+
+    // If the customer adds the same custom configuration again, keep it as
+    // ONE cart line and increase the quantity instead of creating duplicate
+    // custom cart entries. Different print files remain separate items.
+    const sameCustom = cart.find(item => {
+      if (!isCustomCartItem(item)) return false;
+      if (String(item.garment || '').trim() !== String(newCustomItem.garment || '').trim()) return false;
+      if (String(item.color || '').trim() !== String(newCustomItem.color || '').trim()) return false;
+      if (String(item.size || '').trim() !== String(newCustomItem.size || '').trim()) return false;
+      const oldFront = String(item?.prints?.front?.path || '');
+      const oldBack = String(item?.prints?.back?.path || '');
+      const newFront = String(newCustomItem?.prints?.front?.path || '');
+      const newBack = String(newCustomItem?.prints?.back?.path || '');
+      return oldFront === newFront && oldBack === newBack;
     });
+
+    if (sameCustom) {
+      sameCustom.qty = Number(sameCustom.qty || 0) + Number(newCustomItem.qty || 0);
+    } else {
+      cart.push(newCustomItem);
+    }
     localStorage.setItem('rebel_cart', JSON.stringify(cart));
     updateCartBadge();
     renderCartDrawer();
@@ -4659,6 +4680,15 @@ function normalizeStoredPrintFile(file) {
   }
 
   if (!path || /^https?:\/\//i.test(path)) return null;
+
+  // Storage paths are stored as object paths, but older records may contain
+  // the bucket name as part of the path (for example:
+  // custom-prints/<user>/<file>). Supabase expects only <user>/<file> when
+  // createSignedUrl() is called on the custom-prints bucket.
+  const bucketPrefix = bucket.replace(/^\/+|\/+$/g, '') + '/';
+  if (path.startsWith(bucketPrefix)) path = path.slice(bucketPrefix.length);
+  path = path.replace(/^\/+/, '');
+
   return { ...file, bucket, path };
 }
 
@@ -4666,39 +4696,67 @@ async function getFreshCustomPrintUrl(orderId, printKey) {
   const co = customOrdersHistory.find(item => String(item?.orderId || '') === String(orderId || ''));
   if (!co) throw new Error('Custom order record not found.');
 
-  let file = normalizeStoredPrintFile(co?.prints?.[printKey]);
-
-  // Prefer the permanent file path from the paid parent order item. This is
-  // more reliable than an old custom_orders mirror/localStorage record.
   const parentId = getCustomParentOrderId(co);
-  const parent = parentId ? ordersHistory.find(o => String(o?.id || '') === String(parentId)) : null;
-  const parentItems = Array.isArray(parent?.items) ? parent.items.filter(isCustomOrderRecordItem) : [];
-  const matchingParentFile = parentItems.map(it => normalizeStoredPrintFile(it?.prints?.[printKey])).find(Boolean);
-  if (matchingParentFile) file = matchingParentFile;
+  const parent = parentId
+    ? ordersHistory.find(o => String(o?.id || '') === String(parentId))
+    : null;
+
+  const parentItems = Array.isArray(parent?.items)
+    ? parent.items.filter(isCustomOrderRecordItem)
+    : [];
+
+  const file =
+    parentItems.map(it => normalizeStoredPrintFile(it?.prints?.[printKey])).find(Boolean) ||
+    normalizeStoredPrintFile(co?.prints?.[printKey]);
 
   if (!file?.path) throw new Error('This print file is not available in Storage.');
-  if (!supabaseClient) throw new Error('Supabase storage is unavailable.');
 
-  // ALWAYS generate a fresh signed URL from the storage object path. Never
-  // reuse an old signed URL, which can expire or point to a deleted object.
-  const { data, error } = await supabaseClient.storage
-    .from(file.bucket)
-    .createSignedUrl(file.path, 3600);
-  if (error) {
-    console.error('Supabase print signed URL error:', { bucket: file.bucket, path: file.path, error });
-    throw new Error('Print file was not found in Supabase Storage.');
+  const accessToken = await getAuthenticatedAccessToken();
+  if (!accessToken) throw new Error('Your login session expired. Please login again.');
+
+  const response = await fetch(EDGE_FUNCTION_CUSTOM_ORDER_ADMIN_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${accessToken}`
+    },
+    body: JSON.stringify({
+      action: 'download_print',
+      order_id: parentId || orderId,
+      print_key: printKey
+    })
+  });
+
+  if (!response.ok) {
+    let message = 'Print file could not be downloaded.';
+    try {
+      const data = await response.json();
+      if (data?.error) message = String(data.error);
+    } catch (_) {}
+    throw new Error(message);
   }
 
-  const href = String(data?.signedUrl || '');
-  if (!href) throw new Error('Print file URL was not generated.');
-  return { href, file };
+  const blob = await response.blob();
+  if (!blob || !blob.size) throw new Error('Print file was empty.');
+
+  const filename = String(
+    file.name || `${printKey}-print`
+  ).replace(/[^a-zA-Z0-9._-]/g, '_');
+
+  return {
+    blob,
+    file: { ...file, name: filename }
+  };
 }
+
 
 async function openCustomPrintFile(orderId, printKey) {
   try {
-    const { href } = await getFreshCustomPrintUrl(orderId, printKey);
-    const popup = window.open(href, '_blank', 'noopener,noreferrer');
-    if (!popup) window.location.href = href;
+    const { blob } = await getFreshCustomPrintUrl(orderId, printKey);
+    const blobUrl = URL.createObjectURL(blob);
+    window.open(blobUrl, '_blank', 'noopener,noreferrer');
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
   } catch (err) {
     console.error('Custom print file open failed:', err);
     showToast(err?.message || 'Print file is unavailable.');
@@ -4707,16 +4765,12 @@ async function openCustomPrintFile(orderId, printKey) {
 
 async function downloadCustomPrintFile(orderId, printKey) {
   try {
-    const { href, file } = await getFreshCustomPrintUrl(orderId, printKey);
+    const { blob, file } = await getFreshCustomPrintUrl(orderId, printKey);
     showToast('Preparing print file download...');
-    const response = await fetch(href);
-    if (!response.ok) throw new Error('Print file download failed.');
-    const blob = await response.blob();
-    const safeName = String(file.name || `${printKey}-print`).replace(/[^a-zA-Z0-9._-]/g, '_');
     const blobUrl = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = blobUrl;
-    a.download = safeName;
+    a.download = String(file.name || `${printKey}-print`).replace(/[^a-zA-Z0-9._-]/g, '_');
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -4728,40 +4782,65 @@ async function downloadCustomPrintFile(orderId, printKey) {
   }
 }
 
-function confirmDeleteCustomOrder(customOrderId) {
+
+async function confirmDeleteCustomOrder(customOrderId) {
   const co = customOrdersHistory.find(item => String(item?.orderId || '') === String(customOrderId || ''));
   if (!co) return;
+
   const parent = getCustomOrderParent(co);
-  const displayOrderId = parent?.id || customOrderId;
+  const parentId = parent?.id || getCustomParentOrderId(co) || customOrderId;
   const customer = String(parent?.billing?.name || co.customer?.name || 'Customer');
-  const ok = window.confirm(`Move this custom order to Trash?\n\nOrder: ${displayOrderId}\nCustomer: ${customer}\n\nThe order will be removed from Custom Orders and can be restored from Trash.`);
+
+  const ok = window.confirm(
+    `Delete this custom order permanently?\\n\\nOrder: ${parentId}\\nCustomer: ${customer}\\n\\nThis will delete the order from the backend. This action cannot be undone.`
+  );
   if (!ok) return;
-  if (parent) {
-    deleteOrderToTrash(parent.id);
-  } else {
-    // Legacy/orphan custom records have no parent paid order. Remove the
-    // dedicated custom record after explicit confirmation.
-    deleteLegacyCustomOrder(customOrderId);
+
+  try {
+    const accessToken = await getAuthenticatedAccessToken();
+    if (!accessToken) throw new Error('Your login session expired. Please login again.');
+
+    const response = await fetch(EDGE_FUNCTION_CUSTOM_ORDER_ADMIN_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${accessToken}`
+      },
+      body: JSON.stringify({
+        action: 'delete_order',
+        order_id: parentId
+      })
+    });
+
+    let data = {};
+    try { data = await response.json(); } catch (_) {}
+
+    if (!response.ok || !data?.success) {
+      throw new Error(data?.error || 'The custom order could not be deleted.');
+    }
+
+    ordersHistory = ordersHistory.filter(o => String(o?.id || '') !== String(parentId));
+    trashOrdersHistory = trashOrdersHistory.filter(o => String(o?.id || '') !== String(parentId));
+    customOrdersHistory = customOrdersHistory.filter(coItem => {
+      const raw = String(coItem?.orderId || '');
+      return raw !== String(customOrderId) && !raw.startsWith(String(parentId) + '-C');
+    });
+
+    localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
+    localStorage.setItem('rebel_trash_orders_history', JSON.stringify(trashOrdersHistory));
+    localStorage.setItem('rebel_custom_orders_history', JSON.stringify(customOrdersHistory));
+
+    showToast(`Custom order ${parentId} deleted from backend.`);
+    renderAdminPanels(currentSelectedDateFilter);
+    renderAdminCustomOrdersTable();
+    renderTrashBinTable();
+  } catch (err) {
+    console.error('Custom order backend delete failed:', err);
+    showToast(err?.message || 'Custom order could not be deleted.');
   }
 }
 
-async function deleteLegacyCustomOrder(customOrderId) {
-  const id = String(customOrderId || '').trim();
-  if (!id) return;
-  try {
-    if (supabaseClient) {
-      const { error } = await supabaseClient.from('custom_orders').delete().eq('order_id', id);
-      if (error) throw error;
-    }
-    customOrdersHistory = customOrdersHistory.filter(co => String(co?.orderId || '') !== id);
-    localStorage.setItem('rebel_custom_orders_history', JSON.stringify(customOrdersHistory));
-    showToast(`Custom order ${id} deleted.`);
-    renderAdminCustomOrdersTable();
-  } catch (err) {
-    console.error('Legacy custom order delete failed:', err);
-    showToast('Custom order could not be deleted: ' + (err?.message || 'Unknown error'));
-  }
-}
 
 async function updateCustomOrderStatusFromSelect(selectEl, parentOrderId) {
   const newStatus = String(selectEl?.value || '').trim();
