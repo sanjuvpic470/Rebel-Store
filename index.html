@@ -5072,24 +5072,70 @@ async function loadAdminDataFromSupabase() {
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (customData && customData.length > 0) {
-      customOrdersHistory = customData.map(co => ({
-        orderId: co.order_id,
-        date: getStoreDateKey(co.created_at || new Date()),
-        customer: {
-          name: co.customer_name,
-          phone: co.customer_phone,
-          address: 'Online Custom Order'
-        },
-        title: `Custom ${co.garment} (${co.color || 'Black'})`,
-        size: co.size,
-        color: co.color || 'Black',
-        qty: co.quantity,
-        totalAmount: Number(co.total_amount),
-        prints: co.prints
-      }));
-      localStorage.setItem('rebel_custom_orders_history', JSON.stringify(customOrdersHistory));
+    // Custom orders are primarily identified from the paid parent order itself.
+    // This makes the Admin Custom section reliable even if the optional
+    // custom_orders mirror row was not created because of an RLS/schema issue.
+    const customMirror = Array.isArray(customData) ? customData.map(co => ({
+      orderId: co.order_id,
+      date: getStoreDateKey(co.created_at || new Date()),
+      customer: {
+        name: co.customer_name,
+        phone: co.customer_phone,
+        address: 'Online Custom Order'
+      },
+      title: `Custom ${co.garment} (${co.color || 'Black'})`,
+      size: co.size,
+      color: co.color || 'Black',
+      qty: co.quantity,
+      totalAmount: Number(co.total_amount),
+      prints: co.prints
+    })) : [];
+
+    // Build fallback records directly from orders.items for every paid custom
+    // order. The parent order already stores garment/color/size/qty/prints.
+    const customFromPaidOrders = [];
+    for (const ord of ordersHistory) {
+      if (!isCustomOrderRecord(ord)) continue;
+      const customItems = Array.isArray(ord.items)
+        ? ord.items.filter(item => isCustomOrderRecordItem(item))
+        : [];
+      customItems.forEach((item, index) => {
+        customFromPaidOrders.push({
+          orderId: `${ord.id}-C${index + 1}`,
+          parentOrderId: ord.id,
+          date: getStoreDateKey(ord.createdAt || ord.date || new Date()),
+          customer: {
+            name: ord.billing?.name || 'Customer',
+            phone: ord.billing?.phone || '',
+            address: ord.billing?.address || ''
+          },
+          title: `Custom ${item.garment || 'Print Order'} (${item.color || 'Black'})`,
+          size: item.size || '',
+          color: item.color || 'Black',
+          qty: Number(item.quantity || item.qty || 0),
+          totalAmount: Number(item.total_price || 0),
+          prints: item.prints || null
+        });
+      });
     }
+
+    // Prefer the dedicated mirror record when available, but always fill any
+    // missing parent custom orders from the paid orders table.
+    const mergedCustom = [...customMirror];
+    const existingParentIds = new Set(mergedCustom.map(co => {
+      const raw = String(co.orderId || '');
+      const match = raw.match(/^(.*)-C\d+$/);
+      return match ? match[1] : raw;
+    }));
+    for (const fallback of customFromPaidOrders) {
+      if (!existingParentIds.has(String(fallback.parentOrderId || ''))) {
+        mergedCustom.push(fallback);
+        existingParentIds.add(String(fallback.parentOrderId || ''));
+      }
+    }
+
+    customOrdersHistory = mergedCustom;
+    localStorage.setItem('rebel_custom_orders_history', JSON.stringify(customOrdersHistory));
 
     const { data: usersData, error: usersError } = await supabaseClient
       .from('profiles')
@@ -5379,6 +5425,9 @@ function renderAdminPanels(filterDate = '') {
     chartTbody.innerHTML = '';
     const predicate = statusAliases[currentStatusFilter] || (() => true);
     const filteredOrders = baseOrdersForCounts.filter(ord => {
+      // Custom print orders have their own Admin workflow and must not appear
+      // in the regular Orders table.
+      if (isCustomOrderRecord(ord)) return false;
       const search = currentSearchQuery || '';
       const name = String(ord.billing?.name || '').toLowerCase();
       const phone = String(ord.billing?.phone || '').toLowerCase();
