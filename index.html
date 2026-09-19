@@ -99,18 +99,16 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .hero__art{position:relative;display:flex;justify-content:center}
 .stamp{position:absolute;top:-12px;right:-8px;width:85px;height:85px;border:2px dashed var(--spray-yellow);border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;font-family:'Space Mono',monospace;font-size:.58rem;letter-spacing:.05em;text-transform:uppercase;color:var(--spray-yellow);animation:spin 18s linear infinite;z-index:2}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-.hero-poster{width:100%;max-width:340px;aspect-ratio:1/1;background:var(--spray-yellow);border:3px solid var(--paper);box-shadow:8px 8px 0 var(--paper);display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;padding:0;text-align:center;overflow:hidden;position:relative}
+.hero-poster{width:100%;max-width:340px;aspect-ratio:1/1;background:var(--spray-yellow);border:3px solid var(--paper);box-shadow:8px 8px 0 var(--paper);display:flex;align-items:stretch;justify-content:flex-start;padding:0;text-align:center;overflow:hidden;position:relative}
 .hero-poster svg{width:220px;height:auto}
 .hero-poster p{font-family:'Space Mono',monospace;font-size:.85rem;color:var(--ink);font-weight:700;margin-top:1rem}
-.hero-drop-media{width:100%;height:62%;background:#141416;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.hero-drop-media{width:100%;height:100%;background:var(--spray-yellow);display:flex;align-items:center;justify-content:center;overflow:hidden}
 .hero-drop-media img{width:100%;height:100%;object-fit:cover;display:block}
 .hero-drop-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:1rem;box-sizing:border-box;background:var(--spray-yellow)}
 .hero-drop-placeholder svg{max-width:78%;max-height:78%}
-.hero-drop-copy{padding:.75rem .9rem .8rem;background:var(--spray-yellow);color:var(--ink);display:flex;flex-direction:column;align-items:center;gap:.18rem;flex:1;justify-content:center}
-.hero-drop-label{font-family:'Space Mono',monospace;font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
-.hero-drop-title{font-family:'Anton',sans-serif;font-size:1.3rem;line-height:1;text-transform:uppercase;letter-spacing:.02em}
-.hero-drop-price{font-family:'Space Mono',monospace;font-size:.7rem;font-weight:700}
-.hero-drop-launch{font-family:'Space Mono',monospace;font-size:.55rem;text-transform:uppercase;opacity:.75}
+.hero-drop-copy{padding:0 0 .7rem;color:var(--paper);display:flex;flex-direction:column;align-items:center;gap:.18rem;justify-content:center}
+.hero-drop-label{font-family:'Space Mono',monospace;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em}
+.hero-drop-title{font-family:'Anton',sans-serif;font-size:1.5rem;line-height:1;text-transform:uppercase;letter-spacing:.02em;color:var(--spray-yellow)}
 .admin-drop-preview-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr);gap:1rem;align-items:start}
 .admin-drop-preview-card{background:#111113;border:1px solid rgba(242,240,234,.12);padding:1rem}
 .admin-drop-preview-thumb{width:100%;max-width:360px;aspect-ratio:1/1;background:#17171a;border:2px solid rgba(242,240,234,.15);display:flex;align-items:center;justify-content:center;overflow:hidden;margin:0 auto}
@@ -862,6 +860,10 @@ footer a:hover{color:var(--paper)}
       </div>
       <div class="hero__art">
         <div class="stamp" id="hero-stamp-text">EST. 2026 · REBEL GANG</div>
+        <div class="hero-drop-copy">
+          <span class="hero-drop-label" id="hero-drop-label">WEEKLY DROP</span>
+          <strong class="hero-drop-title" id="hero-drop-title">STAY TUNED</strong>
+        </div>
         <div class="hero-poster" id="hero-drop-preview-card">
           <div class="hero-drop-media" id="hero-drop-media">
             <div class="hero-drop-placeholder" id="hero-drop-placeholder">
@@ -878,12 +880,6 @@ footer a:hover{color:var(--paper)}
                 <text x="190" y="81" font-family="'Archivo Black', sans-serif" font-size="15" font-weight="900" fill="#ffd500">STORE</text>
               </svg>
             </div>
-          </div>
-          <div class="hero-drop-copy">
-            <span class="hero-drop-label" id="hero-drop-label">NEXT DROP</span>
-            <strong class="hero-drop-title" id="hero-drop-title">Weekly Drop Preview</strong>
-            <span class="hero-drop-price" id="hero-drop-price">₹ 713</span>
-            <span class="hero-drop-launch" id="hero-drop-launch">Launching next week</span>
           </div>
         </div>
       </div>
@@ -2122,10 +2118,10 @@ let DEFAULT_SITE_CONTENT = {
   heroSub: "240 GSM premium combed cotton tees, high-definition DTF prints, zero compromises.",
   heroStamp: "EST. 2026 · REBEL GANG",
   dropPreviewImage: "",
-  dropPreviewLabel: "NEXT DROP",
-  dropPreviewTitle: "Weekly Drop Preview",
-  dropPreviewPrice: "₹ 713",
-  dropPreviewLaunch: "Launching next week",
+  dropPreviewLabel: "WEEKLY DROP",
+  dropPreviewTitle: "STAY TUNED",
+  dropPreviewPrice: "",
+  dropPreviewLaunch: "Stay tuned",
   feat1Title: "240GSM Heavyweight Cotton",
   feat1Desc: "Boxy fit, no shrink, no fade after wash 50.",
   feat2Title: "Small-Batch Drops",
@@ -2204,15 +2200,11 @@ function applySiteContentToDOM() {
   if (document.getElementById('hero-stamp-text')) document.getElementById('hero-stamp-text').innerText = SITE_CONTENT.heroStamp;
   const dropLabelEl = document.getElementById('hero-drop-label');
   const dropTitleEl = document.getElementById('hero-drop-title');
-  const dropPriceEl = document.getElementById('hero-drop-price');
-  const dropLaunchEl = document.getElementById('hero-drop-launch');
   const dropMediaEl = document.getElementById('hero-drop-media');
   const dropPlaceholderEl = document.getElementById('hero-drop-placeholder');
   const dropImage = safeMediaUrl(SITE_CONTENT.dropPreviewImage || '');
-  if (dropLabelEl) dropLabelEl.innerText = SITE_CONTENT.dropPreviewLabel || 'NEXT DROP';
-  if (dropTitleEl) dropTitleEl.innerText = SITE_CONTENT.dropPreviewTitle || 'Weekly Drop Preview';
-  if (dropPriceEl) dropPriceEl.innerText = SITE_CONTENT.dropPreviewPrice || '';
-  if (dropLaunchEl) dropLaunchEl.innerText = SITE_CONTENT.dropPreviewLaunch || 'Launching next week';
+  if (dropLabelEl) dropLabelEl.innerText = SITE_CONTENT.dropPreviewLabel || 'WEEKLY DROP';
+  if (dropTitleEl) dropTitleEl.innerText = SITE_CONTENT.dropPreviewTitle || 'STAY TUNED';
   if (dropMediaEl) {
     if (dropImage) {
       dropMediaEl.innerHTML = `<img src="${escapeHtml(dropImage)}" alt="${escapeHtml(SITE_CONTENT.dropPreviewTitle || 'Upcoming Rebel Store drop')}" loading="eager">`;
