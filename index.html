@@ -1618,32 +1618,29 @@ footer a:hover{color:var(--paper)}
 
     <!-- CUSTOM PRINT ORDERS SUBPAGE -->
     <div class="admin-sub-page" id="subpage-custom-orders">
-      <div class="sub-page-header">
-        <div><span class="admin-mini-label">CUSTOM FULFILMENT</span><h2>⚡ Custom Orders</h2><p style="margin:.25rem 0 0;color:var(--grey);font-family:'Space Mono';font-size:.65rem;">Custom orders are managed here. Regular Orders excludes orders containing custom print items.</p></div>
-        <button class="btn btn--ghost" style="padding:0.4rem 1rem; font-size:0.8rem;" onclick="closeAdminSubPages()">← Back to Dashboard</button>
+      <div class="sub-page-header admin-sub-header-new">
+        <div><span class="admin-mini-label">CUSTOM FULFILMENT</span><h2>⚡ Custom Orders</h2><p>Manage custom orders with the same fulfilment workflow as Orders. Front / Back print downloads are the only custom-only actions.</p></div>
+        <button class="btn btn--ghost" style="padding:.4rem 1rem;font-size:.8rem;" onclick="closeAdminSubPages()">← Dashboard</button>
       </div>
-      <div class="custom-order-admin-summary">
-        <div class="custom-order-admin-kpi"><small>Total Custom</small><strong id="custom-admin-count">0</strong></div>
-        <div class="custom-order-admin-kpi"><small>Processing</small><strong id="custom-admin-processing">0</strong></div>
-        <div class="custom-order-admin-kpi"><small>Shipping</small><strong id="custom-admin-shipping">0</strong></div>
-        <div class="custom-order-admin-kpi"><small>Delivered</small><strong id="custom-admin-delivered">0</strong></div>
+
+      <div class="admin-order-toolbar">
+        <div class="admin-status-pills" id="custom-order-status-tabs">
+          <button data-status="New" class="active" onclick="filterCustomOrdersByStatus('New', this)">🆕 New <b id="custom-cnt-new">0</b></button>
+          <button data-status="Processing" onclick="filterCustomOrdersByStatus('Processing', this)">⚙️ Processing <b id="custom-cnt-processing">0</b></button>
+          <button data-status="Printing" onclick="filterCustomOrdersByStatus('Printing', this)">🖨️ Printing <b id="custom-cnt-printing">0</b></button>
+          <button data-status="Ready" onclick="filterCustomOrdersByStatus('Ready', this)">📦 Ready <b id="custom-cnt-ready">0</b></button>
+          <button data-status="Shipping" onclick="filterCustomOrdersByStatus('Shipping', this)">🚚 Shipping <b id="custom-cnt-shipping">0</b></button>
+          <button data-status="Delivered" onclick="filterCustomOrdersByStatus('Delivered', this)">✓ Delivered <b id="custom-cnt-delivered">0</b></button>
+          <button data-status="Returned" onclick="filterCustomOrdersByStatus('Returned', this)">↩ Returned <b id="custom-cnt-returned">0</b></button>
+          <button data-status="All" onclick="filterCustomOrdersByStatus('All', this)">All <b id="custom-cnt-all">0</b></button>
+        </div>
+        <input type="text" id="custom-order-search-input" class="admin-input-small admin-order-search" placeholder="🔎 Order / customer / phone" oninput="handleCustomOrderSearch(this.value)" autocomplete="off">
       </div>
-      <div class="admin-table-wrap">
-        <table class="date-chart-table">
-          <thead>
-            <tr>
-              <th>Order</th>
-              <th>Customer & Address</th>
-              <th>Custom Item / Print</th>
-              <th>Status</th>
-              <th>Courier / Tracking</th>
-              <th>Total</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="admin-custom-orders-tbody">
-            <tr><td colspan="7" style="text-align:center; color:var(--grey);">No custom orders received yet.</td></tr>
-          </tbody>
+
+      <div class="admin-table-wrap admin-orders-table-wrap">
+        <table class="date-chart-table admin-orders-table">
+          <thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Manage</th></tr></thead>
+          <tbody id="admin-custom-orders-tbody"><tr><td colspan="5" style="text-align:center;color:var(--grey);">No custom orders received yet.</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -2123,6 +2120,8 @@ let calCurrentMonth = 7;
 let currentSelectedDateFilter = '';
 let currentStatusFilter = 'New';
 let currentSearchQuery = '';
+let currentCustomStatusFilter = 'New';
+let currentCustomSearchQuery = '';
 
 function renameCardTitle(elementId, defaultName) {
   const el = document.getElementById(elementId);
@@ -4919,46 +4918,90 @@ async function renderAdminCustomOrdersTable() {
     .map(co => ({ co, parent: getCustomOrderParent(co), parentId: getCustomParentOrderId(co) }))
     .filter(entry => entry.parent && isCustomOrderRecord(entry.parent));
 
-  const countEl = document.getElementById('custom-admin-count');
-  const processingEl = document.getElementById('custom-admin-processing');
-  const shippingEl = document.getElementById('custom-admin-shipping');
-  const deliveredEl = document.getElementById('custom-admin-delivered');
   const statusOf = entry => String(entry.parent?.orderStatus || 'New');
-  if (countEl) countEl.innerText = visible.length;
-  if (processingEl) processingEl.innerText = visible.filter(e => ['Processing','Printing','Pending Print','Go For Print','Print Received','Ready','Product Ready','Packaged'].includes(statusOf(e))).length;
-  if (shippingEl) processingEl && (shippingEl.innerText = visible.filter(e => ['Dispatched','Shipped','Out for Delivery'].includes(statusOf(e))).length);
-  if (deliveredEl) deliveredEl.innerText = visible.filter(e => ['Delivered','Completed'].includes(statusOf(e))).length;
+  const statusAliases = {
+    New: o => getAdminOrderStage(o.orderStatus) === 'New',
+    Processing: o => getAdminOrderStage(o.orderStatus) === 'Processing',
+    Printing: o => getAdminOrderStage(o.orderStatus) === 'Printing',
+    Ready: o => getAdminOrderStage(o.orderStatus) === 'Ready',
+    Shipping: o => getAdminOrderStage(o.orderStatus) === 'Shipping',
+    Delivered: o => getAdminOrderStage(o.orderStatus) === 'Delivered',
+    Returned: o => getAdminOrderStage(o.orderStatus) === 'Returned',
+    All: () => true
+  };
+
+  const countMap = {
+    'custom-cnt-new': visible.filter(e => getAdminOrderStage(statusOf(e)) === 'New').length,
+    'custom-cnt-processing': visible.filter(e => getAdminOrderStage(statusOf(e)) === 'Processing').length,
+    'custom-cnt-printing': visible.filter(e => getAdminOrderStage(statusOf(e)) === 'Printing').length,
+    'custom-cnt-ready': visible.filter(e => getAdminOrderStage(statusOf(e)) === 'Ready').length,
+    'custom-cnt-shipping': visible.filter(e => getAdminOrderStage(statusOf(e)) === 'Shipping').length,
+    'custom-cnt-delivered': visible.filter(e => getAdminOrderStage(statusOf(e)) === 'Delivered').length,
+    'custom-cnt-returned': visible.filter(e => getAdminOrderStage(statusOf(e)) === 'Returned').length,
+    'custom-cnt-all': visible.length
+  };
+  Object.entries(countMap).forEach(([id, value]) => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = value;
+  });
+
+  const predicate = statusAliases[currentCustomStatusFilter] || (() => true);
+  const search = currentCustomSearchQuery || '';
+  const filtered = visible.filter(entry => {
+    const ord = entry.parent;
+    const co = entry.co;
+    const name = String(ord?.billing?.name || co.customer?.name || '').toLowerCase();
+    const phone = String(ord?.billing?.phone || co.customer?.phone || '').toLowerCase();
+    const id = String(ord?.id || co.orderId || '').toLowerCase();
+    return predicate(ord) && (!search || id.includes(search) || name.includes(search) || phone.includes(search));
+  });
 
   customTbody.innerHTML = '';
-  if (!visible.length) {
-    customTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--grey);padding:2rem;">No active custom orders found.</td></tr>`;
+  if (!filtered.length) {
+    customTbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--grey);padding:2rem;">No matching custom orders.</td></tr>`;
     return;
   }
 
   const statusOptions = ['New','Processing','Printing','Ready','Dispatched','Out for Delivery','Delivered','Returned'];
 
-  for (const entry of visible) {
+  for (const entry of filtered) {
     const co = entry.co;
     const ord = entry.parent;
-    const parentId = ord?.id || '';
-    const displayId = parentId || co.orderId;
+    const parentId = String(ord?.id || co.orderId || '');
     const indexedItems = Array.isArray(ord?.items)
-      ? ord.items.map((item, originalIndex) => ({ item, originalIndex })).filter(entry => isCustomOrderRecordItem(entry.item))
+      ? ord.items.map((item, originalIndex) => ({ item, originalIndex })).filter(x => isCustomOrderRecordItem(x.item))
       : [];
     const customItems = indexedItems.length
-      ? indexedItems.map(entry => entry.item)
+      ? indexedItems.map(x => x.item)
       : [{
-          isCustom: true, garment: co.title?.replace(/^Custom\s+/i,'') || '', color: co.color || 'Black', size: co.size || '-', qty: co.qty || 0, price: co.totalAmount && co.qty ? Number(co.totalAmount)/Number(co.qty) : 0, prints: co.prints || null
+          isCustom: true,
+          garment: co.title?.replace(/^Custom\s+/i,'') || '',
+          color: co.color || 'Black',
+          size: co.size || '-',
+          qty: co.qty || 0,
+          price: co.totalAmount && co.qty ? Number(co.totalAmount) / Number(co.qty) : 0,
+          prints: co.prints || null
         }];
+
     const rawStatus = String(ord?.orderStatus || 'New');
-    const next = ord ? getNextOrderStatus(rawStatus) : '';
+    const next = getNextOrderStatus(rawStatus);
     const customerName = ord?.billing?.name || co.customer?.name || 'Customer';
     const customerPhone = ord?.billing?.phone || co.customer?.phone || '';
     const address = ord?.billing?.address || co.customer?.address || '—';
     const total = ord ? getCustomOrderTotal(ord) : Number(co.totalAmount ?? 0);
     const courier = ord?.courierName || '';
     const tracking = ord?.trackingId || '';
+
     const firstItem = customItems[0] || {};
+    const firstPrint = firstItem?.prints?.front || firstItem?.prints?.back || null;
+    const firstImage = safeMediaUrl(firstItem.image || firstItem.product_image || firstItem.image_url || '');
+    const firstTitle = firstItem.title || `Custom ${firstItem.garment || 'Print'}`;
+    const firstSize = firstItem.size || '-';
+    const firstQty = Number(firstItem.qty ?? firstItem.quantity ?? 0);
+    const moreItems = Math.max(0, customItems.length - 1);
+    const itemPreviewHtml = firstImage
+      ? `<img class="admin-order-item-thumb" src="${escapeHtml(firstImage)}" alt="${escapeHtml(firstTitle)}">`
+      : `<div class="admin-order-item-thumb-placeholder">CUSTOM<br>PRINT</div>`;
 
     let printButtons = '';
     for (const [key, label] of [['front','Front'],['back','Back']]) {
@@ -4968,70 +5011,120 @@ async function renderAdminCustomOrdersTable() {
     }
     if (!printButtons) printButtons = '<span class="custom-order-muted">No print file</span>';
 
-    let itemDetailHtml = '';
+    const itemsSummaryHtml = `
+      <div class="admin-order-item-preview">
+        ${itemPreviewHtml}
+        <div class="admin-order-item-preview-copy">
+          <strong>${escapeHtml(firstTitle)}</strong>
+          <span>Size: <b style="color:var(--spray-yellow);">${escapeHtml(firstSize)}</b> · Qty: <b>${firstQty}</b>${moreItems ? ` · +${moreItems} more item${moreItems > 1 ? 's' : ''}` : ''}</span>
+          <span style="color:var(--spray-yellow);font-size:.58rem;">CUSTOM PRINT</span>
+        </div>
+      </div>
+      <div class="custom-order-print-grid" style="margin-top:.35rem;">${printButtons}</div>
+      <span class="admin-order-expand-hint">Click for full details</span>`;
+
+    let itemsDetailedHtml = '';
     customItems.forEach((it, idx) => {
       const originalItemIndex = indexedItems[idx]?.originalIndex ?? idx;
+      const safeItemImage = safeMediaUrl(it.image || it.product_image || it.image_url || '');
+      const imgHtml = safeItemImage
+        ? `<img src="${escapeHtml(safeItemImage)}" alt="${escapeHtml(it.title || 'Custom Product')}" style="width:54px;height:64px;object-fit:contain;background:#111;border:1px solid #333;border-radius:4px;flex:0 0 auto;">`
+        : `<div class="admin-order-item-thumb-placeholder">CUSTOM<br>PRINT</div>`;
+      const st = it.stockStatus || { available:true, notes:'' };
       const note = String(it.production_note || '').replace(/\n/g,' ');
-      const st = it.stockStatus || {available:true,notes:''};
       const printLinks = [];
       for (const [key,label] of [['front','Front'],['back','Back']]) {
         if (it?.prints?.[key]?.path) printLinks.push(`<button type="button" class="custom-order-print-btn" onclick="event.stopPropagation();downloadCustomPrintFile('${escapeHtml(co.orderId)}','${key}')">⬇ ${label}</button>`);
       }
-      itemDetailHtml += `<div style="padding:.65rem 0;border-bottom:1px dashed rgba(242,240,234,.14);">
-        <div><strong>${escapeHtml(it.title || `Custom ${it.garment || 'Print'}`)}</strong> <span style="color:var(--spray-yellow);font-size:.6rem;">CUSTOM</span></div>
-        <div class="custom-order-muted">Garment: ${escapeHtml(it.garment || '-')} · Color: ${escapeHtml(it.color || '-')} · Size: ${escapeHtml(it.size || '-')} · Qty: ${Number(it.qty ?? it.quantity ?? 0)} · ₹ ${Number(it.price ?? it.unit_price ?? 0)}</div>
-        <div class="custom-order-print-grid">${printLinks.join('') || '<span class="custom-order-muted">No print files</span>'}</div>
-        ${ord ? `<div style="margin-top:.55rem;display:grid;gap:.45rem;">
-          <label style="font-size:.6rem;color:var(--grey);">Stock</label>
-          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-            <label style="font-size:.6rem;color:var(--success-green);"><input type="radio" name="custom-stock-${escapeHtml(ord.id)}-${idx}" ${st.available ? 'checked' : ''} onchange="updateItemStockMeta('${escapeHtml(ord.id)}',${originalItemIndex},'available',true);event.stopPropagation()"> Available</label>
-            <label style="font-size:.6rem;color:var(--rebel-red);"><input type="radio" name="custom-stock-${escapeHtml(ord.id)}-${idx}" ${!st.available ? 'checked' : ''} onchange="updateItemStockMeta('${escapeHtml(ord.id)}',${originalItemIndex},'available',false);event.stopPropagation()"> Unavailable</label>
-            <input class="admin-input-small" style="margin:0;width:190px;font-size:.6rem;" value="${escapeHtml(st.notes || '')}" placeholder="Stock note" onchange="updateItemStockMeta('${escapeHtml(ord.id)}',${originalItemIndex},'notes',this.value)" onclick="event.stopPropagation()">
+      itemsDetailedHtml += `
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;border-bottom:1px dashed rgba(242,240,234,.15);padding-bottom:10px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            ${imgHtml}
+            <div><strong>${escapeHtml(it.title || `Custom ${it.garment || 'Print'}`)}</strong> <span style="color:var(--spray-yellow);font-size:.6rem;">CUSTOM</span><br><span style="font-size:.65rem;color:var(--grey);">Garment: ${escapeHtml(it.garment || '-')} · Color: ${escapeHtml(it.color || '-')} · Size: <strong style="color:var(--spray-yellow);">${escapeHtml(it.size || '-')}</strong> · Qty: ${Number(it.qty ?? it.quantity) || 0} · ₹ ${Number(it.price ?? it.unit_price) || 0}</span></div>
           </div>
-          <textarea class="admin-note-input" style="min-height:55px;" placeholder="Production note — print / packaging / customer note" onchange="updateItemStockMeta('${escapeHtml(ord.id)}',${originalItemIndex},'production_note',this.value)" onclick="event.stopPropagation()">${escapeHtml(note)}</textarea>
-        </div>` : ''}
-      </div>`;
+          <div class="custom-order-print-grid" style="margin-left:64px;">${printLinks.join('') || '<span class="custom-order-muted">No print files</span>'}</div>
+          ${ord ? `<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-left:64px;">
+            <label style="font-size:.62rem;cursor:pointer;display:flex;gap:4px;align-items:center;color:var(--success-green);font-weight:700;"><input type="radio" name="custom-stock-${escapeHtml(ord.id)}-${idx}" ${st.available ? 'checked' : ''} onchange="updateItemStockMeta('${escapeHtml(ord.id)}',${originalItemIndex},'available',true);event.stopPropagation()"> Available</label>
+            <label style="font-size:.62rem;cursor:pointer;display:flex;gap:4px;align-items:center;color:var(--rebel-red);font-weight:700;"><input type="radio" name="custom-stock-${escapeHtml(ord.id)}-${idx}" ${!st.available ? 'checked' : ''} onchange="updateItemStockMeta('${escapeHtml(ord.id)}',${originalItemIndex},'available',false);event.stopPropagation()"> Unavailable</label>
+            <input type="text" class="admin-input-small" placeholder="Stock note" value="${escapeHtml(st.notes || '')}" onchange="updateItemStockMeta('${escapeHtml(ord.id)}',${originalItemIndex},'notes',this.value)" style="width:180px;margin:0;font-size:.62rem;padding:4px 7px;" onclick="event.stopPropagation()">
+          </div>
+          <textarea class="admin-note-input" placeholder="Production note — print / packaging / customer note" onchange="updateItemStockMeta('${escapeHtml(ord.id)}',${originalItemIndex},'production_note',this.value)" onclick="event.stopPropagation()">${escapeHtml(note)}</textarea>` : ''}
+        </div>`;
     });
 
-    const statusSelect = ord ? `<select class="custom-order-status-select" onchange="event.stopPropagation();updateCustomOrderStatusFromSelect(this,'${escapeHtml(parentId)}')">${statusOptions.map(st => `<option value="${escapeHtml(st)}" ${rawStatus === st ? 'selected' : ''}>${escapeHtml(st)}</option>`).join('')}</select>` : `<span class="custom-order-muted">${escapeHtml(rawStatus)}</span>`;
-    const nextButton = ord && next && next !== 'Dispatched' ? `<button class="btn btn--solid" type="button" onclick="event.stopPropagation();updateOrderStatusInSupabase('${escapeHtml(parentId)}','${escapeHtml(next)}')">→ ${escapeHtml(next)}</button>` : ord && next === 'Dispatched' ? `<button class="btn btn--solid" type="button" onclick="event.stopPropagation();openDispatchModal('${escapeHtml(parentId)}')">→ Dispatch</button>` : '';
-    const actionButtons = ord ? `<div class="custom-order-admin-actions" onclick="event.stopPropagation()">
-      ${nextButton}
-      <button class="btn btn--ghost" type="button" title="Save Courier + Tracking" onclick="event.stopPropagation();openDispatchModal('${escapeHtml(parentId)}')">🚚 Tracking</button>
-      <button class="btn btn--ghost" type="button" title="Download shipping label PDF" onclick="event.stopPropagation();downloadCourierLabelPDF('${escapeHtml(parentId)}')">🏷️ Label</button>
-      <button class="btn btn--ghost" type="button" title="Download Zoho invoice PDF" onclick="event.stopPropagation();downloadZohoInvoicePDF('${escapeHtml(parentId)}')">🧾 Invoice</button>
-      <button class="btn btn--ghost admin-trash-action" type="button" title="Move custom order to Trash" style="color:var(--rebel-red);border-color:var(--rebel-red);" onclick="event.stopPropagation();confirmDeleteCustomOrder('${escapeHtml(co.orderId)}')">🗑️ Delete</button>
-    </div>` : `<button class="btn btn--ghost admin-trash-action" type="button" style="color:var(--rebel-red);border-color:var(--rebel-red);" onclick="event.stopPropagation();confirmDeleteCustomOrder('${escapeHtml(co.orderId)}')">🗑️ Delete</button>`;
+    const statusSelect = ord
+      ? `<select class="custom-order-status-select" onchange="event.stopPropagation();updateCustomOrderStatusFromSelect(this,'${escapeHtml(parentId)}')">${statusOptions.map(st => `<option value="${escapeHtml(st)}" ${rawStatus === st ? 'selected' : ''}>${escapeHtml(st)}</option>`).join('')}</select>`
+      : `<span class="custom-order-muted">${escapeHtml(rawStatus)}</span>`;
+
+    const nextLabel = rawStatus === 'New'
+      ? '✓ Accept Order'
+      : next === 'Dispatched'
+        ? '→ Dispatch'
+        : next
+          ? `→ ${escapeHtml(next)}`
+          : rawStatus === 'Delivered'
+            ? '✓ Delivered'
+            : rawStatus === 'Returned'
+              ? '↩ Returned'
+              : '—';
+    const nextDisabled = !next;
+    const nextAction = next
+      ? (next === 'Dispatched'
+          ? `openDispatchModal('${escapeHtml(parentId)}')`
+          : `updateOrderStatusInSupabase('${escapeHtml(parentId)}','${escapeHtml(next)}')`)
+      : '';
+
+    // Keep the exact normal-order management actions, with only the custom
+    // Front / Back print download buttons added in the Items column.
+    const actionColHtml = `
+      <div class="admin-order-action-box" onclick="event.stopPropagation()">
+        <div class="admin-order-action-buttons">
+          <button class="btn btn--solid admin-next-btn ${nextDisabled ? 'admin-order-next-disabled' : ''}" type="button" ${nextDisabled ? 'disabled' : ''} onclick="event.stopPropagation();${nextAction}">${nextLabel}</button>
+          <button class="btn btn--ghost admin-icon-action" type="button" title="Download shipping label PDF" aria-label="Download shipping label PDF" onclick="event.stopPropagation();downloadCourierLabelPDF('${escapeHtml(parentId)}')">🏷️</button>
+          <button class="btn btn--ghost admin-icon-action" type="button" title="Download Zoho invoice PDF" aria-label="Download Zoho invoice PDF" onclick="event.stopPropagation();downloadZohoInvoicePDF('${escapeHtml(parentId)}')">🧾</button>
+          <button class="btn btn--ghost admin-icon-action admin-trash-action" title="Move order to Trash" aria-label="Move order to Trash" style="color:var(--rebel-red);border-color:var(--rebel-red);" type="button" onclick="event.stopPropagation();confirmDeleteCustomOrder('${escapeHtml(co.orderId)}')">🗑️</button>
+        </div>
+      </div>`;
 
     const detailId = `custom-detail-${String(co.orderId).replace(/[^a-zA-Z0-9_-]/g,'_')}`;
     const tr = document.createElement('tr');
-    tr.className = 'custom-order-admin-row';
     tr.style.cursor = 'pointer';
     tr.onclick = (e) => {
       if (['BUTTON','INPUT','SELECT','OPTION','TEXTAREA','LABEL'].includes(e.target.tagName)) return;
-      const detail = document.getElementById(detailId);
-      if (detail) detail.style.display = detail.style.display === 'block' ? 'none' : 'block';
+      const addressBox = document.getElementById(`order-detail-${String(parentId).replace(/[^a-zA-Z0-9_-]/g,'_')}`);
+      const itemBox = document.getElementById(`order-items-${String(parentId).replace(/[^a-zA-Z0-9_-]/g,'_')}`);
+      if (addressBox && itemBox) {
+        const open = addressBox.style.display !== 'block';
+        addressBox.style.display = open ? 'block' : 'none';
+        itemBox.style.display = open ? 'block' : 'none';
+      } else {
+        const detail = document.getElementById(detailId);
+        if (detail) detail.style.display = detail.style.display === 'block' ? 'none' : 'block';
+      }
     };
-    tr.innerHTML = `
-      <td><strong>${escapeHtml(displayId)}</strong><br><span class="custom-order-muted">${escapeHtml(co.date || ord?.date || '')}</span>${co.orderId !== displayId ? `<br><span class="custom-order-muted">Custom Ref: ${escapeHtml(co.orderId)}</span>` : ''}</td>
-      <td><strong>${escapeHtml(customerName)}</strong><br><span class="custom-order-muted">${escapeHtml(customerPhone)}</span><div class="custom-order-detail-box" id="${detailId}"><span style="font-size:.58rem;color:var(--spray-yellow);">DELIVERY ADDRESS</span><br>${escapeHtml(address)}</div></td>
-      <td><strong>${escapeHtml(firstItem.garment || co.title || 'Custom Print')}</strong><br><span class="custom-order-muted">Color: ${escapeHtml(firstItem.color || co.color || '-')} · Size: ${escapeHtml(firstItem.size || co.size || '-')} · Qty: ${Number(firstItem.qty ?? firstItem.quantity ?? co.qty ?? 0)}</span><div class="custom-order-print-grid">${printButtons}</div><div class="custom-order-detail-box" id="${detailId}-items"><span style="font-size:.58rem;color:var(--spray-yellow);">CUSTOM DETAILS</span>${itemDetailHtml}</div></td>
-      <td>${statusSelect}<br><span class="custom-order-muted" style="display:inline-block;margin-top:.35rem;">Payment: ${escapeHtml(ord?.paymentStatus || 'paid')}</span></td>
-      <td><strong>${escapeHtml(courier || 'Not set')}</strong><br><span class="custom-order-muted">${escapeHtml(tracking || 'Tracking not added')}</span></td>
-      <td style="color:var(--spray-yellow);font-weight:bold;white-space:nowrap;">₹ ${total.toLocaleString('en-IN')}</td>
-      <td>${actionButtons}</td>`;
 
-    // Expand both address and custom details together.
-    tr.onclick = (e) => {
-      if (['BUTTON','INPUT','SELECT','OPTION','TEXTAREA','LABEL'].includes(e.target.tagName)) return;
-      const addressBox = document.getElementById(detailId);
-      const itemBox = document.getElementById(`${detailId}-items`);
-      const open = addressBox?.style.display !== 'block';
-      if (addressBox) addressBox.style.display = open ? 'block' : 'none';
-      if (itemBox) itemBox.style.display = open ? 'block' : 'none';
-    };
+    const safeParentDomId = String(parentId).replace(/[^a-zA-Z0-9_-]/g,'_');
+    tr.innerHTML = `
+      <td><strong>${escapeHtml(parentId)}</strong><br><span style="font-size:.6rem;color:var(--grey);">${escapeHtml(formatStoreDateTimeIndia(ord?.createdAt || ord?.date || co.date || ''))}</span></td>
+      <td><strong>${escapeHtml(customerName)}</strong><br><span style="font-size:.6rem;color:var(--grey);">${escapeHtml(customerPhone)}</span><div id="order-detail-${safeParentDomId}" style="display:none;margin-top:8px;background:#18181b;padding:10px;border:1px solid rgba(242,240,234,.15);"><span style="font-size:.58rem;color:var(--spray-yellow);">ADDRESS</span><br>${escapeHtml(address)}<br><span style="font-size:.58rem;color:var(--spray-yellow);display:inline-block;margin-top:6px;">COURIER / TRACKING</span><br>${escapeHtml(courier || 'Not set')} · ${escapeHtml(tracking || 'Tracking not added')}</div></td>
+      <td><div id="order-items-summary-${safeParentDomId}">${itemsSummaryHtml}</div><div id="order-items-${safeParentDomId}" style="display:none;margin-top:10px;background:#18181b;padding:10px;border:1px solid rgba(242,240,234,.15);">${itemsDetailedHtml || '<span style="color:var(--grey)">No item details</span>'}</div></td>
+      <td style="color:var(--spray-yellow);font-weight:bold;white-space:nowrap;">₹ ${total.toLocaleString('en-IN')}<br><span style="background:rgba(34,197,94,.15);color:#22c55e;padding:1px 5px;font-size:.52rem;">${escapeHtml(ord?.paymentStatus || 'paid')}</span></td>
+      <td>${actionColHtml}</td>`;
+
     customTbody.appendChild(tr);
   }
+}
+
+function filterCustomOrdersByStatus(status, btnElement) {
+  currentCustomStatusFilter = status;
+  document.querySelectorAll('#custom-order-status-tabs button').forEach(b => b.classList.remove('active'));
+  if (btnElement) btnElement.classList.add('active');
+  renderAdminCustomOrdersTable();
+}
+
+function handleCustomOrderSearch(query) {
+  currentCustomSearchQuery = String(query || '').trim().toLowerCase();
+  renderAdminCustomOrdersTable();
 }
 
 function isCustomOrderRecordItem(item) {
