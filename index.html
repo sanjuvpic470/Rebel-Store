@@ -216,7 +216,7 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .size-selector{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1.4rem}
 .size-btn{min-width:48px;height:46px;background:#18181b;border:1.5px solid rgba(242,240,234,.2);color:var(--paper);font-family:'Space Mono',monospace;font-weight:700;font-size:.88rem;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0 .5rem}
 .size-btn.selected{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow);box-shadow:3px 3px 0 var(--paper)}
-#pdp-color-selector .color-swatch-btn{width:46px;min-width:46px;height:46px;padding:0;border-radius:50%;display:flex;align-items:center;justify-content:center;box-sizing:border-box;position:relative;overflow:hidden;border:2px solid rgba(242,240,234,.3);box-shadow:none;flex:0 0 46px}
+#pdp-color-selector .color-swatch-btn{width:46px;min-width:46px;height:46px;padding:0;border-radius:50%;display:flex;align-items:center;justify-content:center;box-sizing:border-box;position:relative;overflow:hidden;border:2px solid rgba(242,240,234,.3);box-shadow:none;flex:0 0 46px;background:var(--swatch-color)}
 #pdp-color-selector .color-swatch-btn.selected{border-color:var(--spray-yellow);box-shadow:0 0 0 3px var(--ink),0 0 0 5px var(--spray-yellow);background:var(--swatch-color);color:transparent}
 #pdp-color-selector .color-swatch-btn.is-unavailable{opacity:.35;text-decoration:none;cursor:not-allowed}
 #pdp-color-selector .color-swatch-btn.is-unavailable::after{content:"";position:absolute;left:8%;right:8%;top:50%;border-top:2px solid rgba(255,255,255,.95);transform:rotate(-18deg)}
@@ -1012,7 +1012,7 @@ footer a:hover{color:var(--paper)}
           <button type="button" class="size-chart-btn" onclick="openSizeChart()">Size Chart ↗</button>
           <button type="button" id="fit-finder-open-btn" class="fit-finder-btn">👕 Find My T-Shirt Size</button>
         </div>
-        <span class="option-label">Select Color (Default: Yellow & White)</span>
+        
         <div class="size-selector" id="pdp-color-selector"></div>
         <div class="pdp-selection-status" id="pdp-selection-status"></div>
         <div class="pdp-stock-note" id="pdp-stock-note"><span class="pdp-stock-dot"></span><span id="pdp-stock-text">In Stock</span><span id="pdp-stock-count" class="stock-count-badge"></span></div><button type="button" class="notify-stock-btn" id="notify-stock-btn" onclick="notifyWhenBackInStock()">Notify Me When Available ↗</button><div class="notify-stock-note" id="notify-stock-note">We’ll save your request on this device for this product + selected size/color.</div>
@@ -2997,7 +2997,7 @@ function updatePdpSelectionStatus() {
     ? currentProduct.colors
     : ['Yellow','White'];
 
-  status.innerHTML = `Selected: <strong>${selectedSize || '—'}</strong> · <strong>${selectedColor || '—'}</strong>`;
+  status.innerHTML = `Selected Color: <strong>${selectedColor || '—'}</strong>`;
 
   const hasLiveStock = Array.isArray(currentProduct.stockVariants);
   const selectedStock = hasLiveStock && !currentProduct.stockLoadFailed && typeof currentProduct.getStockForSelection === 'function'
