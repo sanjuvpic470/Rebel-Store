@@ -1093,6 +1093,13 @@ h1.hero__title .stroke{-webkit-text-stroke:0;color:#fff}
 .file-hint,.b-hint{color:#9ca3af}
 .b-hint{color:#FACC15}
 
+/* T-SHIRT LAB COLOR PALETTE */
+.cust-color-swatch-row{display:flex;flex-wrap:wrap;gap:.7rem;align-items:center}
+.cust-color-swatch{width:42px;height:42px;min-width:42px;padding:0;border-radius:50%;border:2px solid var(--cust-border,rgba(255,255,255,.25));background:transparent;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s;position:relative}
+.cust-color-swatch-inner{width:100%;height:100%;border-radius:50%;background:var(--cust-color,#808080);display:block}
+.cust-color-swatch.selected{border-color:var(--spray-yellow);box-shadow:0 0 0 2px var(--ink),0 0 0 4px var(--spray-yellow);transform:scale(1.08)}
+.cust-color-swatch.is-unavailable{opacity:.3;cursor:not-allowed}
+.cust-color-swatch.is-unavailable::after{content:'';position:absolute;left:8%;right:8%;top:50%;border-top:2px solid #fff;transform:rotate(-45deg)}
 /* ---------- 12. CUSTOM ORDER PAGE (T-Shirt Lab) ---------- */
 .custom-form-box,.billing-form-box,.checkout-new-address-box{background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--glass-line);border-radius:1.5rem;padding:2rem;box-shadow:0 0 60px -10px rgba(250,204,21,.15)}
 @media(max-width:600px){.custom-form-box,.billing-form-box,.checkout-new-address-box{padding:1.25rem}}
@@ -1394,7 +1401,6 @@ footer a:hover{color:#FACC15}
         <a onclick="handleNavSignatureClick()" id="nav-link-signature" role="link" tabindex="0">Signature Drops</a>
         <a onclick="openCustomOrderPage()" id="nav-link-manifesto" role="link" tabindex="0">T-Shirt Lab</a>
         <a onclick="handleNavContactClick()" id="nav-link-contact" role="link" tabindex="0">Contact</a>
-        <a onclick="openMasterFeatures()" id="nav-link-features" role="link" tabindex="0">Features</a>
       </nav>
 
       <div class="header-actions">
@@ -1406,10 +1412,8 @@ footer a:hover{color:#FACC15}
           <div class="user-dropdown-item" onclick="openProfileModal()">👤 Profile</div>
           <div class="user-dropdown-item" onclick="openOrdersModal()">📦 My Orders</div>
           <div class="user-dropdown-item" onclick="openSavedAddressesModal()">📍 Saved Address</div>
-          <div class="user-dropdown-item" onclick="openWishlistModal()">❤️ Wishlist</div>
           <div class="user-dropdown-item" onclick="logoutUser()" style="color:var(--rebel-red);">🚪 Logout</div>
         </div>
-        <button class="wishlist-icon-btn" onclick="openWishlistModal()" title="View Wishlist" aria-label="View Wishlist"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></button>
         <button class="cart-btn" onclick="toggleCartDrawer(true)" aria-label="Open shopping bag"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><span class="cart-badge" id="cart-count-header" style="display:none;">0</span></button>
         <a class="lux-shop-btn" onclick="handleNavShopClick()" role="link" tabindex="0">Shop Drops</a>
         <button id="menu-btn" class="lux-menu-btn" type="button" aria-label="Open menu" aria-expanded="false" onclick="toggleMobileMenu()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
@@ -1421,7 +1425,6 @@ footer a:hover{color:#FACC15}
       <a onclick="closeMobileMenu();handleNavSignatureClick()">Signature Drops</a>
       <a onclick="closeMobileMenu();openCustomOrderPage()">T-Shirt Lab</a>
       <a onclick="closeMobileMenu();handleNavContactClick()">Contact</a>
-      <a onclick="closeMobileMenu();openMasterFeatures()">Features</a>
       <a class="lux-mobile-cta" onclick="closeMobileMenu();handleNavShopClick()">Shop Drops</a>
     </div>
   </header>
@@ -1566,9 +1569,9 @@ footer a:hover{color:#FACC15}
         <div class="lux-lab-glow"></div>
         <div class="lux-lab-grid">
           <div class="lux-lab-copy">
-            <h3 class="lux-h3-sm" id="compact-custom-title">Create Your Custom Order ⚡</h3>
-            <p id="compact-custom-desc">Have your own design? Upload your custom front or back print artwork at just ரூ 699 (Min Qty: 2).</p>
-            <button class="btn btn--solid" onclick="openCustomOrderPage()" id="compact-custom-btn">Start Custom Order Now →</button>
+            <h3 class="lux-h3-sm" id="compact-custom-title">T-Shirt Lab ⚡</h3>
+            <p id="compact-custom-desc">Create your own T-shirt design. Upload front or back print artwork at just ரூ 699 (Min Qty: 2).</p>
+            <button class="btn btn--solid" onclick="openCustomOrderPage()" id="compact-custom-btn">Open T-Shirt Lab →</button>
           </div>
           <div class="lux-lab-form">
             <h4>Join the Rebel List</h4>
@@ -1595,10 +1598,10 @@ footer a:hover{color:#FACC15}
   <section id="custom-order-page">
     <button class="back-btn" onclick="showHomeView()">← Back to Store</button>
     <div class="custom-form-box">
-      <h2>⚡ Custom Print Builder (ரூ 699 | Min Qty: 2)</h2>
+      <h2>⚡ T-Shirt Lab (ரூ 699 | Min Qty: 2)</h2>
       <div class="form-group">
-        <label>Select Garment Type</label>
-        <select id="cust-garment" class="form-control">
+        <label>Select T-Shirt</label>
+        <select id="cust-garment" class="form-control" onchange="onCustProductChange(this.value)">
           <!-- Dynamically populated from active storefront categories -->
         </select>
       </div>
@@ -1614,20 +1617,11 @@ footer a:hover{color:#FACC15}
       </div>
       <div class="form-group">
         <label>Select Color</label>
-        <div class="size-selector" id="cust-color-selector">
-          <button type="button" class="size-btn selected" onclick="selectCustColor(this, 'Black')">Black</button>
-          <button type="button" class="size-btn" onclick="selectCustColor(this, 'White')">White</button>
-        </div>
+        <div class="size-selector cust-color-swatch-row" id="cust-color-selector" aria-label="T-Shirt colors"></div>
       </div>
       <div class="form-group">
         <label>Select Size</label>
-        <div class="size-selector" id="cust-size-selector">
-          <button type="button" class="size-btn" onclick="selectCustSize(this, 'S')">S</button>
-          <button type="button" class="size-btn selected" onclick="selectCustSize(this, 'M')">M</button>
-          <button type="button" class="size-btn" onclick="selectCustSize(this, 'L')">L</button>
-          <button type="button" class="size-btn" onclick="selectCustSize(this, 'XL')">XL</button>
-          <button type="button" class="size-btn" onclick="selectCustSize(this, 'XXL')">XXL</button>
-        </div>
+        <div class="size-selector" id="cust-size-selector" aria-label="T-Shirt sizes"></div>
       </div>
       <div class="form-group">
         <label>Quantity (Minimum 2)</label>
@@ -1642,7 +1636,7 @@ footer a:hover{color:#FACC15}
         <span class="price-curr" id="cust-total-price-display">ரூ 1398</span>
         <span class="badge-off">MIN QTY 2 RATE</span>
       </div>
-      <button class="btn btn--solid" style="width:100%; justify-content:center; margin-top:1.5rem;" onclick="addCustomOrderToCart()">Add Custom Order to Cart →</button>
+      <button class="btn btn--solid" style="width:100%; justify-content:center; margin-top:1.5rem;" onclick="addCustomOrderToCart()">Add T-Shirt Lab Order to Cart →</button>
     </div>
   </section>
 
@@ -2308,7 +2302,7 @@ footer a:hover{color:#FACC15}
     <!-- CUSTOM PRINT ORDERS SUBPAGE -->
     <div class="admin-sub-page" id="subpage-custom-orders">
       <div class="sub-page-header admin-sub-header-new">
-        <div><span class="admin-mini-label">CUSTOM FULFILMENT</span><h2>⚡ Custom Orders</h2><p>Manage custom orders with the same fulfilment workflow as Orders. Front / Back print downloads are the only custom-only actions.</p></div>
+        <div><span class="admin-mini-label">T-SHIRT LAB FULFILMENT</span><h2>⚡ T-Shirt Lab Orders</h2><p>Manage T-Shirt Lab orders with the same fulfilment workflow as Orders. Front / Back print downloads are available here.</p></div>
         <button class="btn btn--ghost" style="padding:.4rem 1rem;font-size:.8rem;" onclick="closeAdminSubPages()">← Dashboard</button>
       </div>
 
@@ -2329,7 +2323,7 @@ footer a:hover{color:#FACC15}
       <div class="admin-table-wrap admin-orders-table-wrap">
         <table class="date-chart-table admin-orders-table">
           <thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Manage</th></tr></thead>
-          <tbody id="admin-custom-orders-tbody"><tr><td colspan="5" style="text-align:center;color:var(--grey);">No custom orders received yet.</td></tr></tbody>
+          <tbody id="admin-custom-orders-tbody"><tr><td colspan="5" style="text-align:center;color:var(--grey);">No T-Shirt Lab orders received yet.</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -3088,18 +3082,100 @@ function renderStorefront() {
   if (typeof renderCuratedSection === 'function') renderCuratedSection();
 }
 
-function updateCustomOrderGarmentDropdown() {
+function getTShirtLabProducts() {
+  const out = [];
+  (Array.isArray(CATEGORIES) ? CATEGORIES : []).forEach(cat => {
+    (Array.isArray(cat.products) ? cat.products : []).forEach(prod => {
+      if (typeof prod.customizeEnabled !== 'boolean') prod.customizeEnabled = true;
+      if (prod.customizeEnabled !== false) out.push({ cat, prod });
+    });
+  });
+  return out;
+}
+
+function findTShirtLabSelection(value) {
+  const raw = String(value || '');
+  const split = raw.indexOf('::');
+  if (split < 0) return null;
+  const catName = raw.slice(0, split);
+  const productId = raw.slice(split + 2);
+  const cat = CATEGORIES.find(c => String(c.name) === catName);
+  const prod = cat?.products?.find(p => String(p.id) === productId);
+  return cat && prod ? { cat, prod } : null;
+}
+
+function getProductColorHex(prod, color) {
+  const key = String(color || '').trim().toLowerCase();
+  const meta = prod?.colorMeta && typeof prod.colorMeta === 'object' ? prod.colorMeta[key] : '';
+  if (/^#[0-9a-f]{6}$/i.test(String(meta || ''))) return String(meta).toLowerCase();
+  return typeof getAdminDefaultColorHex === 'function' ? getAdminDefaultColorHex(color) : '#808080';
+}
+
+function renderTShirtLabOptions() {
+  const select = document.getElementById('cust-garment');
+  const colorWrap = document.getElementById('cust-color-selector');
+  const sizeWrap = document.getElementById('cust-size-selector');
+  if (!select || !colorWrap || !sizeWrap) return;
+
+  const selected = findTShirtLabSelection(select.value) || getTShirtLabProducts()[0] || null;
+  if (!selected) {
+    colorWrap.innerHTML = '<span style="font-family:\'Space Mono\';font-size:.7rem;color:var(--grey);">No T-Shirt Lab products are enabled. Enable a product from Admin → Products.</span>';
+    sizeWrap.innerHTML = '';
+    return;
+  }
+
+  const { prod } = selected;
+  const colors = Array.isArray(prod.colors) && prod.colors.length ? prod.colors : ['Black','White'];
+  const disabledColors = Array.isArray(prod.disabledColors) ? prod.disabledColors : [];
+  const sizes = Array.isArray(prod.sizes) && prod.sizes.length ? prod.sizes : ['S','M','L','XL'];
+  const disabledSizes = Array.isArray(prod.disabledSizes) ? prod.disabledSizes : [];
+
+  let activeColor = colors.find(c => String(c).toLowerCase() === String(custColor || '').toLowerCase() && !disabledColors.some(d => String(d).toLowerCase() === String(c).toLowerCase())) || colors.find(c => !disabledColors.some(d => String(d).toLowerCase() === String(c).toLowerCase())) || colors[0];
+  custColor = activeColor || colors[0] || 'Black';
+  let activeSize = sizes.find(sz => String(sz).toLowerCase() === String(custSize || '').toLowerCase() && !disabledSizes.some(d => String(d).toLowerCase() === String(sz).toLowerCase())) || sizes.find(sz => !disabledSizes.some(d => String(d).toLowerCase() === String(sz).toLowerCase())) || sizes[0];
+  custSize = activeSize || sizes[0] || 'M';
+
+  colorWrap.innerHTML = colors.map(color => {
+    const key = String(color).trim().toLowerCase();
+    const unavailable = disabledColors.some(d => String(d).trim().toLowerCase() === key);
+    const hex = getProductColorHex(prod, color);
+    const border = hex.toLowerCase() === '#ffffff' || hex.toLowerCase() === '#fff' ? 'rgba(255,255,255,.65)' : 'rgba(255,255,255,.25)';
+    return `<button type="button" class="cust-color-swatch${String(color).toLowerCase() === String(custColor).toLowerCase() ? ' selected' : ''}${unavailable ? ' is-unavailable' : ''}" title="${escapeHtml(color)}${unavailable ? ' — unavailable' : ''}" aria-label="${escapeHtml(color)}" ${unavailable ? 'disabled' : ''} onclick="selectCustColor(this, '${escapeHtml(String(color).replace(/'/g,"\\'"))}')" style="--cust-color:${escapeHtml(hex)};--cust-border:${border};"><span class="cust-color-swatch-inner"></span></button>`;
+  }).join('');
+
+  sizeWrap.innerHTML = sizes.map(size => {
+    const unavailable = disabledSizes.some(d => String(d).trim().toLowerCase() === String(size).trim().toLowerCase());
+    return `<button type="button" class="size-btn${String(size).toLowerCase() === String(custSize).toLowerCase() ? ' selected' : ''}${unavailable ? ' is-unavailable' : ''}" ${unavailable ? 'disabled' : ''} onclick="selectCustSize(this, '${escapeHtml(String(size).replace(/'/g,"\\'"))}')">${escapeHtml(size)}</button>`;
+  }).join('');
+}
+
+function updateCustomOrderGarmentDropdown(preferredValue = '') {
   const select = document.getElementById('cust-garment');
   if (!select) return;
-  const currentVal = select.value;
+  const products = getTShirtLabProducts();
+  const currentVal = preferredValue || select.value;
   select.innerHTML = '';
-  CATEGORIES.forEach(cat => {
+  products.forEach(({cat, prod}) => {
     const opt = document.createElement('option');
-    opt.value = cat.name;
-    opt.textContent = cat.name;
-    if (cat.name === currentVal) opt.selected = true;
+    opt.value = `${cat.name}::${prod.id}`;
+    opt.textContent = `${prod.title} · ${cat.name}`;
+    if (opt.value === currentVal) opt.selected = true;
     select.appendChild(opt);
   });
+  if (!select.value && products[0]) select.value = `${products[0].cat.name}::${products[0].prod.id}`;
+  renderTShirtLabOptions();
+}
+
+function onCustProductChange(value) {
+  custColor = '';
+  custSize = '';
+  renderTShirtLabOptions();
+  const selected = findTShirtLabSelection(value);
+  if (selected?.prod?.price) {
+    custUnitPrice = Number(selected.prod.customPrice || custUnitPrice || 699);
+  }
+  const priceEl = document.getElementById('cust-total-price-display');
+  if (priceEl) priceEl.innerText = 'ரூ ' + (custUnitPrice * custQty);
 }
 
 function createProductCard(catName, prod, index) {
@@ -3192,7 +3268,7 @@ function showHomeView() {
 function openCustomOrderPage() {
   updateCustomOrderGarmentDropdown();
 
-  // Custom Order is a product-builder page only. Address selection belongs
+  // T-Shirt Lab is a product-builder page only. Address selection belongs
   // to the Cart -> Shipping & Billing step, not underneath this page.
   // Always hide checkout/address views so an old address form cannot remain
   // visible when switching accounts or returning from checkout.
@@ -3213,18 +3289,14 @@ function openCustomOrderPage() {
 
   // Reset the builder to its clean defaults whenever it is opened.
   custQty = 2;
-  custSize = 'M';
-  custColor = 'Black';
+  custSize = '';
+  custColor = '';
   const qtyEl = document.getElementById('cust-qty-val');
   const priceEl = document.getElementById('cust-total-price-display');
   if (qtyEl) qtyEl.innerText = '2';
   if (priceEl) priceEl.innerText = 'ரூ ' + (custUnitPrice * 2);
-  document.querySelectorAll('#cust-size-selector .size-btn').forEach(btn => {
-    btn.classList.toggle('selected', btn.textContent.trim() === 'M');
-  });
-  document.querySelectorAll('#cust-color-selector .size-btn').forEach(btn => {
-    btn.classList.toggle('selected', btn.textContent.trim() === 'Black');
-  });
+  updateCustomOrderGarmentDropdown();
+  renderTShirtLabOptions();
 
   window.location.hash = '#custom-order';
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -3270,18 +3342,21 @@ let customOrderSubmitInProgress = false;
 
 async function addCustomOrderToCart() {
   if (customOrderSubmitInProgress) { showToast('Custom order is already being added. Please wait...'); return; }
-  if (custQty < 2) { showToast('Minimum quantity for custom order is 2!'); return; }
-  const garment = String(document.getElementById('cust-garment')?.value || '').trim();
-  if (!garment) { showToast('Please select a garment type.'); return; }
+  if (custQty < 2) { showToast('Minimum quantity for T-Shirt Lab is 2!'); return; }
+  const selection = findTShirtLabSelection(document.getElementById('cust-garment')?.value || '');
+  const garment = selection?.prod?.title || '';
+  const garmentCategory = selection?.cat?.name || '';
+  if (selection?.prod) { custColor = custColor || selection.prod.colors?.[0] || 'Black'; custSize = custSize || selection.prod.sizes?.[0] || 'M'; }
+  if (!garment) { showToast('Please select a T-Shirt for T-Shirt Lab.'); return; }
 
   customOrderSubmitInProgress = true;
   const addCustomBtn = document.querySelector('button[onclick="addCustomOrderToCart()"]');
   const originalText = addCustomBtn?.innerText || '';
-  if (addCustomBtn) { addCustomBtn.disabled = true; addCustomBtn.innerText = 'ADDING CUSTOM ORDER...'; }
+  if (addCustomBtn) { addCustomBtn.disabled = true; addCustomBtn.innerText = 'ADDING T-SHIRT LAB ORDER...'; }
 
   let uploadedFiles = [];
   try {
-    showToast('Uploading custom print files securely...');
+    showToast('Uploading T-Shirt Lab print files securely...');
     const frontPrint = await uploadFileToSupabaseStorage('cust-file-front');
     if (frontPrint) uploadedFiles.push(frontPrint);
     const backPrint = await uploadFileToSupabaseStorage('cust-file-back');
@@ -3290,7 +3365,7 @@ async function addCustomOrderToCart() {
     if (!frontPrint && !backPrint) throw new Error('Please upload at least one print file (Front or Back)!');
 
     const newCustomItem = {
-      isCustom: true, title: `Custom ${garment} (${custColor})`, garment, size: custSize, color: custColor,
+      isCustom: true, title: `T-Shirt Lab — ${garment} (${custColor})`, garment, garmentCategory, productId: selection?.prod?.id || '', size: custSize, color: custColor,
       price: custUnitPrice, qty: custQty, prints: { front: frontPrint, back: backPrint }, image: '',
       stockStatus: { available: true, notes: '' }
     };
@@ -3318,19 +3393,19 @@ async function addCustomOrderToCart() {
     localStorage.setItem('rebel_cart', JSON.stringify(cart));
     updateCartBadge();
     renderCartDrawer();
-    showToast('Custom order added to cart successfully!');
+    showToast('T-Shirt Lab order added to cart successfully!');
   } catch (err) {
-    console.error('Custom order upload failed:', err);
+    console.error('T-Shirt Lab upload failed:', err);
     // Remove successfully uploaded files if the second upload or cart step fails.
     for (const file of uploadedFiles) {
       if (file?.path && supabaseClient) {
         try { await supabaseClient.storage.from(file.bucket || 'custom-prints').remove([file.path]); } catch (cleanupErr) { console.warn('Print cleanup failed:', cleanupErr); }
       }
     }
-    showToast(err?.message || 'Custom print upload failed. Please try again.');
+    showToast(err?.message || 'T-Shirt Lab print upload failed. Please try again.');
   } finally {
     customOrderSubmitInProgress = false;
-    if (addCustomBtn) { addCustomBtn.disabled = false; addCustomBtn.innerText = originalText || 'Add Custom Order →'; }
+    if (addCustomBtn) { addCustomBtn.disabled = false; addCustomBtn.innerText = originalText || 'Add T-Shirt Lab Order →'; }
   }
 }
 
@@ -4137,8 +4212,10 @@ async function addToWishlist() {
   }
 
   const productName = `${currentProduct.title} (${selectedColor || 'Default'})`;
+  const wishCategory = (CATEGORIES || []).find(c => (c.products || []).some(p => String(p.id) === String(currentProduct.id)));
   const wishItem = {
     id: currentProduct.id,
+    category: wishCategory?.name || '',
     title: productName,
     price: currentProduct.price,
     image: productImg,
@@ -4807,7 +4884,7 @@ async function proceedToPayment() {
       }
 
       if (isCustomCartItem(item)) {
-        if (qty < 2) throw new Error('Custom orders require a minimum quantity of 2.');
+        if (qty < 2) throw new Error('T-Shirt Lab orders require a minimum quantity of 2.');
         return {
           isCustom: true,
           garment: String(item?.garment || '').trim().slice(0, 60),
@@ -5230,7 +5307,7 @@ async function handleOrderSuccessDirect(paymentData) {
       }
 
       if (isCustomCartItem(item)) {
-        if (quantity < 2) throw new Error('Minimum quantity for custom order is 2.');
+        if (quantity < 2) throw new Error('Minimum quantity for T-Shirt Lab is 2.');
         return {
           isCustom: true,
           garment: String(item?.garment || '').trim().slice(0, 60),
@@ -5569,7 +5646,7 @@ function normalizeStoredPrintFile(file) {
 
 async function getFreshCustomPrintUrl(orderId, printKey) {
   const co = customOrdersHistory.find(item => String(item?.orderId || '') === String(orderId || ''));
-  if (!co) throw new Error('Custom order record not found.');
+  if (!co) throw new Error('T-Shirt Lab order record not found.');
 
   let parentId = getCustomParentOrderId(co);
   if (!parentId) {
@@ -5708,7 +5785,7 @@ async function confirmDeleteCustomOrder(customOrderId) {
       // Supabase order is already gone. Treat that as an already-completed
       // deletion and purge the stale UI record instead of blocking the admin.
       if (/order not found/i.test(backendMessage)) {
-        console.warn('Custom order already absent from backend; removing stale local record:', parentId);
+        console.warn('T-Shirt Lab order already absent from backend; removing stale local record:', parentId);
       } else {
         throw new Error(backendMessage || 'The custom order could not be deleted.');
       }
@@ -5725,12 +5802,12 @@ async function confirmDeleteCustomOrder(customOrderId) {
     localStorage.setItem('rebel_trash_orders_history', JSON.stringify(trashOrdersHistory));
     localStorage.setItem('rebel_custom_orders_history', JSON.stringify(customOrdersHistory));
 
-    showToast(`Custom order ${parentId} deleted from backend.`);
+    showToast(`T-Shirt Lab order ${parentId} deleted from backend.`);
     renderAdminPanels(currentSelectedDateFilter);
     renderAdminCustomOrdersTable();
     renderTrashBinTable();
   } catch (err) {
-    console.error('Custom order backend delete failed:', err);
+    console.error('T-Shirt Lab backend delete failed:', err);
     showToast(err?.message || 'Custom order could not be deleted.');
   }
 }
@@ -5799,7 +5876,7 @@ async function renderAdminCustomOrdersTable() {
 
   customTbody.innerHTML = '';
   if (!filtered.length) {
-    customTbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--grey);padding:2rem;">No matching custom orders.</td></tr>`;
+    customTbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--grey);padding:2rem;">No matching T-Shirt Lab orders.</td></tr>`;
     return;
   }
 
@@ -5842,7 +5919,7 @@ async function renderAdminCustomOrdersTable() {
     const moreItems = Math.max(0, customItems.length - 1);
     const itemPreviewHtml = firstImage
       ? `<img class="admin-order-item-thumb" src="${escapeHtml(firstImage)}" alt="${escapeHtml(firstTitle)}">`
-      : `<div class="admin-order-item-thumb-placeholder">CUSTOM<br>PRINT</div>`;
+      : `<div class="admin-order-item-thumb-placeholder">T-SHIRT<br>LAB</div>`;
 
     let printButtons = '';
     for (const [key, label] of [['front','Front'],['back','Back']]) {
@@ -5858,7 +5935,7 @@ async function renderAdminCustomOrdersTable() {
         <div class="admin-order-item-preview-copy">
           <strong>${escapeHtml(firstTitle)}</strong>
           <span>Size: <b style="color:var(--spray-yellow);">${escapeHtml(firstSize)}</b> · Qty: <b>${firstQty}</b>${moreItems ? ` · +${moreItems} more item${moreItems > 1 ? 's' : ''}` : ''}</span>
-          <span style="color:var(--spray-yellow);font-size:.58rem;">CUSTOM PRINT</span>
+          <span style="color:var(--spray-yellow);font-size:.58rem;">T-SHIRT LAB</span>
         </div>
       </div>
       <div class="custom-order-print-grid" style="margin-top:.35rem;">${printButtons}</div>
@@ -5869,8 +5946,8 @@ async function renderAdminCustomOrdersTable() {
       const originalItemIndex = indexedItems[idx]?.originalIndex ?? idx;
       const safeItemImage = safeMediaUrl(it.image || it.product_image || it.image_url || '');
       const imgHtml = safeItemImage
-        ? `<img src="${escapeHtml(safeItemImage)}" alt="${escapeHtml(it.title || 'Custom Product')}" style="width:54px;height:64px;object-fit:contain;background:#111;border:1px solid #333;border-radius:4px;flex:0 0 auto;">`
-        : `<div class="admin-order-item-thumb-placeholder">CUSTOM<br>PRINT</div>`;
+        ? `<img src="${escapeHtml(safeItemImage)}" alt="${escapeHtml(it.title || 'T-Shirt Lab Product')}" style="width:54px;height:64px;object-fit:contain;background:#111;border:1px solid #333;border-radius:4px;flex:0 0 auto;">`
+        : `<div class="admin-order-item-thumb-placeholder">T-SHIRT<br>LAB</div>`;
       const st = it.stockStatus || { available:true, notes:'' };
       const note = String(it.production_note || '').replace(/\n/g,' ');
       const printLinks = [];
@@ -6210,7 +6287,7 @@ async function loadAdminDataFromSupabase() {
       customer: {
         name: co.customer_name,
         phone: co.customer_phone,
-        address: 'Online Custom Order'
+        address: 'Online T-Shirt Lab'
       },
       title: `Custom ${co.garment} (${co.color || 'Black'})`,
       size: co.size,
@@ -6874,6 +6951,7 @@ function renderAdminProductFormsForCategory(catName) {
   catObj.products.forEach((prod, pIndex) => {
     if(!prod.colors) prod.colors = ['Yellow', 'White'];
     if(!prod.sizes) prod.sizes = ['S', 'M', 'L', 'XL'];
+    if(typeof prod.customizeEnabled !== 'boolean') prod.customizeEnabled = true;
     if(!Array.isArray(prod.disabledSizes)) prod.disabledSizes = [];
     if(!Array.isArray(prod.disabledColors)) prod.disabledColors = [];
     if(!prod.colorMeta || typeof prod.colorMeta !== 'object' || Array.isArray(prod.colorMeta)) prod.colorMeta = {};
@@ -6910,6 +6988,14 @@ function renderAdminProductFormsForCategory(catName) {
         <div><label class="admin-field-label">Price</label><input type="number" id="prod-price-${cIndex}-${pIndex}" class="admin-input-small" value="${prod.price}"></div>
       </div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:.8rem; margin-bottom:.5rem;">
+        <div>
+          <label class="admin-field-label">T-Shirt Lab</label>
+          <label style="display:flex;align-items:center;gap:.55rem;background:#111113;border:1px solid rgba(255,213,0,.22);padding:.55rem .65rem;font-family:'Space Mono';font-size:.62rem;color:var(--paper);cursor:pointer;min-height:38px;">
+            <input type="checkbox" id="prod-customize-${cIndex}-${pIndex}" ${prod.customizeEnabled ? 'checked' : ''} onchange="toggleAdminProductCustomize(${cIndex},${pIndex},this.checked)">
+            <span>Enable this product in T-Shirt Lab</span>
+          </label>
+          <div style="font-family:'Space Mono';font-size:.56rem;color:#888;margin-top:.25rem;line-height:1.4;">T-Shirt Lab uses this product's live colors and sizes below.</div>
+        </div>
         <div>
           <label class="admin-field-label">Colors (Comma separated)</label>
           <div style="display:flex;gap:.4rem;align-items:center;">
@@ -6962,6 +7048,14 @@ function renderAdminProductFormsForCategory(catName) {
   });
 }
 
+function toggleAdminProductCustomize(cIndex, pIndex, enabled) {
+  const prod = CATEGORIES?.[cIndex]?.products?.[pIndex];
+  if (!prod) return;
+  prod.customizeEnabled = !!enabled;
+  saveAllCategoriesAndProducts();
+  showToast(enabled ? 'Product enabled in T-Shirt Lab.' : 'Product removed from T-Shirt Lab.');
+}
+
 function addNewCategory() {
   const name = document.getElementById('new-category-input').value.trim();
   if (!name) { showToast('Enter category name'); return; }
@@ -6973,7 +7067,7 @@ function addNewCategory() {
     id: 'cat-' + Date.now(),
     name: name,
     products: [
-      { id: 'p' + Date.now(), code: 'NEW1', title: `New ${name} 01`, desc: 'Heavyweight cotton drop.', mrp: 1200, price: 800, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] }
+      { id: 'p' + Date.now(), code: 'NEW1', title: `New ${name} 01`, desc: 'Heavyweight cotton drop.', mrp: 1200, price: 800, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'], customizeEnabled: true }
     ]
   });
   document.getElementById('new-category-input').value = '';
@@ -6996,7 +7090,7 @@ function addProdToCurrentAdminCategory() {
       price: 713,
       images: [''],
       colors: ['Yellow', 'White'],
-      sizes: ['S', 'M', 'L', 'XL'], disabledSizes: []
+      sizes: ['S', 'M', 'L', 'XL'], disabledSizes: [], customizeEnabled: true
     });
     renderAdminProductFormsForCategory(activeAdminEditingCategoryName);
   }
@@ -7134,7 +7228,9 @@ function collectCategoryFormValues() {
     const colorsInput = document.getElementById(`prod-colors-${cIndex}-${pIndex}`);
     const sizesInput = document.getElementById(`prod-sizes-${cIndex}-${pIndex}`);
     const disabledSizesInput = document.getElementById(`prod-disabled-sizes-${cIndex}-${pIndex}`);
+    const customizeInput = document.getElementById(`prod-customize-${cIndex}-${pIndex}`);
 
+    if (customizeInput) prod.customizeEnabled = !!customizeInput.checked;
     if (codeInput) prod.code = codeInput.value.trim().toUpperCase();
     if (titleInput) prod.title = titleInput.value.trim();
     if (mrpInput) prod.mrp = parseInt(mrpInput.value) || 1070;
@@ -7653,6 +7749,8 @@ function handleRouteFromHash() {
     openProfileModal('orders', false);
   } else if (hash === '#saved-address') {
     openProfileModal('addresses', false);
+  } else if (hash === '#wishlist') {
+    openProfileModal('wishlist', false);
   } else if (hash === '#custom-order') {
     openCustomOrderPage();
   } else if (hash === '#shipping') {
@@ -8252,15 +8350,44 @@ function openAccountTab(tab) {
   const profile = document.getElementById('profile-tab-content');
   const orders = document.getElementById('profile-orders-tab-content');
   const saved = document.getElementById('profile-address-tab-content');
+  const wishlistPane = document.getElementById('profile-wishlist-tab-content');
   const tabs = document.querySelectorAll('#profile-account-tabs .account-tab');
-  [profile, orders, saved].forEach(el => { if (el) el.style.display = 'none'; });
+  [profile, orders, saved, wishlistPane].forEach(el => { if (el) el.style.display = 'none'; });
   tabs.forEach(el => el.classList.remove('active'));
-  const map = { profile: profile, orders: orders, addresses: saved };
-  const target = map[tab];
+  const map = { profile, orders, addresses: saved, wishlist: wishlistPane };
+  const target = map[tab] || profile;
   if (target) target.style.display = 'block';
-  tabs.forEach(el => { if (el.dataset.tab === tab) el.classList.add('active'); });
+  tabs.forEach(el => { if (el.dataset.tab === (map[tab] ? tab : 'profile')) el.classList.add('active'); });
   if (tab === 'orders') renderOrdersInsideProfile();
   if (tab === 'addresses') renderAddressesInsideProfile();
+  if (tab === 'wishlist') renderWishlistInsideProfile();
+  const routeHash = tab === 'orders' ? '#orders' : (tab === 'addresses' ? '#saved-address' : (tab === 'wishlist' ? '#wishlist' : '#profile'));
+  if (window.location.hash !== routeHash) window.location.hash = routeHash;
+}
+
+function renderWishlistInsideProfile() {
+  const area = document.getElementById('profile-wishlist-tab-content');
+  if (!area) return;
+  if (!Array.isArray(wishlist) || !wishlist.length) {
+    area.innerHTML = `<h2 class="profile-account-heading">Wishlist</h2><p class="profile-account-subheading">Products you save will appear here.</p><div class="profile-account-orders-empty">Your wishlist is empty.</div>`;
+    return;
+  }
+  area.innerHTML = `<h2 class="profile-account-heading">Wishlist</h2><p class="profile-account-subheading">Your saved products.</p><div class="profile-wishlist-grid">${wishlist.map((item, idx) => {
+    const product = resolveRegularProductFromCatalogByTitle(String(item.title || '').replace(/\s*\([^)]*\)\s*$/,'')) || CATEGORIES.flatMap(c=>c.products||[]).find(p=>String(p.id)===String(item.id));
+    const cat = product ? CATEGORIES.find(c => (c.products||[]).some(p => String(p.id)===String(product.id))) : null;
+    const image = safeMediaUrl(item.image || product?.images?.[0] || '');
+    return `<article class="wishlist-render-item" data-profile-wishlist-index="${idx}"><div class="wishlist-render-main" style="display:flex;gap:12px;align-items:center;cursor:pointer;">${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(item.title||'Wishlist Product')}" style="width:64px;height:64px;object-fit:contain;background:#111;border:1px solid rgba(255,255,255,.12);border-radius:.75rem;">` : ''}<div><h5 style="font-family:'Archivo Black';font-size:.95rem;text-transform:uppercase;color:var(--paper);">${escapeHtml(item.title||'Wishlist Product')}</h5><div style="font-family:'Space Mono';font-size:.75rem;color:var(--spray-yellow);">ரூ ${escapeHtml(item.price||0)}</div></div></div><button type="button" class="cart-item-remove wishlist-remove-btn">Remove</button></article>`;
+  }).join('')}</div>`;
+  area.querySelectorAll('.profile-wishlist-grid .wishlist-render-item').forEach(card => {
+    const idx = Number(card.dataset.profileWishlistIndex);
+    card.querySelector('.wishlist-render-main')?.addEventListener('click', () => {
+      const item = wishlist[idx]; if (!item) return;
+      const product = CATEGORIES.flatMap(c=>c.products||[]).find(p=>String(p.id)===String(item.id));
+      const cat = product ? CATEGORIES.find(c => (c.products||[]).some(p=>String(p.id)===String(product.id))) : null;
+      if (product && cat) openProductByDetails(cat.name, product.id);
+    });
+    card.querySelector('.wishlist-remove-btn')?.addEventListener('click', async e => { await removeFromWishlist(e, idx); renderWishlistInsideProfile(); });
+  });
 }
 
 async function openProfileModal(initialTab = 'profile', syncHash = true) {
@@ -8272,10 +8399,10 @@ async function openProfileModal(initialTab = 'profile', syncHash = true) {
 
   // If the account page is already open, do NOT rebuild the whole page.
   // Rebuilding here was making the sidebar navigation feel like dead/dummy buttons.
-  if (modal.style.display === 'flex' && area.innerHTML.trim()) {
+  if (modal.style.display === 'flex' && area.innerHTML.trim() && document.getElementById('profile-account-tabs') && document.getElementById('profile-tab-content')) {
     openAccountTab(initialTab);
     if (syncHash) {
-      const routeHash = initialTab === 'orders' ? '#orders' : (initialTab === 'addresses' ? '#saved-address' : '#profile');
+      const routeHash = initialTab === 'orders' ? '#orders' : (initialTab === 'addresses' ? '#saved-address' : (initialTab === 'wishlist' ? '#wishlist' : '#profile'));
       if (window.location.hash !== routeHash) window.location.hash = routeHash;
     }
     return;
@@ -8305,6 +8432,7 @@ async function openProfileModal(initialTab = 'profile', syncHash = true) {
           <button type="button" class="account-tab" data-tab="profile" onclick="openProfileModal('profile')">👤 Profile</button>
           <button type="button" class="account-tab" data-tab="orders" onclick="openProfileModal('orders')">📦 Orders</button>
           <button type="button" class="account-tab" data-tab="addresses" onclick="openProfileModal('addresses')">📍 Saved Address</button>
+          <button type="button" class="account-tab" data-tab="wishlist" onclick="openProfileModal('wishlist')">❤️ Wishlist</button>
         </nav>
 
         <div class="profile-account-sidebar-actions">
@@ -8334,6 +8462,7 @@ async function openProfileModal(initialTab = 'profile', syncHash = true) {
 
         <section id="profile-orders-tab-content" class="profile-account-panel" style="display:none;"></section>
         <section id="profile-address-tab-content" class="profile-account-panel" style="display:none;"></section>
+        <section id="profile-wishlist-tab-content" class="profile-account-panel" style="display:none;"></section>
       </main>
     </div>`;
 
@@ -8344,7 +8473,7 @@ async function openProfileModal(initialTab = 'profile', syncHash = true) {
   openAccountTab(initialTab);
 
   if (syncHash) {
-    const routeHash = initialTab === 'orders' ? '#orders' : (initialTab === 'addresses' ? '#saved-address' : '#profile');
+    const routeHash = initialTab === 'orders' ? '#orders' : (initialTab === 'addresses' ? '#saved-address' : (initialTab === 'wishlist' ? '#wishlist' : '#profile'));
     if (window.location.hash !== routeHash) window.location.hash = routeHash;
   }
 }
@@ -8542,11 +8671,12 @@ async function loadCustomerOrdersFromSupabase() {
 
 function getCustomerOrderStatusLabel(status) {
   const st = String(status || 'New').toLowerCase();
-  if (st.includes('cancel')) return 'Cancelled';
-  if (st.includes('return')) return 'Returned';
   if (st.includes('deliver') || st.includes('complete')) return 'Delivered';
   if (st.includes('dispatch') || st.includes('ship') || st.includes('transit') || st.includes('out for delivery')) return 'Dispatched';
-  if (st === 'new' || st.includes('order')) return 'Order Placed';
+  if (st === 'new' || st.includes('order') || st.includes('paid')) return 'Order Placed';
+  // Printing, Ready, Cancelled, Returned and other internal/admin states are
+  // intentionally not exposed to customers. The customer timeline stays at
+  // the four public stages only.
   return 'Processing';
 }
 
@@ -8617,15 +8747,8 @@ function getOrderItemPrice(item) {
 }
 
 function buildOrderStatusTimeline(status) {
-  const label = getCustomerOrderStatusLabel(status);
-  if (label === 'Cancelled') {
-    return `<div class="order-status-timeline"><div class="order-status-step done"><div class="order-status-dot"></div>Order Placed</div><div class="order-status-step active"><div class="order-status-dot" style="background:var(--rebel-red);border-color:var(--rebel-red)"></div>Cancelled</div></div>`;
-  }
-  if (label === 'Returned') {
-    return `<div class="order-status-timeline"><div class="order-status-step done"><div class="order-status-dot"></div>Order Placed</div><div class="order-status-step done"><div class="order-status-dot"></div>Processing</div><div class="order-status-step done"><div class="order-status-dot"></div>Shipped</div><div class="order-status-step active"><div class="order-status-dot"></div>Returned</div></div>`;
-  }
   const stage = getOrderTrackingStage(status);
-  const labels = ['Order Placed','Processing','Printing','Print Received','Ready','Dispatched','Out for Delivery','Delivered'];
+  const labels = ['Order Placed','Processing','Dispatched','Delivered'];
   return `<div class="order-status-timeline order-status-timeline-wide">${labels.map((x, i) => {
     const stateClass = i < stage ? 'done' : (i === stage ? 'active' : '');
     return `<div class="order-status-step ${stateClass}"><div class="order-status-dot"></div>${x}</div>`;
@@ -8661,7 +8784,7 @@ function openCustomerOrderDetails(orderId) {
   }).join('');
 
   const label = getCustomerOrderStatusLabel(order.orderStatus);
-  const trackingVisible = ['Dispatched','Shipped','Out for Delivery','Delivered','Completed'].includes(String(order.orderStatus || '')) && Boolean(order.courierName || order.trackingId);
+  const trackingVisible = ['Dispatched','Delivered'].includes(getCustomerOrderStatusLabel(order.orderStatus)) && Boolean(order.courierName || order.trackingId);
   const customerTrackingUrl = buildTrackingUrl(order.courierName, order.trackingId);
   const trackingHtml = trackingVisible
     ? `<div class="order-courier-box"><strong>Courier:</strong> ${escapeHtml(order.courierName || 'Not assigned')}<br><strong>Tracking ID:</strong> ${escapeHtml(order.trackingId || 'Not assigned')}${customerTrackingUrl ? `<br><a href="${escapeHtml(customerTrackingUrl)}" target="_blank" rel="noopener noreferrer" class="preview-link-btn" style="display:inline-block;margin-top:8px;text-decoration:none;">Track Shipment ↗</a>` : ''}</div>`
@@ -8681,6 +8804,7 @@ function openCustomerOrderDetails(orderId) {
           <button type="button" onclick="openProfileModal('profile')">👤 Profile</button>
           <button type="button" class="active" onclick="openProfileModal('orders')">📦 Orders</button>
           <button type="button" onclick="openProfileModal('addresses')">📍 Saved Address</button>
+          <button type="button" onclick="openProfileModal('wishlist')">❤️ Wishlist</button>
         </nav>
         <div class="profile-account-sidebar-actions"><button type="button" onclick="logoutUser()">Logout</button></div>
       </aside>
