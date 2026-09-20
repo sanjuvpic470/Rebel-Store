@@ -13,7 +13,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800;900&family=Noto+Sans+Tamil:wght@400;600;700;900&family=Anton&family=Archivo+Black&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Tamil:wght@400;600;700;900&display=swap" rel="stylesheet">
 
 <!-- Supabase JS Library -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -809,7 +809,7 @@ footer a:hover{color:var(--paper)}
 /* =====================================================================
    REBEL STORE — LUXURY THEME
    Design language taken from the reference file (luxury_agency_portfolio.html):
-   near-black canvas, yellow #FACC15 accent, Outfit + Inter type, glass cards,
+   near-black canvas, yellow #FACC15 accent, one type family (Inter), glass cards,
    rounded-3xl surfaces, pill buttons, soft yellow glow, grid + orb backdrop.
    This block sits AFTER all legacy CSS so it re-skins every page. Only visual
    rules live here — no behaviour is changed.
@@ -824,15 +824,15 @@ footer a:hover{color:var(--paper)}
   --glass-bg:rgba(22,22,22,.75); --glass-line:rgba(255,255,255,.08); --glass-line-hover:rgba(250,204,21,.5);
   --r-card:1.5rem; --r-ctl:.75rem;
   --font-body:'Inter','Noto Sans Tamil',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --font-display:'Outfit','Noto Sans Tamil',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace;
+  --font-display:var(--font-body);
+  --font-mono:var(--font-body);
 }
 
 /* ---------- 2. BASE ---------- */
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;font-family:var(--font-body)}
 body{background:#080808;color:#fff;font-family:var(--font-body);overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 /* Every legacy inline / class font (Space Mono, Anton, Archivo Black…) → Inter; headings → Outfit */
-body *{font-family:var(--font-body)!important}
+body *,body *::before,body *::after,body::before,body::after{font-family:var(--font-body)!important}
 body h1,body h2,body h3,body h4,body h5,body h6,body .font-display,
 body .price-curr,body .pdp-price,body .cart-item-price,body .cart-total-row,body .cart-total-row span,
 body .stat-card h3,body .admin-kpi-card strong,body .admin-status-grid b,body .admin-chart-total,
@@ -842,7 +842,7 @@ body .profile-address-card-label,body .billing-saved-address-card-label,body .pr
 body .customer-order-product-placeholder,body .admin-nav-grid-new .admin-nav-card b,
 body .master-plan .price{font-family:var(--font-display)!important}
 body .lux-mono,body .stamp,body .admin-order-item-thumb-placeholder{font-family:var(--font-mono)!important}
-body svg text{font-family:'Anton','Archivo Black',sans-serif!important}
+body svg text{font-family:var(--font-body)!important;font-weight:900}
 ::selection{background:#FACC15;color:#080808}
 ::-webkit-scrollbar{width:8px;height:8px}
 ::-webkit-scrollbar-track{background:#080808}
@@ -1471,10 +1471,10 @@ footer a:hover{color:#FACC15}
                         <path d="M64 56L74 64M74 56L64 64" stroke="#ffd500" stroke-width="4" stroke-linecap="round"/>
                         <path d="M38 74H62V78H38V74Z" fill="#0b0b0c"/>
                         <rect x="52" y="74" width="6" height="7" fill="#e52521"/>
-                        <text x="105" y="62" font-family="'Anton', sans-serif" font-size="52" font-weight="900" fill="#0b0b0c">REBEL</text>
+                        <text x="105" y="62" font-family="'Inter', sans-serif" font-size="42" font-weight="900" fill="#0b0b0c">REBEL</text>
                         <path d="M105 72H275" stroke="#0b0b0c" stroke-width="5" stroke-linecap="round"/>
                         <rect x="180" y="64" width="85" height="24" fill="#0b0b0c" rx="2"/>
-                        <text x="190" y="81" font-family="'Archivo Black', sans-serif" font-size="15" font-weight="900" fill="#ffd500">STORE</text>
+                        <text x="190" y="81" font-family="'Inter', sans-serif" font-size="14" font-weight="900" fill="#ffd500">STORE</text>
                       </svg>
                     </div>
                   </div>
