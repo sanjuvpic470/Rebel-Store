@@ -627,6 +627,60 @@ footer a:hover{color:var(--paper)}
 .admin-order-item-preview{min-height:46px!important}
 .admin-order-expand-hint{font-size:.46rem!important}
 @media(max-width:650px){.admin-orders-table{min-width:760px!important}.admin-order-action-buttons{grid-template-columns:minmax(105px,1fr) 38px 38px 34px!important}}
+
+/* ---------- T-SHIRT LAB ADMIN SETTINGS + MOBILE POLISH ---------- */
+.custom-lab-settings{background:#151518;border:1px solid rgba(242,240,234,.1);border-radius:10px;padding:1rem;margin-bottom:1rem}
+.custom-lab-settings-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:1rem;align-items:start}
+.custom-lab-field{background:#0f0f12;border:1px solid rgba(242,240,234,.12);border-radius:7px;padding:.8rem}
+.custom-lab-field label{display:block;font-family:'Space Mono',monospace;font-size:.58rem;text-transform:uppercase;color:#9a9aa0;margin-bottom:.35rem}
+.custom-lab-field .value{font-family:'Space Mono',monospace;font-size:.72rem;color:#fff;line-height:1.45;word-break:break-word}
+.custom-lab-field input,.custom-lab-field select{width:100%;box-sizing:border-box;background:#0b0b0d;border:1px solid rgba(242,240,234,.16);color:#fff;border-radius:6px;padding:.65rem;font-family:'Space Mono',monospace;font-size:.72rem}
+.custom-lab-field input:focus,.custom-lab-field select:focus{outline:none;border-color:var(--spray-yellow)}
+.custom-lab-edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.custom-lab-help{font-family:'Space Mono',monospace;color:#777;font-size:.56rem;line-height:1.5;margin-top:.35rem}
+.custom-lab-summary{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.7rem}
+.custom-lab-chip{font-family:'Space Mono',monospace;font-size:.58rem;padding:.35rem .5rem;border:1px solid rgba(242,240,234,.14);background:#0e0e10;color:#c9c9cd;border-radius:999px}
+.custom-lab-chip strong{color:var(--spray-yellow)}
+@media(max-width:720px){
+  .custom-lab-settings-grid,.custom-lab-edit-grid{grid-template-columns:1fr}
+}
+@media(max-width:767px){
+  .lux-nav-inner{min-height:72px!important;padding:0 .75rem!important;gap:.5rem!important}
+  #header-logo-container{width:135px!important;height:52px!important}
+  #header-logo-container img,#header-logo-container svg{transform:scale(1.55)!important;transform-origin:left center!important}
+  .lux-nav-links{display:none!important}
+  .header-actions{gap:.4rem!important}
+  .lux-shop-btn{display:none!important}
+  .lux-cards{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:.75rem!important}
+  .card.lux-card{border-radius:1rem!important}
+  .lux-card-media{aspect-ratio:3/4!important}
+  .lux-card-media .tee-swatch{padding:.35rem!important;font-size:1.7rem!important}
+  .lux-card-body{padding:.8rem!important}
+  .lux-card-top{gap:.45rem!important;margin-bottom:.35rem!important}
+  .lux-card-top h4{font-size:.9rem!important;line-height:1.2!important}
+  .lux-card-price .price-curr{font-size:.9rem!important}
+  .lux-card-price .price-cut{font-size:.62rem!important}
+  .lux-card-body p{font-size:.66rem!important;line-height:1.4!important;margin:0 0 .75rem!important;min-height:2.1em!important}
+  .lux-card-foot{gap:.35rem!important;padding-top:.7rem!important}
+  .lux-card-foot .lux-mono{font-size:.58rem!important}
+  .lux-card-btn{padding:.4rem .55rem!important;font-size:.6rem!important;border-radius:.6rem!important}
+  .lux-card-tag{top:.6rem!important;left:.6rem!important;padding:.2rem .5rem!important;font-size:.58rem!important}
+  .lux-card-heart{top:.55rem!important;right:.55rem!important;padding:.4rem!important}
+  .lux-card-off{left:.6rem!important;bottom:.6rem!important;font-size:.55rem!important}
+  .section{padding-left:.75rem!important;padding-right:.75rem!important}
+  .section__head h2{font-size:1.75rem!important}
+  .section__head p{font-size:.7rem!important}
+  #craftsmanship .lux-feature-grid{gap:.75rem!important}
+  .admin-kpi-grid,.admin-nav-grid-new{gap:.55rem!important}
+  .admin-nav-grid-new{grid-template-columns:1fr 1fr!important}
+  .admin-dashboard-grid{grid-template-columns:1fr!important}
+  .admin-orders-table-wrap{overflow-x:auto!important}
+}
+@media(max-width:420px){
+  .lux-cards{grid-template-columns:1fr!important}
+  .lux-card-media{aspect-ratio:4/5!important}
+  #header-logo-container{width:120px!important}
+}
 </style>
 
 <style>
@@ -1365,6 +1419,27 @@ footer a:hover{color:#FACC15}
   html{scroll-behavior:auto}
 }
 
+</style>
+
+<style id="rebel-mobile-final-fixes">
+@media(max-width:767px){
+  .pdp-grid{gap:1.25rem!important}
+  .gallery-container{width:100%!important}
+  .slider-wrapper{width:min(100%,520px)!important;margin:0 auto!important}
+  .slide-item img{max-height:88vw!important}
+  .thumb-row{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:.45rem!important}
+  .custom-form-box{width:100%!important;max-width:100%!important;box-sizing:border-box!important}
+  .custom-form-box .form-control,.billing-form-box .b-field input,.billing-form-box .b-field select{font-size:.8rem!important}
+  .admin-product-row{padding:.85rem!important}
+  .admin-product-row>div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
+  #admin-category-detail-view .admin-product-row input{min-width:0!important}
+}
+@media(max-width:420px){
+  #header-logo-container{width:112px!important}
+  #header-logo-container img{transform:scale(1.45)!important}
+  .lux-nav-inner{padding-left:.6rem!important;padding-right:.6rem!important}
+  #user-avatar-icon,.lux-nav-inner .cart-btn{width:2.2rem!important;height:2.2rem!important}
+}
 </style>
 </head>
 <body>
@@ -2304,6 +2379,48 @@ footer a:hover{color:#FACC15}
       <div class="sub-page-header admin-sub-header-new">
         <div><span class="admin-mini-label">T-SHIRT LAB FULFILMENT</span><h2>⚡ T-Shirt Lab Orders</h2><p>Manage T-Shirt Lab orders with the same fulfilment workflow as Orders. Front / Back print downloads are available here.</p></div>
         <button class="btn btn--ghost" style="padding:.4rem 1rem;font-size:.8rem;" onclick="closeAdminSubPages()">← Dashboard</button>
+      </div>
+
+      <div class="custom-lab-settings">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.8rem;flex-wrap:wrap;margin-bottom:.8rem;">
+          <div>
+            <span class="admin-mini-label">T-SHIRT LAB SETTINGS</span>
+            <h3 style="font-family:'Anton',sans-serif;font-size:1.25rem;text-transform:uppercase;color:#fff;margin:.15rem 0 .2rem;">Custom Product Options</h3>
+            <p style="font-family:'Space Mono',monospace;color:var(--grey);font-size:.58rem;margin:0;line-height:1.45;">Choose a regular product that is enabled for T-Shirt Lab, then manage its live colors and sizes here. The same product data feeds the customer T-Shirt Lab.</p>
+          </div>
+          <button type="button" class="btn btn--ghost" style="padding:.42rem .7rem;font-size:.62rem;" onclick="openAdminSubPage('subpage-products')">Open Products Manager →</button>
+        </div>
+        <div class="custom-lab-settings-grid">
+          <div>
+            <div class="custom-lab-field" style="margin-bottom:.7rem;">
+              <label>Select T-Shirt Lab Product</label>
+              <select id="custom-lab-product-select" onchange="loadCustomLabProductSettings(this.value)"></select>
+              <div class="custom-lab-help">Only products with <strong>Enable this product in T-Shirt Lab</strong> are listed.</div>
+            </div>
+            <div class="custom-lab-edit-grid">
+              <div class="custom-lab-field"><label>Product Code</label><div class="value" id="custom-lab-code-value">—</div></div>
+              <div class="custom-lab-field"><label>Category</label><div class="value" id="custom-lab-category-value">—</div></div>
+              <div class="custom-lab-field"><label>Product Title</label><div class="value" id="custom-lab-title-value">—</div></div>
+              <div class="custom-lab-field"><label>Price / MRP</label><div class="value" id="custom-lab-price-value">—</div></div>
+            </div>
+          </div>
+          <div>
+            <div class="custom-lab-edit-grid">
+              <div class="custom-lab-field">
+                <label>Colors (comma separated)</label>
+                <input type="text" id="custom-lab-colors-input" placeholder="Black, White, Yellow">
+                <div class="custom-lab-help">These become the selectable color swatches in T-Shirt Lab.</div>
+              </div>
+              <div class="custom-lab-field">
+                <label>Sizes (comma separated)</label>
+                <input type="text" id="custom-lab-sizes-input" placeholder="S, M, L, XL, XXL, XXXL">
+                <div class="custom-lab-help">Example: <strong>S, M, L, XL, XXL, XXXL</strong>. Disabled options remain visible but unavailable.</div>
+              </div>
+            </div>
+            <div class="custom-lab-summary" id="custom-lab-summary"></div>
+            <button type="button" class="btn btn--solid" style="width:100%;justify-content:center;margin-top:.8rem;" onclick="saveCustomLabProductSettings()">Save T-Shirt Lab Sizes & Colors 💾</button>
+          </div>
+        </div>
       </div>
 
       <div class="admin-order-toolbar">
@@ -5525,6 +5642,7 @@ function openAdminSubPage(subPageId) {
       loadAdminWishlistFromSupabase();
     }
     if (subPageId === 'subpage-custom-orders') {
+      renderCustomLabAdminSettings();
       renderAdminCustomOrdersTable();
     }
     if (subPageId === 'subpage-orders') {
@@ -5826,6 +5944,164 @@ async function updateCustomOrderStatusFromSelect(selectEl, parentOrderId) {
     return;
   }
   await updateOrderStatusInSupabase(id, newStatus);
+}
+
+function getCustomLabAdminProducts() {
+  const out = [];
+  (Array.isArray(CATEGORIES) ? CATEGORIES : []).forEach(cat => {
+    (Array.isArray(cat.products) ? cat.products : []).forEach(prod => {
+      if (prod && prod.customizeEnabled !== false) out.push({ cat, prod });
+    });
+  });
+  return out;
+}
+
+function getCustomLabAdminKey(cat, prod) {
+  return `${String(cat?.name || '')}::${String(prod?.id || '')}`;
+}
+
+function renderCustomLabAdminSettings(preferredValue = '') {
+  const select = document.getElementById('custom-lab-product-select');
+  if (!select) return;
+  const products = getCustomLabAdminProducts();
+  const currentValue = preferredValue || select.value;
+  select.innerHTML = '';
+
+  if (!products.length) {
+    select.innerHTML = '<option value="">No T-Shirt Lab products enabled</option>';
+    ['custom-lab-code-value','custom-lab-category-value','custom-lab-title-value','custom-lab-price-value','custom-lab-summary'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '—'; });
+    return;
+  }
+
+  products.forEach(({cat, prod}) => {
+    const opt = document.createElement('option');
+    opt.value = getCustomLabAdminKey(cat, prod);
+    opt.textContent = `${prod.title || prod.code || 'Product'} · ${cat.name}`;
+    if (opt.value === currentValue) opt.selected = true;
+    select.appendChild(opt);
+  });
+
+  if (!select.value) select.value = getCustomLabAdminKey(products[0].cat, products[0].prod);
+  loadCustomLabProductSettings(select.value);
+}
+
+function loadCustomLabProductSettings(value) {
+  const split = String(value || '').indexOf('::');
+  const catName = split >= 0 ? String(value).slice(0, split) : '';
+  const productId = split >= 0 ? String(value).slice(split + 2) : '';
+  const cat = CATEGORIES.find(c => String(c.name) === catName);
+  const prod = cat?.products?.find(p => String(p.id) === productId);
+  if (!prod) return;
+
+  if (!Array.isArray(prod.colors) || !prod.colors.length) prod.colors = ['Black','White'];
+  if (!Array.isArray(prod.sizes) || !prod.sizes.length) prod.sizes = ['S','M','L','XL'];
+  if (!Array.isArray(prod.disabledColors)) prod.disabledColors = [];
+  if (!Array.isArray(prod.disabledSizes)) prod.disabledSizes = [];
+
+  const setValue = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+  setValue('custom-lab-code-value', prod.code || '—');
+  setValue('custom-lab-category-value', cat.name || '—');
+  setValue('custom-lab-title-value', prod.title || '—');
+  setValue('custom-lab-price-value', `₹ ${Number(prod.price || 0).toLocaleString('en-IN')} / MRP ₹ ${Number(prod.mrp || 0).toLocaleString('en-IN')}`);
+
+  const colorsInput = document.getElementById('custom-lab-colors-input');
+  const sizesInput = document.getElementById('custom-lab-sizes-input');
+  if (colorsInput) colorsInput.value = prod.colors.join(', ');
+  if (sizesInput) sizesInput.value = prod.sizes.join(', ');
+
+  const summary = document.getElementById('custom-lab-summary');
+  if (summary) {
+    const colorChips = prod.colors.map(c => {
+      const disabled = prod.disabledColors.some(d => String(d).toLowerCase() === String(c).toLowerCase());
+      return `<span class="custom-lab-chip"><strong>Color</strong> ${escapeHtml(String(c))}${disabled ? ' · unavailable' : ''}</span>`;
+    });
+    const sizeChips = prod.sizes.map(s => {
+      const disabled = prod.disabledSizes.some(d => String(d).toLowerCase() === String(s).toLowerCase());
+      return `<span class="custom-lab-chip"><strong>Size</strong> ${escapeHtml(String(s))}${disabled ? ' · unavailable' : ''}</span>`;
+    });
+    summary.innerHTML = colorChips.concat(sizeChips).join('') || '<span class="custom-lab-chip">No options configured</span>';
+  }
+}
+
+async function saveCustomLabProductSettings() {
+  const select = document.getElementById('custom-lab-product-select');
+  if (!select || !select.value) { showToast('Select a T-Shirt Lab product first.'); return; }
+  const split = String(select.value).indexOf('::');
+  const catName = split >= 0 ? String(select.value).slice(0, split) : '';
+  const productId = split >= 0 ? String(select.value).slice(split + 2) : '';
+  const cat = CATEGORIES.find(c => String(c.name) === catName);
+  const prod = cat?.products?.find(p => String(p.id) === productId);
+  if (!prod) { showToast('Selected T-Shirt Lab product was not found.'); return; }
+
+  const colorsInput = document.getElementById('custom-lab-colors-input');
+  const sizesInput = document.getElementById('custom-lab-sizes-input');
+  const nextColors = [...new Set(String(colorsInput?.value || '').split(',').map(v => v.trim()).filter(Boolean))];
+  const nextSizes = [...new Set(String(sizesInput?.value || '').split(',').map(v => v.trim()).filter(Boolean))];
+  if (!nextColors.length || !nextSizes.length) { showToast('Add at least one color and one size.'); return; }
+
+  const prevDisabledColors = Array.isArray(prod.disabledColors) ? prod.disabledColors : [];
+  const prevDisabledSizes = Array.isArray(prod.disabledSizes) ? prod.disabledSizes : [];
+  prod.colors = nextColors;
+  prod.sizes = nextSizes;
+  prod.disabledColors = nextColors.filter(v => prevDisabledColors.some(d => String(d).toLowerCase() === String(v).toLowerCase()));
+  prod.disabledSizes = nextSizes.filter(v => prevDisabledSizes.some(d => String(d).toLowerCase() === String(v).toLowerCase()));
+  prod.customizeEnabled = true;
+
+  if (!prod.colorMeta || typeof prod.colorMeta !== 'object' || Array.isArray(prod.colorMeta)) prod.colorMeta = {};
+  nextColors.forEach(color => {
+    const key = String(color).trim().toLowerCase();
+    if (!/^#[0-9a-f]{6}$/i.test(String(prod.colorMeta[key] || ''))) prod.colorMeta[key] = getAdminDefaultColorHex(color);
+  });
+
+  localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
+  if (!supabaseClient) {
+    renderCustomLabAdminSettings(select.value);
+    updateCustomOrderGarmentDropdown();
+    showToast('Saved locally. Supabase connection is unavailable.');
+    return;
+  }
+
+  try {
+    const { error: categoryError } = await supabaseClient
+      .from('store_settings')
+      .upsert({ key: 'store_categories', value: CATEGORIES }, { onConflict: 'key' });
+    if (categoryError) throw categoryError;
+
+    const code = String(prod.code || '').trim().toUpperCase();
+    if (code) {
+      const { data: existing, error: existingError } = await supabaseClient
+        .from('products')
+        .select('id, active')
+        .eq('product_code', code)
+        .maybeSingle();
+      if (existingError) throw existingError;
+
+      const images = (Array.isArray(prod.images) ? prod.images : [])
+        .map((url, index) => ({ image_url: String(url || '').trim(), sort_order: index, active: true }))
+        .filter(item => item.image_url);
+
+      const { data: savedId, error: saveError } = await supabaseClient.rpc('admin_save_product', {
+        p_product_id: existing?.id || null,
+        p_product_code: code,
+        p_title: String(prod.title || '').trim(),
+        p_price: Number(prod.price || 0),
+        p_mrp: Number(prod.mrp || 0),
+        p_active: prod.active !== false,
+        p_variants: [],
+        p_images: images
+      });
+      if (saveError) throw saveError;
+      if (savedId) prod.dbProductId = savedId;
+    }
+
+    renderCustomLabAdminSettings(select.value);
+    updateCustomOrderGarmentDropdown();
+    renderStorefront();
+    showToast('T-Shirt Lab colors and sizes saved successfully.');
+  } catch (err) {
+    console.error('T-Shirt Lab settings save failed:', err);
+    showToast(err?.message || 'Could not save T-Shirt Lab settings.');
+  }
 }
 
 async function renderAdminCustomOrdersTable() {
@@ -7004,7 +7280,14 @@ function renderAdminProductFormsForCategory(catName) {
           </div>
           <div style="font-family:'Space Mono';font-size:.58rem;color:#888;margin-top:.25rem;line-height:1.4;">Add names separated by commas, then choose the actual color below.</div>
         </div>
-        <div><label class="admin-field-label">Sizes (Comma separated)</label><input type="text" id="prod-sizes-${cIndex}-${pIndex}" class="admin-input-small" value="${escapeHtml(prod.sizes.join(', '))}"></div>
+        <div>
+          <label class="admin-field-label">Sizes (Comma separated)</label>
+          <div style="display:flex;gap:.4rem;align-items:center;">
+            <input type="text" id="prod-sizes-${cIndex}-${pIndex}" class="admin-input-small" value="${escapeHtml(prod.sizes.join(', '))}" placeholder="S, M, L, XL, XXL, XXXL" style="margin-bottom:0;flex:1;" onchange="syncAdminProductSizeRows(${cIndex},${pIndex})">
+            <button type="button" class="btn btn--ghost" style="padding:.35rem .55rem;min-height:auto;font-size:.6rem;white-space:nowrap;" onclick="syncAdminProductSizeRows(${cIndex},${pIndex})">Apply</button>
+          </div>
+          <div style="font-family:'Space Mono';font-size:.58rem;color:#888;margin-top:.25rem;line-height:1.4;">Add names separated by commas. Apply to immediately show them under Available / Disabled Sizes.</div>
+        </div>
       </div>
       <div style="margin-bottom:.7rem;">
         <label class="admin-field-label">Available / Disabled Colors</label>
@@ -7090,7 +7373,10 @@ function addProdToCurrentAdminCategory() {
       price: 713,
       images: [''],
       colors: ['Yellow', 'White'],
-      sizes: ['S', 'M', 'L', 'XL'], disabledSizes: [], customizeEnabled: true
+      sizes: ['S', 'M', 'L', 'XL'],
+      disabledSizes: [],
+      disabledColors: [],
+      colorMeta: {}, disabledSizes: [], customizeEnabled: true
     });
     renderAdminProductFormsForCategory(activeAdminEditingCategoryName);
   }
@@ -7149,6 +7435,31 @@ function syncAdminProductColorRows(cIndex, pIndex) {
   });
   prod.disabledColors = previousDisabled.filter(disabled => prod.colors.some(color => String(color).trim().toLowerCase() === String(disabled).trim().toLowerCase()));
   renderAdminProductFormsForCategory(activeAdminEditingCategoryName);
+}
+
+function syncAdminProductSizeRows(cIndex, pIndex) {
+  // Capture any other unsaved fields on the current product card before re-rendering the option rows.
+  collectCategoryFormValues();
+  const cat = CATEGORIES[cIndex];
+  const prod = cat?.products?.[pIndex];
+  const input = document.getElementById(`prod-sizes-${cIndex}-${pIndex}`);
+  if (!prod || !input) return;
+
+  const nextSizes = [...new Set(
+    input.value
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean)
+  )];
+
+  const previousDisabled = Array.isArray(prod.disabledSizes) ? prod.disabledSizes : [];
+  const previousDisabledKeys = new Set(previousDisabled.map(s => String(s).trim().toLowerCase()).filter(Boolean));
+
+  prod.sizes = nextSizes;
+  prod.disabledSizes = nextSizes.filter(size => previousDisabledKeys.has(String(size).trim().toLowerCase()));
+
+  renderAdminProductFormsForCategory(activeAdminEditingCategoryName);
+  showToast(nextSizes.length ? `Sizes updated: ${nextSizes.join(', ')}` : 'No sizes entered.');
 }
 
 function toggleAdminProductColor(cIndex, pIndex, colorIndex, isAvailable) {
