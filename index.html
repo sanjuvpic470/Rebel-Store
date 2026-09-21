@@ -100,7 +100,7 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .hero__art{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .stamp{position:absolute;top:-12px;right:-8px;width:85px;height:85px;border:2px dashed var(--spray-yellow);border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;font-family:'Space Mono',monospace;font-size:.58rem;letter-spacing:.05em;text-transform:uppercase;color:var(--spray-yellow);animation:spin 18s linear infinite;z-index:2}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-.hero-poster{width:100%;max-width:340px;aspect-ratio:1/1;background:var(--spray-yellow);border:3px solid var(--paper);box-shadow:none;display:flex;align-items:stretch;justify-content:flex-start;padding:0;text-align:center;overflow:hidden;position:relative}
+.hero-poster{cursor:pointer;width:100%;max-width:340px;aspect-ratio:1/1;background:var(--spray-yellow);border:3px solid var(--paper);box-shadow:none;display:flex;align-items:stretch;justify-content:flex-start;padding:0;text-align:center;overflow:hidden;position:relative}
 .hero-poster svg{width:220px;height:auto}
 .hero-poster p{font-family:'Space Mono',monospace;font-size:.85rem;color:var(--ink);font-weight:700;margin-top:1rem}
 .hero-drop-media{width:100%;height:100%;background:transparent;display:flex;align-items:center;justify-content:center;overflow:visible}
@@ -1782,7 +1782,7 @@ body.profile-account-open .ticker{display:flex !important;}
             <div class="lux-hero-stage">
               <div class="lux-stage-inner">
                 <div class="lux-stage-ring"></div>
-                <div class="hero-poster" id="hero-drop-preview-card">
+                <div class="hero-poster" id="hero-drop-preview-card" role="button" tabindex="0" aria-label="Open Next Weekly Drop" onclick="openWeeklyDropProduct()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openWeeklyDropProduct();}">
                   <div class="hero-drop-media" id="hero-drop-media">
                     <div class="hero-drop-placeholder" id="hero-drop-placeholder">
                       <svg viewBox="0 0 340 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -1805,7 +1805,7 @@ body.profile-account-open .ticker{display:flex !important;}
 
             <div class="lux-hero-bottom">
               <div class="hero-drop-copy"><span class="hero-drop-label" id="hero-drop-label">NEXT WEEKLY DROP</span></div>
-              <button type="button" class="lux-round-go" onclick="handleNavShopClick()" aria-label="Shop the drops"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+              <button type="button" class="lux-round-go" onclick="openWeeklyDropProduct()" aria-label="Open next weekly drop"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
             </div>
           </div>
         </div>
@@ -2550,26 +2550,7 @@ body.profile-account-open .ticker{display:flex !important;}
         <h2>✍️ Website Texts & Content Editor</h2>
         <button class="btn btn--ghost" style="padding:0.4rem 1rem; font-size:0.8rem;" onclick="closeAdminSubPages()">← Back to Dashboard</button>
       </div>
-      <div class="admin-drop-preview-card" style="margin-bottom:1rem;">
-        <h3 style="font-family:'Anton',sans-serif;color:var(--spray-yellow);font-size:1.35rem;margin:0 0 .35rem;">🔥 Weekly Drop Preview</h3>
-        <p style="font-family:'Space Mono',monospace;color:var(--grey);font-size:.62rem;line-height:1.6;margin:0 0 1rem;">Paste the Supabase image URL for the next weekly drop. The URL is stored in the cloud site settings only.</p>
-        <div class="admin-drop-preview-grid">
-          <div class="admin-drop-preview-card">
-            <div class="admin-drop-preview-thumb" id="admin-drop-preview-thumb"><span style="font-family:'Space Mono',monospace;color:var(--grey);font-size:.65rem;">Paste a PNG image link to preview it</span></div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:.7rem;justify-content:center;">
-            <label class="admin-field-label" for="cms-drop-image-url">Weekly Drop PNG Image Link</label>
-            <input type="url" id="cms-drop-image-url" class="admin-input-full" value="" placeholder="https://your-domain.com/weekly-drop.png" autocomplete="off" inputmode="url">
-            <button type="button" class="btn btn--ghost" id="admin-drop-preview-btn" style="width:100%;justify-content:center;margin-top:.05rem;" onclick="previewWeeklyDropImageUrl()">🔗 Preview Image Link</button>
-            <div style="font-family:'Space Mono',monospace;color:var(--grey);font-size:.66rem;line-height:1.65;">
-              Paste the <strong style="color:#fff;">direct PNG image URL</strong>. No file upload is used here. When you paste a valid PNG link, the preview updates in this section; click <strong style="color:#fff;">Save Site Content</strong> to publish it to the homepage.
-            </div>
-            <small id="admin-drop-image-status" style="font-family:'Space Mono',monospace;color:var(--grey);font-size:.58rem;min-height:1em;">PNG link only · Paste the link, preview it, then save.</small>
-          </div>
-        </div>
-      </div>
-
-      <div style="display:flex; flex-direction:column; gap:1.2rem;">
+            <div style="display:flex; flex-direction:column; gap:1.2rem;">
         <div>
           <label class="admin-field-label">Top Banner Ticker Text</label>
           <input type="text" id="cms-ticker-msg" class="admin-input-full" value="★ 48H DISPATCH · 3–5 DAYS DELIVERY IN TN¹ ★ FREE SHIPPING ACROSS TN²">
@@ -2793,6 +2774,35 @@ body.profile-account-open .ticker{display:flex !important;}
           <button class="btn btn--solid" style="min-height:38px; padding:0 1.2rem;" onclick="addNewCategory()">+ Add Category</button>
         </div>
       </div>
+      <div class="admin-drop-preview-card" id="weekly-drop-product-manager" style="margin:0 0 1.5rem;">
+        <div class="sub-page-header" style="margin:0 0 .8rem;">
+          <div><h2>🔥 Weekly Drop Product</h2><p style="font-family:'Space Mono';font-size:.62rem;color:var(--grey);margin:.25rem 0 0;">The Next Weekly Drop is a real storefront product. Edit its PNG link, code, price, colors and sizes here. It will appear under the Weekly Drop category and open the normal Product Details page.</p></div>
+          <span class="admin-mini-label">PRODUCT CATALOGUE</span>
+        </div>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.8fr);gap:1rem;align-items:start;">
+          <div style="display:grid;gap:.7rem;">
+            <div><label class="admin-field-label">PNG Image URL</label><input type="url" id="weekly-prod-image-url" class="admin-input-full" placeholder="https://.../weekly-drop.png" autocomplete="off" inputmode="url"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
+              <div><label class="admin-field-label">Product Code</label><input type="text" id="weekly-prod-code" class="admin-input-small" placeholder="WEEKLY01"></div>
+              <div><label class="admin-field-label">Product Title</label><input type="text" id="weekly-prod-title" class="admin-input-small" placeholder="Next Weekly Drop"></div>
+            </div>
+            <div><label class="admin-field-label">Description</label><textarea id="weekly-prod-desc" class="admin-input-full" rows="3" placeholder="Next weekly drop design."></textarea></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
+              <div><label class="admin-field-label">MRP</label><input type="number" id="weekly-prod-mrp" class="admin-input-small" min="0" step="1"></div>
+              <div><label class="admin-field-label">Selling Price</label><input type="number" id="weekly-prod-price" class="admin-input-small" min="0" step="1"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
+              <div><label class="admin-field-label">Colors (comma separated)</label><input type="text" id="weekly-prod-colors" class="admin-input-small" placeholder="Black, White"></div>
+              <div><label class="admin-field-label">Sizes (comma separated)</label><input type="text" id="weekly-prod-sizes" class="admin-input-small" placeholder="S, M, L, XL"></div>
+            </div>
+            <button type="button" class="btn btn--solid" onclick="saveWeeklyDropProduct()">Save Weekly Drop Product 💾</button>
+          </div>
+          <div class="admin-drop-preview-card" style="min-height:260px;display:flex;align-items:center;justify-content:center;">
+            <div id="weekly-prod-preview" class="admin-drop-preview-thumb" style="width:100%;min-height:240px;display:flex;align-items:center;justify-content:center;"><span style="font-family:'Space Mono';font-size:.65rem;color:var(--grey);">Paste a PNG URL to preview.</span></div>
+          </div>
+        </div>
+      </div>
+
       <div class="admin-category-grid" id="admin-category-main-grid"></div>
 
       <div id="admin-custom-garment-view" style="display:none; margin-top:1.5rem;">
@@ -3215,7 +3225,8 @@ function applySiteContentToDOM() {
   const dropTitleEl = document.getElementById('hero-drop-title');
   const dropMediaEl = document.getElementById('hero-drop-media');
   const dropPlaceholderEl = document.getElementById('hero-drop-placeholder');
-  const dropImage = safeMediaUrl(SITE_CONTENT.dropPreviewImage || '');
+  const dropProduct = (typeof getWeeklyDropProduct === 'function') ? getWeeklyDropProduct() : null;
+  const dropImage = safeMediaUrl(dropProduct?.images?.[0] || SITE_CONTENT.dropPreviewImage || '');
   if (dropLabelEl) dropLabelEl.innerText = 'NEXT WEEKLY DROP';
   if (dropTitleEl) dropTitleEl.innerText = '';
   if (dropMediaEl) {
@@ -3403,6 +3414,9 @@ async function loadSiteContentFromCloud() {
       const localSiteContent = { ...SITE_CONTENT };
       delete localSiteContent.dropPreviewImage;
       localStorage.setItem('rebel_site_content', JSON.stringify(localSiteContent));
+      ensureWeeklyDropCategory();
+      renderWeeklyDropAdminPanel();
+      renderStorefront();
       applySiteContentToDOM();
     }
   } catch (err) {
@@ -3510,7 +3524,97 @@ function resetShopFilters() {
   applyShopFilters();
 }
 
+function ensureWeeklyDropCategory() {
+  let cat = CATEGORIES.find(c => String(c?.name || '').trim().toLowerCase() === 'weekly drop');
+  if (!cat) {
+    cat = { id: 'weekly-drop-category', name: 'Weekly Drop', products: [] };
+    CATEGORIES.push(cat);
+  }
+  if (!Array.isArray(cat.products)) cat.products = [];
+  let prod = cat.products.find(p => String(p?.id || '') === 'weekly-drop-product');
+  if (!prod) {
+    prod = {
+      id: 'weekly-drop-product', code: 'WEEKLY01', title: 'Next Weekly Drop',
+      desc: 'Next weekly drop design.', mrp: 1499, price: 999,
+      images: [], colors: ['Black','White'], sizes: ['S','M','L','XL'],
+      disabledColors: [], disabledSizes: [], colorMeta: {}, customizeEnabled: false, active: true
+    };
+    cat.products.unshift(prod);
+  }
+  if (!Array.isArray(prod.images)) prod.images = [];
+  if (!Array.isArray(prod.colors) || !prod.colors.length) prod.colors = ['Black','White'];
+  if (!Array.isArray(prod.sizes) || !prod.sizes.length) prod.sizes = ['S','M','L','XL'];
+  if (!Array.isArray(prod.disabledColors)) prod.disabledColors = [];
+  if (!Array.isArray(prod.disabledSizes)) prod.disabledSizes = [];
+  if (!prod.colorMeta || typeof prod.colorMeta !== 'object' || Array.isArray(prod.colorMeta)) prod.colorMeta = {};
+  const legacyImage = safeMediaUrl(SITE_CONTENT.dropPreviewImage || '');
+  if (legacyImage && !prod.images.some(x => String(x || '').trim() === legacyImage)) prod.images = [legacyImage];
+  if (prod.images.length) SITE_CONTENT.dropPreviewImage = safeMediaUrl(prod.images[0] || '');
+  SITE_CONTENT.dropPreviewLabel = 'NEXT WEEKLY DROP';
+  return { cat, prod };
+}
+
+function getWeeklyDropProduct() {
+  return ensureWeeklyDropCategory().prod;
+}
+
+function openWeeklyDropProduct() {
+  const { cat, prod } = ensureWeeklyDropCategory();
+  if (!prod.images?.length) {
+    showToast('Weekly Drop product is not configured yet. Add its PNG image in Admin → Products.');
+  }
+  openProductByDetails(cat.name, prod.id);
+}
+
+function renderWeeklyDropAdminPanel() {
+  const { prod } = ensureWeeklyDropCategory();
+  const set = (id, value) => { const el = document.getElementById(id); if (el) el.value = value ?? ''; };
+  set('weekly-prod-image-url', prod.images?.[0] || '');
+  set('weekly-prod-code', prod.code || 'WEEKLY01');
+  set('weekly-prod-title', prod.title || 'Next Weekly Drop');
+  set('weekly-prod-desc', prod.desc || 'Next weekly drop design.');
+  set('weekly-prod-mrp', Number(prod.mrp || 1499));
+  set('weekly-prod-price', Number(prod.price || 999));
+  set('weekly-prod-colors', (prod.colors || []).join(', '));
+  set('weekly-prod-sizes', (prod.sizes || []).join(', '));
+  const preview = document.getElementById('weekly-prod-preview');
+  const url = safeMediaUrl(prod.images?.[0] || '');
+  if (preview) preview.innerHTML = url ? `<img src="${escapeHtml(url)}" alt="Weekly Drop product preview" style="max-width:100%;max-height:240px;object-fit:contain;background:transparent;display:block;" onerror="this.parentElement.innerHTML='<span style=\"font-family:Space Mono;font-size:.65rem;color:#ff6b6b;\">PNG link could not be loaded</span>'">` : `<span style="font-family:'Space Mono';font-size:.65rem;color:var(--grey);">Paste a PNG URL to preview.</span>`;
+}
+
+async function saveWeeklyDropProduct() {
+  const { cat, prod } = ensureWeeklyDropCategory();
+  const imageUrl = String(document.getElementById('weekly-prod-image-url')?.value || '').trim();
+  const code = String(document.getElementById('weekly-prod-code')?.value || '').trim().toUpperCase();
+  const title = String(document.getElementById('weekly-prod-title')?.value || '').trim();
+  const desc = String(document.getElementById('weekly-prod-desc')?.value || '').trim();
+  const mrp = Number(document.getElementById('weekly-prod-mrp')?.value || 0);
+  const price = Number(document.getElementById('weekly-prod-price')?.value || 0);
+  const colors = String(document.getElementById('weekly-prod-colors')?.value || '').split(',').map(x => x.trim()).filter(Boolean);
+  const sizes = String(document.getElementById('weekly-prod-sizes')?.value || '').split(',').map(x => x.trim()).filter(Boolean);
+  if (imageUrl && !isDirectPngUrl(imageUrl)) { showToast('Weekly Drop image must be a direct PNG URL.'); return; }
+  if (!code || !title) { showToast('Product code and title are required.'); return; }
+  if (!Number.isFinite(mrp) || !Number.isFinite(price) || mrp < 0 || price < 0 || price > mrp) { showToast('Enter a valid MRP and selling price.'); return; }
+  if (!colors.length || !sizes.length) { showToast('Add at least one color and one size.'); return; }
+  prod.code = code; prod.title = title; prod.desc = desc || 'Next weekly drop design.'; prod.mrp = mrp; prod.price = price;
+  prod.images = imageUrl ? [safeMediaUrl(imageUrl)] : [];
+  prod.colors = colors; prod.sizes = sizes;
+  prod.disabledColors = (prod.disabledColors || []).filter(x => colors.some(c => c.toLowerCase() === String(x).toLowerCase()));
+  prod.disabledSizes = (prod.disabledSizes || []).filter(x => sizes.some(sz => sz.toLowerCase() === String(x).toLowerCase()));
+  prod.colorMeta = prod.colorMeta || {};
+  colors.forEach(c => { const k=c.toLowerCase(); if (!/^#[0-9a-f]{6}$/i.test(String(prod.colorMeta[k] || ''))) prod.colorMeta[k] = getAdminDefaultColorHex(c); });
+  SITE_CONTENT.dropPreviewImage = prod.images[0] || '';
+  SITE_CONTENT.dropPreviewLabel = 'NEXT WEEKLY DROP';
+  localStorage.setItem('rebel_site_content', JSON.stringify(Object.fromEntries(Object.entries(SITE_CONTENT).filter(([k]) => k !== 'dropPreviewImage'))));
+  renderWeeklyDropAdminPanel();
+  renderStorefront();
+  applySiteContentToDOM();
+  await saveAllCategoriesAndProducts();
+  showToast('Weekly Drop product saved. It is now a real product in the Weekly Drop category.');
+}
+
 function renderStorefront() {
+  ensureWeeklyDropCategory();
   populateShopFilterOptions();
   const container = document.getElementById('home-categories-container');
   const footerLinks = document.getElementById('footer-shop-links');
@@ -8444,6 +8548,7 @@ async function saveAllCategoriesAndProducts() {
   // adding the authoritative backend product records.
   if (secureDbSaved) {
     localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
+    renderWeeklyDropAdminPanel();
     renderStorefront();
 
     if (supabaseClient) {
@@ -8478,8 +8583,10 @@ async function loadCategoriesFromCloud() {
 
     if (data && data.value && Array.isArray(data.value) && data.value.length > 0) {
       CATEGORIES = data.value;
+      ensureWeeklyDropCategory();
       localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
       renderAdminCategoriesMainGrid();
+      renderWeeklyDropAdminPanel();
       renderStorefront();
     }
   } catch (err) {
@@ -8568,8 +8675,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   updateCartBadge();
+  ensureWeeklyDropCategory();
   applySiteContentToDOM();
   renderAdminCategoriesMainGrid();
+  renderWeeklyDropAdminPanel();
   renderStorefront();
   renderAdminPanels();
   loadCategoriesFromCloud();
