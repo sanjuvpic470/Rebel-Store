@@ -635,6 +635,7 @@ footer a:hover{color:var(--paper)}
 .admin-custom-garment-row .field-grid{display:grid;grid-template-columns:1.2fr .7fr .7fr;gap:.6rem}
 .admin-custom-garment-row .option-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.6rem}
 .admin-custom-garment-row .row-actions{display:flex;justify-content:space-between;gap:.6rem;align-items:center;margin-top:.7rem;flex-wrap:wrap}
+.custom-option-list{display:flex;flex-direction:column;gap:.45rem;margin-top:.45rem}.custom-option-row{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;padding:.45rem .55rem;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.03);font-family:'Space Mono';font-size:.6rem;border-radius:6px}.custom-option-row.is-disabled{border-color:rgba(255,80,80,.5);background:rgba(255,80,80,.08);opacity:.95}.custom-option-row label{display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;min-width:110px}.custom-option-row .custom-option-name{font-weight:700;color:#fff;min-width:110px}.custom-option-row .custom-option-remove{margin-left:auto;color:#ff7a7a;border:1px solid rgba(255,90,90,.35);background:transparent;border-radius:999px;padding:.22rem .45rem;cursor:pointer}.custom-option-add{display:flex;gap:.4rem;align-items:center;margin-top:.45rem}.custom-option-add input{flex:1;min-width:0}.custom-option-help{font-family:'Space Mono';font-size:.58rem;color:#888;line-height:1.4;margin-top:.3rem}
 .admin-custom-status{font-family:'Space Mono',monospace;font-size:.58rem;color:#aaa}
 .admin-custom-garment-card{background:linear-gradient(145deg,#19190f,#111113)!important;border:1px solid rgba(255,213,0,.42)!important;cursor:pointer;min-height:110px;position:relative;overflow:hidden}
 .admin-custom-garment-card::after{content:'CUSTOM';position:absolute;right:-1.4rem;top:.65rem;transform:rotate(35deg);font-family:'Space Mono',monospace;font-size:.5rem;color:rgba(255,213,0,.22);letter-spacing:.15em}
@@ -7179,6 +7180,7 @@ function openCustomTshirtManager() {
   if (main) main.style.display = 'none';
   if (detail) detail.style.display = 'none';
   if (panel) panel.style.display = 'block';
+  CUSTOM_TSHIRT_CATEGORIES.forEach(ensureCustomTshirtCategoryShape);
   renderCustomTshirtCategoriesAdmin();
 }
 
@@ -7190,9 +7192,34 @@ function renderCustomTshirtCategoriesAdmin() {
     list.innerHTML = '<div style="padding:1rem;border:1px dashed rgba(242,240,234,.15);font-family:\'Space Mono\';font-size:.62rem;color:#888;">No custom garment types yet. Add T-Shirt, Hoodie, Oversized, Polo T-Shirt or any type you need.</div>';
     return;
   }
+
   list.innerHTML = CUSTOM_TSHIRT_CATEGORIES.map((item, index) => {
-    const colorText = (item.colors || []).join(', ');
-    const sizeText = (item.sizes || []).join(', ');
+    ensureCustomTshirtCategoryShape(item);
+    const colorRows = (item.colors || []).map((color, colorIndex) => {
+      const colorName = String(color || '').trim();
+      const key = colorName.toLowerCase();
+      const disabled = (item.disabledColors || []).some(v => String(v).trim().toLowerCase() === key);
+      const hex = /^#[0-9a-f]{6}$/i.test(String(item.colorMeta?.[key] || '')) ? String(item.colorMeta[key]).toLowerCase() : getAdminDefaultColorHex(colorName);
+      return `<div class="custom-option-row${disabled ? ' is-disabled' : ''}">
+        <label><input type="checkbox" ${disabled ? '' : 'checked'} onchange="toggleCustomTshirtCategoryColor(${index},${colorIndex},this.checked)"><span class="custom-option-name">${escapeHtml(colorName)}</span></label>
+        <input type="color" value="${hex}" title="Choose ${escapeHtml(colorName)} color" onchange="updateCustomTshirtCategoryColorHex(${index},${colorIndex},this.value)" style="width:42px;height:30px;padding:0;border:1px solid rgba(255,255,255,.2);background:transparent;cursor:pointer;">
+        <input type="text" value="${hex}" maxlength="7" title="Hex color" onchange="updateCustomTshirtCategoryColorHex(${index},${colorIndex},this.value)" style="width:88px;margin:0;padding:.35rem;background:#111;border:1px solid rgba(255,255,255,.16);color:#fff;font-family:'Space Mono';font-size:.58rem;">
+        <span style="color:#777;">${disabled ? 'Unavailable' : 'Available'}</span>
+        <button type="button" class="custom-option-remove" onclick="removeCustomTshirtCategoryOption(${index},'colors',${colorIndex})">Remove</button>
+      </div>`;
+    }).join('');
+
+    const sizeRows = (item.sizes || []).map((size, sizeIndex) => {
+      const sizeName = String(size || '').trim();
+      const key = sizeName.toLowerCase();
+      const disabled = (item.disabledSizes || []).some(v => String(v).trim().toLowerCase() === key);
+      return `<div class="custom-option-row${disabled ? ' is-disabled' : ''}">
+        <label><input type="checkbox" ${disabled ? '' : 'checked'} onchange="toggleCustomTshirtCategorySize(${index},${sizeIndex},this.checked)"><span class="custom-option-name">${escapeHtml(sizeName)}</span></label>
+        <span style="color:#777;">${disabled ? 'Unavailable' : 'Available'}</span>
+        <button type="button" class="custom-option-remove" onclick="removeCustomTshirtCategoryOption(${index},'sizes',${sizeIndex})">Remove</button>
+      </div>`;
+    }).join('');
+
     return `
       <div class="admin-custom-garment-row" data-custom-index="${index}">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.55rem;">
@@ -7204,12 +7231,29 @@ function renderCustomTshirtCategoriesAdmin() {
           <div><label class="admin-field-label">Price</label><input type="number" min="0" class="admin-input-full" value="${Number(item.price)||0}" style="margin-bottom:0;" oninput="updateCustomTshirtCategoryField(${index},'price',this.value)"></div>
           <div><label class="admin-field-label">MRP</label><input type="number" min="0" class="admin-input-full" value="${Number(item.mrp)||0}" style="margin-bottom:0;" oninput="updateCustomTshirtCategoryField(${index},'mrp',this.value)"></div>
         </div>
-        <div class="option-grid">
-          <div><label class="admin-field-label">Colors</label><input class="admin-input-full" value="${escapeHtml(colorText)}" style="margin-bottom:0;" oninput="updateCustomTshirtCategoryArrayField(${index},'colors',this.value)"><div class="admin-custom-status">Comma separated · ${item.colors.length} color(s)</div></div>
-          <div><label class="admin-field-label">Sizes</label><input class="admin-input-full" value="${escapeHtml(sizeText)}" style="margin-bottom:0;" oninput="updateCustomTshirtCategoryArrayField(${index},'sizes',this.value)"><div class="admin-custom-status">Comma separated · ${item.sizes.length} size(s)</div></div>
+
+        <div style="margin-top:.75rem;">
+          <label class="admin-field-label">Available / Disabled Colors</label>
+          <div class="custom-option-list">${colorRows || '<div class="custom-option-help">No colors added yet.</div>'}</div>
+          <div class="custom-option-add">
+            <input type="text" id="custom-color-add-${index}" class="admin-input-full" style="margin:0;" placeholder="Add color e.g. Green, Navy, Maroon">
+            <button type="button" class="btn btn--ghost" style="padding:.35rem .6rem;min-height:auto;font-size:.6rem;white-space:nowrap;" onclick="addCustomTshirtCategoryOption(${index},'colors')">+ Add Color</button>
+          </div>
+          <div class="custom-option-help">Checked = available. Uncheck to show the color crossed out and prevent selection. Use the color picker / hex value for the actual swatch.</div>
         </div>
+
+        <div style="margin-top:.75rem;">
+          <label class="admin-field-label">Available / Disabled Sizes</label>
+          <div class="custom-option-list" style="flex-direction:row;flex-wrap:wrap;">${sizeRows || '<div class="custom-option-help">No sizes added yet.</div>'}</div>
+          <div class="custom-option-add">
+            <input type="text" id="custom-size-add-${index}" class="admin-input-full" style="margin:0;" placeholder="Add sizes e.g. XXL, XXXL, 4XL">
+            <button type="button" class="btn btn--ghost" style="padding:.35rem .6rem;min-height:auto;font-size:.6rem;white-space:nowrap;" onclick="addCustomTshirtCategoryOption(${index},'sizes')">+ Add Size</button>
+          </div>
+          <div class="custom-option-help">Checked = available. Uncheck to keep the size visible in T-Shirt Lab but crossed out and not selectable.</div>
+        </div>
+
         <div class="row-actions">
-          <span class="admin-custom-status">Code: ${escapeHtml(item.code)} · Save below to publish changes.</span>
+          <span class="admin-custom-status">Code: ${escapeHtml(item.code)} · Changes are published when you click Save.</span>
           <button type="button" class="btn btn--ghost" style="padding:.4rem .65rem;font-size:.62rem;color:#ff7a7a;" onclick="deleteCustomTshirtCategory(${index})">Delete</button>
         </div>
       </div>`;
@@ -7224,56 +7268,95 @@ function updateCustomTshirtCategoryField(index, field, value) {
   item[field] = value;
   if (field === 'price' && item.price > item.mrp) item.mrp = item.price;
   if (field === 'name') {
+    item.name = String(item.name || '').trim();
     item.code = `CT-${String(item.name || 'CUSTOM').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'').toUpperCase()}`;
   }
 }
 
-function updateCustomTshirtCategoryArrayField(index, field, value) {
+function addCustomTshirtCategoryOption(index, field) {
   const item = CUSTOM_TSHIRT_CATEGORIES[index];
-  if (!item) return;
-  const next = [...new Set(String(value || '').split(',').map(v => v.trim()).filter(Boolean))];
-  item[field] = next;
-  if (field === 'colors') {
-    const oldDisabled = Array.isArray(item.disabledColors) ? item.disabledColors : [];
-    item.disabledColors = next.filter(v => oldDisabled.some(d => String(d).toLowerCase() === String(v).toLowerCase()));
-  }
-  if (field === 'sizes') {
-    const oldDisabled = Array.isArray(item.disabledSizes) ? item.disabledSizes : [];
-    item.disabledSizes = next.filter(v => oldDisabled.some(d => String(d).toLowerCase() === String(v).toLowerCase()));
-  }
-}
-
-function addCustomTshirtCategory() {
-  const input = document.getElementById('new-custom-garment-input');
-  const name = String(input?.value || '').trim();
-  if (!name) { showToast('Enter a custom garment name first.'); return; }
-  if (CUSTOM_TSHIRT_CATEGORIES.some(item => String(item.name || '').toLowerCase() === name.toLowerCase())) {
-    showToast('That custom garment already exists.');
-    return;
-  }
-  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
-  CUSTOM_TSHIRT_CATEGORIES.push(ensureCustomTshirtCategoryShape({
-    id:`ct-${slug}-${Date.now().toString(36)}`,
-    name,
-    code:`CT-${name.replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'').toUpperCase()}`,
-    price:699,
-    mrp:999,
-    colors:['Black','White'],
-    sizes:['S','M','L','XL','XXL','XXXL'],
-    active:true
-  }));
+  if (!item || !['colors','sizes'].includes(field)) return;
+  ensureCustomTshirtCategoryShape(item);
+  const input = document.getElementById(`custom-${field === 'colors' ? 'color' : 'size'}-add-${index}`);
+  const raw = String(input?.value || '').trim();
+  if (!raw) { showToast(`Enter ${field === 'colors' ? 'a color' : 'a size'} first.`); return; }
+  const values = raw.split(',').map(v => v.trim()).filter(Boolean);
+  const existing = Array.isArray(item[field]) ? item[field] : [];
+  const existingKeys = new Set(existing.map(v => String(v).trim().toLowerCase()));
+  values.forEach(value => {
+    const key = value.toLowerCase();
+    if (existingKeys.has(key)) return;
+    existing.push(value);
+    existingKeys.add(key);
+    if (field === 'colors') {
+      const metaKey = key;
+      if (!item.colorMeta || typeof item.colorMeta !== 'object' || Array.isArray(item.colorMeta)) item.colorMeta = {};
+      item.colorMeta[metaKey] = getAdminDefaultColorHex(value);
+    }
+  });
+  item[field] = existing;
   if (input) input.value = '';
   renderCustomTshirtCategoriesAdmin();
-  showToast(`${name} added to Custom T-shirt Orders.`);
 }
 
-function deleteCustomTshirtCategory(index) {
+function removeCustomTshirtCategoryOption(index, field, optionIndex) {
   const item = CUSTOM_TSHIRT_CATEGORIES[index];
-  if (!item) return;
-  if (!window.confirm(`Delete Custom T-shirt type “${item.name}”?`)) return;
-  CUSTOM_TSHIRT_CATEGORIES.splice(index, 1);
+  if (!item || !Array.isArray(item[field])) return;
+  if (item[field].length <= 1) {
+    showToast(`Keep at least one ${field === 'colors' ? 'color' : 'size'}.`);
+    return;
+  }
+  const removed = String(item[field][optionIndex] || '').trim();
+  item[field].splice(optionIndex, 1);
+  if (field === 'colors') {
+    const key = removed.toLowerCase();
+    if (item.colorMeta && typeof item.colorMeta === 'object') delete item.colorMeta[key];
+    item.disabledColors = (item.disabledColors || []).filter(v => String(v).trim().toLowerCase() !== key);
+  } else {
+    const key = removed.toLowerCase();
+    item.disabledSizes = (item.disabledSizes || []).filter(v => String(v).trim().toLowerCase() !== key);
+  }
   renderCustomTshirtCategoriesAdmin();
-  showToast(`${item.name} removed. Click Save Custom T-shirt Categories to confirm.`);
+}
+
+function toggleCustomTshirtCategoryColor(index, colorIndex, isAvailable) {
+  const item = CUSTOM_TSHIRT_CATEGORIES[index];
+  if (!item || !Array.isArray(item.colors)) return;
+  ensureCustomTshirtCategoryShape(item);
+  const color = String(item.colors[colorIndex] || '').trim();
+  if (!color) return;
+  const key = color.toLowerCase();
+  item.disabledColors = item.disabledColors.filter(v => String(v).trim().toLowerCase() !== key);
+  if (!isAvailable) item.disabledColors.push(color);
+  renderCustomTshirtCategoriesAdmin();
+}
+
+function toggleCustomTshirtCategorySize(index, sizeIndex, isAvailable) {
+  const item = CUSTOM_TSHIRT_CATEGORIES[index];
+  if (!item || !Array.isArray(item.sizes)) return;
+  ensureCustomTshirtCategoryShape(item);
+  const size = String(item.sizes[sizeIndex] || '').trim();
+  if (!size) return;
+  const key = size.toLowerCase();
+  item.disabledSizes = item.disabledSizes.filter(v => String(v).trim().toLowerCase() !== key);
+  if (!isAvailable) item.disabledSizes.push(size);
+  renderCustomTshirtCategoriesAdmin();
+}
+
+function updateCustomTshirtCategoryColorHex(index, colorIndex, value) {
+  const item = CUSTOM_TSHIRT_CATEGORIES[index];
+  if (!item || !Array.isArray(item.colors)) return;
+  const color = String(item.colors[colorIndex] || '').trim();
+  if (!color) return;
+  let hex = String(value || '').trim();
+  if (!hex.startsWith('#')) hex = '#' + hex;
+  if (!/^#[0-9a-f]{6}$/i.test(hex)) {
+    showToast('Enter a valid 6-digit color code');
+    return;
+  }
+  if (!item.colorMeta || typeof item.colorMeta !== 'object' || Array.isArray(item.colorMeta)) item.colorMeta = {};
+  item.colorMeta[color.toLowerCase()] = hex.toLowerCase();
+  renderCustomTshirtCategoriesAdmin();
 }
 
 async function saveCustomTshirtCategories() {
@@ -7281,15 +7364,32 @@ async function saveCustomTshirtCategories() {
   if (saveBtn) { saveBtn.disabled = true; saveBtn.innerText = 'Saving...'; }
   try {
     CUSTOM_TSHIRT_CATEGORIES.forEach(ensureCustomTshirtCategoryShape);
-    localStorage.setItem('rebel_custom_tshirt_categories', JSON.stringify(CUSTOM_TSHIRT_CATEGORIES));
+    CUSTOM_TSHIRT_CATEGORIES.forEach(item => {
+      item.colors = [...new Set((item.colors || []).map(v => String(v).trim()).filter(Boolean))];
+      item.sizes = [...new Set((item.sizes || []).map(v => String(v).trim()).filter(Boolean))];
+      const colorKeys = new Set(item.colors.map(v => v.toLowerCase()));
+      const sizeKeys = new Set(item.sizes.map(v => v.toLowerCase()));
+      item.disabledColors = [...new Set((item.disabledColors || []).filter(v => colorKeys.has(String(v).trim().toLowerCase())))];
+      item.disabledSizes = [...new Set((item.disabledSizes || []).filter(v => sizeKeys.has(String(v).trim().toLowerCase())))];
+      if (!item.colorMeta || typeof item.colorMeta !== 'object' || Array.isArray(item.colorMeta)) item.colorMeta = {};
+      item.colors.forEach(color => {
+        const key = color.toLowerCase();
+        if (!/^#[0-9a-f]{6}$/i.test(String(item.colorMeta[key] || ''))) item.colorMeta[key] = getAdminDefaultColorHex(color);
+      });
+    });
+    const payload = JSON.parse(JSON.stringify(CUSTOM_TSHIRT_CATEGORIES));
+    localStorage.setItem('rebel_custom_tshirt_categories', JSON.stringify(payload));
     if (supabaseClient) {
-      const { error } = await supabaseClient.from('store_settings').upsert({ key:'custom_tshirt_categories', value:CUSTOM_TSHIRT_CATEGORIES }, { onConflict:'key' });
+      const { error } = await supabaseClient.from('store_settings').upsert({ key:'custom_tshirt_categories', value:payload }, { onConflict:'key' });
       if (error) throw error;
     }
+    CUSTOM_TSHIRT_CATEGORIES = payload;
+    CUSTOM_TSHIRT_CATEGORIES.forEach(ensureCustomTshirtCategoryShape);
     updateCustomTshirtLabDropdownOnly();
+    renderTShirtLabOptions();
     renderCustomTshirtCategoriesAdmin();
     renderCustomLabAdminSettings();
-    showToast('Custom T-shirt categories saved successfully.');
+    showToast('Custom T-shirt sizes, colors and availability saved successfully.');
   } catch (err) {
     console.error('Custom T-shirt category save failed:', err);
     showToast(err?.message || 'Could not save Custom T-shirt categories.');
