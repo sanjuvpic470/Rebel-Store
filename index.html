@@ -183,17 +183,16 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .pdp-grid{display:grid;grid-template-columns:1fr;gap:2.5rem;width:100%;box-sizing:border-box;}
 @media(min-width:850px){.pdp-grid{grid-template-columns:480px 1fr;align-items:start;gap:3rem}}
 .gallery-container{display:flex;flex-direction:column;gap:1rem;width:100%;max-width:100%;box-sizing:border-box;margin:0 auto}
-.slider-wrapper{position:relative;width:100%;max-width:100%;aspect-ratio:1/1;height:auto;overflow:hidden;background:#141416;border:2px solid rgba(242,240,234,.2);box-shadow:none;border-radius:2px;box-sizing:border-box;}
+.slider-wrapper{position:relative;width:100%;max-width:100%;aspect-ratio:4/5;height:auto;overflow:hidden;background:#141416;border:2px solid rgba(242,240,234,.2);box-shadow:none;border-radius:2px;box-sizing:border-box;}
 .slider-track{display:flex;width:100%;height:100%;transition:transform .3s ease-out}
-.slide-item{min-width:100%;width:100%;height:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;background:#141416;padding:10px;overflow:hidden;flex-shrink:0;box-sizing:border-box;}
+.slide-item{min-width:100%;width:100%;height:100%;aspect-ratio:4/5;display:flex;align-items:center;justify-content:center;background:#141416;padding:10px;overflow:hidden;flex-shrink:0;box-sizing:border-box;}
 .slide-item img{width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;display:block}
 .slide-item .big-preview-text{font-family:'Anton',sans-serif;font-size:clamp(3.2rem,10vw,4.8rem);text-transform:uppercase;color:var(--spray-yellow);line-height:1}
 .slide-nav-btn{position:absolute;top:50%;transform:translateY(-50%);background:var(--ink);color:var(--paper);border:1px solid var(--paper);width:36px;height:36px;font-size:1.1rem;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center}
 .slide-prev{left:8px}
 .slide-next{right:8px}
-.angle-badge{position:absolute;bottom:12px;left:12px;background:var(--ink);border:1px solid var(--paper);font-family:'Space Mono',monospace;font-size:.65rem;padding:4px 8px;text-transform:uppercase;z-index:5}
 .thumb-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;width:100%;box-sizing:border-box;}
-.thumb-card{aspect-ratio:1/1;width:100%;background:#141416;border:1.5px solid rgba(242,240,234,.15);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:4px;overflow:hidden;transition:border-color 0.2s, box-shadow 0.2s;border-radius:2px;box-sizing:border-box;}
+.thumb-card{aspect-ratio:4/5;width:100%;background:#141416;border:1.5px solid rgba(242,240,234,.15);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:4px;overflow:hidden;transition:border-color 0.2s, box-shadow 0.2s;border-radius:2px;box-sizing:border-box;}
 .thumb-card.active{border-color:var(--spray-yellow);background:#222226;box-shadow:0 0 8px rgba(255,213,0,0.4)}
 .thumb-card img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none}
 .thumb-card span.thumb-title{font-family:'Space Mono',monospace;font-size:.6rem;color:var(--paper);font-weight:700;background:rgba(0,0,0,0.6);padding:2px 4px}
@@ -1203,7 +1202,6 @@ h1.hero__title .stroke{-webkit-text-stroke:0;color:#fff}
 .slide-item .big-preview-text{font-weight:800;color:#FACC15}
 .slide-nav-btn{background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid var(--glass-line);border-radius:9999px;color:#fff;transition:color .2s,border-color .2s}
 .slide-nav-btn:hover{color:#FACC15;border-color:#FACC15}
-.angle-badge{background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid var(--lux-border);border-radius:9999px;color:#FACC15;font-size:.7rem;padding:.25rem .75rem;text-transform:none}
 .pdp-zoom-btn{border-radius:9999px;background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);text-transform:none;font-size:.7rem;border:1px solid var(--glass-line)}
 .thumb-card{background:#161616;border:1px solid var(--lux-border);border-radius:1rem;transition:border-color .2s}
 .thumb-card:hover{border-color:rgba(250,204,21,.5)}
@@ -1455,7 +1453,10 @@ footer a:hover{color:#FACC15}
   .pdp-grid{gap:1.25rem!important}
   .gallery-container{width:100%!important}
   .slider-wrapper{width:min(100%,520px)!important;margin:0 auto!important}
-  .slide-item img{max-height:88vw!important}
+  .slider-wrapper{aspect-ratio:4/5!important}
+  .slide-item{aspect-ratio:4/5!important}
+  .thumb-card{aspect-ratio:4/5!important}
+  .slide-item img{max-height:100%!important}
   .thumb-row{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:.45rem!important}
   .custom-form-box{width:100%!important;max-width:100%!important;box-sizing:border-box!important}
   .custom-form-box .form-control,.billing-form-box .b-field input,.billing-form-box .b-field select{font-size:.8rem!important}
@@ -1891,7 +1892,6 @@ body.admin-mode .admin-header-refresh-btn{display:inline-flex;}
           <button class="slide-nav-btn slide-prev" onclick="prevSlide()">❮</button>
           <button class="slide-nav-btn slide-next" onclick="nextSlide()">❯</button>
           <div class="slider-track" id="slider-track"></div>
-          <div class="angle-badge" id="pdp-angle-label">Front View</div>
         </div>
         <div class="thumb-row" id="thumb-row-container"></div>
       </div>
@@ -3172,7 +3172,6 @@ let selectedQty = 1;
 let currentSlideIndex = 0;
 let currentProduct = null;
 let loggedInUser = null;
-const angleLabels = ['Angle 01 // Front View', 'Angle 02 // Back Graphic', 'Angle 03 // Detail', 'Angle 04 // Fit'];
 const STORE_START_DATE = new Date(2026, 7, 1);
 const calendarToday = new Date();
 let calCurrentYear = calendarToday.getFullYear();
@@ -3608,8 +3607,6 @@ function renderProductGalleryForColor(product, color, startIndex = 0) {
   window.TOTAL_SLIDES_COUNT = images.length;
   currentSlideIndex = Math.max(0, Math.min(Number(startIndex) || 0, images.length - 1));
   goToSlide(currentSlideIndex);
-  const label = document.getElementById('pdp-angle-label');
-  if (label) label.innerText = color ? `${color} · ${angleLabels[currentSlideIndex] || 'View'}` : (angleLabels[currentSlideIndex] || 'View');
 }
 
 function syncCurrentProductGalleryToColor() {
@@ -4146,7 +4143,6 @@ function updateSliderPosition() {
   const track = document.getElementById('slider-track');
   if (!track) return;
   track.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
-  document.getElementById('pdp-angle-label').innerText = angleLabels[currentSlideIndex] || 'View';
   
   document.querySelectorAll('#thumb-row-container .thumb-card').forEach((thumb, idx) => {
     if (idx === currentSlideIndex) {
