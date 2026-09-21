@@ -1625,6 +1625,57 @@ body.admin-mode .admin-header-refresh-btn{display:inline-flex;}
 .hero-drop-placeholder{background:transparent !important;}
 @media(max-width:420px){.hero-poster{width:13rem !important;height:13rem !important;}}
 </style>
+
+<style id="rebel-weekly-drop-ticker-glow-final">
+/* FINAL Weekly Drop + Global Ticker polish */
+/* Keep the running delivery/offer ticker visible on every page, including Profile, Orders, Saved Address and Checkout. */
+body.profile-account-open .ticker{display:flex !important;}
+.ticker{display:flex !important;visibility:visible !important;opacity:1 !important;}
+
+/* Replace the visible rotating circle with a soft radial yellow glow: bright at the centre and fading outward. */
+.lux-stage-ring{
+  inset:-1.5rem !important;
+  border-radius:50% !important;
+  background:radial-gradient(circle at center, rgba(250,204,21,.30) 0%, rgba(250,204,21,.18) 28%, rgba(250,204,21,.08) 48%, rgba(250,204,21,0) 72%) !important;
+  filter:blur(8px) !important;
+  animation:none !important;
+  pointer-events:none !important;
+}
+
+/* The horizontal divider must not cut through/crop the glow behind the Weekly Drop. */
+.lux-hero-bottom{border-top:0 !important;}
+
+/* Supplied transparent PNG: enlarge the actual floating artwork without adding any white/card background. */
+.hero-poster{
+  width:15rem !important;
+  height:15rem !important;
+  overflow:visible !important;
+}
+.hero-drop-media{
+  overflow:visible !important;
+}
+.hero-drop-media img{
+  width:125% !important;
+  height:125% !important;
+  max-width:none !important;
+  max-height:none !important;
+  object-fit:contain !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  transform:scale(1.04) !important;
+  transform-origin:center center !important;
+}
+@media(max-width:600px){
+  .hero-poster{width:14rem !important;height:14rem !important;}
+  .hero-drop-media img{width:128% !important;height:128% !important;transform:scale(1.04) !important;}
+}
+@media(max-width:420px){
+  .hero-poster{width:13.5rem !important;height:13.5rem !important;}
+  .hero-drop-media img{width:130% !important;height:130% !important;}
+}
+</style>
+
 </head>
 <body>
   <div id="cursor" class="custom-cursor" aria-hidden="true"></div>
