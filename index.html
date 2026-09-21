@@ -9137,43 +9137,129 @@ function previewAndCropAvatar(event) {
 }
 
 async function saveUserProfileEdits() {
-  if (!supabaseClient) return;
+  if (!supabaseClient) {
+    showToast('Supabase is not connected.');
+    return;
+  }
+
   const newName = document.getElementById('edit-profile-name')?.value.trim();
   const newPhone = document.getElementById('edit-profile-phone')?.value.trim() || '';
   const newDob = document.getElementById('edit-profile-dob')?.value || '';
   const newGender = document.getElementById('edit-profile-gender')?.value || '';
   if (!newName) { showToast('Name cannot be empty!'); return; }
 
-  let avatarUrl = loggedInUser.avatarUrl || '';
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) {
+    showToast('Session expired. Please login again.');
+    return;
+  }
+
+  let avatarUrl = loggedInUser?.avatarUrl || '';
   if (croppedAvatarBlob) {
-    const userId = (await supabaseClient.auth.getUser()).data.user?.id;
-    if (!userId) { showToast('Session expired. Please login again.'); return; }
-    const fileName = `${userId}/avatar_${Date.now()}.jpg`;
-    const { error: uploadErr } = await supabaseClient.storage.from('avatars').upload(fileName, croppedAvatarBlob, { contentType: 'image/jpeg', upsert: false });
-    if (uploadErr) { showToast('Profile photo upload failed: ' + uploadErr.message); return; }
+    const fileName = `${user.id}/avatar_${Date.now()}.jpg`;
+    const { error: uploadErr } = await supabaseClient.storage
+      .from('avatars')
+      .upload(fileName, croppedAvatarBlob, { contentType: 'image/jpeg', upsert: false });
+    if (uploadErr) {
+      showToast('Profile photo upload failed: ' + uploadErr.message);
+      return;
+    }
     const { data: pubData } = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
     avatarUrl = pubData?.publicUrl || avatarUrl;
   }
 
-  const { data: { user } } = await supabaseClient.auth.getUser();
-  if (!user) { showToast('Session expired. Please login again.'); return; }
+  // Save the complete profile with UPSERT. The previous implementation used
+  // UPDATE and then deliberately dropped DOB/Gender in its fallback, which is
+  // why those two fields could appear saved in the UI but never reach Supabase.
+  const fullPayload = {
+    id: user.id,
+    email: user.email || loggedInUser?.email || null,
+    name: newName,
+    username: loggedInUser?.username || user.user_metadata?.username || null,
+    phone: newPhone || null,
+    avatar_url: avatarUrl || null,
+    alt_phone: loggedInUser?.altPhone || null,
+    date_of_birth: newDob || null,
+    gender: newGender || null
+  };
 
-  const payload = { name: newName, phone: newPhone || null, avatar_url: avatarUrl || null, alt_phone: loggedInUser.altPhone || null, date_of_birth: newDob || null, gender: newGender || null };
-  const { error } = await supabaseClient.from('profiles').update(payload).eq('id', user.id);
-  if (error) {
-    // Graceful fallback for an older profiles table that does not yet have DOB/gender columns.
-    console.warn('Full profile update failed:', error.message);
-    const fallback = await supabaseClient.from('profiles').update({ name: newName, phone: newPhone || null, avatar_url: avatarUrl || null }).eq('id', user.id);
-    if (fallback.error) { showToast('Profile update failed: ' + fallback.error.message); return; }
-    showToast('Profile core details saved. Add date_of_birth/gender columns in Supabase to save those fields too.');
+  let saveError = null;
+  let savedRow = null;
+
+  // First attempt: write the whole profile in one atomic upsert.
+  const fullSave = await supabaseClient
+    .from('profiles')
+    .upsert(fullPayload, { onConflict: 'id' })
+    .select('id,name,phone,avatar_url,date_of_birth,gender')
+    .maybeSingle();
+
+  if (!fullSave.error) {
+    savedRow = fullSave.data || null;
   } else {
-    showToast('Profile updated successfully!');
+    saveError = fullSave.error;
+    console.warn('Full profile upsert failed:', fullSave.error.message);
+
+    // Retry specifically with the fields requested here. This keeps DOB and
+    // Gender from being lost when an unrelated optional profile column causes
+    // the broader payload to fail.
+    const coreSave = await supabaseClient
+      .from('profiles')
+      .upsert({
+        id: user.id,
+        name: newName,
+        phone: newPhone || null,
+        date_of_birth: newDob || null,
+        gender: newGender || null
+      }, { onConflict: 'id' })
+      .select('id,name,phone,date_of_birth,gender')
+      .maybeSingle();
+
+    if (!coreSave.error) {
+      savedRow = coreSave.data || null;
+      saveError = null;
+    } else {
+      saveError = coreSave.error;
+      console.error('Profile DOB/Gender save failed:', coreSave.error.message);
+    }
   }
 
-  loggedInUser = { ...loggedInUser, name: newName, phone: newPhone, avatarUrl, dateOfBirth: newDob, gender: newGender };
+  // Verify the cloud values before telling the customer that the save worked.
+  if (!saveError) {
+    const { data: verifyRow, error: verifyError } = await supabaseClient
+      .from('profiles')
+      .select('date_of_birth,gender,name,phone,avatar_url')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (verifyError) {
+      saveError = verifyError;
+    } else if (
+      String(verifyRow?.date_of_birth || '') !== String(newDob || '') ||
+      String(verifyRow?.gender || '') !== String(newGender || '')
+    ) {
+      saveError = new Error('Profile was written, but Date of Birth / Gender could not be verified in Supabase.');
+    }
+  }
+
+  if (saveError) {
+    showToast('Profile update failed: ' + (saveError.message || 'Unable to save profile.'));
+    return;
+  }
+
+  loggedInUser = {
+    ...loggedInUser,
+    id: user.id,
+    email: user.email || loggedInUser?.email || '',
+    name: newName,
+    phone: newPhone,
+    avatarUrl,
+    dateOfBirth: newDob,
+    gender: newGender
+  };
   sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
   updateUserBadgeDisplay();
   croppedAvatarBlob = null;
+  showToast('Profile updated successfully!');
 }
 
 function escapeHtml(value) {
