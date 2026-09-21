@@ -1046,20 +1046,20 @@ h1.hero__title .stroke{-webkit-text-stroke:0;color:#fff}
 .lux-icon-tile svg{width:2rem;height:2rem}
 .stamp{position:static;width:auto;height:auto;border:1px solid var(--lux-border);border-radius:9999px;background:rgba(0,0,0,.6);color:#FACC15;padding:.25rem .75rem;font-size:.75rem;letter-spacing:0;text-transform:uppercase;animation:none;display:inline-block;text-align:right;line-height:1.5}
 .lux-hero-stage{position:relative;z-index:1;margin:1rem 0;display:flex;align-items:center;justify-content:center;flex:1;min-height:0}
-.lux-stage-inner{position:relative;width:16rem;height:16rem;max-width:100%;display:flex;align-items:center;justify-content:center}
-.lux-stage-ring{position:absolute;inset:0;border-radius:9999px;background:linear-gradient(to top right,rgba(250,204,21,.2),transparent,rgba(245,158,11,.2));animation:luxSpin 15s linear infinite}
-@keyframes luxSpin{to{transform:rotate(360deg)}}
-@keyframes floatSlow{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-15px) rotate(1deg)}}
-.hero-poster{position:relative;width:12.5rem;height:12.5rem;max-width:none;aspect-ratio:auto;padding:.75rem;display:block;border:1px solid rgba(250,204,21,.4);border-radius:1rem;background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:0 25px 50px -12px rgba(0,0,0,.6);animation:floatSlow 6s ease-in-out infinite;overflow:hidden}
-.hero-drop-media{width:100%;height:100%;border-radius:.75rem;background:#FACC15;overflow:hidden}
-.hero-drop-media img{filter:contrast(1.1)}
-.lux-hero-bottom{position:relative;z-index:1;padding-top:1rem;border-top:1px solid rgba(38,38,38,.6);display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.lux-stage-inner{position:relative;width:18rem;height:18rem;max-width:100%;display:flex;align-items:center;justify-content:center;overflow:visible}
+.lux-stage-ring{position:absolute;inset:-2.25rem;border-radius:50%;background:radial-gradient(circle at 50% 50%,rgba(250,204,21,.34) 0%,rgba(250,204,21,.20) 28%,rgba(250,204,21,.10) 48%,rgba(250,204,21,.045) 62%,transparent 78%);filter:blur(1px);animation:none;pointer-events:none}
+@keyframes floatSlow{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-14px) rotate(1deg)}}
+.hero-poster{position:relative;width:17rem;height:17rem;max-width:none;aspect-ratio:auto;padding:0;display:block;border:0;border-radius:0;background:transparent;box-shadow:none;animation:none;overflow:visible;z-index:2}
+.hero-drop-media{width:100%;height:100%;border-radius:0;background:transparent;overflow:visible;display:flex;align-items:center;justify-content:center}
+.hero-drop-media img{display:block;width:100%;height:100%;max-width:none;max-height:none;object-fit:contain;object-position:center;filter:contrast(1.08);background:transparent;border:0;border-radius:0;animation:floatSlow 5.5s ease-in-out infinite;will-change:transform}
+.hero-drop-media img[src$=".png"]{background:transparent!important}
+.lux-hero-bottom{position:relative;z-index:1;padding-top:1rem;border-top:0;display:flex;align-items:center;justify-content:space-between;gap:1rem}
 .hero-drop-copy{padding:0;display:block;width:auto;color:#fff}
 .hero-drop-label{font-family:var(--font-display)!important;font-weight:700;font-size:1.125rem;letter-spacing:0;text-transform:uppercase;color:#fff}
 .lux-round-go{width:2.5rem;height:2.5rem;border-radius:.75rem;background:#FACC15;color:#080808;display:inline-flex;align-items:center;justify-content:center;border:0;cursor:pointer;box-shadow:0 4px 6px -1px rgba(0,0,0,.3);transition:transform .2s}
 .lux-round-go:hover{transform:translateX(3px)}
 .lux-round-go svg{width:1.1rem;height:1.1rem}
-@media(max-width:420px){.lux-hero-card{padding:1.25rem}.lux-stage-inner{width:13rem;height:13rem}.hero-poster{width:10.5rem;height:10.5rem}}
+@media(max-width:420px){.lux-hero-card{padding:1.25rem}.lux-stage-inner{width:15rem;height:15rem}.lux-stage-ring{inset:-1.75rem}.hero-poster{width:14.25rem;height:14.25rem}}
 
 /* ---------- 7. SECTIONS ---------- */
 .lux-section{position:relative;z-index:10;padding:6rem 1.5rem}
@@ -1574,6 +1574,13 @@ body.admin-mode .admin-header-refresh-btn{display:inline-flex;}
 }
 </style>
 
+
+<style id="weekly-drop-category-responsive-fix">
+@media(max-width:650px){
+  #weekly-drop-category-settings>div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important;}
+  #weekly-drop-category-settings>div[style*="grid-template-columns:minmax(260px,1fr) auto"]{grid-template-columns:1fr!important;}
+}
+</style>
 </head>
 <body>
   <div id="cursor" class="custom-cursor" aria-hidden="true"></div>
@@ -2694,19 +2701,43 @@ body.admin-mode .admin-header-refresh-btn{display:inline-flex;}
       <div id="admin-category-detail-view" style="display:none; margin-top:1.5rem;">
         <button class="back-btn" onclick="backToAdminCategoriesGrid()">← Back to Categories</button>
         <div id="weekly-drop-category-settings" style="display:none;margin-top:1rem;background:#0d0d0f;border:1px solid rgba(250,204,21,.22);padding:1rem 1.1rem;border-radius:10px;">
-          <span class="admin-mini-label">WEEKLY DROP</span>
-          <h3 style="margin:.25rem 0 .35rem;color:var(--spray-yellow);font-family:'Anton',sans-serif;text-transform:uppercase;">Homepage Header Link</h3>
-          <p style="margin:0 0 .8rem;font-family:'Space Mono';font-size:.62rem;color:#999;line-height:1.5;">Paste the direct PNG image URL. This is the only setting for Weekly Drop.</p>
-          <div style="display:flex;gap:.6rem;align-items:end;flex-wrap:wrap;">
-            <div style="flex:1;min-width:240px;">
-              <label class="admin-field-label">Header Link / PNG URL</label>
-              <input type="url" id="weekly-category-header-link" class="admin-input-full" placeholder="https://.../weekly-drop.png" autocomplete="off" inputmode="url">
-            </div>
-            <button type="button" class="btn btn--solid" style="min-height:40px;" onclick="saveWeeklyDropCategoryLink()">Save Link 💾</button>
-          </div>
-          <div id="weekly-category-link-preview" style="margin-top:.8rem;min-height:100px;border:1px dashed rgba(242,240,234,.14);display:flex;align-items:center;justify-content:center;background:#080808;border-radius:8px;overflow:hidden;"></div>
-        </div>
-        <div class="sub-page-header" style="margin-top:1rem;">
+  <span class="admin-mini-label">WEEKLY DROP</span>
+  <h3 style="margin:.25rem 0 .35rem;color:var(--spray-yellow);font-family:'Anton',sans-serif;text-transform:uppercase;">Weekly Drop Settings</h3>
+  <p style="margin:0 0 .8rem;font-family:'Space Mono';font-size:.62rem;color:#999;line-height:1.5;">This category is reserved for the homepage Weekly Drop. It has no normal product cards. Manage only the PNG link, available colors and available sizes here.</p>
+  <div style="display:grid;grid-template-columns:minmax(260px,1fr) auto;gap:.6rem;align-items:end;">
+    <div>
+      <label class="admin-field-label">Homepage PNG Link</label>
+      <input type="url" id="weekly-category-header-link" class="admin-input-full" placeholder="https://.../weekly-drop.png" autocomplete="off" inputmode="url">
+    </div>
+    <button type="button" class="btn btn--solid" style="min-height:40px;" onclick="saveWeeklyDropCategoryLink()">Save Weekly Drop 💾</button>
+  </div>
+  <div id="weekly-category-link-preview" style="margin-top:.8rem;min-height:100px;border:1px dashed rgba(242,240,234,.14);display:flex;align-items:center;justify-content:center;background:#080808;border-radius:8px;overflow:hidden;"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:1rem;">
+    <div>
+      <label class="admin-field-label">Colors (Comma separated)</label>
+      <div style="display:flex;gap:.4rem;">
+        <input type="text" id="weekly-category-colors" class="admin-input-small" placeholder="Black, White, Yellow" style="margin:0;flex:1;">
+      </div>
+      <div style="font-family:'Space Mono';font-size:.58rem;color:#888;margin-top:.3rem;">Add the colors you want, separated by commas.</div>
+    </div>
+    <div>
+      <label class="admin-field-label">Sizes (Comma separated)</label>
+      <div style="display:flex;gap:.4rem;">
+        <input type="text" id="weekly-category-sizes" class="admin-input-small" placeholder="S, M, L, XL, XXL" style="margin:0;flex:1;">
+      </div>
+      <div style="font-family:'Space Mono';font-size:.58rem;color:#888;margin-top:.3rem;">Add the sizes you want, separated by commas.</div>
+    </div>
+  </div>
+  <div style="margin-top:1rem;">
+    <label class="admin-field-label">Available / Unavailable Colors</label>
+    <div id="weekly-category-color-toggles" style="display:flex;flex-direction:column;gap:.45rem;margin-top:.35rem;"></div>
+  </div>
+  <div style="margin-top:1rem;">
+    <label class="admin-field-label">Available / Unavailable Sizes</label>
+    <div id="weekly-category-size-toggles" style="display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.35rem;"></div>
+  </div>
+</div>
+<div class="sub-page-header" style="margin-top:1rem;">
           <h2 id="adm-cat-detail-title">Category Products</h2>
           <button class="btn btn--solid" style="padding:.4rem .8rem; font-size:.7rem;" onclick="addProdToCurrentAdminCategory()">+ Add Product</button>
         </div>
@@ -3032,14 +3063,24 @@ CATEGORIES.forEach(cat => { if (cat && typeof cat.active !== 'boolean') cat.acti
 function ensureWeeklyDropCategory() {
   let cat = CATEGORIES.find(c => String(c?.name || '').trim().toLowerCase() === 'weekly drop');
   if (!cat) {
-    cat = { id:'cat-weekly-drop', name:'Weekly Drop', products:[], active:false, weeklyDropLink:'' };
+    cat = { id:'cat-weekly-drop', name:'Weekly Drop', products:[], active:false, weeklyDropLink:'', colors:['Black','White'], sizes:['S','M','L','XL'], disabledColors:[], disabledSizes:[], colorMeta:{} };
     CATEGORIES.push(cat);
   }
-  // Weekly Drop is a private link-only category. It must never contain normal products.
+  // Weekly Drop is a private configuration category. It never contains normal products.
   cat.products = [];
-  if (typeof cat.active !== 'boolean') cat.active = false;
   cat.active = false;
   if (typeof cat.weeklyDropLink !== 'string') cat.weeklyDropLink = '';
+  if (!Array.isArray(cat.colors) || !cat.colors.length) cat.colors = ['Black','White'];
+  if (!Array.isArray(cat.sizes) || !cat.sizes.length) cat.sizes = ['S','M','L','XL'];
+  if (!Array.isArray(cat.disabledColors)) cat.disabledColors = [];
+  if (!Array.isArray(cat.disabledSizes)) cat.disabledSizes = [];
+  if (!cat.colorMeta || typeof cat.colorMeta !== 'object' || Array.isArray(cat.colorMeta)) cat.colorMeta = {};
+  cat.colors.forEach(color => {
+    const key = String(color || '').trim().toLowerCase();
+    if (key && !/^#[0-9a-f]{6}$/i.test(String(cat.colorMeta[key] || ''))) cat.colorMeta[key] = getAdminDefaultColorHex(color);
+  });
+  cat.disabledColors = cat.disabledColors.filter(v => cat.colors.some(c => String(c).trim().toLowerCase() === String(v).trim().toLowerCase()));
+  cat.disabledSizes = cat.disabledSizes.filter(v => cat.sizes.some(sz => String(sz).trim().toLowerCase() === String(v).trim().toLowerCase()));
   return cat;
 }
 ensureWeeklyDropCategory();
@@ -7790,10 +7831,93 @@ function renderWeeklyDropCategorySettings() {
       ? `<img src="${escapeHtml(url)}" alt="Weekly Drop PNG preview" style="max-width:100%;max-height:180px;object-fit:contain;background:transparent;display:block;" onerror="this.parentElement.innerHTML='<span style=\"font-family:Space Mono;font-size:.62rem;color:#ff6b6b;\">PNG link could not be loaded</span>'">`
       : `<span style="font-family:'Space Mono';font-size:.62rem;color:var(--grey);">Paste a direct PNG URL above.</span>`;
   }
+
+  const colorInput = document.getElementById('weekly-category-colors');
+  const sizeInput = document.getElementById('weekly-category-sizes');
+  if (colorInput) colorInput.value = cat.colors.join(', ');
+  if (sizeInput) sizeInput.value = cat.sizes.join(', ');
+
+  const colorWrap = document.getElementById('weekly-category-color-toggles');
+  if (colorWrap) {
+    colorWrap.innerHTML = cat.colors.map((color, index) => {
+      const name = String(color || '').trim();
+      const key = name.toLowerCase();
+      const disabled = cat.disabledColors.some(v => String(v).trim().toLowerCase() === key);
+      const hex = /^#[0-9a-f]{6}$/i.test(String(cat.colorMeta[key] || '')) ? cat.colorMeta[key] : getAdminDefaultColorHex(name);
+      return `<div style="display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;padding:.45rem .55rem;border:1px solid ${disabled ? 'rgba(255,80,80,.5)' : 'rgba(255,255,255,.16)'};background:${disabled ? 'rgba(255,80,80,.08)' : 'rgba(255,255,255,.03)'};font-family:'Space Mono';font-size:.6rem;">
+        <label style="display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;min-width:100px;"><input type="checkbox" ${disabled ? '' : 'checked'} onchange="toggleWeeklyDropColor(${index},this.checked)"><span>${escapeHtml(name)}</span></label>
+        <input type="color" value="${hex}" onchange="updateWeeklyDropColorHex(${index},this.value)" style="width:42px;height:30px;padding:0;border:1px solid rgba(255,255,255,.2);background:transparent;cursor:pointer;">
+        <input type="text" value="${hex}" maxlength="7" onchange="updateWeeklyDropColorHex(${index},this.value)" style="width:88px;margin:0;padding:.35rem;background:#111;border:1px solid rgba(255,255,255,.16);color:var(--paper);font-family:'Space Mono';font-size:.58rem;">
+        <span style="color:#777;">Checked = available · Uncheck = unavailable</span>
+      </div>`;
+    }).join('');
+  }
+
+  const sizeWrap = document.getElementById('weekly-category-size-toggles');
+  if (sizeWrap) {
+    sizeWrap.innerHTML = cat.sizes.map((size, index) => {
+      const key = String(size).trim().toLowerCase();
+      const disabled = cat.disabledSizes.some(v => String(v).trim().toLowerCase() === key);
+      return `<label style="display:inline-flex;align-items:center;gap:.3rem;padding:.35rem .55rem;border:1px solid ${disabled ? 'rgba(255,80,80,.5)' : 'rgba(255,255,255,.16)'};background:${disabled ? 'rgba(255,80,80,.08)' : 'rgba(255,255,255,.03)'};font-family:'Space Mono';font-size:.62rem;cursor:pointer;">
+        <input type="checkbox" ${disabled ? '' : 'checked'} onchange="toggleWeeklyDropSize(${index},this.checked)">
+        <span>${escapeHtml(String(size))}</span>
+      </label>`;
+    }).join('');
+  }
+}
+
+function updateWeeklyDropOptionsFromInputs() {
+  const cat = ensureWeeklyDropCategory();
+  const colors = [...new Set(String(document.getElementById('weekly-category-colors')?.value || '').split(',').map(v => v.trim()).filter(Boolean))];
+  const sizes = [...new Set(String(document.getElementById('weekly-category-sizes')?.value || '').split(',').map(v => v.trim()).filter(Boolean))];
+  if (!colors.length) { showToast('Add at least one Weekly Drop color.'); return false; }
+  if (!sizes.length) { showToast('Add at least one Weekly Drop size.'); return false; }
+  const oldMeta = cat.colorMeta || {};
+  const oldDisabledColors = new Set((cat.disabledColors || []).map(v => String(v).trim().toLowerCase()));
+  const oldDisabledSizes = new Set((cat.disabledSizes || []).map(v => String(v).trim().toLowerCase()));
+  cat.colors = colors;
+  cat.sizes = sizes;
+  cat.colorMeta = {};
+  cat.colors.forEach(color => {
+    const key = color.toLowerCase();
+    cat.colorMeta[key] = /^#[0-9a-f]{6}$/i.test(String(oldMeta[key] || '')) ? oldMeta[key] : getAdminDefaultColorHex(color);
+  });
+  cat.disabledColors = colors.filter(v => oldDisabledColors.has(v.toLowerCase()));
+  cat.disabledSizes = sizes.filter(v => oldDisabledSizes.has(v.toLowerCase()));
+  return true;
+}
+
+function toggleWeeklyDropColor(index, available) {
+  const cat = ensureWeeklyDropCategory();
+  const color = cat.colors[index];
+  if (!color) return;
+  cat.disabledColors = Array.isArray(cat.disabledColors) ? cat.disabledColors : [];
+  const key = String(color).trim().toLowerCase();
+  cat.disabledColors = available ? cat.disabledColors.filter(v => String(v).trim().toLowerCase() !== key) : [...new Set([...cat.disabledColors, color])];
+  renderWeeklyDropCategorySettings();
+}
+
+function updateWeeklyDropColorHex(index, value) {
+  const cat = ensureWeeklyDropCategory();
+  const color = cat.colors[index];
+  if (!color || !/^#[0-9a-f]{6}$/i.test(String(value).trim())) { showToast('Use a valid 6-digit HEX color.'); return; }
+  cat.colorMeta[String(color).trim().toLowerCase()] = String(value).trim().toLowerCase();
+  renderWeeklyDropCategorySettings();
+}
+
+function toggleWeeklyDropSize(index, available) {
+  const cat = ensureWeeklyDropCategory();
+  const size = cat.sizes[index];
+  if (!size) return;
+  cat.disabledSizes = Array.isArray(cat.disabledSizes) ? cat.disabledSizes : [];
+  const key = String(size).trim().toLowerCase();
+  cat.disabledSizes = available ? cat.disabledSizes.filter(v => String(v).trim().toLowerCase() !== key) : [...new Set([...cat.disabledSizes, size])];
+  renderWeeklyDropCategorySettings();
 }
 
 async function saveWeeklyDropCategoryLink() {
   const cat = ensureWeeklyDropCategory();
+  if (!updateWeeklyDropOptionsFromInputs()) return;
   const input = document.getElementById('weekly-category-header-link');
   const raw = String(input?.value || '').trim();
   if (raw && !isDirectPngUrl(raw)) { showToast('Please paste a direct PNG image URL.'); return; }
@@ -7821,7 +7945,7 @@ async function saveWeeklyDropCategoryLink() {
   applySiteContentToDOM();
   renderWeeklyDropCategorySettings();
   renderStorefront();
-  showToast('Weekly Drop link saved successfully.');
+  showToast('Weekly Drop link, colors and sizes saved successfully.');
 }
 
 function backToAdminCategoriesGrid() {
