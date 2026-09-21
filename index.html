@@ -3091,12 +3091,13 @@ CATEGORIES.forEach(cat => { if (cat && typeof cat.active !== 'boolean') cat.acti
 function ensureWeeklyDropCategory() {
   let cat = CATEGORIES.find(c => String(c?.name || '').trim().toLowerCase() === 'weekly drop');
   if (!cat) {
-    cat = { id:'cat-weekly-drop', name:'Weekly Drop', products:[], active:false, weeklyDropLink:'', colors:['Black','White'], sizes:['S','M','L','XL'], disabledColors:[], disabledSizes:[], colorMeta:{} };
+    cat = { id:'cat-weekly-drop', name:'Weekly Drop', products:[], active:true, weeklyDropLink:'', productCode:'', productTitle:'Weekly Drop T-Shirt', mrp:0, price:0, colors:['Black','White'], sizes:['S','M','L','XL'], disabledColors:[], disabledSizes:[], colorMeta:{} };
     CATEGORIES.push(cat);
   }
-  // Weekly Drop is a private configuration category. It never contains normal products.
-  cat.products = [];
-  cat.active = false;
+  // Weekly Drop is a real, dedicated category. Keep its single virtual product in this category
+  // so it can be listed here, while the global Shop search still excludes it.
+  if (!Array.isArray(cat.products)) cat.products = [];
+  if (typeof cat.active !== 'boolean') cat.active = true;
   if (typeof cat.weeklyDropLink !== 'string') cat.weeklyDropLink = '';
   if (!Array.isArray(cat.colors) || !cat.colors.length) cat.colors = ['Black','White'];
   if (!Array.isArray(cat.sizes) || !cat.sizes.length) cat.sizes = ['S','M','L','XL'];
@@ -3539,7 +3540,34 @@ function resetShopFilters() {
   applyShopFilters();
 }
 
+function syncWeeklyDropProductFromCategory() {
+  const cat = CATEGORIES.find(c => String(c?.name || '').trim().toLowerCase() === 'weekly drop');
+  if (!cat) return null;
+  if (!Array.isArray(cat.products)) cat.products = [];
+  const existing = cat.products.find(p => p && String(p.id) === 'weekly-drop-product') || cat.products[0] || null;
+  const product = existing || { id:'weekly-drop-product' };
+  product.id = 'weekly-drop-product';
+  product.code = cat.productCode || product.code || 'WEEKLY-DROP';
+  product.product_code = product.code;
+  product.title = cat.productTitle || product.title || 'Weekly Drop T-Shirt';
+  product.desc = product.desc || 'Limited Weekly Drop';
+  product.mrp = Number(cat.mrp || product.mrp || 0);
+  product.price = Number(cat.price || product.price || 0);
+  product.image = cat.weeklyDropLink || product.image || '';
+  product.images = product.image ? [product.image] : (Array.isArray(product.images) ? product.images : []);
+  product.colors = Array.isArray(cat.colors) && cat.colors.length ? [...cat.colors] : ['Black','White'];
+  product.sizes = Array.isArray(cat.sizes) && cat.sizes.length ? [...cat.sizes] : ['S','M','L','XL'];
+  product.disabledColors = Array.isArray(cat.disabledColors) ? [...cat.disabledColors] : [];
+  product.disabledSizes = Array.isArray(cat.disabledSizes) ? [...cat.disabledSizes] : [];
+  product.colorMeta = cat.colorMeta && typeof cat.colorMeta === 'object' ? {...cat.colorMeta} : {};
+  product.active = true;
+  product.customizeEnabled = true;
+  cat.products = [product];
+  return product;
+}
+
 function renderStorefront() {
+  syncWeeklyDropProductFromCategory();
   populateShopFilterOptions();
   const container = document.getElementById('home-categories-container');
   const footerLinks = document.getElementById('footer-shop-links');
@@ -3709,6 +3737,7 @@ function openCategoryDedicatedPage(catName) {
   catGrid.innerHTML = '';
   const foundCat = CATEGORIES.find(c => c.name === catName);
   if (foundCat) {
+    if (String(foundCat.name || '').trim().toLowerCase() === 'weekly drop') syncWeeklyDropProductFromCategory();
     catTitle.innerText = foundCat.name;
     catDesc.innerText = `Exclusive ${foundCat.name} collection drops.`;
     foundCat.products.forEach((prod, index) => {
@@ -7848,8 +7877,8 @@ async function toggleCategoryVisibility(index, checked) {
   if (!cat) return;
   cat.active = !!checked;
   if (String(cat.name || '').trim().toLowerCase() === 'weekly drop') {
-    // Weekly Drop remains a private admin category; its homepage image is controlled by its link.
-    cat.active = false;
+    // Weekly Drop visibility is controlled by this checkbox just like every other category.
+    // It remains excluded from the global Shop/search results; it is only listed in its own category.
   }
   localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
   renderAdminCategoriesMainGrid();
@@ -8020,7 +8049,26 @@ async function saveWeeklyDropCategoryLink() {
   if (raw && !isDirectPngUrl(raw)) { showToast('Please paste a direct PNG image URL.'); return; }
   const url = raw ? safeMediaUrl(raw) : '';
   cat.weeklyDropLink = url;
-  cat.active = false;
+  cat.active = true;
+  // Keep one real product record inside the Weekly Drop category so the category page can list it.
+  cat.products = [{
+    id: 'weekly-drop-product',
+    code: cat.productCode || 'WEEKLY-DROP',
+    product_code: cat.productCode || 'WEEKLY-DROP',
+    title: cat.productTitle || 'Weekly Drop T-Shirt',
+    desc: 'Limited Weekly Drop',
+    mrp: Number(cat.mrp || 0),
+    price: Number(cat.price || 0),
+    image: url,
+    images: url ? [url] : [],
+    colors: Array.isArray(cat.colors) ? [...cat.colors] : ['Black','White'],
+    sizes: Array.isArray(cat.sizes) ? [...cat.sizes] : ['S','M','L','XL'],
+    disabledColors: Array.isArray(cat.disabledColors) ? [...cat.disabledColors] : [],
+    disabledSizes: Array.isArray(cat.disabledSizes) ? [...cat.disabledSizes] : [],
+    colorMeta: cat.colorMeta && typeof cat.colorMeta === 'object' ? {...cat.colorMeta} : {},
+    active: true,
+    customizeEnabled: true
+  }];
   SITE_CONTENT.dropPreviewImage = url;
   SITE_CONTENT.dropPreviewLabel = 'NEXT WEEKLY DROP';
   localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
