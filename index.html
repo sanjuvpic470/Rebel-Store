@@ -9142,124 +9142,170 @@ async function saveUserProfileEdits() {
     return;
   }
 
-  const newName = document.getElementById('edit-profile-name')?.value.trim();
+  const newName = document.getElementById('edit-profile-name')?.value.trim() || '';
   const newPhone = document.getElementById('edit-profile-phone')?.value.trim() || '';
   const newDob = document.getElementById('edit-profile-dob')?.value || '';
   const newGender = document.getElementById('edit-profile-gender')?.value || '';
-  if (!newName) { showToast('Name cannot be empty!'); return; }
 
-  const { data: { user } } = await supabaseClient.auth.getUser();
-  if (!user) {
+  if (!newName) {
+    showToast('Name cannot be empty!');
+    return;
+  }
+
+  const { data: authData, error: authError } = await supabaseClient.auth.getUser();
+  const user = authData?.user;
+  if (authError || !user?.id) {
     showToast('Session expired. Please login again.');
     return;
   }
 
-  let avatarUrl = loggedInUser?.avatarUrl || '';
-  if (croppedAvatarBlob) {
-    const fileName = `${user.id}/avatar_${Date.now()}.jpg`;
-    const { error: uploadErr } = await supabaseClient.storage
-      .from('avatars')
-      .upload(fileName, croppedAvatarBlob, { contentType: 'image/jpeg', upsert: false });
-    if (uploadErr) {
-      showToast('Profile photo upload failed: ' + uploadErr.message);
-      return;
-    }
-    const { data: pubData } = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
-    avatarUrl = pubData?.publicUrl || avatarUrl;
+  const saveBtn = document.querySelector('button[onclick="saveUserProfileEdits()"]');
+  const originalText = saveBtn?.innerText || 'Save Profile Changes';
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.innerText = 'Saving...';
   }
 
-  // Save the complete profile with UPSERT. The previous implementation used
-  // UPDATE and then deliberately dropped DOB/Gender in its fallback, which is
-  // why those two fields could appear saved in the UI but never reach Supabase.
-  const fullPayload = {
-    id: user.id,
-    email: user.email || loggedInUser?.email || null,
-    name: newName,
-    username: loggedInUser?.username || user.user_metadata?.username || null,
-    phone: newPhone || null,
-    avatar_url: avatarUrl || null,
-    alt_phone: loggedInUser?.altPhone || null,
-    date_of_birth: newDob || null,
-    gender: newGender || null
-  };
+  try {
+    let avatarUrl = loggedInUser?.avatarUrl || '';
 
-  let saveError = null;
-  let savedRow = null;
+    if (croppedAvatarBlob) {
+      const fileName = `${user.id}/avatar_${Date.now()}.jpg`;
+      const { error: uploadErr } = await supabaseClient.storage
+        .from('avatars')
+        .upload(fileName, croppedAvatarBlob, {
+          contentType: 'image/jpeg',
+          upsert: false
+        });
 
-  // First attempt: write the whole profile in one atomic upsert.
-  const fullSave = await supabaseClient
-    .from('profiles')
-    .upsert(fullPayload, { onConflict: 'id' })
-    .select('id,name,phone,avatar_url,date_of_birth,gender')
-    .maybeSingle();
+      if (uploadErr) throw new Error('Profile photo upload failed: ' + uploadErr.message);
 
-  if (!fullSave.error) {
-    savedRow = fullSave.data || null;
-  } else {
-    saveError = fullSave.error;
-    console.warn('Full profile upsert failed:', fullSave.error.message);
+      const { data: pubData } = supabaseClient.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
 
-    // Retry specifically with the fields requested here. This keeps DOB and
-    // Gender from being lost when an unrelated optional profile column causes
-    // the broader payload to fail.
-    const coreSave = await supabaseClient
+      avatarUrl = pubData?.publicUrl || avatarUrl;
+    }
+
+    const updatePayload = {
+      name: newName,
+      phone: newPhone || null,
+      avatar_url: avatarUrl || null,
+      alt_phone: loggedInUser?.altPhone || null,
+      date_of_birth: newDob || null,
+      gender: newGender || null
+    };
+
+    console.log('[Profile] Updating profiles row:', user.id, updatePayload);
+
+    // IMPORTANT: update the existing profile row first.
+    // The earlier version used UPSERT, which can require INSERT permission
+    // under RLS even though the profile row already exists.
+    const updateResult = await supabaseClient
       .from('profiles')
-      .upsert({
-        id: user.id,
-        name: newName,
-        phone: newPhone || null,
-        date_of_birth: newDob || null,
-        gender: newGender || null
-      }, { onConflict: 'id' })
-      .select('id,name,phone,date_of_birth,gender')
+      .update(updatePayload)
+      .eq('id', user.id)
+      .select('id,name,phone,avatar_url,alt_phone,date_of_birth,gender')
       .maybeSingle();
 
-    if (!coreSave.error) {
-      savedRow = coreSave.data || null;
-      saveError = null;
-    } else {
-      saveError = coreSave.error;
-      console.error('Profile DOB/Gender save failed:', coreSave.error.message);
-    }
-  }
+    let savedRow = updateResult.data;
 
-  // Verify the cloud values before telling the customer that the save worked.
-  if (!saveError) {
-    const { data: verifyRow, error: verifyError } = await supabaseClient
+    if (updateResult.error) {
+      console.error('[Profile] UPDATE failed:', updateResult.error);
+      throw new Error(updateResult.error.message);
+    }
+
+    // RLS can silently return zero rows when the user is not allowed to update.
+    // Do not show a fake success in that case.
+    if (!savedRow) {
+      const { data: existingRow, error: existingError } = await supabaseClient
+        .from('profiles')
+        .select('id')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (existingError) {
+        throw new Error(existingError.message);
+      }
+
+      if (existingRow) {
+        throw new Error('Supabase did not update the profile row. Check the profiles UPDATE RLS policy for the logged-in user.');
+      }
+
+      // Only create a row when one truly does not exist.
+      const insertPayload = {
+        id: user.id,
+        email: user.email || loggedInUser?.email || null,
+        username: loggedInUser?.username || user.user_metadata?.username || null,
+        ...updatePayload
+      };
+
+      const insertResult = await supabaseClient
+        .from('profiles')
+        .insert(insertPayload)
+        .select('id,name,phone,avatar_url,alt_phone,date_of_birth,gender')
+        .maybeSingle();
+
+      if (insertResult.error) {
+        console.error('[Profile] INSERT failed:', insertResult.error);
+        throw new Error(insertResult.error.message);
+      }
+
+      savedRow = insertResult.data;
+
+      if (!savedRow) {
+        throw new Error('Supabase did not create the profile row. Check the profiles INSERT RLS policy.');
+      }
+    }
+
+    // Final cloud verification. Only after this passes do we update local session data.
+    const { data: verifiedRow, error: verifyError } = await supabaseClient
       .from('profiles')
-      .select('date_of_birth,gender,name,phone,avatar_url')
+      .select('id,name,phone,avatar_url,alt_phone,date_of_birth,gender')
       .eq('id', user.id)
       .maybeSingle();
 
     if (verifyError) {
-      saveError = verifyError;
-    } else if (
-      String(verifyRow?.date_of_birth || '') !== String(newDob || '') ||
-      String(verifyRow?.gender || '') !== String(newGender || '')
-    ) {
-      saveError = new Error('Profile was written, but Date of Birth / Gender could not be verified in Supabase.');
+      throw new Error('Cloud verification failed: ' + verifyError.message);
+    }
+
+    const verifiedDob = verifiedRow?.date_of_birth || '';
+    const verifiedGender = verifiedRow?.gender || '';
+
+    if (verifiedDob !== newDob || verifiedGender !== newGender) {
+      console.error('[Profile] Verification mismatch:', {
+        sent: { date_of_birth: newDob, gender: newGender },
+        saved: { date_of_birth: verifiedDob, gender: verifiedGender }
+      });
+      throw new Error('Supabase saved the profile, but Date of Birth / Gender did not match during verification.');
+    }
+
+    loggedInUser = {
+      ...loggedInUser,
+      id: user.id,
+      email: user.email || loggedInUser?.email || '',
+      name: verifiedRow?.name || newName,
+      phone: verifiedRow?.phone || newPhone,
+      altPhone: verifiedRow?.alt_phone || loggedInUser?.altPhone || '',
+      avatarUrl: verifiedRow?.avatar_url || avatarUrl || '',
+      dateOfBirth: verifiedDob,
+      gender: verifiedGender
+    };
+
+    sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
+    updateUserBadgeDisplay();
+    croppedAvatarBlob = null;
+
+    showToast('Profile updated successfully!');
+  } catch (error) {
+    console.error('[Profile] Save error:', error);
+    showToast('Profile update failed: ' + (error?.message || 'Unable to save profile.'));
+  } finally {
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.innerText = originalText;
     }
   }
-
-  if (saveError) {
-    showToast('Profile update failed: ' + (saveError.message || 'Unable to save profile.'));
-    return;
-  }
-
-  loggedInUser = {
-    ...loggedInUser,
-    id: user.id,
-    email: user.email || loggedInUser?.email || '',
-    name: newName,
-    phone: newPhone,
-    avatarUrl,
-    dateOfBirth: newDob,
-    gender: newGender
-  };
-  sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
-  updateUserBadgeDisplay();
-  croppedAvatarBlob = null;
-  showToast('Profile updated successfully!');
 }
 
 function escapeHtml(value) {
