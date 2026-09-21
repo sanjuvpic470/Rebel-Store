@@ -1585,10 +1585,10 @@ body.admin-mode .admin-header-refresh-btn{display:inline-flex;}
     <div class="ticker__track" id="ticker-track-box">
       <span id="ticker-msg-1">★ 48H DISPATCH · 3–5 DAYS DELIVERY IN TN¹</span>
       <span id="ticker-msg-2">★ FREE SHIPPING ACROSS TN²</span>
-      <span id="ticker-coupon-text">★ USE CODE <strong id="t-code">REBEL16</strong> IN CART FOR EXTRA <strong id="t-discount">16%</strong> OFF</span>
+      <span id="ticker-coupon-text">★ USE CODE <strong id="t-code">REBELS20</strong> IN CART FOR EXTRA <strong id="t-discount">20%</strong> OFF</span>
       <span id="ticker-msg-3">★ 48H DISPATCH · 3–5 DAYS DELIVERY IN TN¹</span>
       <span id="ticker-msg-4">★ FREE SHIPPING ACROSS TN²</span>
-      <span id="ticker-coupon-text-2">★ USE CODE <strong id="t-code-2">REBEL16</strong> IN CART FOR EXTRA <strong id="t-discount-2">16%</strong> OFF</span>
+      <span id="ticker-coupon-text-2">★ USE CODE <strong id="t-code-2">REBELS20</strong> IN CART FOR EXTRA <strong id="t-discount-2">20%</strong> OFF</span>
     </div>
   </div>
 
@@ -1652,7 +1652,7 @@ body.admin-mode .admin-header-refresh-btn{display:inline-flex;}
 
           <h1 class="hero__title" id="hero-title-box">WEAR THE<br><span class="fill-yellow">UPRISING</span><br><span class="stroke">NOT THE</span> UNIFORM</h1>
 
-          <p class="hero__sub" id="hero-sub-text">240 GSM premium combed cotton tees, high-definition DTF prints, zero compromises. Use code <strong id="hero-coupon-display">REBEL16</strong> in bag for extra <strong id="hero-discount-display">16%</strong> off.</p>
+          <p class="hero__sub" id="hero-sub-text">240 GSM premium combed cotton tees, high-definition DTF prints, zero compromises. Use code <strong id="hero-coupon-display">REBELS20</strong> in bag for extra <strong id="hero-discount-display">20%</strong> off.</p>
 
           <div class="hero__cta">
             <a class="btn btn--solid" id="hero-cta-btn1" onclick="handleNavShopClick()" role="link" tabindex="0">Explore Collection <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
@@ -1874,7 +1874,7 @@ body.admin-mode .admin-header-refresh-btn{display:inline-flex;}
         </div>
         
         <div style="font-family:'Space Mono', monospace; font-size:0.75rem; background:rgba(255,213,0,0.15); border:1px dashed var(--spray-yellow); padding:0.5rem 0.8rem; margin-bottom:1.2rem; border-radius:2px; color:var(--spray-yellow);">
-          🔥 Use code <strong id="pdp-active-coupon-code" style="color:#fff;">REBEL16</strong> in bag for extra <strong id="pdp-active-coupon-disc" style="color:#fff;">16%</strong> off!
+          🔥 Use code <strong id="pdp-active-coupon-code" style="color:#fff;">REBELS20</strong> in bag for extra <strong id="pdp-active-coupon-disc" style="color:#fff;">20%</strong> off!
         </div>
 
         <p class="pdp-desc" id="pdp-desc-text">240 GSM premium combed cotton.</p>
@@ -2648,11 +2648,11 @@ body.admin-mode .admin-header-refresh-btn{display:inline-flex;}
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
         <div>
           <label class="admin-field-label">Offer Code</label>
-          <input type="text" id="adm-offer-code-input" class="admin-input-full" style="margin-bottom:0;" value="REBEL16">
+          <input type="text" id="adm-offer-code-input" class="admin-input-full" style="margin-bottom:0;" value="REBELS20">
         </div>
         <div>
           <label class="admin-field-label">Discount Percentage</label>
-          <input type="number" id="adm-offer-disc-input" class="admin-input-full" style="margin-bottom:0;" value="16">
+          <input type="number" id="adm-offer-disc-input" class="admin-input-full" style="margin-bottom:0;" value="20">
         </div>
       </div>
       <button class="btn btn--solid" style="min-height:38px; padding:0 1rem; font-size:0.8rem;" onclick="saveOfferSettings()">Update Offer Code 💾</button>
@@ -3053,8 +3053,8 @@ let wishlist = JSON.parse(localStorage.getItem('rebel_wishlist')) || [];
 let currentRole = 'customer';
 let lastViewedProductId = null;
 let activeAdminEditingCategoryName = 'Oversized Tee';
-let activeOfferCode = 'REBEL16';
-let activeDiscountPercent = 16;
+let activeOfferCode = 'REBELS20';
+let activeDiscountPercent = 20;
 let isCouponApplied = false;
 let custSize = 'M';
 let custColor = 'Black';
@@ -3071,8 +3071,9 @@ let currentProduct = null;
 let loggedInUser = null;
 const angleLabels = ['Angle 01 // Front View', 'Angle 02 // Back Graphic', 'Angle 03 // Detail', 'Angle 04 // Fit'];
 const STORE_START_DATE = new Date(2026, 7, 1);
-let calCurrentYear = 2026;
-let calCurrentMonth = 7;
+const calendarToday = new Date();
+let calCurrentYear = calendarToday.getFullYear();
+let calCurrentMonth = calendarToday.getMonth();
 let currentSelectedDateFilter = '';
 let currentStatusFilter = 'New';
 let currentSearchQuery = '';
@@ -8471,6 +8472,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadOfferSettingsFromCloud();
   loadSiteContentFromCloud();
   if (loggedInUser) loadCustomerOrdersFromSupabase();
+  syncOfferSettingsUI();
   window.addEventListener('hashchange', handleRouteFromHash);
   if (window.location.hash === '#admin') {
     setTimeout(handleRouteFromHash, 0);
@@ -8736,6 +8738,14 @@ function renderStaffListDisplay() {
   disp.innerHTML = html;
 }
 
+function syncOfferSettingsUI() {
+  const codeInput = document.getElementById('adm-offer-code-input');
+  const discInput = document.getElementById('adm-offer-disc-input');
+  if (codeInput) codeInput.value = activeOfferCode || 'REBELS20';
+  if (discInput) discInput.value = Number.isFinite(Number(activeDiscountPercent)) ? Number(activeDiscountPercent) : 20;
+  window.storeOfferSettings = { code: activeOfferCode || 'REBELS20', discount: Number(activeDiscountPercent || 20) };
+}
+
 async function saveOfferSettings() {
   const codeInput = document.getElementById('adm-offer-code-input').value.trim().toUpperCase();
   const discInput = parseInt(document.getElementById('adm-offer-disc-input').value, 10);
@@ -8745,6 +8755,7 @@ async function saveOfferSettings() {
 
   activeOfferCode = codeInput;
   activeDiscountPercent = discInput;
+  syncOfferSettingsUI();
   renderStorefront();
 
   if (!supabaseClient) { showToast('Supabase is not connected.'); return; }
@@ -8774,6 +8785,7 @@ async function loadOfferSettingsFromCloud() {
     if (code && Number.isInteger(discount) && discount >= 0 && discount <= 90) {
       activeOfferCode = code;
       activeDiscountPercent = discount;
+      syncOfferSettingsUI();
       renderStorefront();
     }
   } catch (err) {
@@ -9908,7 +9920,7 @@ function showToast(msg) {
 </div>
 
 <script>
-function openOffersPanel(){const m=document.getElementById('offers-panel');if(!m)return;const o=window.storeOfferSettings||{};const code=String(o.code||'REBEL16');const pct=Number(o.discount||16);document.getElementById('offers-panel-content').innerHTML='<div style="padding:18px;border:1px dashed rgba(250,204,21,.5);border-radius:16px;background:rgba(250,204,21,.06)"><div style="font-size:13px;font-family:Space Mono,monospace">CURRENT OFFER</div><div style="font-size:28px;font-weight:900;margin:8px 0">'+pct+'% OFF</div><div>Use coupon <strong style="font-family:Space Mono,monospace">'+code+'</strong> at checkout.</div></div><p style="font-size:13px;opacity:.7;margin-bottom:0">Coupon validity and discount are validated securely during checkout.</p>';m.style.display='flex'}
+function openOffersPanel(){const m=document.getElementById('offers-panel');if(!m)return;const o=window.storeOfferSettings||{};const code=String(o.code||activeOfferCode||'REBELS20');const pct=Number(o.discount ?? activeDiscountPercent ?? 20);document.getElementById('offers-panel-content').innerHTML='<div style="padding:18px;border:1px dashed rgba(250,204,21,.5);border-radius:16px;background:rgba(250,204,21,.06)"><div style="font-size:13px;font-family:Space Mono,monospace">CURRENT OFFER</div><div style="font-size:28px;font-weight:900;margin:8px 0">'+pct+'% OFF</div><div>Use coupon <strong style="font-family:Space Mono,monospace">'+code+'</strong> at checkout.</div></div><p style="font-size:13px;opacity:.7;margin-bottom:0">Coupon validity and discount are validated securely during checkout.</p>';m.style.display='flex'}
 function closeOffersPanel(){const m=document.getElementById('offers-panel');if(m)m.style.display='none'}
 function refreshSalesOfferStrip(){const el=document.getElementById('sales-offer-strip'),tx=document.getElementById('sales-offer-strip-text');if(!el||!tx)return;const o=window.storeOfferSettings||{};const pct=Number(o.discount||0);const code=String(o.code||'').trim();if(pct>0&&code){tx.textContent=pct+'% OFF · Use code '+code;el.style.display='block'}else el.style.display='none'}
 if(typeof window!=='undefined'){window.openOffersPanel=openOffersPanel;window.closeOffersPanel=closeOffersPanel;window.refreshSalesOfferStrip=refreshSalesOfferStrip}
