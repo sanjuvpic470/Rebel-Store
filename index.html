@@ -629,6 +629,18 @@ footer a:hover{color:var(--paper)}
 @media(max-width:650px){.admin-orders-table{min-width:760px!important}.admin-order-action-buttons{grid-template-columns:minmax(105px,1fr) 38px 38px 34px!important}}
 
 /* ---------- T-SHIRT LAB ADMIN SETTINGS + MOBILE POLISH ---------- */
+.admin-custom-garment-add-box{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.75rem;background:#0f0f11;border:1px solid rgba(242,240,234,.1);padding:.8rem;margin:.8rem 0}
+.admin-custom-garment-list{display:flex;flex-direction:column;gap:.8rem}
+.admin-custom-garment-row{background:#111113;border:1px solid rgba(242,240,234,.12);padding:1rem;border-radius:8px}
+.admin-custom-garment-row .field-grid{display:grid;grid-template-columns:1.2fr .7fr .7fr;gap:.6rem}
+.admin-custom-garment-row .option-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.6rem}
+.admin-custom-garment-row .row-actions{display:flex;justify-content:space-between;gap:.6rem;align-items:center;margin-top:.7rem;flex-wrap:wrap}
+.admin-custom-status{font-family:'Space Mono',monospace;font-size:.58rem;color:#aaa}
+.admin-custom-garment-card{background:linear-gradient(145deg,#19190f,#111113)!important;border:1px solid rgba(255,213,0,.42)!important;cursor:pointer;min-height:110px;position:relative;overflow:hidden}
+.admin-custom-garment-card::after{content:'CUSTOM';position:absolute;right:-1.4rem;top:.65rem;transform:rotate(35deg);font-family:'Space Mono',monospace;font-size:.5rem;color:rgba(255,213,0,.22);letter-spacing:.15em}
+.admin-custom-garment-card:hover{border-color:var(--spray-yellow)!important;background:#1c1c12!important}
+@media(max-width:700px){.admin-custom-garment-row .field-grid,.admin-custom-garment-row .option-grid{grid-template-columns:1fr}.admin-custom-garment-add-box{grid-template-columns:1fr}}
+
 .custom-lab-settings{background:#151518;border:1px solid rgba(242,240,234,.1);border-radius:10px;padding:1rem;margin-bottom:1rem}
 .custom-lab-settings-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:1rem;align-items:start}
 .custom-lab-field{background:#0f0f12;border:1px solid rgba(242,240,234,.12);border-radius:7px;padding:.8rem}
@@ -1677,7 +1689,7 @@ footer a:hover{color:#FACC15}
       <div class="form-group">
         <label>Select T-Shirt</label>
         <select id="cust-garment" class="form-control" onchange="onCustProductChange(this.value)">
-          <!-- Dynamically populated from active storefront categories -->
+          <!-- Dynamically populated from Admin → Products → Custom T-shirt Orders -->
         </select>
       </div>
       <div class="form-group">
@@ -2386,16 +2398,16 @@ footer a:hover{color:#FACC15}
           <div>
             <span class="admin-mini-label">T-SHIRT LAB SETTINGS</span>
             <h3 style="font-family:'Anton',sans-serif;font-size:1.25rem;text-transform:uppercase;color:#fff;margin:.15rem 0 .2rem;">Custom Product Options</h3>
-            <p style="font-family:'Space Mono',monospace;color:var(--grey);font-size:.58rem;margin:0;line-height:1.45;">Choose a regular product that is enabled for T-Shirt Lab, then manage its live colors and sizes here. The same product data feeds the customer T-Shirt Lab.</p>
+            <p style="font-family:'Space Mono',monospace;color:var(--grey);font-size:.58rem;margin:0;line-height:1.45;">Manage the same Custom T-shirt Orders types used by T-Shirt Lab. Add the garment type under Admin → Products, then set its colors, sizes and price here or there.</p>
           </div>
-          <button type="button" class="btn btn--ghost" style="padding:.42rem .7rem;font-size:.62rem;" onclick="openAdminSubPage('subpage-products')">Open Products Manager →</button>
+          <button type="button" class="btn btn--ghost" style="padding:.42rem .7rem;font-size:.62rem;" onclick="openAdminSubPage('subpage-products')">Manage in Products →</button>
         </div>
         <div class="custom-lab-settings-grid">
           <div>
             <div class="custom-lab-field" style="margin-bottom:.7rem;">
-              <label>Select T-Shirt Lab Product</label>
+              <label>Select Custom Garment</label>
               <select id="custom-lab-product-select" onchange="loadCustomLabProductSettings(this.value)"></select>
-              <div class="custom-lab-help">Only products with <strong>Enable this product in T-Shirt Lab</strong> are listed.</div>
+              <div class="custom-lab-help">Only active Custom T-shirt Orders types are listed.</div>
             </div>
             <div class="custom-lab-edit-grid">
               <div class="custom-lab-field"><label>Product Code</label><div class="value" id="custom-lab-code-value">—</div></div>
@@ -2542,13 +2554,31 @@ footer a:hover{color:#FACC15}
         <button class="btn btn--ghost" style="padding:0.4rem 1rem; font-size:0.8rem;" onclick="closeAdminSubPages()">← Back to Dashboard</button>
       </div>
       <div style="background:#111; padding:1.2rem; border:1px solid rgba(242,240,234,.15); margin-bottom:1.5rem;">
-        <label class="admin-field-label">+ Add New Category Column</label>
+        <label class="admin-field-label">+ Add New Store Category</label>
         <div style="display:flex; gap:.8rem;">
           <input type="text" id="new-category-input" class="admin-input-full" style="margin-bottom:0;" placeholder="Category Name">
           <button class="btn btn--solid" style="min-height:38px; padding:0 1.2rem;" onclick="addNewCategory()">+ Add Category</button>
         </div>
       </div>
       <div class="admin-category-grid" id="admin-category-main-grid"></div>
+
+      <div id="admin-custom-garment-view" style="display:none; margin-top:1.5rem;">
+        <button class="back-btn" onclick="backToAdminCategoriesGrid()">← Back to Products</button>
+        <div class="sub-page-header" style="margin-top:1rem;">
+          <div><h2>🎨 Custom T-shirt Orders</h2><p style="font-family:'Space Mono';font-size:.62rem;color:var(--grey);margin:.25rem 0 0;">These custom garment types appear inside T-Shirt Lab. They are separate from the normal storefront Products categories.</p></div>
+          <button class="btn btn--solid" style="padding:.4rem .8rem;font-size:.7rem;" onclick="addCustomTshirtCategory()">+ Add Custom Type</button>
+        </div>
+        <div class="admin-custom-garment-add-box">
+          <div>
+            <label class="admin-field-label">New Custom Garment Name</label>
+            <input type="text" id="new-custom-garment-input" class="admin-input-full" style="margin-bottom:0;" placeholder="Example: T-Shirt, Hoodie, Oversized, Polo T-Shirt">
+          </div>
+          <button class="btn btn--ghost" type="button" onclick="addCustomTshirtCategory()" style="align-self:end;min-height:40px;">+ Add</button>
+        </div>
+        <div id="admin-custom-garment-list" class="admin-custom-garment-list"></div>
+        <button class="btn btn--solid" id="save-custom-garments-btn" style="width:100%;justify-content:center;margin-top:1rem;" onclick="saveCustomTshirtCategories()">Save Custom T-shirt Categories 💾</button>
+      </div>
+
       <div id="admin-category-detail-view" style="display:none; margin-top:1.5rem;">
         <button class="back-btn" onclick="backToAdminCategoriesGrid()">← Back to Categories</button>
         <div class="sub-page-header" style="margin-top:1rem;">
@@ -2826,6 +2856,32 @@ let DEFAULT_CATEGORIES = [
     ]
   }
 ];
+
+
+const DEFAULT_CUSTOM_TSHIRT_CATEGORIES = [
+  { id:'ct-tshirt', name:'T-Shirt', code:'CT-T-SHIRT', price:699, mrp:999, colors:['Black','White'], sizes:['S','M','L','XL','XXL','XXXL'], disabledColors:[], disabledSizes:[], colorMeta:{}, active:true },
+  { id:'ct-hoodie', name:'Hoodie', code:'CT-HOODIE', price:999, mrp:1399, colors:['Black','White'], sizes:['S','M','L','XL','XXL','XXXL'], disabledColors:[], disabledSizes:[], colorMeta:{}, active:true },
+  { id:'ct-oversized', name:'Oversized', code:'CT-OVERSIZED', price:749, mrp:1099, colors:['Black','White'], sizes:['S','M','L','XL','XXL','XXXL'], disabledColors:[], disabledSizes:[], colorMeta:{}, active:true },
+  { id:'ct-regular-fit', name:'Regular Fit', code:'CT-REGULAR', price:699, mrp:999, colors:['Black','White'], sizes:['S','M','L','XL','XXL'], disabledColors:[], disabledSizes:[], colorMeta:{}, active:true },
+  { id:'ct-polo', name:'Polo T-Shirt', code:'CT-POLO', price:799, mrp:1099, colors:['Black','White'], sizes:['S','M','L','XL','XXL'], disabledColors:[], disabledSizes:[], colorMeta:{}, active:true },
+  { id:'ct-long-sleeve', name:'Long Sleeve', code:'CT-LONG-SLEEVE', price:799, mrp:1099, colors:['Black','White'], sizes:['S','M','L','XL','XXL'], disabledColors:[], disabledSizes:[], colorMeta:{}, active:true }
+];
+
+let CUSTOM_TSHIRT_CATEGORIES = JSON.parse(localStorage.getItem('rebel_custom_tshirt_categories')) || DEFAULT_CUSTOM_TSHIRT_CATEGORIES;
+CUSTOM_TSHIRT_CATEGORIES = Array.isArray(CUSTOM_TSHIRT_CATEGORIES) ? CUSTOM_TSHIRT_CATEGORIES : DEFAULT_CUSTOM_TSHIRT_CATEGORIES;
+CUSTOM_TSHIRT_CATEGORIES.forEach((item, index) => {
+  if (!item.id) item.id = `ct-${Date.now()}-${index}`;
+  if (!Array.isArray(item.colors) || !item.colors.length) item.colors = ['Black','White'];
+  if (!Array.isArray(item.sizes) || !item.sizes.length) item.sizes = ['S','M','L','XL'];
+  if (!Array.isArray(item.disabledColors)) item.disabledColors = [];
+  if (!Array.isArray(item.disabledSizes)) item.disabledSizes = [];
+  if (!item.colorMeta || typeof item.colorMeta !== 'object' || Array.isArray(item.colorMeta)) item.colorMeta = {};
+  if (typeof item.active !== 'boolean') item.active = true;
+  if (!item.code) item.code = `CT-${String(item.name || 'CUSTOM').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'').toUpperCase()}`;
+  if (!Number.isFinite(Number(item.price))) item.price = 699;
+  if (!Number.isFinite(Number(item.mrp))) item.mrp = 999;
+});
+localStorage.setItem('rebel_custom_tshirt_categories', JSON.stringify(CUSTOM_TSHIRT_CATEGORIES));
 
 let DEFAULT_SITE_CONTENT = {
   tickerMsg: "★ 48H DISPATCH · 3–5 DAYS DELIVERY IN TN¹ ★ FREE SHIPPING ACROSS TN²",
@@ -3200,25 +3256,17 @@ function renderStorefront() {
 }
 
 function getTShirtLabProducts() {
-  const out = [];
-  (Array.isArray(CATEGORIES) ? CATEGORIES : []).forEach(cat => {
-    (Array.isArray(cat.products) ? cat.products : []).forEach(prod => {
-      if (typeof prod.customizeEnabled !== 'boolean') prod.customizeEnabled = true;
-      if (prod.customizeEnabled !== false) out.push({ cat, prod });
-    });
-  });
-  return out;
+  return CUSTOM_TSHIRT_CATEGORIES
+    .filter(item => item && item.active !== false)
+    .map(item => ({ cat:{ name:'Custom T-shirt Orders' }, prod:ensureCustomTshirtCategoryShape(item) }));
 }
 
 function findTShirtLabSelection(value) {
   const raw = String(value || '');
-  const split = raw.indexOf('::');
-  if (split < 0) return null;
-  const catName = raw.slice(0, split);
-  const productId = raw.slice(split + 2);
-  const cat = CATEGORIES.find(c => String(c.name) === catName);
-  const prod = cat?.products?.find(p => String(p.id) === productId);
-  return cat && prod ? { cat, prod } : null;
+  if (!raw.startsWith('custom::')) return null;
+  const productId = raw.slice('custom::'.length);
+  const prod = getCustomTshirtCategoryById(productId);
+  return prod ? { cat:{ name:'Custom T-shirt Orders' }, prod:ensureCustomTshirtCategoryShape(prod) } : null;
 }
 
 function getProductColorHex(prod, color) {
@@ -3234,9 +3282,10 @@ function renderTShirtLabOptions() {
   const sizeWrap = document.getElementById('cust-size-selector');
   if (!select || !colorWrap || !sizeWrap) return;
 
+  updateCustomTshirtLabDropdownOnly(select.value);
   const selected = findTShirtLabSelection(select.value) || getTShirtLabProducts()[0] || null;
   if (!selected) {
-    colorWrap.innerHTML = '<span style="font-family:\'Space Mono\';font-size:.7rem;color:var(--grey);">No T-Shirt Lab products are enabled. Enable a product from Admin → Products.</span>';
+    colorWrap.innerHTML = '<span style="font-family:\'Space Mono\';font-size:.7rem;color:var(--grey);">No custom garment types are active. Add one from Admin → Products → Custom T-shirt Orders.</span>';
     sizeWrap.innerHTML = '';
     return;
   }
@@ -3247,6 +3296,7 @@ function renderTShirtLabOptions() {
   const sizes = Array.isArray(prod.sizes) && prod.sizes.length ? prod.sizes : ['S','M','L','XL'];
   const disabledSizes = Array.isArray(prod.disabledSizes) ? prod.disabledSizes : [];
 
+  custUnitPrice = Number(prod.price || 699);
   let activeColor = colors.find(c => String(c).toLowerCase() === String(custColor || '').toLowerCase() && !disabledColors.some(d => String(d).toLowerCase() === String(c).toLowerCase())) || colors.find(c => !disabledColors.some(d => String(d).toLowerCase() === String(c).toLowerCase())) || colors[0];
   custColor = activeColor || colors[0] || 'Black';
   let activeSize = sizes.find(sz => String(sz).toLowerCase() === String(custSize || '').toLowerCase() && !disabledSizes.some(d => String(d).toLowerCase() === String(sz).toLowerCase())) || sizes.find(sz => !disabledSizes.some(d => String(d).toLowerCase() === String(sz).toLowerCase())) || sizes[0];
@@ -3264,35 +3314,24 @@ function renderTShirtLabOptions() {
     const unavailable = disabledSizes.some(d => String(d).trim().toLowerCase() === String(size).trim().toLowerCase());
     return `<button type="button" class="size-btn${String(size).toLowerCase() === String(custSize).toLowerCase() ? ' selected' : ''}${unavailable ? ' is-unavailable' : ''}" ${unavailable ? 'disabled' : ''} onclick="selectCustSize(this, '${escapeHtml(String(size).replace(/'/g,"\\'"))}')">${escapeHtml(size)}</button>`;
   }).join('');
+
+  const priceEl = document.getElementById('cust-total-price-display');
+  if (priceEl) priceEl.innerText = 'ரூ ' + (custUnitPrice * custQty);
+  const labTitle = document.querySelector('#custom-order-page .custom-form-box h2');
+  if (labTitle) labTitle.textContent = `⚡ T-Shirt Lab (ரூ ${custUnitPrice.toLocaleString('en-IN')} | Min Qty: 2)`;
 }
 
 function updateCustomOrderGarmentDropdown(preferredValue = '') {
-  const select = document.getElementById('cust-garment');
-  if (!select) return;
-  const products = getTShirtLabProducts();
-  const currentVal = preferredValue || select.value;
-  select.innerHTML = '';
-  products.forEach(({cat, prod}) => {
-    const opt = document.createElement('option');
-    opt.value = `${cat.name}::${prod.id}`;
-    opt.textContent = `${prod.title} · ${cat.name}`;
-    if (opt.value === currentVal) opt.selected = true;
-    select.appendChild(opt);
-  });
-  if (!select.value && products[0]) select.value = `${products[0].cat.name}::${products[0].prod.id}`;
+  updateCustomTshirtLabDropdownOnly(preferredValue);
   renderTShirtLabOptions();
 }
 
 function onCustProductChange(value) {
   custColor = '';
   custSize = '';
-  renderTShirtLabOptions();
   const selected = findTShirtLabSelection(value);
-  if (selected?.prod?.price) {
-    custUnitPrice = Number(selected.prod.customPrice || custUnitPrice || 699);
-  }
-  const priceEl = document.getElementById('cust-total-price-display');
-  if (priceEl) priceEl.innerText = 'ரூ ' + (custUnitPrice * custQty);
+  if (selected?.prod) custUnitPrice = Number(selected.prod.price || 699);
+  renderTShirtLabOptions();
 }
 
 function createProductCard(catName, prod, index) {
@@ -3427,7 +3466,7 @@ function selectCustSize(btn, size) {
 
 function selectCustColor(btn, color) {
   custColor = color;
-  document.querySelectorAll('#cust-color-selector .size-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('#cust-color-selector .cust-color-swatch').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
 }
 
@@ -3461,9 +3500,9 @@ async function addCustomOrderToCart() {
   if (customOrderSubmitInProgress) { showToast('Custom order is already being added. Please wait...'); return; }
   if (custQty < 2) { showToast('Minimum quantity for T-Shirt Lab is 2!'); return; }
   const selection = findTShirtLabSelection(document.getElementById('cust-garment')?.value || '');
-  const garment = selection?.prod?.title || '';
+  const garment = selection?.prod?.name || '';
   const garmentCategory = selection?.cat?.name || '';
-  if (selection?.prod) { custColor = custColor || selection.prod.colors?.[0] || 'Black'; custSize = custSize || selection.prod.sizes?.[0] || 'M'; }
+  if (selection?.prod) { custUnitPrice = Number(selection.prod.price || custUnitPrice || 699); custColor = custColor || selection.prod.colors?.[0] || 'Black'; custSize = custSize || selection.prod.sizes?.[0] || 'M'; }
   if (!garment) { showToast('Please select a T-Shirt for T-Shirt Lab.'); return; }
 
   customOrderSubmitInProgress = true;
@@ -3482,7 +3521,7 @@ async function addCustomOrderToCart() {
     if (!frontPrint && !backPrint) throw new Error('Please upload at least one print file (Front or Back)!');
 
     const newCustomItem = {
-      isCustom: true, title: `T-Shirt Lab — ${garment} (${custColor})`, garment, garmentCategory, productId: selection?.prod?.id || '', size: custSize, color: custColor,
+      isCustom: true, title: `T-Shirt Lab — ${garment} (${custColor})`, garment, garmentCategory, productId: selection?.prod?.id || '', customTypeId: selection?.prod?.id || '', size: custSize, color: custColor,
       price: custUnitPrice, qty: custQty, prints: { front: frontPrint, back: backPrint }, image: '',
       stockStatus: { available: true, notes: '' }
     };
@@ -5637,6 +5676,7 @@ function openAdminSubPage(subPageId) {
     target.classList.add('active');
     if (subPageId === 'subpage-products') {
       backToAdminCategoriesGrid();
+      renderCustomTshirtCategoriesAdmin();
     }
     if (subPageId === 'subpage-wishlist') {
       loadAdminWishlistFromSupabase();
@@ -5946,18 +5986,27 @@ async function updateCustomOrderStatusFromSelect(selectEl, parentOrderId) {
   await updateOrderStatusInSupabase(id, newStatus);
 }
 
+function updateCustomOrderStatusFromSelect(selectEl, parentOrderId) {
+  const newStatus = String(selectEl?.value || '').trim();
+  const id = String(parentOrderId || '').trim();
+  if (!newStatus || !id) return;
+  const ord = ordersHistory.find(o => String(o?.id || '') === id);
+  if (!ord) return;
+  const current = String(ord.orderStatus || 'New');
+  if (newStatus === current) return;
+  if (newStatus === 'Dispatched') {
+    updateOrderStatusInSupabase(id, 'Dispatched');
+    return;
+  }
+  updateOrderStatusInSupabase(id, newStatus);
+}
+
 function getCustomLabAdminProducts() {
-  const out = [];
-  (Array.isArray(CATEGORIES) ? CATEGORIES : []).forEach(cat => {
-    (Array.isArray(cat.products) ? cat.products : []).forEach(prod => {
-      if (prod && prod.customizeEnabled !== false) out.push({ cat, prod });
-    });
-  });
-  return out;
+  return CUSTOM_TSHIRT_CATEGORIES.map(item => ({ cat:{ name:'Custom T-shirt Orders' }, prod:ensureCustomTshirtCategoryShape(item) }));
 }
 
 function getCustomLabAdminKey(cat, prod) {
-  return `${String(cat?.name || '')}::${String(prod?.id || '')}`;
+  return `custom::${String(prod?.id || '')}`;
 }
 
 function renderCustomLabAdminSettings(preferredValue = '') {
@@ -5966,137 +6015,74 @@ function renderCustomLabAdminSettings(preferredValue = '') {
   const products = getCustomLabAdminProducts();
   const currentValue = preferredValue || select.value;
   select.innerHTML = '';
-
   if (!products.length) {
-    select.innerHTML = '<option value="">No T-Shirt Lab products enabled</option>';
+    select.innerHTML = '<option value="">No custom garments configured</option>';
     ['custom-lab-code-value','custom-lab-category-value','custom-lab-title-value','custom-lab-price-value','custom-lab-summary'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '—'; });
     return;
   }
-
   products.forEach(({cat, prod}) => {
     const opt = document.createElement('option');
     opt.value = getCustomLabAdminKey(cat, prod);
-    opt.textContent = `${prod.title || prod.code || 'Product'} · ${cat.name}`;
+    opt.textContent = `${prod.name}${prod.active === false ? ' · Hidden' : ''}`;
     if (opt.value === currentValue) opt.selected = true;
     select.appendChild(opt);
   });
-
   if (!select.value) select.value = getCustomLabAdminKey(products[0].cat, products[0].prod);
   loadCustomLabProductSettings(select.value);
 }
 
 function loadCustomLabProductSettings(value) {
-  const split = String(value || '').indexOf('::');
-  const catName = split >= 0 ? String(value).slice(0, split) : '';
-  const productId = split >= 0 ? String(value).slice(split + 2) : '';
-  const cat = CATEGORIES.find(c => String(c.name) === catName);
-  const prod = cat?.products?.find(p => String(p.id) === productId);
+  const raw = String(value || '');
+  const productId = raw.startsWith('custom::') ? raw.slice('custom::'.length) : '';
+  const prod = getCustomTshirtCategoryById(productId);
   if (!prod) return;
-
-  if (!Array.isArray(prod.colors) || !prod.colors.length) prod.colors = ['Black','White'];
-  if (!Array.isArray(prod.sizes) || !prod.sizes.length) prod.sizes = ['S','M','L','XL'];
-  if (!Array.isArray(prod.disabledColors)) prod.disabledColors = [];
-  if (!Array.isArray(prod.disabledSizes)) prod.disabledSizes = [];
-
+  ensureCustomTshirtCategoryShape(prod);
   const setValue = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
   setValue('custom-lab-code-value', prod.code || '—');
-  setValue('custom-lab-category-value', cat.name || '—');
-  setValue('custom-lab-title-value', prod.title || '—');
+  setValue('custom-lab-category-value', 'Custom T-shirt Orders');
+  setValue('custom-lab-title-value', prod.name || '—');
   setValue('custom-lab-price-value', `₹ ${Number(prod.price || 0).toLocaleString('en-IN')} / MRP ₹ ${Number(prod.mrp || 0).toLocaleString('en-IN')}`);
-
   const colorsInput = document.getElementById('custom-lab-colors-input');
   const sizesInput = document.getElementById('custom-lab-sizes-input');
   if (colorsInput) colorsInput.value = prod.colors.join(', ');
   if (sizesInput) sizesInput.value = prod.sizes.join(', ');
-
   const summary = document.getElementById('custom-lab-summary');
   if (summary) {
-    const colorChips = prod.colors.map(c => {
-      const disabled = prod.disabledColors.some(d => String(d).toLowerCase() === String(c).toLowerCase());
-      return `<span class="custom-lab-chip"><strong>Color</strong> ${escapeHtml(String(c))}${disabled ? ' · unavailable' : ''}</span>`;
-    });
-    const sizeChips = prod.sizes.map(s => {
-      const disabled = prod.disabledSizes.some(d => String(d).toLowerCase() === String(s).toLowerCase());
-      return `<span class="custom-lab-chip"><strong>Size</strong> ${escapeHtml(String(s))}${disabled ? ' · unavailable' : ''}</span>`;
-    });
+    const colorChips = prod.colors.map(c => `<span class="custom-lab-chip"><strong>Color</strong> ${escapeHtml(String(c))}</span>`);
+    const sizeChips = prod.sizes.map(sz => `<span class="custom-lab-chip"><strong>Size</strong> ${escapeHtml(String(sz))}</span>`);
     summary.innerHTML = colorChips.concat(sizeChips).join('') || '<span class="custom-lab-chip">No options configured</span>';
   }
 }
 
 async function saveCustomLabProductSettings() {
   const select = document.getElementById('custom-lab-product-select');
-  if (!select || !select.value) { showToast('Select a T-Shirt Lab product first.'); return; }
-  const split = String(select.value).indexOf('::');
-  const catName = split >= 0 ? String(select.value).slice(0, split) : '';
-  const productId = split >= 0 ? String(select.value).slice(split + 2) : '';
-  const cat = CATEGORIES.find(c => String(c.name) === catName);
-  const prod = cat?.products?.find(p => String(p.id) === productId);
-  if (!prod) { showToast('Selected T-Shirt Lab product was not found.'); return; }
-
+  if (!select || !select.value) { showToast('Select a custom garment first.'); return; }
+  const productId = String(select.value).startsWith('custom::') ? String(select.value).slice('custom::'.length) : '';
+  const prod = getCustomTshirtCategoryById(productId);
+  if (!prod) { showToast('Selected custom garment was not found.'); return; }
   const colorsInput = document.getElementById('custom-lab-colors-input');
   const sizesInput = document.getElementById('custom-lab-sizes-input');
   const nextColors = [...new Set(String(colorsInput?.value || '').split(',').map(v => v.trim()).filter(Boolean))];
   const nextSizes = [...new Set(String(sizesInput?.value || '').split(',').map(v => v.trim()).filter(Boolean))];
   if (!nextColors.length || !nextSizes.length) { showToast('Add at least one color and one size.'); return; }
-
-  const prevDisabledColors = Array.isArray(prod.disabledColors) ? prod.disabledColors : [];
-  const prevDisabledSizes = Array.isArray(prod.disabledSizes) ? prod.disabledSizes : [];
+  ensureCustomTshirtCategoryShape(prod);
   prod.colors = nextColors;
   prod.sizes = nextSizes;
-  prod.disabledColors = nextColors.filter(v => prevDisabledColors.some(d => String(d).toLowerCase() === String(v).toLowerCase()));
-  prod.disabledSizes = nextSizes.filter(v => prevDisabledSizes.some(d => String(d).toLowerCase() === String(v).toLowerCase()));
-  prod.customizeEnabled = true;
-
-  if (!prod.colorMeta || typeof prod.colorMeta !== 'object' || Array.isArray(prod.colorMeta)) prod.colorMeta = {};
+  prod.disabledColors = (prod.disabledColors || []).filter(d => nextColors.some(v => String(v).toLowerCase() === String(d).toLowerCase()));
+  prod.disabledSizes = (prod.disabledSizes || []).filter(d => nextSizes.some(v => String(v).toLowerCase() === String(d).toLowerCase()));
   nextColors.forEach(color => {
     const key = String(color).trim().toLowerCase();
     if (!/^#[0-9a-f]{6}$/i.test(String(prod.colorMeta[key] || ''))) prod.colorMeta[key] = getAdminDefaultColorHex(color);
   });
-
-  localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
-  if (!supabaseClient) {
-    renderCustomLabAdminSettings(select.value);
-    updateCustomOrderGarmentDropdown();
-    showToast('Saved locally. Supabase connection is unavailable.');
-    return;
-  }
-
   try {
-    const { error: categoryError } = await supabaseClient
-      .from('store_settings')
-      .upsert({ key: 'store_categories', value: CATEGORIES }, { onConflict: 'key' });
-    if (categoryError) throw categoryError;
-
-    const code = String(prod.code || '').trim().toUpperCase();
-    if (code) {
-      const { data: existing, error: existingError } = await supabaseClient
-        .from('products')
-        .select('id, active')
-        .eq('product_code', code)
-        .maybeSingle();
-      if (existingError) throw existingError;
-
-      const images = (Array.isArray(prod.images) ? prod.images : [])
-        .map((url, index) => ({ image_url: String(url || '').trim(), sort_order: index, active: true }))
-        .filter(item => item.image_url);
-
-      const { data: savedId, error: saveError } = await supabaseClient.rpc('admin_save_product', {
-        p_product_id: existing?.id || null,
-        p_product_code: code,
-        p_title: String(prod.title || '').trim(),
-        p_price: Number(prod.price || 0),
-        p_mrp: Number(prod.mrp || 0),
-        p_active: prod.active !== false,
-        p_variants: [],
-        p_images: images
-      });
-      if (saveError) throw saveError;
-      if (savedId) prod.dbProductId = savedId;
+    localStorage.setItem('rebel_custom_tshirt_categories', JSON.stringify(CUSTOM_TSHIRT_CATEGORIES));
+    if (supabaseClient) {
+      const { error } = await supabaseClient.from('store_settings').upsert({ key:'custom_tshirt_categories', value:CUSTOM_TSHIRT_CATEGORIES }, { onConflict:'key' });
+      if (error) throw error;
     }
-
     renderCustomLabAdminSettings(select.value);
-    updateCustomOrderGarmentDropdown();
-    renderStorefront();
+    renderCustomTshirtCategoriesAdmin();
+    updateCustomOrderGarmentDropdown(select.value);
     showToast('T-Shirt Lab colors and sizes saved successfully.');
   } catch (err) {
     console.error('T-Shirt Lab settings save failed:', err);
@@ -7165,9 +7151,199 @@ function renderGraphChart() {
   });
 }
 
+function getCustomTshirtCategoryById(id) {
+  return CUSTOM_TSHIRT_CATEGORIES.find(item => String(item?.id || '') === String(id || '')) || null;
+}
+
+function ensureCustomTshirtCategoryShape(item) {
+  if (!item) return null;
+  if (!item.id) item.id = `ct-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
+  item.name = String(item.name || 'Custom Garment').trim();
+  item.code = String(item.code || `CT-${item.name.replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'').toUpperCase()}`).trim().toUpperCase();
+  item.price = Number.isFinite(Number(item.price)) ? Number(item.price) : 699;
+  item.mrp = Number.isFinite(Number(item.mrp)) ? Number(item.mrp) : 999;
+  if (item.price > item.mrp) item.mrp = item.price;
+  if (!Array.isArray(item.colors) || !item.colors.length) item.colors = ['Black','White'];
+  if (!Array.isArray(item.sizes) || !item.sizes.length) item.sizes = ['S','M','L','XL'];
+  if (!Array.isArray(item.disabledColors)) item.disabledColors = [];
+  if (!Array.isArray(item.disabledSizes)) item.disabledSizes = [];
+  if (!item.colorMeta || typeof item.colorMeta !== 'object' || Array.isArray(item.colorMeta)) item.colorMeta = {};
+  if (typeof item.active !== 'boolean') item.active = true;
+  return item;
+}
+
+function openCustomTshirtManager() {
+  const main = document.getElementById('admin-category-main-grid');
+  const detail = document.getElementById('admin-category-detail-view');
+  const panel = document.getElementById('admin-custom-garment-view');
+  if (main) main.style.display = 'none';
+  if (detail) detail.style.display = 'none';
+  if (panel) panel.style.display = 'block';
+  renderCustomTshirtCategoriesAdmin();
+}
+
+function renderCustomTshirtCategoriesAdmin() {
+  const list = document.getElementById('admin-custom-garment-list');
+  if (!list) return;
+  CUSTOM_TSHIRT_CATEGORIES.forEach(ensureCustomTshirtCategoryShape);
+  if (!CUSTOM_TSHIRT_CATEGORIES.length) {
+    list.innerHTML = '<div style="padding:1rem;border:1px dashed rgba(242,240,234,.15);font-family:\'Space Mono\';font-size:.62rem;color:#888;">No custom garment types yet. Add T-Shirt, Hoodie, Oversized, Polo T-Shirt or any type you need.</div>';
+    return;
+  }
+  list.innerHTML = CUSTOM_TSHIRT_CATEGORIES.map((item, index) => {
+    const colorText = (item.colors || []).join(', ');
+    const sizeText = (item.sizes || []).join(', ');
+    return `
+      <div class="admin-custom-garment-row" data-custom-index="${index}">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.55rem;">
+          <div><span class="admin-mini-label">CUSTOM TYPE ${String(index+1).padStart(2,'0')}</span><h4 style="margin:.15rem 0 0;font-size:1rem;">${escapeHtml(item.name)}</h4></div>
+          <label style="display:flex;align-items:center;gap:.35rem;font-family:'Space Mono';font-size:.58rem;color:#bbb;cursor:pointer;"><input type="checkbox" ${item.active ? 'checked' : ''} onchange="updateCustomTshirtCategoryField(${index},'active',this.checked)"> Show in T-Shirt Lab</label>
+        </div>
+        <div class="field-grid">
+          <div><label class="admin-field-label">Name</label><input class="admin-input-full" value="${escapeHtml(item.name)}" style="margin-bottom:0;" oninput="updateCustomTshirtCategoryField(${index},'name',this.value)"></div>
+          <div><label class="admin-field-label">Price</label><input type="number" min="0" class="admin-input-full" value="${Number(item.price)||0}" style="margin-bottom:0;" oninput="updateCustomTshirtCategoryField(${index},'price',this.value)"></div>
+          <div><label class="admin-field-label">MRP</label><input type="number" min="0" class="admin-input-full" value="${Number(item.mrp)||0}" style="margin-bottom:0;" oninput="updateCustomTshirtCategoryField(${index},'mrp',this.value)"></div>
+        </div>
+        <div class="option-grid">
+          <div><label class="admin-field-label">Colors</label><input class="admin-input-full" value="${escapeHtml(colorText)}" style="margin-bottom:0;" oninput="updateCustomTshirtCategoryArrayField(${index},'colors',this.value)"><div class="admin-custom-status">Comma separated · ${item.colors.length} color(s)</div></div>
+          <div><label class="admin-field-label">Sizes</label><input class="admin-input-full" value="${escapeHtml(sizeText)}" style="margin-bottom:0;" oninput="updateCustomTshirtCategoryArrayField(${index},'sizes',this.value)"><div class="admin-custom-status">Comma separated · ${item.sizes.length} size(s)</div></div>
+        </div>
+        <div class="row-actions">
+          <span class="admin-custom-status">Code: ${escapeHtml(item.code)} · Save below to publish changes.</span>
+          <button type="button" class="btn btn--ghost" style="padding:.4rem .65rem;font-size:.62rem;color:#ff7a7a;" onclick="deleteCustomTshirtCategory(${index})">Delete</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function updateCustomTshirtCategoryField(index, field, value) {
+  const item = CUSTOM_TSHIRT_CATEGORIES[index];
+  if (!item) return;
+  ensureCustomTshirtCategoryShape(item);
+  if (field === 'price' || field === 'mrp') value = Number(value || 0);
+  item[field] = value;
+  if (field === 'price' && item.price > item.mrp) item.mrp = item.price;
+  if (field === 'name') {
+    item.code = `CT-${String(item.name || 'CUSTOM').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'').toUpperCase()}`;
+  }
+}
+
+function updateCustomTshirtCategoryArrayField(index, field, value) {
+  const item = CUSTOM_TSHIRT_CATEGORIES[index];
+  if (!item) return;
+  const next = [...new Set(String(value || '').split(',').map(v => v.trim()).filter(Boolean))];
+  item[field] = next;
+  if (field === 'colors') {
+    const oldDisabled = Array.isArray(item.disabledColors) ? item.disabledColors : [];
+    item.disabledColors = next.filter(v => oldDisabled.some(d => String(d).toLowerCase() === String(v).toLowerCase()));
+  }
+  if (field === 'sizes') {
+    const oldDisabled = Array.isArray(item.disabledSizes) ? item.disabledSizes : [];
+    item.disabledSizes = next.filter(v => oldDisabled.some(d => String(d).toLowerCase() === String(v).toLowerCase()));
+  }
+}
+
+function addCustomTshirtCategory() {
+  const input = document.getElementById('new-custom-garment-input');
+  const name = String(input?.value || '').trim();
+  if (!name) { showToast('Enter a custom garment name first.'); return; }
+  if (CUSTOM_TSHIRT_CATEGORIES.some(item => String(item.name || '').toLowerCase() === name.toLowerCase())) {
+    showToast('That custom garment already exists.');
+    return;
+  }
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+  CUSTOM_TSHIRT_CATEGORIES.push(ensureCustomTshirtCategoryShape({
+    id:`ct-${slug}-${Date.now().toString(36)}`,
+    name,
+    code:`CT-${name.replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'').toUpperCase()}`,
+    price:699,
+    mrp:999,
+    colors:['Black','White'],
+    sizes:['S','M','L','XL','XXL','XXXL'],
+    active:true
+  }));
+  if (input) input.value = '';
+  renderCustomTshirtCategoriesAdmin();
+  showToast(`${name} added to Custom T-shirt Orders.`);
+}
+
+function deleteCustomTshirtCategory(index) {
+  const item = CUSTOM_TSHIRT_CATEGORIES[index];
+  if (!item) return;
+  if (!window.confirm(`Delete Custom T-shirt type “${item.name}”?`)) return;
+  CUSTOM_TSHIRT_CATEGORIES.splice(index, 1);
+  renderCustomTshirtCategoriesAdmin();
+  showToast(`${item.name} removed. Click Save Custom T-shirt Categories to confirm.`);
+}
+
+async function saveCustomTshirtCategories() {
+  const saveBtn = document.getElementById('save-custom-garments-btn');
+  if (saveBtn) { saveBtn.disabled = true; saveBtn.innerText = 'Saving...'; }
+  try {
+    CUSTOM_TSHIRT_CATEGORIES.forEach(ensureCustomTshirtCategoryShape);
+    localStorage.setItem('rebel_custom_tshirt_categories', JSON.stringify(CUSTOM_TSHIRT_CATEGORIES));
+    if (supabaseClient) {
+      const { error } = await supabaseClient.from('store_settings').upsert({ key:'custom_tshirt_categories', value:CUSTOM_TSHIRT_CATEGORIES }, { onConflict:'key' });
+      if (error) throw error;
+    }
+    updateCustomTshirtLabDropdownOnly();
+    renderCustomTshirtCategoriesAdmin();
+    renderCustomLabAdminSettings();
+    showToast('Custom T-shirt categories saved successfully.');
+  } catch (err) {
+    console.error('Custom T-shirt category save failed:', err);
+    showToast(err?.message || 'Could not save Custom T-shirt categories.');
+  } finally {
+    if (saveBtn) { saveBtn.disabled = false; saveBtn.innerText = 'Save Custom T-shirt Categories 💾'; }
+  }
+}
+
+async function loadCustomTshirtCategoriesFromCloud() {
+  if (!supabaseClient) return;
+  try {
+    const { data, error } = await supabaseClient.from('store_settings').select('value').eq('key','custom_tshirt_categories').maybeSingle();
+    if (error) throw error;
+    if (data && Array.isArray(data.value) && data.value.length) {
+      CUSTOM_TSHIRT_CATEGORIES = data.value;
+      CUSTOM_TSHIRT_CATEGORIES.forEach(ensureCustomTshirtCategoryShape);
+      localStorage.setItem('rebel_custom_tshirt_categories', JSON.stringify(CUSTOM_TSHIRT_CATEGORIES));
+    } else {
+      await supabaseClient.from('store_settings').upsert({ key:'custom_tshirt_categories', value:CUSTOM_TSHIRT_CATEGORIES }, { onConflict:'key' });
+    }
+    updateCustomTshirtLabDropdownOnly();
+    renderCustomTshirtCategoriesAdmin();
+    renderCustomLabAdminSettings();
+    renderAdminCategoriesMainGrid();
+  } catch (err) {
+    console.warn('Custom T-shirt categories cloud load failed; using local copy.', err);
+  }
+}
+
+function updateCustomTshirtLabDropdownOnly(preferredValue = '') {
+  const select = document.getElementById('cust-garment');
+  if (!select) return;
+  const current = preferredValue || select.value;
+  const active = CUSTOM_TSHIRT_CATEGORIES.filter(item => item && item.active !== false).map(ensureCustomTshirtCategoryShape);
+  select.innerHTML = '';
+  active.forEach(item => {
+    const opt = document.createElement('option');
+    opt.value = `custom::${item.id}`;
+    opt.textContent = item.name;
+    if (opt.value === current) opt.selected = true;
+    select.appendChild(opt);
+  });
+  if (!select.value && active[0]) select.value = `custom::${active[0].id}`;
+}
+
 function renderAdminCategoriesMainGrid() {
   const mainGrid = document.getElementById('admin-category-main-grid');
+  if (!mainGrid) return;
   mainGrid.innerHTML = '';
+  const customPanel = document.getElementById('admin-custom-garment-view');
+  const detailPanel = document.getElementById('admin-category-detail-view');
+  if (customPanel) customPanel.style.display = 'none';
+  if (detailPanel) detailPanel.style.display = 'none';
+  mainGrid.style.display = 'grid';
   CATEGORIES.forEach((cat, index) => {
     const card = document.createElement('div');
     card.className = 'admin-category-card';
@@ -7200,6 +7376,17 @@ function renderAdminCategoriesMainGrid() {
     });
     mainGrid.appendChild(card);
   });
+
+  const customCard = document.createElement('div');
+  customCard.className = 'admin-category-card admin-custom-garment-card';
+  customCard.onclick = openCustomTshirtManager;
+  customCard.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.6rem;">
+      <div><span class="admin-mini-label">T-SHIRT LAB</span><h3 style="margin:.2rem 0 0;cursor:pointer;">🎨 Custom T-shirt Orders</h3></div>
+      <span style="font-size:1.2rem;color:var(--spray-yellow);">→</span>
+    </div>
+    <div class="drag-handle" style="cursor:pointer;">${CUSTOM_TSHIRT_CATEGORIES.length} custom garment types · sizes · colors</div>`;
+  mainGrid.appendChild(customCard);
 }
 
 function openAdminCategoryProducts(catName) {
@@ -7213,9 +7400,14 @@ function openAdminCategoryProducts(catName) {
 
 function backToAdminCategoriesGrid() {
   collectCategoryFormValues();
-  document.getElementById('admin-category-detail-view').style.display = 'none';
-  document.getElementById('admin-category-main-grid').style.display = 'flex';
+  const detail = document.getElementById('admin-category-detail-view');
+  const custom = document.getElementById('admin-custom-garment-view');
+  const main = document.getElementById('admin-category-main-grid');
+  if (detail) detail.style.display = 'none';
+  if (custom) custom.style.display = 'none';
+  if (main) main.style.display = 'grid';
   renderAdminCategoriesMainGrid();
+  renderCustomTshirtCategoriesAdmin();
 }
 
 function renderAdminProductFormsForCategory(catName) {
@@ -7963,6 +8155,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderStorefront();
   renderAdminPanels();
   loadCategoriesFromCloud();
+  loadCustomTshirtCategoriesFromCloud();
   loadOfferSettingsFromCloud();
   loadSiteContentFromCloud();
   if (loggedInUser) loadCustomerOrdersFromSupabase();
