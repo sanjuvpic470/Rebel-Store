@@ -7989,69 +7989,51 @@ function openAdminCategoryProducts(catName) {
   setTimeout(() => loadAdminStockForCurrentCategory(), 0);
 }
 
+function collectWeeklyDropColorImageInputs() {
+  const cat = ensureWeeklyDropCategory();
+  (cat.colors || []).forEach((color, index) => {
+    const key = String(color || '').trim().toLowerCase();
+    const inputs = document.querySelectorAll(`.weekly-color-image-url-${index}`);
+    if (inputs.length) {
+      cat.colorImages[key] = [];
+      inputs.forEach(input => { const v=String(input.value||'').trim(); if(v) cat.colorImages[key].push(v); });
+    }
+  });
+}
+function addWeeklyDropColorImageUrlInput(colorIndex) {
+  const cat=ensureWeeklyDropCategory(); collectWeeklyDropColorImageInputs(); const color=cat.colors[colorIndex]; if(!color)return;
+  const key=String(color).trim().toLowerCase(); if(!Array.isArray(cat.colorImages[key]))cat.colorImages[key]=[]; cat.colorImages[key].push(''); renderWeeklyDropCategorySettings();
+}
+function removeWeeklyDropColorImageUrl(colorIndex,imageIndex) {
+  const cat=ensureWeeklyDropCategory(); collectWeeklyDropColorImageInputs(); const color=cat.colors[colorIndex]; if(!color)return;
+  const key=String(color).trim().toLowerCase(); if(!Array.isArray(cat.colorImages[key]))cat.colorImages[key]=[];
+  cat.colorImages[key].splice(imageIndex,1); renderWeeklyDropCategorySettings();
+}
 function renderWeeklyDropCategorySettings() {
   const cat = ensureWeeklyDropCategory();
   const input = document.getElementById('weekly-category-header-link');
   const preview = document.getElementById('weekly-category-link-preview');
   const url = safeMediaUrl(cat.weeklyDropLink || SITE_CONTENT.dropPreviewImage || '');
   if (input) input.value = url;
-  const weeklyImagesWrap = document.getElementById('weekly-category-images-wrap');
-  if (weeklyImagesWrap) {
-    const defaultImages = Array.isArray(cat.images) && cat.images.length ? cat.images : (url ? [url] : ['']);
-    weeklyImagesWrap.innerHTML = defaultImages.map((imgUrl, idx) => `
-      <div class="admin-color-image-row">
-        <span style="font-family:'Space Mono';font-size:.54rem;color:#777;min-width:38px;">${idx+1}.</span>
-        <input type="text" class="admin-input-small weekly-drop-image-url" value="${escapeHtml(imgUrl || '')}" placeholder="Paste image URL for slide ${idx+1}" style="margin:0;">
-        <button type="button" class="btn btn--ghost" style="padding:.2rem .5rem;min-height:30px;font-size:.6rem;color:var(--rebel-red);" onclick="removeWeeklyDropImageUrl(${idx})">×</button>
-      </div>`).join('');
-  }
-  if (preview) {
-    preview.innerHTML = url
-      ? `<img src="${escapeHtml(url)}" alt="Weekly Drop PNG preview" style="max-width:100%;max-height:180px;object-fit:contain;background:transparent;display:block;" onerror="this.parentElement.innerHTML='<span style=\"font-family:Space Mono;font-size:.62rem;color:#ff6b6b;\">PNG link could not be loaded</span>'">`
-      : `<span style="font-family:'Space Mono';font-size:.62rem;color:var(--grey);">Paste a direct PNG URL above.</span>`;
-  }
-
-  const codeInput = document.getElementById('weekly-category-code');
-  const titleInput = document.getElementById('weekly-category-title');
-  const mrpInput = document.getElementById('weekly-category-mrp');
-  const priceInput = document.getElementById('weekly-category-price');
-  if (codeInput) codeInput.value = cat.productCode || '';
-  if (titleInput) titleInput.value = cat.productTitle || '';
-  if (mrpInput) mrpInput.value = Number.isFinite(Number(cat.mrp)) ? cat.mrp : '';
-  if (priceInput) priceInput.value = Number.isFinite(Number(cat.price)) ? cat.price : '';
-
-  const colorInput = document.getElementById('weekly-category-colors');
-  const sizeInput = document.getElementById('weekly-category-sizes');
-  if (colorInput) colorInput.value = cat.colors.join(', ');
-  if (sizeInput) sizeInput.value = cat.sizes.join(', ');
-
-  const colorWrap = document.getElementById('weekly-category-color-toggles');
-  if (colorWrap) {
-    colorWrap.innerHTML = cat.colors.map((color, index) => {
-      const name = String(color || '').trim();
-      const key = name.toLowerCase();
-      const disabled = cat.disabledColors.some(v => String(v).trim().toLowerCase() === key);
-      const hex = /^#[0-9a-f]{6}$/i.test(String(cat.colorMeta[key] || '')) ? cat.colorMeta[key] : getAdminDefaultColorHex(name);
-      return `<div style="display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;padding:.45rem .55rem;border:1px solid ${disabled ? 'rgba(255,80,80,.5)' : 'rgba(255,255,255,.16)'};background:${disabled ? 'rgba(255,80,80,.08)' : 'rgba(255,255,255,.03)'};font-family:'Space Mono';font-size:.6rem;">
-        <label style="display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;min-width:100px;"><input type="checkbox" ${disabled ? '' : 'checked'} onchange="toggleWeeklyDropColor(${index},this.checked)"><span>${escapeHtml(name)}</span></label>
-        <input type="color" value="${hex}" onchange="updateWeeklyDropColorHex(${index},this.value)" style="width:42px;height:30px;padding:0;border:1px solid rgba(255,255,255,.2);background:transparent;cursor:pointer;">
-        <input type="text" value="${hex}" maxlength="7" onchange="updateWeeklyDropColorHex(${index},this.value)" style="width:88px;margin:0;padding:.35rem;background:#111;border:1px solid rgba(255,255,255,.16);color:var(--paper);font-family:'Space Mono';font-size:.58rem;">
-        <span style="color:#777;">Checked = available · Uncheck = unavailable</span>
-      </div>`;
-    }).join('');
-  }
-
-  const sizeWrap = document.getElementById('weekly-category-size-toggles');
-  if (sizeWrap) {
-    sizeWrap.innerHTML = cat.sizes.map((size, index) => {
-      const key = String(size).trim().toLowerCase();
-      const disabled = cat.disabledSizes.some(v => String(v).trim().toLowerCase() === key);
-      return `<label style="display:inline-flex;align-items:center;gap:.3rem;padding:.35rem .55rem;border:1px solid ${disabled ? 'rgba(255,80,80,.5)' : 'rgba(255,255,255,.16)'};background:${disabled ? 'rgba(255,80,80,.08)' : 'rgba(255,255,255,.03)'};font-family:'Space Mono';font-size:.62rem;cursor:pointer;">
-        <input type="checkbox" ${disabled ? '' : 'checked'} onchange="toggleWeeklyDropSize(${index},this.checked)">
-        <span>${escapeHtml(String(size))}</span>
-      </label>`;
-    }).join('');
-  }
+  if (preview) preview.innerHTML = url ? `<img src="${escapeHtml(url)}" alt="Weekly Drop PNG preview" style="max-width:100%;max-height:180px;object-fit:contain;background:transparent;display:block;">` : `<span style="font-family:'Space Mono';font-size:.62rem;color:var(--grey);">Paste a direct PNG URL above.</span>`;
+  const codeInput=document.getElementById('weekly-category-code'), titleInput=document.getElementById('weekly-category-title'), mrpInput=document.getElementById('weekly-category-mrp'), priceInput=document.getElementById('weekly-category-price');
+  if(codeInput)codeInput.value=cat.productCode||''; if(titleInput)titleInput.value=cat.productTitle||''; if(mrpInput)mrpInput.value=Number.isFinite(Number(cat.mrp))?cat.mrp:''; if(priceInput)priceInput.value=Number.isFinite(Number(cat.price))?cat.price:'';
+  const colorInput=document.getElementById('weekly-category-colors'), sizeInput=document.getElementById('weekly-category-sizes');
+  if(colorInput)colorInput.value=cat.colors.join(', '); if(sizeInput)sizeInput.value=cat.sizes.join(', ');
+  const colorWrap=document.getElementById('weekly-category-color-toggles');
+  if(colorWrap) colorWrap.innerHTML=cat.colors.map((color,index)=>{
+    const name=String(color||'').trim(), key=name.toLowerCase(); const disabled=cat.disabledColors.some(v=>String(v).trim().toLowerCase()===key); const hex=/^#[0-9a-f]{6}$/i.test(String(cat.colorMeta[key]||''))?cat.colorMeta[key]:getAdminDefaultColorHex(name);
+    const urls=Array.isArray(cat.colorImages[key])&&cat.colorImages[key].length?cat.colorImages[key]:[''];
+    return `<div style="padding:.65rem;border:1px solid ${disabled?'rgba(255,80,80,.5)':'rgba(255,255,255,.16)'};background:${disabled?'rgba(255,80,80,.08)':'rgba(255,255,255,.03)'};font-family:'Space Mono';font-size:.6rem;">
+      <div style="display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;"><label style="display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;min-width:100px;"><input type="checkbox" ${disabled?'':'checked'} onchange="toggleWeeklyDropColor(${index},this.checked)"><span>${escapeHtml(name)}</span></label><input type="color" value="${hex}" onchange="updateWeeklyDropColorHex(${index},this.value)" style="width:42px;height:30px;padding:0;border:1px solid rgba(255,255,255,.2);background:transparent;cursor:pointer;"><input type="text" value="${hex}" maxlength="7" onchange="updateWeeklyDropColorHex(${index},this.value)" style="width:88px;margin:0;padding:.35rem;background:#111;border:1px solid rgba(255,255,255,.16);color:var(--paper);font-family:'Space Mono';font-size:.58rem;"><span style="color:#777;">Checked = available · Uncheck = unavailable</span></div>
+      <div style="margin-top:.65rem;padding-top:.55rem;border-top:1px dashed rgba(255,255,255,.1);"><div style="color:var(--spray-yellow);font-size:.62rem;font-weight:700;margin-bottom:.35rem;">${escapeHtml(name)} — IMAGE SLIDES / URLs</div>
+        <div style="font-family:'Space Mono';font-size:.54rem;color:#777;margin-bottom:.4rem;">When ${escapeHtml(name)} is selected on the Weekly Drop product, only these images will slide.</div>
+        <div style="display:flex;flex-direction:column;gap:.35rem;">${urls.map((u,j)=>`<div style="display:flex;align-items:center;gap:.35rem;"><span style="color:#777;min-width:28px;">${j+1}.</span><input type="text" class="admin-input-small weekly-color-image-url-${index}" value="${escapeHtml(u||'')}" placeholder="Paste image URL for ${escapeHtml(name)}" style="margin:0;flex:1;"><button type="button" class="btn btn--ghost" style="padding:.2rem .5rem;min-height:30px;font-size:.6rem;color:var(--rebel-red);" onclick="removeWeeklyDropColorImageUrl(${index},${j})">×</button></div>`).join('')}</div>
+        <button type="button" class="btn btn--ghost" style="margin-top:.4rem;padding:.25rem .55rem;min-height:30px;font-size:.6rem;" onclick="addWeeklyDropColorImageUrlInput(${index})">+ Add Image URL / Slide</button>
+      </div></div>`;
+  }).join('');
+  const sizeWrap=document.getElementById('weekly-category-size-toggles');
+  if(sizeWrap)sizeWrap.innerHTML=cat.sizes.map((size,index)=>{const key=String(size).trim().toLowerCase();const disabled=cat.disabledSizes.some(v=>String(v).trim().toLowerCase()===key);return `<label style="display:inline-flex;align-items:center;gap:.3rem;padding:.35rem .55rem;border:1px solid ${disabled?'rgba(255,80,80,.5)':'rgba(255,255,255,.16)'};background:${disabled?'rgba(255,80,80,.08)':'rgba(255,255,255,.03)'};font-family:'Space Mono';font-size:.62rem;cursor:pointer;"><input type="checkbox" ${disabled?'':'checked'} onchange="toggleWeeklyDropSize(${index},this.checked)"><span>${escapeHtml(String(size))}</span></label>`;}).join('');
 }
 
 function updateWeeklyDropOptionsFromInputs() {
@@ -8113,6 +8095,7 @@ function removeWeeklyDropColorImageUrl(colorIndex, imgIndex) {
 
 function toggleWeeklyDropColor(index, available) {
   const cat = ensureWeeklyDropCategory();
+  collectWeeklyDropColorImageInputs();
   const color = cat.colors[index];
   if (!color) return;
   cat.disabledColors = Array.isArray(cat.disabledColors) ? cat.disabledColors : [];
@@ -8123,6 +8106,7 @@ function toggleWeeklyDropColor(index, available) {
 
 function updateWeeklyDropColorHex(index, value) {
   const cat = ensureWeeklyDropCategory();
+  collectWeeklyDropColorImageInputs();
   const color = cat.colors[index];
   if (!color || !/^#[0-9a-f]{6}$/i.test(String(value).trim())) { showToast('Use a valid 6-digit HEX color.'); return; }
   cat.colorMeta[String(color).trim().toLowerCase()] = String(value).trim().toLowerCase();
@@ -8131,6 +8115,7 @@ function updateWeeklyDropColorHex(index, value) {
 
 function toggleWeeklyDropSize(index, available) {
   const cat = ensureWeeklyDropCategory();
+  collectWeeklyDropColorImageInputs();
   const size = cat.sizes[index];
   if (!size) return;
   cat.disabledSizes = Array.isArray(cat.disabledSizes) ? cat.disabledSizes : [];
@@ -8141,6 +8126,7 @@ function toggleWeeklyDropSize(index, available) {
 
 async function saveWeeklyDropCategoryLink() {
   const cat = ensureWeeklyDropCategory();
+  collectWeeklyDropColorImageInputs();
   if (!updateWeeklyDropOptionsFromInputs()) return;
   const input = document.getElementById('weekly-category-header-link');
   const weeklyImageInputs = document.querySelectorAll('.weekly-drop-image-url');
