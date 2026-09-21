@@ -100,10 +100,10 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .hero__art{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .stamp{position:absolute;top:-12px;right:-8px;width:85px;height:85px;border:2px dashed var(--spray-yellow);border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;font-family:'Space Mono',monospace;font-size:.58rem;letter-spacing:.05em;text-transform:uppercase;color:var(--spray-yellow);animation:spin 18s linear infinite;z-index:2}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-.hero-poster{cursor:pointer;width:100%;max-width:340px;aspect-ratio:1/1;background:var(--spray-yellow);border:3px solid var(--paper);box-shadow:none;display:flex;align-items:stretch;justify-content:flex-start;padding:0;text-align:center;overflow:hidden;position:relative}
+.hero-poster{width:100%;max-width:340px;aspect-ratio:1/1;background:var(--spray-yellow);border:3px solid var(--paper);box-shadow:none;display:flex;align-items:stretch;justify-content:flex-start;padding:0;text-align:center;overflow:hidden;position:relative}
 .hero-poster svg{width:220px;height:auto}
 .hero-poster p{font-family:'Space Mono',monospace;font-size:.85rem;color:var(--ink);font-weight:700;margin-top:1rem}
-.hero-drop-media{width:100%;height:100%;background:transparent;display:flex;align-items:center;justify-content:center;overflow:visible}
+.hero-drop-media{width:100%;height:100%;background:var(--spray-yellow);display:flex;align-items:center;justify-content:center;overflow:hidden}
 .hero-drop-media img{width:100%;height:100%;object-fit:cover;display:block}
 .hero-drop-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:1rem;box-sizing:border-box;background:var(--spray-yellow)}
 .hero-drop-placeholder svg{max-width:78%;max-height:78%}
@@ -230,6 +230,8 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .size-btn{min-width:48px;height:46px;background:#18181b;border:1.5px solid rgba(242,240,234,.2);color:var(--paper);font-family:'Space Mono',monospace;font-weight:700;font-size:.88rem;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0 .5rem}
 .size-btn.selected{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow);box-shadow:none}
 #pdp-color-selector .color-swatch-btn{width:46px;min-width:46px;height:46px;padding:0;border-radius:50%;display:flex;align-items:center;justify-content:center;box-sizing:border-box;position:relative;overflow:hidden;border:2px solid rgba(242,240,234,.3);box-shadow:none;flex:0 0 46px;background:var(--swatch-color)}
+#pdp-color-selector{padding:6px 8px 6px 10px!important;overflow:visible!important;box-sizing:border-box;min-width:72px;}
+#pdp-color-selector .color-swatch-btn{overflow:visible!important;margin:0 2px;}
 #pdp-color-selector .color-swatch-btn.selected{border-color:var(--spray-yellow);box-shadow:0 0 0 3px var(--ink),0 0 0 5px var(--spray-yellow);background:var(--swatch-color);color:transparent}
 #pdp-color-selector .color-swatch-btn.is-unavailable{opacity:.35;text-decoration:none;cursor:not-allowed}
 #pdp-color-selector .color-swatch-btn.is-unavailable::after{content:"";position:absolute;left:8%;right:8%;top:50%;border-top:2px solid rgba(255,255,255,.95);transform:rotate(-18deg)}
@@ -1206,6 +1208,8 @@ h1.hero__title .stroke{-webkit-text-stroke:0;color:#fff}
 .option-label{color:#9ca3af;font-size:.75rem;font-weight:500;letter-spacing:.05em}
 .pdp-info>div[style*="dashed"]{border-radius:1rem!important;background:rgba(250,204,21,.08)!important;border:1px dashed rgba(250,204,21,.4)!important;padding:.75rem 1rem!important;font-size:.8rem!important}
 #pdp-color-selector .color-swatch-btn{border:2px solid rgba(255,255,255,.25)}
+#pdp-color-selector{padding-left:10px!important;padding-right:8px!important;overflow:visible!important;}
+#pdp-color-selector .color-swatch-btn{overflow:visible!important;}
 #pdp-color-selector .color-swatch-btn.selected{border-color:#FACC15;box-shadow:0 0 0 3px #080808,0 0 0 5px #FACC15}
 .pdp-size-guide{background:rgba(22,22,22,.6);border:1px solid var(--lux-border);border-radius:1rem}
 .pdp-size-guide-text{color:#9ca3af}
@@ -1318,19 +1322,6 @@ h1.hero__title .stroke{-webkit-text-stroke:0;color:#fff}
 .account-tabs{border-bottom-color:var(--lux-border)}
 .profile-account-close{border-radius:9999px}
 
-/* Profile account: keep the reference header, but remove the homepage ticker/coupon strip from account pages. */
-body.profile-account-open .ticker{display:none !important;}
-.profile-account-page{
-  background-color:#080808 !important;
-  background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px) !important;
-  background-size:4rem 4rem !important;
-  padding-bottom:5rem !important;
-}
-.profile-account-layout{padding-bottom:5rem !important;}
-@media(max-width:800px){
-  .profile-account-page{padding-top:112px !important;min-height:100vh;}
-  .profile-account-layout{padding-bottom:6rem !important;}
-}
 /* ---------- 18. ORDERS + TRACKING ---------- */
 .order-list-page,.order-details-page{background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--glass-line);border-radius:1.5rem;overflow:hidden}
 .order-list-header,.order-details-title{font-weight:800;text-transform:none;color:#fff}
@@ -1493,27 +1484,22 @@ footer a:hover{color:#FACC15}
 .hero-drop-media{
   width:100%;
   height:100%;
-  background:transparent !important;
+  background:#fff !important;
   display:flex;
   align-items:center;
   justify-content:center;
-  overflow:visible;
+  overflow:hidden;
 }
 .hero-drop-media img{
-  width:auto !important;
-  height:auto !important;
-  max-width:100% !important;
-  max-height:100% !important;
+  width:92% !important;
+  height:92% !important;
   object-fit:contain !important;
   object-position:center;
   display:block;
-  background:transparent !important;
-  border:0 !important;
-  box-shadow:none !important;
-  animation:floatSlow 6s ease-in-out infinite;
+  background:transparent;
 }
 .hero-drop-placeholder{
-  width:100%;height:100%;background:transparent !important;
+  width:100%;height:100%;background:#fff !important;
   display:flex;align-items:center;justify-content:center;padding:2rem;box-sizing:border-box;
 }
 .hero-drop-placeholder svg{max-width:72%;max-height:72%;}
@@ -1585,94 +1571,6 @@ body.admin-mode .admin-header-refresh-btn{display:inline-flex;}
 
 @media(max-width:1099px){
   .lux-nav-links{gap:1rem;}
-}
-</style>
-
-
-<style id="rebel-weekly-drop-transparent-final">
-/* Weekly Drop: the supplied transparent PNG floats directly over the reference stage. */
-.hero-poster{
-  width:15rem !important;
-  height:15rem !important;
-  padding:0 !important;
-  border:0 !important;
-  border-radius:0 !important;
-  background:transparent !important;
-  -webkit-backdrop-filter:none !important;
-  backdrop-filter:none !important;
-  box-shadow:none !important;
-  overflow:visible !important;
-  animation:none !important;
-}
-.hero-drop-media{
-  width:100% !important;
-  height:100% !important;
-  border-radius:0 !important;
-  background:transparent !important;
-  overflow:visible !important;
-}
-.hero-drop-media img{
-  width:auto !important;
-  height:auto !important;
-  max-width:100% !important;
-  max-height:100% !important;
-  object-fit:contain !important;
-  background:transparent !important;
-  border:0 !important;
-  box-shadow:none !important;
-  animation:floatSlow 6s ease-in-out infinite !important;
-}
-.hero-drop-placeholder{background:transparent !important;}
-@media(max-width:420px){.hero-poster{width:13rem !important;height:13rem !important;}}
-</style>
-
-<style id="rebel-weekly-drop-ticker-glow-final">
-/* FINAL Weekly Drop + Global Ticker polish */
-/* Keep the running delivery/offer ticker visible on every page, including Profile, Orders, Saved Address and Checkout. */
-body.profile-account-open .ticker{display:flex !important;}
-.ticker{display:flex !important;visibility:visible !important;opacity:1 !important;}
-
-/* Replace the visible rotating circle with a soft radial yellow glow: bright at the centre and fading outward. */
-.lux-stage-ring{
-  inset:-1.5rem !important;
-  border-radius:50% !important;
-  background:radial-gradient(circle at center, rgba(250,204,21,.30) 0%, rgba(250,204,21,.18) 28%, rgba(250,204,21,.08) 48%, rgba(250,204,21,0) 72%) !important;
-  filter:blur(8px) !important;
-  animation:none !important;
-  pointer-events:none !important;
-}
-
-/* The horizontal divider must not cut through/crop the glow behind the Weekly Drop. */
-.lux-hero-bottom{border-top:0 !important;}
-
-/* Supplied transparent PNG: enlarge the actual floating artwork without adding any white/card background. */
-.hero-poster{
-  width:15rem !important;
-  height:15rem !important;
-  overflow:visible !important;
-}
-.hero-drop-media{
-  overflow:visible !important;
-}
-.hero-drop-media img{
-  width:125% !important;
-  height:125% !important;
-  max-width:none !important;
-  max-height:none !important;
-  object-fit:contain !important;
-  background:transparent !important;
-  border:0 !important;
-  box-shadow:none !important;
-  transform:scale(1.04) !important;
-  transform-origin:center center !important;
-}
-@media(max-width:600px){
-  .hero-poster{width:14rem !important;height:14rem !important;}
-  .hero-drop-media img{width:128% !important;height:128% !important;transform:scale(1.04) !important;}
-}
-@media(max-width:420px){
-  .hero-poster{width:13.5rem !important;height:13.5rem !important;}
-  .hero-drop-media img{width:130% !important;height:130% !important;}
 }
 </style>
 
@@ -1782,7 +1680,7 @@ body.profile-account-open .ticker{display:flex !important;}
             <div class="lux-hero-stage">
               <div class="lux-stage-inner">
                 <div class="lux-stage-ring"></div>
-                <div class="hero-poster" id="hero-drop-preview-card" role="button" tabindex="0" aria-label="Open Next Weekly Drop" onclick="openWeeklyDropProduct()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openWeeklyDropProduct();}">
+                <div class="hero-poster" id="hero-drop-preview-card">
                   <div class="hero-drop-media" id="hero-drop-media">
                     <div class="hero-drop-placeholder" id="hero-drop-placeholder">
                       <svg viewBox="0 0 340 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -1805,7 +1703,7 @@ body.profile-account-open .ticker{display:flex !important;}
 
             <div class="lux-hero-bottom">
               <div class="hero-drop-copy"><span class="hero-drop-label" id="hero-drop-label">NEXT WEEKLY DROP</span></div>
-              <button type="button" class="lux-round-go" onclick="openWeeklyDropProduct()" aria-label="Open next weekly drop"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+              <button type="button" class="lux-round-go" onclick="handleNavShopClick()" aria-label="Shop the drops"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
             </div>
           </div>
         </div>
@@ -2550,7 +2448,7 @@ body.profile-account-open .ticker{display:flex !important;}
         <h2>✍️ Website Texts & Content Editor</h2>
         <button class="btn btn--ghost" style="padding:0.4rem 1rem; font-size:0.8rem;" onclick="closeAdminSubPages()">← Back to Dashboard</button>
       </div>
-            <div style="display:flex; flex-direction:column; gap:1.2rem;">
+      <div style="display:flex; flex-direction:column; gap:1.2rem;">
         <div>
           <label class="admin-field-label">Top Banner Ticker Text</label>
           <input type="text" id="cms-ticker-msg" class="admin-input-full" value="★ 48H DISPATCH · 3–5 DAYS DELIVERY IN TN¹ ★ FREE SHIPPING ACROSS TN²">
@@ -2774,35 +2672,6 @@ body.profile-account-open .ticker{display:flex !important;}
           <button class="btn btn--solid" style="min-height:38px; padding:0 1.2rem;" onclick="addNewCategory()">+ Add Category</button>
         </div>
       </div>
-      <div class="admin-drop-preview-card" id="weekly-drop-product-manager" style="margin:0 0 1.5rem;">
-        <div class="sub-page-header" style="margin:0 0 .8rem;">
-          <div><h2>🔥 Weekly Drop Product</h2><p style="font-family:'Space Mono';font-size:.62rem;color:var(--grey);margin:.25rem 0 0;">The Next Weekly Drop is a real product. Edit its PNG link, code, colors and sizes here. Its category visibility is controlled by the Weekly Drop category checkbox in Products.</p></div>
-          <span class="admin-mini-label">PRODUCT CATALOGUE</span>
-        </div>
-        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.8fr);gap:1rem;align-items:start;">
-          <div style="display:grid;gap:.7rem;">
-            <div><label class="admin-field-label">PNG Image URL</label><input type="url" id="weekly-prod-image-url" class="admin-input-full" placeholder="https://.../weekly-drop.png" autocomplete="off" inputmode="url"></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
-              <div><label class="admin-field-label">Product Code</label><input type="text" id="weekly-prod-code" class="admin-input-small" placeholder="WEEKLY01"></div>
-              <div><label class="admin-field-label">Product Title</label><input type="text" id="weekly-prod-title" class="admin-input-small" placeholder="Next Weekly Drop"></div>
-            </div>
-            <div><label class="admin-field-label">Description</label><textarea id="weekly-prod-desc" class="admin-input-full" rows="3" placeholder="Next weekly drop design."></textarea></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
-              <div><label class="admin-field-label">MRP</label><input type="number" id="weekly-prod-mrp" class="admin-input-small" min="0" step="1"></div>
-              <div><label class="admin-field-label">Selling Price</label><input type="number" id="weekly-prod-price" class="admin-input-small" min="0" step="1"></div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
-              <div><label class="admin-field-label">Colors (comma separated)</label><input type="text" id="weekly-prod-colors" class="admin-input-small" placeholder="Black, White"></div>
-              <div><label class="admin-field-label">Sizes (comma separated)</label><input type="text" id="weekly-prod-sizes" class="admin-input-small" placeholder="S, M, L, XL"></div>
-            </div>
-            <button type="button" class="btn btn--solid" onclick="saveWeeklyDropProduct()">Save Weekly Drop Product 💾</button>
-          </div>
-          <div class="admin-drop-preview-card" style="min-height:260px;display:flex;align-items:center;justify-content:center;">
-            <div id="weekly-prod-preview" class="admin-drop-preview-thumb" style="width:100%;min-height:240px;display:flex;align-items:center;justify-content:center;"><span style="font-family:'Space Mono';font-size:.65rem;color:var(--grey);">Paste a PNG URL to preview.</span></div>
-          </div>
-        </div>
-      </div>
-
       <div class="admin-category-grid" id="admin-category-main-grid"></div>
 
       <div id="admin-custom-garment-view" style="display:none; margin-top:1.5rem;">
@@ -2824,6 +2693,19 @@ body.profile-account-open .ticker{display:flex !important;}
 
       <div id="admin-category-detail-view" style="display:none; margin-top:1.5rem;">
         <button class="back-btn" onclick="backToAdminCategoriesGrid()">← Back to Categories</button>
+        <div id="weekly-drop-category-settings" style="display:none;margin-top:1rem;background:#0d0d0f;border:1px solid rgba(250,204,21,.22);padding:1rem 1.1rem;border-radius:10px;">
+          <span class="admin-mini-label">WEEKLY DROP</span>
+          <h3 style="margin:.25rem 0 .35rem;color:var(--spray-yellow);font-family:'Anton',sans-serif;text-transform:uppercase;">Homepage Header Link</h3>
+          <p style="margin:0 0 .8rem;font-family:'Space Mono';font-size:.62rem;color:#999;line-height:1.5;">Paste the direct PNG image URL. This is the only setting for Weekly Drop.</p>
+          <div style="display:flex;gap:.6rem;align-items:end;flex-wrap:wrap;">
+            <div style="flex:1;min-width:240px;">
+              <label class="admin-field-label">Header Link / PNG URL</label>
+              <input type="url" id="weekly-category-header-link" class="admin-input-full" placeholder="https://.../weekly-drop.png" autocomplete="off" inputmode="url">
+            </div>
+            <button type="button" class="btn btn--solid" style="min-height:40px;" onclick="saveWeeklyDropCategoryLink()">Save Link 💾</button>
+          </div>
+          <div id="weekly-category-link-preview" style="margin-top:.8rem;min-height:100px;border:1px dashed rgba(242,240,234,.14);display:flex;align-items:center;justify-content:center;background:#080808;border-radius:8px;overflow:hidden;"></div>
+        </div>
         <div class="sub-page-header" style="margin-top:1rem;">
           <h2 id="adm-cat-detail-title">Category Products</h2>
           <button class="btn btn--solid" style="padding:.4rem .8rem; font-size:.7rem;" onclick="addProdToCurrentAdminCategory()">+ Add Product</button>
@@ -2981,19 +2863,14 @@ const INDIA_LOCATIONS = {
 };
 
 function initStatesDropdown() {
-  const stateNames = Object.keys(INDIA_LOCATIONS).sort();
-  ['new-b-state', 'b-state'].forEach(id => {
-    const stateSelect = document.getElementById(id);
-    if (!stateSelect) return;
-    const currentValue = stateSelect.value || '';
-    stateSelect.innerHTML = '<option value="">Select State</option>';
-    stateNames.forEach(state => {
-      const opt = document.createElement('option');
-      opt.value = state;
-      opt.textContent = state;
-      stateSelect.appendChild(opt);
-    });
-    if (currentValue && stateNames.includes(currentValue)) stateSelect.value = currentValue;
+  const stateSelect = document.getElementById('b-state');
+  if (!stateSelect) return;
+  stateSelect.innerHTML = '<option value="">Select State</option>';
+  Object.keys(INDIA_LOCATIONS).sort().forEach(state => {
+    const opt = document.createElement('option');
+    opt.value = state;
+    opt.textContent = state;
+    stateSelect.appendChild(opt);
   });
 }
 
@@ -3149,12 +3026,21 @@ let DEFAULT_SITE_CONTENT = {
 };
 
 let CATEGORIES = JSON.parse(localStorage.getItem('rebel_categories')) || DEFAULT_CATEGORIES;
-CATEGORIES = Array.isArray(CATEGORIES) ? CATEGORIES : DEFAULT_CATEGORIES;
-CATEGORIES.forEach((cat) => {
-  if (!cat || typeof cat !== 'object') return;
-  if (typeof cat.active !== 'boolean') cat.active = true;
+CATEGORIES = Array.isArray(CATEGORIES) ? CATEGORIES : [];
+CATEGORIES.forEach(cat => { if (cat && typeof cat.active !== 'boolean') cat.active = true; });
+
+function ensureWeeklyDropCategory() {
+  let cat = CATEGORIES.find(c => String(c?.name || '').trim().toLowerCase() === 'weekly drop');
+  if (!cat) {
+    cat = { id:'cat-weekly-drop', name:'Weekly Drop', products:[], active:false, weeklyDropLink:'' };
+    CATEGORIES.push(cat);
+  }
   if (!Array.isArray(cat.products)) cat.products = [];
-});
+  if (typeof cat.active !== 'boolean') cat.active = false;
+  if (typeof cat.weeklyDropLink !== 'string') cat.weeklyDropLink = '';
+  return cat;
+}
+ensureWeeklyDropCategory();
 let SITE_CONTENT = JSON.parse(localStorage.getItem('rebel_site_content')) || DEFAULT_SITE_CONTENT;
 // Weekly drop image is cloud-only; never restore its URL from localStorage.
 SITE_CONTENT.dropPreviewImage = '';
@@ -3231,8 +3117,8 @@ function applySiteContentToDOM() {
   const dropTitleEl = document.getElementById('hero-drop-title');
   const dropMediaEl = document.getElementById('hero-drop-media');
   const dropPlaceholderEl = document.getElementById('hero-drop-placeholder');
-  const dropProduct = (typeof getWeeklyDropProduct === 'function') ? getWeeklyDropProduct() : null;
-  const dropImage = safeMediaUrl(dropProduct?.images?.[0] || SITE_CONTENT.dropPreviewImage || '');
+  const weeklyCat = (typeof CATEGORIES !== 'undefined' && Array.isArray(CATEGORIES)) ? CATEGORIES.find(c => String(c?.name || '').trim().toLowerCase() === 'weekly drop') : null;
+  const dropImage = safeMediaUrl(weeklyCat?.weeklyDropLink || SITE_CONTENT.dropPreviewImage || '');
   if (dropLabelEl) dropLabelEl.innerText = 'NEXT WEEKLY DROP';
   if (dropTitleEl) dropTitleEl.innerText = '';
   if (dropMediaEl) {
@@ -3255,7 +3141,6 @@ function applySiteContentToDOM() {
   if (document.getElementById('cms-hero-t3')) document.getElementById('cms-hero-t3').value = SITE_CONTENT.heroT3;
   if (document.getElementById('cms-hero-sub')) document.getElementById('cms-hero-sub').value = SITE_CONTENT.heroSub;
   if (document.getElementById('cms-hero-stamp')) document.getElementById('cms-hero-stamp').value = SITE_CONTENT.heroStamp;
-  if (document.getElementById('cms-drop-image-url')) document.getElementById('cms-drop-image-url').value = SITE_CONTENT.dropPreviewImage || '';
   bindWeeklyDropImageLinkPreview();
   const adminDropThumb = document.getElementById('admin-drop-preview-thumb');
   const adminDropImage = safeMediaUrl(SITE_CONTENT.dropPreviewImage || '');
@@ -3363,12 +3248,8 @@ async function saveWebsiteContentCMS() {
   SITE_CONTENT.heroT3 = document.getElementById('cms-hero-t3').value.trim();
   SITE_CONTENT.heroSub = document.getElementById('cms-hero-sub').value.trim();
   SITE_CONTENT.heroStamp = document.getElementById('cms-hero-stamp').value.trim();
-  const weeklyDropImageUrl = document.getElementById('cms-drop-image-url')?.value.trim() || '';
-  if (weeklyDropImageUrl && !isDirectPngUrl(weeklyDropImageUrl)) {
-    showToast('Please paste a direct PNG image URL.');
-    return;
-  }
-  SITE_CONTENT.dropPreviewImage = safeMediaUrl(weeklyDropImageUrl);
+  const weeklyDropCategory = ensureWeeklyDropCategory();
+  SITE_CONTENT.dropPreviewImage = safeMediaUrl(weeklyDropCategory.weeklyDropLink || SITE_CONTENT.dropPreviewImage || '');
   SITE_CONTENT.dropPreviewLabel = 'NEXT WEEKLY DROP';
   delete SITE_CONTENT.dropPreviewTitle;
   delete SITE_CONTENT.dropPreviewPrice;
@@ -3420,9 +3301,6 @@ async function loadSiteContentFromCloud() {
       const localSiteContent = { ...SITE_CONTENT };
       delete localSiteContent.dropPreviewImage;
       localStorage.setItem('rebel_site_content', JSON.stringify(localSiteContent));
-      ensureWeeklyDropCategory();
-      renderWeeklyDropAdminPanel();
-      renderStorefront();
       applySiteContentToDOM();
     }
   } catch (err) {
@@ -3433,7 +3311,9 @@ async function loadSiteContentFromCloud() {
 function getAllStoreProducts() {
   const all = [];
   CATEGORIES.forEach((cat, categoryIndex) => {
+    if (!cat || cat.active === false) return;
     (cat.products || []).forEach((prod, productIndex) => {
+      if (prod && prod.active === false) return;
       all.push({ catName: cat.name, categoryIndex, productIndex, product: prod });
     });
   });
@@ -3449,7 +3329,7 @@ function populateShopFilterOptions() {
   const currentCategory = categorySelect.value;
   const currentSize = sizeSelect.value;
   const currentColor = colorSelect.value;
-  const products = getAllStoreProducts().filter(x => x && x.product && CATEGORIES[x.categoryIndex]?.active !== false);
+  const products = getAllStoreProducts();
   const categories = [...new Set(products.map(x => String(x.catName || '').trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b));
   const sizes = [...new Set(products.flatMap(x => Array.isArray(x.product?.sizes) ? x.product.sizes : [] ).map(x => String(x).trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b, undefined, {numeric:true}));
   const colors = [...new Set(products.flatMap(x => Array.isArray(x.product?.colors) ? x.product.colors : [] ).map(x => String(x).trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b));
@@ -3530,105 +3410,15 @@ function resetShopFilters() {
   applyShopFilters();
 }
 
-function ensureWeeklyDropCategory() {
-  let cat = CATEGORIES.find(c => String(c?.name || '').trim().toLowerCase() === 'weekly drop');
-  if (!cat) {
-    cat = { id: 'weekly-drop-category', name: 'Weekly Drop', products: [], active: false };
-    CATEGORIES.push(cat);
-  }
-  if (!Array.isArray(cat.products)) cat.products = [];
-  if (typeof cat.active !== 'boolean') cat.active = false;
-  let prod = cat.products.find(p => String(p?.id || '') === 'weekly-drop-product');
-  if (!prod) {
-    prod = {
-      id: 'weekly-drop-product', code: 'WEEKLY01', title: 'Next Weekly Drop',
-      desc: 'Next weekly drop design.', mrp: 1499, price: 999,
-      images: [], colors: ['Black','White'], sizes: ['S','M','L','XL'],
-      disabledColors: [], disabledSizes: [], colorMeta: {}, customizeEnabled: false, active: true
-    };
-    cat.products.unshift(prod);
-  }
-  if (!Array.isArray(prod.images)) prod.images = [];
-  if (!Array.isArray(prod.colors) || !prod.colors.length) prod.colors = ['Black','White'];
-  if (!Array.isArray(prod.sizes) || !prod.sizes.length) prod.sizes = ['S','M','L','XL'];
-  if (!Array.isArray(prod.disabledColors)) prod.disabledColors = [];
-  if (!Array.isArray(prod.disabledSizes)) prod.disabledSizes = [];
-  if (!prod.colorMeta || typeof prod.colorMeta !== 'object' || Array.isArray(prod.colorMeta)) prod.colorMeta = {};
-  const legacyImage = safeMediaUrl(SITE_CONTENT.dropPreviewImage || '');
-  if (legacyImage && !prod.images.some(x => String(x || '').trim() === legacyImage)) prod.images = [legacyImage];
-  if (prod.images.length) SITE_CONTENT.dropPreviewImage = safeMediaUrl(prod.images[0] || '');
-  SITE_CONTENT.dropPreviewLabel = 'NEXT WEEKLY DROP';
-  return { cat, prod };
-}
-
-function getWeeklyDropProduct() {
-  return ensureWeeklyDropCategory().prod;
-}
-
-function openWeeklyDropProduct() {
-  const { cat, prod } = ensureWeeklyDropCategory();
-  if (!prod.images?.length) {
-    showToast('Weekly Drop product is not configured yet. Add its PNG image in Admin → Products.');
-  }
-  openProductByDetails(cat.name, prod.id);
-}
-
-function renderWeeklyDropAdminPanel() {
-  const { prod } = ensureWeeklyDropCategory();
-  const set = (id, value) => { const el = document.getElementById(id); if (el) el.value = value ?? ''; };
-  set('weekly-prod-image-url', prod.images?.[0] || '');
-  set('weekly-prod-code', prod.code || 'WEEKLY01');
-  set('weekly-prod-title', prod.title || 'Next Weekly Drop');
-  set('weekly-prod-desc', prod.desc || 'Next weekly drop design.');
-  set('weekly-prod-mrp', Number(prod.mrp || 1499));
-  set('weekly-prod-price', Number(prod.price || 999));
-  set('weekly-prod-colors', (prod.colors || []).join(', '));
-  set('weekly-prod-sizes', (prod.sizes || []).join(', '));
-  const preview = document.getElementById('weekly-prod-preview');
-  const url = safeMediaUrl(prod.images?.[0] || '');
-  if (preview) preview.innerHTML = url ? `<img src="${escapeHtml(url)}" alt="Weekly Drop product preview" style="max-width:100%;max-height:240px;object-fit:contain;background:transparent;display:block;" onerror="this.parentElement.innerHTML='<span style=\"font-family:Space Mono;font-size:.65rem;color:#ff6b6b;\">PNG link could not be loaded</span>'">` : `<span style="font-family:'Space Mono';font-size:.65rem;color:var(--grey);">Paste a PNG URL to preview.</span>`;
-}
-
-async function saveWeeklyDropProduct() {
-  const { cat, prod } = ensureWeeklyDropCategory();
-  const imageUrl = String(document.getElementById('weekly-prod-image-url')?.value || '').trim();
-  const code = String(document.getElementById('weekly-prod-code')?.value || '').trim().toUpperCase();
-  const title = String(document.getElementById('weekly-prod-title')?.value || '').trim();
-  const desc = String(document.getElementById('weekly-prod-desc')?.value || '').trim();
-  const mrp = Number(document.getElementById('weekly-prod-mrp')?.value || 0);
-  const price = Number(document.getElementById('weekly-prod-price')?.value || 0);
-  const colors = String(document.getElementById('weekly-prod-colors')?.value || '').split(',').map(x => x.trim()).filter(Boolean);
-  const sizes = String(document.getElementById('weekly-prod-sizes')?.value || '').split(',').map(x => x.trim()).filter(Boolean);
-  if (imageUrl && !isDirectPngUrl(imageUrl)) { showToast('Weekly Drop image must be a direct PNG URL.'); return; }
-  if (!code || !title) { showToast('Product code and title are required.'); return; }
-  if (!Number.isFinite(mrp) || !Number.isFinite(price) || mrp < 0 || price < 0 || price > mrp) { showToast('Enter a valid MRP and selling price.'); return; }
-  if (!colors.length || !sizes.length) { showToast('Add at least one color and one size.'); return; }
-  prod.code = code; prod.title = title; prod.desc = desc || 'Next weekly drop design.'; prod.mrp = mrp; prod.price = price;
-  prod.images = imageUrl ? [safeMediaUrl(imageUrl)] : [];
-  prod.colors = colors; prod.sizes = sizes;
-  prod.disabledColors = (prod.disabledColors || []).filter(x => colors.some(c => c.toLowerCase() === String(x).toLowerCase()));
-  prod.disabledSizes = (prod.disabledSizes || []).filter(x => sizes.some(sz => sz.toLowerCase() === String(x).toLowerCase()));
-  prod.colorMeta = prod.colorMeta || {};
-  colors.forEach(c => { const k=c.toLowerCase(); if (!/^#[0-9a-f]{6}$/i.test(String(prod.colorMeta[k] || ''))) prod.colorMeta[k] = getAdminDefaultColorHex(c); });
-  SITE_CONTENT.dropPreviewImage = prod.images[0] || '';
-  SITE_CONTENT.dropPreviewLabel = 'NEXT WEEKLY DROP';
-  localStorage.setItem('rebel_site_content', JSON.stringify(Object.fromEntries(Object.entries(SITE_CONTENT).filter(([k]) => k !== 'dropPreviewImage'))));
-  renderWeeklyDropAdminPanel();
-  renderStorefront();
-  applySiteContentToDOM();
-  await saveAllCategoriesAndProducts();
-  showToast('Weekly Drop product saved. It is now a real product in the Weekly Drop category.');
-}
-
 function renderStorefront() {
-  ensureWeeklyDropCategory();
   populateShopFilterOptions();
   const container = document.getElementById('home-categories-container');
   const footerLinks = document.getElementById('footer-shop-links');
   if (!container || !footerLinks) return;
   container.innerHTML = '';
   footerLinks.innerHTML = '<li><a onclick="showHomeView()">Riot Collection</a></li><li><a onclick="showHomeView()">Volt Collection</a></li><li><a onclick="showHomeView()">Bone Collection</a></li>';
-  CATEGORIES.filter(cat => cat && cat.active !== false && Array.isArray(cat.products) && cat.products.length > 0).forEach(cat => {
+  CATEGORIES.forEach(cat => {
+    if (!cat || cat.active === false || !(cat.products || []).some(p => p && p.active !== false)) return;
     const rowBlock = document.createElement('div');
     rowBlock.className = 'category-row-block';
     const rowTitle = document.createElement('div');
@@ -5201,7 +4991,6 @@ function startNewBillingAddress() {
   document.getElementById('new-b-address1').value = '';
   document.getElementById('new-b-address2').value = '';
   document.getElementById('new-b-pincode').value = '';
-  initStatesDropdown();
   document.getElementById('new-b-state').value = '';
   document.getElementById('new-b-district').innerHTML = '<option value="">Select District</option>';
   document.getElementById('new-b-pincode-status').textContent = '';
@@ -5231,8 +5020,7 @@ async function handleNewCheckoutPincodeLookup(pincode) {
   const statusHint = document.getElementById('new-b-pincode-status');
   const stateSelect = document.getElementById('new-b-state');
   const districtSelect = document.getElementById('new-b-district');
-  pincode = String(pincode || '').replace(/\D/g,'').slice(0,6);
-  if (stateSelect && stateSelect.options.length <= 1) initStatesDropdown();
+  pincode = String(pincode || '').trim();
   if (statusHint) statusHint.textContent = '';
   if (!stateSelect || !districtSelect || pincode.length !== 6 || !/^\d{6}$/.test(pincode)) return;
 
@@ -7833,7 +7621,7 @@ async function loadCustomTshirtCategoriesFromCloud() {
     const { data, error } = await supabaseClient.from('store_settings').select('value').eq('key','custom_tshirt_categories').maybeSingle();
     if (error) throw error;
     if (data && Array.isArray(data.value) && data.value.length) {
-      CUSTOM_TSHIRT_CATEGORIES = data.value;
+      CUSTOM_TSHIRT_CATEGORIES = Array.isArray(data.value) ? data.value : [];
       CUSTOM_TSHIRT_CATEGORIES.forEach(ensureCustomTshirtCategoryShape);
       localStorage.setItem('rebel_custom_tshirt_categories', JSON.stringify(CUSTOM_TSHIRT_CATEGORIES));
     } else {
@@ -7867,6 +7655,7 @@ function updateCustomTshirtLabDropdownOnly(preferredValue = '') {
 function renderAdminCategoriesMainGrid() {
   const mainGrid = document.getElementById('admin-category-main-grid');
   if (!mainGrid) return;
+  ensureWeeklyDropCategory();
   mainGrid.innerHTML = '';
   const customPanel = document.getElementById('admin-custom-garment-view');
   const detailPanel = document.getElementById('admin-category-detail-view');
@@ -7878,15 +7667,16 @@ function renderAdminCategoriesMainGrid() {
     card.className = 'admin-category-card';
     card.draggable = true;
     card.dataset.index = index;
+    const isVisible = cat.active !== false;
     card.innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.6rem;">
-        <h3 onclick="openAdminCategoryProducts('${escapeHtml(cat.name)}')" style="margin:0;cursor:pointer;">${escapeHtml(cat.name)}</h3>
-        <label style="display:flex;align-items:center;gap:.35rem;font-family:'Space Mono';font-size:.58rem;color:#bbb;cursor:pointer;white-space:nowrap;">
-          <input type="checkbox" ${cat.active !== false ? 'checked' : ''} onchange="toggleCategoryVisibility(${index},this.checked)">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:.7rem;">
+        <h3 onclick="openAdminCategoryProducts('${escapeHtml(cat.name)}')" style="cursor:pointer;">${escapeHtml(cat.name)}</h3>
+        <label style="display:flex;align-items:center;gap:.4rem;font-family:'Space Mono';font-size:.58rem;color:#bbb;white-space:nowrap;cursor:pointer;" onclick="event.stopPropagation()">
+          <input type="checkbox" ${isVisible ? 'checked' : ''} onchange="toggleCategoryVisibility(${index}, this.checked)" style="accent-color:var(--spray-yellow);width:17px;height:17px;">
           Show on Website
         </label>
       </div>
-      <div class="drag-handle">☰ Drag to Reorder · ${(cat.products || []).length} product${(cat.products || []).length === 1 ? '' : 's'}</div>
+      <div class="drag-handle">☰ Drag to Reorder · ${isVisible ? 'VISIBLE' : 'HIDDEN'}</div>
     `;
     card.addEventListener('dragstart', (e) => {
       draggedCategoryIndex = index;
@@ -7924,34 +7714,132 @@ function renderAdminCategoriesMainGrid() {
   mainGrid.appendChild(customCard);
 }
 
-function toggleCategoryVisibility(index, enabled) {
+async function toggleCategoryVisibility(index, checked) {
   const cat = CATEGORIES[index];
   if (!cat) return;
-  cat.active = !!enabled;
+  cat.active = !!checked;
+  if (String(cat.name || '').trim().toLowerCase() === 'weekly drop') {
+    // Weekly Drop remains a private admin category; its homepage image is controlled by its link.
+    cat.active = false;
+  }
   localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
   renderAdminCategoriesMainGrid();
   renderStorefront();
-  saveAllCategoriesAndProducts();
-  showToast(`${cat.name} is ${cat.active ? 'visible' : 'hidden'} on the website.`);
+  populateShopFilterOptions();
+  if (supabaseClient) {
+    const { error } = await supabaseClient.from('store_settings').upsert({ key:'store_categories', value:CATEGORIES }, { onConflict:'key' });
+    if (error) { console.error('Category visibility cloud save failed:', error); showToast('Saved locally; cloud save failed.'); return; }
+  }
+  showToast(`${cat.name}: ${cat.active ? 'visible on website' : 'hidden from website'}`);
 }
 
 function openAdminCategoryProducts(catName) {
   activeAdminEditingCategoryName = catName;
-  document.getElementById('admin-category-main-grid').style.display = 'none';
-  document.getElementById('admin-category-detail-view').style.display = 'block';
-  document.getElementById('adm-cat-detail-title').innerText = `${catName} Products Manager`;
+  const isWeeklyDrop = String(catName || '').trim().toLowerCase() === 'weekly drop';
+  const main = document.getElementById('admin-category-main-grid');
+  const detail = document.getElementById('admin-category-detail-view');
+  const custom = document.getElementById('admin-custom-garment-view');
+  if (main) main.style.display = 'none';
+  if (custom) custom.style.display = 'none';
+  if (detail) detail.style.display = 'block';
+
+  const title = document.getElementById('adm-cat-detail-title');
+  const addBtn = detail?.querySelector('button[onclick="addProdToCurrentAdminCategory()"]');
+  const secureInfo = detail?.querySelector('div[style*="SECURE PRODUCT DATABASE"]');
+  const products = document.getElementById('admin-categories-container');
+  const stock = document.getElementById('admin-stock-management');
+  const save = document.getElementById('save-categories-btn');
+  const weekly = document.getElementById('weekly-drop-category-settings');
+
+  if (isWeeklyDrop) {
+    ensureWeeklyDropCategory();
+    if (title) title.innerText = 'Weekly Drop';
+    if (addBtn) addBtn.style.display = 'none';
+    if (secureInfo) secureInfo.style.display = 'none';
+    if (products) products.style.display = 'none';
+    if (stock) stock.style.display = 'none';
+    if (save) save.style.display = 'none';
+    if (weekly) weekly.style.display = 'block';
+    renderWeeklyDropCategorySettings();
+    return;
+  }
+
+  if (title) title.innerText = `${catName} Products Manager`;
+  if (addBtn) addBtn.style.display = '';
+  if (secureInfo) secureInfo.style.display = '';
+  if (products) products.style.display = 'flex';
+  if (stock) stock.style.display = 'block';
+  if (save) save.style.display = 'flex';
+  if (weekly) weekly.style.display = 'none';
   renderAdminProductFormsForCategory(catName);
   setTimeout(() => loadAdminStockForCurrentCategory(), 0);
 }
 
+function renderWeeklyDropCategorySettings() {
+  const cat = ensureWeeklyDropCategory();
+  const input = document.getElementById('weekly-category-header-link');
+  const preview = document.getElementById('weekly-category-link-preview');
+  const url = safeMediaUrl(cat.weeklyDropLink || SITE_CONTENT.dropPreviewImage || '');
+  if (input) input.value = url;
+  if (preview) {
+    preview.innerHTML = url
+      ? `<img src="${escapeHtml(url)}" alt="Weekly Drop PNG preview" style="max-width:100%;max-height:180px;object-fit:contain;background:transparent;display:block;" onerror="this.parentElement.innerHTML='<span style=\"font-family:Space Mono;font-size:.62rem;color:#ff6b6b;\">PNG link could not be loaded</span>'">`
+      : `<span style="font-family:'Space Mono';font-size:.62rem;color:var(--grey);">Paste a direct PNG URL above.</span>`;
+  }
+}
+
+async function saveWeeklyDropCategoryLink() {
+  const cat = ensureWeeklyDropCategory();
+  const input = document.getElementById('weekly-category-header-link');
+  const raw = String(input?.value || '').trim();
+  if (raw && !isDirectPngUrl(raw)) { showToast('Please paste a direct PNG image URL.'); return; }
+  const url = raw ? safeMediaUrl(raw) : '';
+  cat.weeklyDropLink = url;
+  cat.active = false;
+  SITE_CONTENT.dropPreviewImage = url;
+  SITE_CONTENT.dropPreviewLabel = 'NEXT WEEKLY DROP';
+  localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
+  const localSiteContent = { ...SITE_CONTENT };
+  delete localSiteContent.dropPreviewImage;
+  localStorage.setItem('rebel_site_content', JSON.stringify(localSiteContent));
+
+  if (supabaseClient) {
+    const [catRes, contentRes] = await Promise.all([
+      supabaseClient.from('store_settings').upsert({key:'store_categories', value:CATEGORIES},{onConflict:'key'}),
+      supabaseClient.from('store_settings').upsert({key:'site_content', value:SITE_CONTENT},{onConflict:'key'})
+    ]);
+    if (catRes?.error || contentRes?.error) {
+      console.error('Weekly Drop cloud save failed', catRes?.error || contentRes?.error);
+      showToast('Cloud save failed. Please try again.');
+      return;
+    }
+  }
+  applySiteContentToDOM();
+  renderWeeklyDropCategorySettings();
+  renderStorefront();
+  showToast('Weekly Drop link saved successfully.');
+}
+
 function backToAdminCategoriesGrid() {
-  collectCategoryFormValues();
+  if (String(activeAdminEditingCategoryName || '').trim().toLowerCase() !== 'weekly drop') collectCategoryFormValues();
   const detail = document.getElementById('admin-category-detail-view');
   const custom = document.getElementById('admin-custom-garment-view');
   const main = document.getElementById('admin-category-main-grid');
+  const weekly = document.getElementById('weekly-drop-category-settings');
+  const addBtn = detail?.querySelector('button[onclick="addProdToCurrentAdminCategory()"]');
+  const secureInfo = detail?.querySelector('div[style*="SECURE PRODUCT DATABASE"]');
+  const products = document.getElementById('admin-categories-container');
+  const stock = document.getElementById('admin-stock-management');
+  const save = document.getElementById('save-categories-btn');
   if (detail) detail.style.display = 'none';
   if (custom) custom.style.display = 'none';
   if (main) main.style.display = 'grid';
+  if (weekly) weekly.style.display = 'none';
+  if (addBtn) addBtn.style.display = '';
+  if (secureInfo) secureInfo.style.display = '';
+  if (products) products.style.display = 'flex';
+  if (stock) stock.style.display = 'block';
+  if (save) save.style.display = 'flex';
   renderAdminCategoriesMainGrid();
   renderCustomTshirtCategoriesAdmin();
 }
@@ -8087,7 +7975,6 @@ function addNewCategory() {
   CATEGORIES.push({
     id: 'cat-' + Date.now(),
     name: name,
-    active: true,
     products: [
       { id: 'p' + Date.now(), code: 'NEW1', title: `New ${name} 01`, desc: 'Heavyweight cotton drop.', mrp: 1200, price: 800, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'], customizeEnabled: true }
     ]
@@ -8125,13 +8012,9 @@ function deleteProductFromCategory(cIndex, pIndex) {
   collectCategoryFormValues();
   const cat = CATEGORIES[cIndex];
   if (!cat || !Array.isArray(cat.products)) return;
-  if (pIndex < 0 || pIndex >= cat.products.length) return;
   cat.products.splice(pIndex, 1);
   renderAdminProductFormsForCategory(cat.name);
-  renderAdminCategoriesMainGrid();
-  renderStorefront();
-  saveAllCategoriesAndProducts();
-  showToast(cat.products.length ? 'Product deleted.' : 'All products deleted. Category is now empty and can be hidden or reused.');
+  if (!cat.products.length) showToast(`${cat.name} is now empty. You can add products later.`);
 }
 
 function addProdImageUrlInput(cIndex, pIndex) {
@@ -8576,7 +8459,6 @@ async function saveAllCategoriesAndProducts() {
   // adding the authoritative backend product records.
   if (secureDbSaved) {
     localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
-    renderWeeklyDropAdminPanel();
     renderStorefront();
 
     if (supabaseClient) {
@@ -8610,12 +8492,11 @@ async function loadCategoriesFromCloud() {
       .maybeSingle();
 
     if (data && data.value && Array.isArray(data.value) && data.value.length > 0) {
-      CATEGORIES = data.value;
-      CATEGORIES.forEach(cat => { if (cat && typeof cat.active !== 'boolean') cat.active = true; if (cat && !Array.isArray(cat.products)) cat.products = []; });
+      CATEGORIES = Array.isArray(data.value) ? data.value : [];
+      CATEGORIES.forEach(cat => { if (cat && typeof cat.active !== 'boolean') cat.active = true; });
       ensureWeeklyDropCategory();
       localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
       renderAdminCategoriesMainGrid();
-      renderWeeklyDropAdminPanel();
       renderStorefront();
     }
   } catch (err) {
@@ -8704,10 +8585,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   updateCartBadge();
-  ensureWeeklyDropCategory();
   applySiteContentToDOM();
   renderAdminCategoriesMainGrid();
-  renderWeeklyDropAdminPanel();
   renderStorefront();
   renderAdminPanels();
   loadCategoriesFromCloud();
@@ -9456,40 +9335,7 @@ async function editSavedAddressFromCheckout(id){
 }
 async function setDefaultFromCheckout(id){await setDefaultSavedAddress(id);selectedBillingAddressId=String(id);selectedBillingAddressData=null;await renderBillingSavedAddresses(selectedBillingAddressId)}
 async function deleteSavedAddressFromCheckout(id){await deleteSavedAddress(id)}
-async function profileAddressPincodeLookup(pincode){
-  const stateEl=document.getElementById('address-state');
-  const districtEl=document.getElementById('address-district');
-  const status=document.getElementById('profile-address-pincode-status');
-  pincode=String(pincode||'').replace(/\D/g,'').slice(0,6);
-  if(status)status.textContent='';
-  if(!stateEl||!districtEl||!/^[0-9]{6}$/.test(pincode))return;
-  if(status)status.textContent='Detecting state & district...';
-  try{
-    const res=await fetch(`https://api.postalpincode.in/pincode/${pincode}`,{headers:{'Accept':'application/json'}});
-    const data=await res.json();
-    if(!(data?.[0]?.Status==='Success'&&data?.[0]?.PostOffice?.length)){
-      if(status)status.textContent='Pincode not found. Please select manually.';
-      return;
-    }
-    const po=data[0].PostOffice[0];
-    const apiState=String(po.State||'').trim();
-    const apiDistrict=String(po.District||'').trim();
-    const state=Object.keys(INDIA_LOCATIONS).find(x=>x.toLowerCase()===apiState.toLowerCase())||apiState;
-    if(state&&!Array.from(stateEl.options).some(o=>o.value===state)){
-      const opt=document.createElement('option'); opt.value=state; opt.textContent=state; stateEl.appendChild(opt);
-    }
-    stateEl.value=state;
-    stateEl.dispatchEvent(new Event('change',{bubbles:true}));
-    const m=Array.from(districtEl.options).find(o=>o.value.toLowerCase()===apiDistrict.toLowerCase());
-    if(m)districtEl.value=m.value;
-    else if(apiDistrict){
-      const opt=document.createElement('option'); opt.value=apiDistrict; opt.textContent=apiDistrict; opt.selected=true; districtEl.appendChild(opt);
-    }
-    if(status)status.textContent=`✓ Detected: ${apiDistrict}, ${apiState}`;
-  }catch(_){
-    if(status)status.textContent='Auto-detect offline. Please choose manually.';
-  }
-}
+async function profileAddressPincodeLookup(pincode){const stateEl=document.getElementById('address-state'),districtEl=document.getElementById('address-district'),status=document.getElementById('profile-address-pincode-status');pincode=String(pincode||'').trim();if(status)status.textContent='';if(!stateEl||!districtEl||!/^[0-9]{6}$/.test(pincode))return;if(status)status.textContent='Detecting state & district...';try{const res=await fetch(`https://api.postalpincode.in/pincode/${pincode}`),data=await res.json();if(!(data?.[0]?.Status==='Success'&&data?.[0]?.PostOffice?.length)){if(status)status.textContent='Pincode not found. Please select manually.';return}const po=data[0].PostOffice[0],apiState=String(po.State||''),apiDistrict=String(po.District||'');const state=Object.keys(INDIA_LOCATIONS).find(x=>x.toLowerCase()===apiState.toLowerCase())||apiState;if(state&&!Array.from(stateEl.options).some(o=>o.value===state)){const opt=document.createElement('option');opt.value=state;opt.textContent=state;stateEl.appendChild(opt)}stateEl.value=state;stateEl.dispatchEvent(new Event('change'));const m=Array.from(districtEl.options).find(o=>o.value.toLowerCase()===apiDistrict.toLowerCase());if(m)districtEl.value=m.value;else if(apiDistrict){const opt=document.createElement('option');opt.value=apiDistrict;opt.textContent=apiDistrict;opt.selected=true;districtEl.appendChild(opt)}if(status)status.textContent=`✓ Detected: ${apiDistrict}, ${apiState}`}catch(_){if(status)status.textContent='Auto-detect offline. Please choose manually.'}}
 
 function openAccountTab(tab) {
   const profile = document.getElementById('profile-tab-content');
@@ -9614,7 +9460,6 @@ async function openProfileModal(initialTab = 'profile', syncHash = true) {
   const gender = document.getElementById('edit-profile-gender');
   if (gender) gender.value = loggedInUser.gender || '';
   modal.style.display = 'flex';
-  document.body.classList.add('profile-account-open');
   document.body.style.overflow = 'hidden';
   openAccountTab(initialTab);
 
@@ -9638,7 +9483,6 @@ function closeProfileModal() {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
-  document.body.classList.remove('profile-account-open');
   document.body.style.overflow = '';
 
   // Closing the account area always returns to the actual store home.
@@ -10511,8 +10355,7 @@ function renderCuratedSection() {
   const pills = document.getElementById('curated-pills');
   const grid = document.getElementById('curated-grid');
   if (!pills || !grid || !Array.isArray(CATEGORIES)) return;
-  const visibleCategories = CATEGORIES.filter(c => c && c.active !== false && Array.isArray(c.products) && c.products.length > 0);
-  const names = visibleCategories.map(c => c.name).filter(Boolean);
+  const names = CATEGORIES.filter(c => c && c.active !== false && (c.products || []).some(p => p && p.active !== false)).map(c => c.name).filter(Boolean);
   if (curatedFilter !== 'all' && !names.includes(curatedFilter)) curatedFilter = 'all';
 
   pills.innerHTML = '';
@@ -10531,9 +10374,12 @@ function renderCuratedSection() {
 
   grid.innerHTML = '';
   let count = 0;
-  visibleCategories.forEach(cat => {
-    if (!cat || (curatedFilter !== 'all' && cat.name !== curatedFilter)) return;
-    (cat.products || []).forEach(prod => { grid.appendChild(createProductCard(cat.name, prod, count++)); });
+  CATEGORIES.forEach(cat => {
+    if (!cat || cat.active === false || (curatedFilter !== 'all' && cat.name !== curatedFilter)) return;
+    (cat.products || []).forEach(prod => {
+      if (!prod || prod.active === false) return;
+      grid.appendChild(createProductCard(cat.name, prod, count++));
+    });
   });
   if (!count) grid.innerHTML = '<div class="lux-empty">No drops in this category yet.</div>';
 }
