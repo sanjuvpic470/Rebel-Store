@@ -6358,41 +6358,69 @@ async function loadAdminWishlistFromSupabase() {
   }
 }
 
-function confirmDeleteOrderToTrash(orderId) {
+async function confirmDeleteOrderToTrash(orderId) {
   const ord = ordersHistory.find(o => o.id === orderId);
   if (!ord) return;
   const customer = String(ord.billing?.name || 'Customer');
-  const ok = window.confirm(`Move this order to Trash?\n\nOrder: ${orderId}\nCustomer: ${customer}\n\nThe order will not be permanently deleted and can be restored from Trash.`);
+  const ok = window.confirm(`Move this order to Trash?\n\nOrder: ${orderId}\nCustomer: ${customer}\n\nThe order will be hidden from the customer immediately and can be restored from Trash.`);
   if (!ok) return;
-  deleteOrderToTrash(orderId);
+  await deleteOrderToTrash(orderId);
 }
 
-function deleteOrderToTrash(orderId) {
+async function deleteOrderToTrash(orderId) {
   const index = ordersHistory.findIndex(o => o.id === orderId);
-  if (index !== -1) {
-    const deletedOrd = ordersHistory.splice(index, 1)[0];
-    deletedOrd.deletedAt = new Date().toISOString();
-    trashOrdersHistory.unshift(deletedOrd);
-    localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
-    localStorage.setItem('rebel_trash_orders_history', JSON.stringify(trashOrdersHistory));
-    showToast(`Order ${orderId} moved to Trash Bin!`);
-    renderAdminPanels(currentSelectedDateFilter);
-    renderTrashBinTable();
+  if (index === -1) return;
+
+  const deletedOrd = ordersHistory[index];
+  const deletedAt = new Date().toISOString();
+
+  if (supabaseClient) {
+    const { error } = await supabaseClient
+      .from('orders')
+      .update({ deleted_at: deletedAt })
+      .eq('order_id', orderId);
+
+    if (error) {
+      console.error('Order delete sync failed:', error);
+      showToast('Order delete failed: ' + error.message);
+      return;
+    }
   }
+
+  ordersHistory.splice(index, 1);
+  trashOrdersHistory.unshift({ ...deletedOrd, deletedAt });
+  localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
+  localStorage.setItem('rebel_trash_orders_history', JSON.stringify(trashOrdersHistory));
+  showToast(`Order ${orderId} moved to Trash and hidden from customer.`);
+  renderAdminPanels(currentSelectedDateFilter);
+  renderTrashBinTable();
 }
 
-function restoreOrderFromTrash(orderId) {
+async function restoreOrderFromTrash(orderId) {
   const index = trashOrdersHistory.findIndex(o => o.id === orderId);
-  if (index !== -1) {
-    const restoredOrd = trashOrdersHistory.splice(index, 1)[0];
-    delete restoredOrd.deletedAt;
-    ordersHistory.unshift(restoredOrd);
-    localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
-    localStorage.setItem('rebel_trash_orders_history', JSON.stringify(trashOrdersHistory));
-    showToast(`Order ${orderId} restored successfully!`);
-    renderAdminPanels(currentSelectedDateFilter);
-    renderTrashBinTable();
+  if (index === -1) return;
+
+  if (supabaseClient) {
+    const { error } = await supabaseClient
+      .from('orders')
+      .update({ deleted_at: null })
+      .eq('order_id', orderId);
+
+    if (error) {
+      console.error('Order restore sync failed:', error);
+      showToast('Order restore failed: ' + error.message);
+      return;
+    }
   }
+
+  const restoredOrd = trashOrdersHistory.splice(index, 1)[0];
+  delete restoredOrd.deletedAt;
+  ordersHistory.unshift(restoredOrd);
+  localStorage.setItem('rebel_orders_history', JSON.stringify(ordersHistory));
+  localStorage.setItem('rebel_trash_orders_history', JSON.stringify(trashOrdersHistory));
+  showToast(`Order ${orderId} restored successfully!`);
+  renderAdminPanels(currentSelectedDateFilter);
+  renderTrashBinTable();
 }
 
 function permanentlyDeleteOrder(orderId) {
@@ -6494,6 +6522,7 @@ async function loadAdminDataFromSupabase() {
     const { data: ordersData, error: ordersError } = await supabaseClient
       .from('orders')
       .select('*')
+      .is('deleted_at', null)
       .order('created_at', { ascending: false });
 
     if (!ordersError && Array.isArray(ordersData)) {
@@ -9333,6 +9362,7 @@ async function loadCustomerOrdersFromSupabase() {
     const { data, error } = await supabaseClient
       .from('orders')
       .select('*')
+      .is('deleted_at', null)
       .order('created_at', { ascending: false });
 
     if (error || !Array.isArray(data)) {
