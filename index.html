@@ -103,7 +103,7 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .hero-poster{width:100%;max-width:340px;aspect-ratio:1/1;background:var(--spray-yellow);border:3px solid var(--paper);box-shadow:none;display:flex;align-items:stretch;justify-content:flex-start;padding:0;text-align:center;overflow:hidden;position:relative}
 .hero-poster svg{width:220px;height:auto}
 .hero-poster p{font-family:'Space Mono',monospace;font-size:.85rem;color:var(--ink);font-weight:700;margin-top:1rem}
-.hero-drop-media{width:100%;height:100%;background:var(--spray-yellow);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.hero-drop-media{width:100%;height:100%;background:transparent;display:flex;align-items:center;justify-content:center;overflow:visible}
 .hero-drop-media img{width:100%;height:100%;object-fit:cover;display:block}
 .hero-drop-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:1rem;box-sizing:border-box;background:var(--spray-yellow)}
 .hero-drop-placeholder svg{max-width:78%;max-height:78%}
@@ -1318,6 +1318,19 @@ h1.hero__title .stroke{-webkit-text-stroke:0;color:#fff}
 .account-tabs{border-bottom-color:var(--lux-border)}
 .profile-account-close{border-radius:9999px}
 
+/* Profile account: keep the reference header, but remove the homepage ticker/coupon strip from account pages. */
+body.profile-account-open .ticker{display:none !important;}
+.profile-account-page{
+  background-color:#080808 !important;
+  background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px) !important;
+  background-size:4rem 4rem !important;
+  padding-bottom:5rem !important;
+}
+.profile-account-layout{padding-bottom:5rem !important;}
+@media(max-width:800px){
+  .profile-account-page{padding-top:112px !important;min-height:100vh;}
+  .profile-account-layout{padding-bottom:6rem !important;}
+}
 /* ---------- 18. ORDERS + TRACKING ---------- */
 .order-list-page,.order-details-page{background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--glass-line);border-radius:1.5rem;overflow:hidden}
 .order-list-header,.order-details-title{font-weight:800;text-transform:none;color:#fff}
@@ -1480,22 +1493,27 @@ footer a:hover{color:#FACC15}
 .hero-drop-media{
   width:100%;
   height:100%;
-  background:#fff !important;
+  background:transparent !important;
   display:flex;
   align-items:center;
   justify-content:center;
-  overflow:hidden;
+  overflow:visible;
 }
 .hero-drop-media img{
-  width:92% !important;
-  height:92% !important;
+  width:auto !important;
+  height:auto !important;
+  max-width:100% !important;
+  max-height:100% !important;
   object-fit:contain !important;
   object-position:center;
   display:block;
-  background:transparent;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  animation:floatSlow 6s ease-in-out infinite;
 }
 .hero-drop-placeholder{
-  width:100%;height:100%;background:#fff !important;
+  width:100%;height:100%;background:transparent !important;
   display:flex;align-items:center;justify-content:center;padding:2rem;box-sizing:border-box;
 }
 .hero-drop-placeholder svg{max-width:72%;max-height:72%;}
@@ -1570,6 +1588,43 @@ body.admin-mode .admin-header-refresh-btn{display:inline-flex;}
 }
 </style>
 
+
+<style id="rebel-weekly-drop-transparent-final">
+/* Weekly Drop: the supplied transparent PNG floats directly over the reference stage. */
+.hero-poster{
+  width:15rem !important;
+  height:15rem !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  -webkit-backdrop-filter:none !important;
+  backdrop-filter:none !important;
+  box-shadow:none !important;
+  overflow:visible !important;
+  animation:none !important;
+}
+.hero-drop-media{
+  width:100% !important;
+  height:100% !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  overflow:visible !important;
+}
+.hero-drop-media img{
+  width:auto !important;
+  height:auto !important;
+  max-width:100% !important;
+  max-height:100% !important;
+  object-fit:contain !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  animation:floatSlow 6s ease-in-out infinite !important;
+}
+.hero-drop-placeholder{background:transparent !important;}
+@media(max-width:420px){.hero-poster{width:13rem !important;height:13rem !important;}}
+</style>
 </head>
 <body>
   <div id="cursor" class="custom-cursor" aria-hidden="true"></div>
@@ -2865,14 +2920,19 @@ const INDIA_LOCATIONS = {
 };
 
 function initStatesDropdown() {
-  const stateSelect = document.getElementById('b-state');
-  if (!stateSelect) return;
-  stateSelect.innerHTML = '<option value="">Select State</option>';
-  Object.keys(INDIA_LOCATIONS).sort().forEach(state => {
-    const opt = document.createElement('option');
-    opt.value = state;
-    opt.textContent = state;
-    stateSelect.appendChild(opt);
+  const stateNames = Object.keys(INDIA_LOCATIONS).sort();
+  ['new-b-state', 'b-state'].forEach(id => {
+    const stateSelect = document.getElementById(id);
+    if (!stateSelect) return;
+    const currentValue = stateSelect.value || '';
+    stateSelect.innerHTML = '<option value="">Select State</option>';
+    stateNames.forEach(state => {
+      const opt = document.createElement('option');
+      opt.value = state;
+      opt.textContent = state;
+      stateSelect.appendChild(opt);
+    });
+    if (currentValue && stateNames.includes(currentValue)) stateSelect.value = currentValue;
   });
 }
 
@@ -4979,6 +5039,7 @@ function startNewBillingAddress() {
   document.getElementById('new-b-address1').value = '';
   document.getElementById('new-b-address2').value = '';
   document.getElementById('new-b-pincode').value = '';
+  initStatesDropdown();
   document.getElementById('new-b-state').value = '';
   document.getElementById('new-b-district').innerHTML = '<option value="">Select District</option>';
   document.getElementById('new-b-pincode-status').textContent = '';
@@ -5008,7 +5069,8 @@ async function handleNewCheckoutPincodeLookup(pincode) {
   const statusHint = document.getElementById('new-b-pincode-status');
   const stateSelect = document.getElementById('new-b-state');
   const districtSelect = document.getElementById('new-b-district');
-  pincode = String(pincode || '').trim();
+  pincode = String(pincode || '').replace(/\D/g,'').slice(0,6);
+  if (stateSelect && stateSelect.options.length <= 1) initStatesDropdown();
   if (statusHint) statusHint.textContent = '';
   if (!stateSelect || !districtSelect || pincode.length !== 6 || !/^\d{6}$/.test(pincode)) return;
 
@@ -9205,7 +9267,40 @@ async function editSavedAddressFromCheckout(id){
 }
 async function setDefaultFromCheckout(id){await setDefaultSavedAddress(id);selectedBillingAddressId=String(id);selectedBillingAddressData=null;await renderBillingSavedAddresses(selectedBillingAddressId)}
 async function deleteSavedAddressFromCheckout(id){await deleteSavedAddress(id)}
-async function profileAddressPincodeLookup(pincode){const stateEl=document.getElementById('address-state'),districtEl=document.getElementById('address-district'),status=document.getElementById('profile-address-pincode-status');pincode=String(pincode||'').trim();if(status)status.textContent='';if(!stateEl||!districtEl||!/^[0-9]{6}$/.test(pincode))return;if(status)status.textContent='Detecting state & district...';try{const res=await fetch(`https://api.postalpincode.in/pincode/${pincode}`),data=await res.json();if(!(data?.[0]?.Status==='Success'&&data?.[0]?.PostOffice?.length)){if(status)status.textContent='Pincode not found. Please select manually.';return}const po=data[0].PostOffice[0],apiState=String(po.State||''),apiDistrict=String(po.District||'');const state=Object.keys(INDIA_LOCATIONS).find(x=>x.toLowerCase()===apiState.toLowerCase())||apiState;if(state&&!Array.from(stateEl.options).some(o=>o.value===state)){const opt=document.createElement('option');opt.value=state;opt.textContent=state;stateEl.appendChild(opt)}stateEl.value=state;stateEl.dispatchEvent(new Event('change'));const m=Array.from(districtEl.options).find(o=>o.value.toLowerCase()===apiDistrict.toLowerCase());if(m)districtEl.value=m.value;else if(apiDistrict){const opt=document.createElement('option');opt.value=apiDistrict;opt.textContent=apiDistrict;opt.selected=true;districtEl.appendChild(opt)}if(status)status.textContent=`✓ Detected: ${apiDistrict}, ${apiState}`}catch(_){if(status)status.textContent='Auto-detect offline. Please choose manually.'}}
+async function profileAddressPincodeLookup(pincode){
+  const stateEl=document.getElementById('address-state');
+  const districtEl=document.getElementById('address-district');
+  const status=document.getElementById('profile-address-pincode-status');
+  pincode=String(pincode||'').replace(/\D/g,'').slice(0,6);
+  if(status)status.textContent='';
+  if(!stateEl||!districtEl||!/^[0-9]{6}$/.test(pincode))return;
+  if(status)status.textContent='Detecting state & district...';
+  try{
+    const res=await fetch(`https://api.postalpincode.in/pincode/${pincode}`,{headers:{'Accept':'application/json'}});
+    const data=await res.json();
+    if(!(data?.[0]?.Status==='Success'&&data?.[0]?.PostOffice?.length)){
+      if(status)status.textContent='Pincode not found. Please select manually.';
+      return;
+    }
+    const po=data[0].PostOffice[0];
+    const apiState=String(po.State||'').trim();
+    const apiDistrict=String(po.District||'').trim();
+    const state=Object.keys(INDIA_LOCATIONS).find(x=>x.toLowerCase()===apiState.toLowerCase())||apiState;
+    if(state&&!Array.from(stateEl.options).some(o=>o.value===state)){
+      const opt=document.createElement('option'); opt.value=state; opt.textContent=state; stateEl.appendChild(opt);
+    }
+    stateEl.value=state;
+    stateEl.dispatchEvent(new Event('change',{bubbles:true}));
+    const m=Array.from(districtEl.options).find(o=>o.value.toLowerCase()===apiDistrict.toLowerCase());
+    if(m)districtEl.value=m.value;
+    else if(apiDistrict){
+      const opt=document.createElement('option'); opt.value=apiDistrict; opt.textContent=apiDistrict; opt.selected=true; districtEl.appendChild(opt);
+    }
+    if(status)status.textContent=`✓ Detected: ${apiDistrict}, ${apiState}`;
+  }catch(_){
+    if(status)status.textContent='Auto-detect offline. Please choose manually.';
+  }
+}
 
 function openAccountTab(tab) {
   const profile = document.getElementById('profile-tab-content');
@@ -9330,6 +9425,7 @@ async function openProfileModal(initialTab = 'profile', syncHash = true) {
   const gender = document.getElementById('edit-profile-gender');
   if (gender) gender.value = loggedInUser.gender || '';
   modal.style.display = 'flex';
+  document.body.classList.add('profile-account-open');
   document.body.style.overflow = 'hidden';
   openAccountTab(initialTab);
 
@@ -9353,6 +9449,7 @@ function closeProfileModal() {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
+  document.body.classList.remove('profile-account-open');
   document.body.style.overflow = '';
 
   // Closing the account area always returns to the actual store home.
