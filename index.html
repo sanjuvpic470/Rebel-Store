@@ -420,6 +420,14 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .admin-table-wrap{overflow-x:auto;margin-bottom:1rem}
 .admin-product-row{background:#1a1a1d;border:1px solid rgba(242,240,234,.15);padding:1.2rem;margin-bottom:1rem}
 .admin-url-row{display:flex;gap:.5rem;margin-bottom:.5rem;align-items:center}
+.admin-color-images-box{margin:.45rem 0 0 0;padding:.55rem .65rem;background:#0d0d0f;border:1px dashed rgba(255,213,0,.25);width:100%;}
+.admin-color-images-title{font-family:'Space Mono',monospace;font-size:.58rem;color:var(--spray-yellow);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.4rem;}
+.admin-color-image-row{display:flex;align-items:center;gap:.4rem;margin:.3rem 0;}
+.admin-color-image-row input{flex:1;min-width:180px;}
+.admin-color-image-row button{flex:0 0 auto;}
+.admin-color-images-add{margin-top:.35rem;padding:.25rem .55rem!important;min-height:30px!important;font-size:.58rem!important;}
+@media(max-width:650px){.admin-color-image-row{align-items:stretch;flex-wrap:wrap}.admin-color-image-row input{min-width:0;width:100%;flex:1 1 100%}}
+
 .admin-input-small{background:#111;border:1px solid rgba(242,240,234,.3);color:var(--paper);padding:.4rem .6rem;font-family:'Space Mono',monospace;width:100%}
 .date-chart-table{width:100%;border-collapse:collapse;font-family:'Space Mono',monospace;font-size:.85rem;text-align:left}
 .date-chart-table th{background:#202024;color:var(--spray-yellow);padding:.8rem;text-transform:uppercase;border-bottom:1px solid rgba(242,240,234,.15)}
@@ -2716,8 +2724,10 @@ body.admin-mode .admin-header-refresh-btn{display:inline-flex;}
   <p style="margin:0 0 .8rem;font-family:'Space Mono';font-size:.62rem;color:#999;line-height:1.5;">This category is reserved for the homepage Weekly Drop. It has no normal product cards. Manage only the PNG link, available colors and available sizes here.</p>
   <div style="display:grid;grid-template-columns:minmax(260px,1fr) auto;gap:.6rem;align-items:end;">
     <div>
-      <label class="admin-field-label">Homepage PNG Link</label>
-      <input type="url" id="weekly-category-header-link" class="admin-input-full" placeholder="https://.../weekly-drop.png" autocomplete="off" inputmode="url">
+      <label class="admin-field-label">Homepage / Default Image Links</label>
+      <div id="weekly-category-images-wrap"></div>
+      <button type="button" class="btn btn--ghost admin-color-images-add" onclick="addWeeklyDropImageUrl()">+ Add Image URL / Slide</button>
+      <input type="hidden" id="weekly-category-header-link" value="">
     </div>
     <button type="button" class="btn btn--solid" style="min-height:40px;" onclick="saveWeeklyDropCategoryLink()">Save Weekly Drop 💾</button>
   </div>
@@ -3106,6 +3116,11 @@ function ensureWeeklyDropCategory() {
   if (!Array.isArray(cat.disabledColors)) cat.disabledColors = [];
   if (!Array.isArray(cat.disabledSizes)) cat.disabledSizes = [];
   if (!cat.colorMeta || typeof cat.colorMeta !== 'object' || Array.isArray(cat.colorMeta)) cat.colorMeta = {};
+  if (!cat.colorImages || typeof cat.colorImages !== 'object' || Array.isArray(cat.colorImages)) cat.colorImages = {};
+  cat.colors.forEach(color => {
+    const colorKey = String(color || '').trim().toLowerCase();
+    if (colorKey && !Array.isArray(cat.colorImages[colorKey])) cat.colorImages[colorKey] = [];
+  });
   cat.colors.forEach(color => {
     const key = String(color || '').trim().toLowerCase();
     if (key && !/^#[0-9a-f]{6}$/i.test(String(cat.colorMeta[key] || ''))) cat.colorMeta[key] = getAdminDefaultColorHex(color);
@@ -3542,6 +3557,64 @@ function resetShopFilters() {
   applyShopFilters();
 }
 
+function ensureProductColorImages(product) {
+  if (!product || typeof product !== 'object') return {};
+  if (!product.colorImages || typeof product.colorImages !== 'object' || Array.isArray(product.colorImages)) product.colorImages = {};
+  const colors = Array.isArray(product.colors) && product.colors.length ? product.colors : ['Black','White'];
+  colors.forEach(color => {
+    const key = String(color || '').trim().toLowerCase();
+    if (key && !Array.isArray(product.colorImages[key])) product.colorImages[key] = [];
+  });
+  return product.colorImages;
+}
+
+function getProductImagesForColor(product, color) {
+  if (!product) return [];
+  const map = ensureProductColorImages(product);
+  const key = String(color || '').trim().toLowerCase();
+  const colorUrls = Array.isArray(map[key]) ? map[key].filter(v => String(v || '').trim()) : [];
+  if (colorUrls.length) return colorUrls;
+  const baseUrls = Array.isArray(product.images) ? product.images.filter(v => String(v || '').trim()) : [];
+  return baseUrls;
+}
+
+function renderProductGalleryForColor(product, color, startIndex = 0) {
+  const sliderTrack = document.getElementById('slider-track');
+  const thumbRow = document.getElementById('thumb-row-container');
+  if (!sliderTrack || !thumbRow || !product) return;
+  const validImages = getProductImagesForColor(product, color);
+  const images = validImages.length ? validImages : [''];
+  sliderTrack.innerHTML = '';
+  thumbRow.innerHTML = '';
+  images.forEach((imgUrl, idx) => {
+    const cleanUrl = safeMediaUrl(imgUrl);
+    const slideDiv = document.createElement('div');
+    slideDiv.className = 'slide-item';
+    if (cleanUrl) {
+      slideDiv.innerHTML = `<img src="${escapeHtml(cleanUrl)}" alt="${escapeHtml(product.title || 'Product')} — ${escapeHtml(color || 'Default')}"><button type="button" class="pdp-zoom-btn" onclick="event.stopPropagation(); openProductImageZoom()">Zoom ↗</button>`;
+    } else {
+      slideDiv.innerHTML = `<div class="big-preview-text">${escapeHtml(product.code || '')} [${idx+1}]</div>`;
+    }
+    sliderTrack.appendChild(slideDiv);
+    const thumbDiv = document.createElement('div');
+    thumbDiv.className = `thumb-card ${idx === 0 ? 'active' : ''}`;
+    thumbDiv.onclick = () => goToSlide(idx);
+    if (cleanUrl) thumbDiv.innerHTML = `<img src="${escapeHtml(cleanUrl)}" alt="Thumb ${idx+1}">`;
+    else thumbDiv.innerHTML = `<span class="thumb-title">0${idx+1}</span>`;
+    thumbRow.appendChild(thumbDiv);
+  });
+  window.TOTAL_SLIDES_COUNT = images.length;
+  currentSlideIndex = Math.max(0, Math.min(Number(startIndex) || 0, images.length - 1));
+  goToSlide(currentSlideIndex);
+  const label = document.getElementById('pdp-angle-label');
+  if (label) label.innerText = color ? `${color} · ${angleLabels[currentSlideIndex] || 'View'}` : (angleLabels[currentSlideIndex] || 'View');
+}
+
+function syncCurrentProductGalleryToColor() {
+  if (!currentProduct) return;
+  renderProductGalleryForColor(currentProduct, selectedColor, 0);
+}
+
 function syncWeeklyDropProductFromCategory() {
   const cat = CATEGORIES.find(c => String(c?.name || '').trim().toLowerCase() === 'weekly drop');
   if (!cat) return null;
@@ -3556,12 +3629,13 @@ function syncWeeklyDropProductFromCategory() {
   product.mrp = Number(cat.mrp || product.mrp || 0);
   product.price = Number(cat.price || product.price || 0);
   product.image = cat.weeklyDropLink || product.image || '';
-  product.images = product.image ? [product.image] : (Array.isArray(product.images) ? product.images : []);
+  product.images = Array.isArray(cat.images) && cat.images.length ? [...cat.images] : (product.image ? [product.image] : (Array.isArray(product.images) ? product.images : []));
   product.colors = Array.isArray(cat.colors) && cat.colors.length ? [...cat.colors] : ['Black','White'];
   product.sizes = Array.isArray(cat.sizes) && cat.sizes.length ? [...cat.sizes] : ['S','M','L','XL'];
   product.disabledColors = Array.isArray(cat.disabledColors) ? [...cat.disabledColors] : [];
   product.disabledSizes = Array.isArray(cat.disabledSizes) ? [...cat.disabledSizes] : [];
   product.colorMeta = cat.colorMeta && typeof cat.colorMeta === 'object' ? {...cat.colorMeta} : {};
+  product.colorImages = cat.colorImages && typeof cat.colorImages === 'object' ? JSON.parse(JSON.stringify(cat.colorImages)) : {};
   product.active = true;
   product.customizeEnabled = true;
   cat.products = [product];
@@ -4022,6 +4096,7 @@ function openProductByDetails(catName, productId) {
       selectedColor = col;
       document.querySelectorAll('#pdp-color-selector .size-btn').forEach(b => b.classList.remove('selected'));
       cBtn.classList.add('selected');
+      syncCurrentProductGalleryToColor();
       updatePdpSelectionStatus();
     };
     colorContainer.appendChild(cBtn);
@@ -4049,40 +4124,7 @@ function openProductByDetails(catName, productId) {
   // The legacy catalogue only knows which sizes/colors exist; it does not know stock.
   loadPdpStockForCurrentProduct(foundProd);
 
-  const sliderTrack = document.getElementById('slider-track');
-  const thumbRow = document.getElementById('thumb-row-container');
-  sliderTrack.innerHTML = '';
-  thumbRow.innerHTML = '';
-
-  const rawImages = (foundProd.images && foundProd.images.length > 0) ? foundProd.images.filter(img => img && img.trim() !== '') : [];
-  const validImages = rawImages.length > 0 ? rawImages : [''];
-
-  validImages.forEach((imgUrl, idx) => {
-    const cleanUrl = safeMediaUrl(imgUrl);
-
-    const slideDiv = document.createElement('div');
-    slideDiv.className = 'slide-item';
-    if (cleanUrl) {
-      slideDiv.innerHTML = `<img src="${escapeHtml(cleanUrl)}" alt="${escapeHtml(foundProd.title)}"><button type="button" class="pdp-zoom-btn" onclick="event.stopPropagation(); openProductImageZoom()">Zoom ↗</button>`;
-    } else {
-      slideDiv.innerHTML = `<div class="big-preview-text">${escapeHtml(foundProd.code)} [${idx+1}]</div>`;
-    }
-    sliderTrack.appendChild(slideDiv);
-
-    const thumbDiv = document.createElement('div');
-    thumbDiv.className = `thumb-card ${idx === 0 ? 'active' : ''}`;
-    thumbDiv.onclick = () => goToSlide(idx);
-    
-    if (cleanUrl) {
-      thumbDiv.innerHTML = `<img src="${escapeHtml(cleanUrl)}" alt="Thumb ${idx+1}">`;
-    } else {
-      thumbDiv.innerHTML = `<span class="thumb-title">0${idx+1}</span>`;
-    }
-    thumbRow.appendChild(thumbDiv);
-  });
-
-  window.TOTAL_SLIDES_COUNT = validImages.length;
-  goToSlide(0);
+  renderProductGalleryForColor(foundProd, selectedColor, 0);
 
   document.getElementById('home-view').style.display = 'none';
   document.getElementById('custom-order-page').style.display = 'none';
@@ -7595,6 +7637,18 @@ function renderCustomTshirtCategoriesAdmin() {
         <input type="color" class="custom-color-picker-${index}" data-color-index="${colorIndex}" value="${hex}" title="Pick ${escapeHtml(colorName)} color" onchange="updateCustomTshirtCategoryColorHex(${index},${colorIndex},this.value)" style="width:42px;height:30px;padding:0;border:1px solid rgba(255,255,255,.2);background:transparent;cursor:pointer;">
         <input type="text" class="custom-color-hex-${index}" data-color-index="${colorIndex}" value="${hex}" maxlength="7" placeholder="#000000" onchange="updateCustomTshirtCategoryColorHex(${index},${colorIndex},this.value)" style="width:88px;margin:0;padding:.35rem;background:#111;border:1px solid rgba(255,255,255,.16);color:var(--paper);font-family:'Space Mono';font-size:.58rem;">
         <span style="color:#777;">Checked = available · Uncheck = unavailable</span>
+        <div class="admin-color-images-box">
+          <div class="admin-color-images-title">${escapeHtml(name)} · Product Images / Slides</div>
+          <div id="weekly-color-images-wrap-${index}">
+            ${(Array.isArray(cat.colorImages[key]) && cat.colorImages[key].length ? cat.colorImages[key] : ['']).map((imgUrl, imgIndex) => `
+              <div class="admin-color-image-row">
+                <span style="font-family:'Space Mono';font-size:.54rem;color:#777;min-width:38px;">${imgIndex+1}.</span>
+                <input type="text" class="admin-input-small weekly-color-image-url-${index}" value="${escapeHtml(imgUrl || '')}" placeholder="Paste image URL for ${escapeHtml(name)}" style="margin:0;">
+                <button type="button" class="btn btn--ghost" style="padding:.2rem .5rem;min-height:30px;font-size:.6rem;color:var(--rebel-red);" onclick="removeWeeklyDropColorImageUrl(${index},${imgIndex})">×</button>
+              </div>`).join('')}
+          </div>
+          <button type="button" class="btn btn--ghost admin-color-images-add" onclick="addWeeklyDropColorImageUrl(${index})">+ Add Image URL / Slide</button>
+        </div>
       </div>`;
     }).join('');
     const sizeRows = (item.sizes || []).map((size, sizeIndex) => {
@@ -7941,6 +7995,16 @@ function renderWeeklyDropCategorySettings() {
   const preview = document.getElementById('weekly-category-link-preview');
   const url = safeMediaUrl(cat.weeklyDropLink || SITE_CONTENT.dropPreviewImage || '');
   if (input) input.value = url;
+  const weeklyImagesWrap = document.getElementById('weekly-category-images-wrap');
+  if (weeklyImagesWrap) {
+    const defaultImages = Array.isArray(cat.images) && cat.images.length ? cat.images : (url ? [url] : ['']);
+    weeklyImagesWrap.innerHTML = defaultImages.map((imgUrl, idx) => `
+      <div class="admin-color-image-row">
+        <span style="font-family:'Space Mono';font-size:.54rem;color:#777;min-width:38px;">${idx+1}.</span>
+        <input type="text" class="admin-input-small weekly-drop-image-url" value="${escapeHtml(imgUrl || '')}" placeholder="Paste image URL for slide ${idx+1}" style="margin:0;">
+        <button type="button" class="btn btn--ghost" style="padding:.2rem .5rem;min-height:30px;font-size:.6rem;color:var(--rebel-red);" onclick="removeWeeklyDropImageUrl(${idx})">×</button>
+      </div>`).join('');
+  }
   if (preview) {
     preview.innerHTML = url
       ? `<img src="${escapeHtml(url)}" alt="Weekly Drop PNG preview" style="max-width:100%;max-height:180px;object-fit:contain;background:transparent;display:block;" onerror="this.parentElement.innerHTML='<span style=\"font-family:Space Mono;font-size:.62rem;color:#ff6b6b;\">PNG link could not be loaded</span>'">`
@@ -7997,18 +8061,54 @@ function updateWeeklyDropOptionsFromInputs() {
   if (!colors.length) { showToast('Add at least one Weekly Drop color.'); return false; }
   if (!sizes.length) { showToast('Add at least one Weekly Drop size.'); return false; }
   const oldMeta = cat.colorMeta || {};
+  const oldColorImages = cat.colorImages && typeof cat.colorImages === 'object' ? cat.colorImages : {};
   const oldDisabledColors = new Set((cat.disabledColors || []).map(v => String(v).trim().toLowerCase()));
   const oldDisabledSizes = new Set((cat.disabledSizes || []).map(v => String(v).trim().toLowerCase()));
   cat.colors = colors;
   cat.sizes = sizes;
   cat.colorMeta = {};
+  cat.colorImages = {};
   cat.colors.forEach(color => {
     const key = color.toLowerCase();
     cat.colorMeta[key] = /^#[0-9a-f]{6}$/i.test(String(oldMeta[key] || '')) ? oldMeta[key] : getAdminDefaultColorHex(color);
+    cat.colorImages[key] = Array.isArray(oldColorImages[key]) ? [...oldColorImages[key]] : [];
   });
   cat.disabledColors = colors.filter(v => oldDisabledColors.has(v.toLowerCase()));
   cat.disabledSizes = sizes.filter(v => oldDisabledSizes.has(v.toLowerCase()));
   return true;
+}
+
+function addWeeklyDropImageUrl() {
+  const wrap = document.getElementById('weekly-category-images-wrap');
+  if (!wrap) return;
+  const row = document.createElement('div');
+  row.className = 'admin-color-image-row';
+  const idx = wrap.querySelectorAll('.weekly-drop-image-url').length + 1;
+  row.innerHTML = `<span style="font-family:'Space Mono';font-size:.54rem;color:#777;min-width:38px;">${idx}.</span><input type="text" class="admin-input-small weekly-drop-image-url" value="" placeholder="Paste image URL for slide ${idx}" style="margin:0;"><button type="button" class="btn btn--ghost" style="padding:.2rem .5rem;min-height:30px;font-size:.6rem;color:var(--rebel-red);" onclick="this.closest('.admin-color-image-row').remove()">×</button>`;
+  wrap.appendChild(row);
+}
+function removeWeeklyDropImageUrl(index) {
+  const cat = ensureWeeklyDropCategory();
+  if (Array.isArray(cat.images) && cat.images.length > 1) cat.images.splice(index,1);
+  else cat.images = [];
+  renderWeeklyDropCategorySettings();
+}
+function addWeeklyDropColorImageUrl(colorIndex) {
+  const cat = ensureWeeklyDropCategory();
+  const color = String(cat.colors?.[colorIndex] || '').trim();
+  if (!color) return;
+  const key = color.toLowerCase();
+  if (!Array.isArray(cat.colorImages[key])) cat.colorImages[key] = [];
+  cat.colorImages[key].push('');
+  renderWeeklyDropCategorySettings();
+}
+function removeWeeklyDropColorImageUrl(colorIndex, imgIndex) {
+  const cat = ensureWeeklyDropCategory();
+  const color = String(cat.colors?.[colorIndex] || '').trim();
+  const key = color.toLowerCase();
+  if (!Array.isArray(cat.colorImages?.[key])) return;
+  if (cat.colorImages[key].length > 1) cat.colorImages[key].splice(imgIndex,1); else cat.colorImages[key] = [];
+  renderWeeklyDropCategorySettings();
 }
 
 function toggleWeeklyDropColor(index, available) {
@@ -8043,7 +8143,18 @@ async function saveWeeklyDropCategoryLink() {
   const cat = ensureWeeklyDropCategory();
   if (!updateWeeklyDropOptionsFromInputs()) return;
   const input = document.getElementById('weekly-category-header-link');
-  const raw = String(input?.value || '').trim();
+  const weeklyImageInputs = document.querySelectorAll('.weekly-drop-image-url');
+  cat.images = [];
+  weeklyImageInputs.forEach(el => { const v = String(el.value || '').trim(); if (v) cat.images.push(v); });
+  if (!cat.images.length) cat.images = [];
+  const raw = String(input?.value || '').trim() || String(cat.images[0] || '').trim();
+  ensureWeeklyDropCategory();
+  cat.colors.forEach((color, colorIndex) => {
+    const key = String(color || '').trim().toLowerCase();
+    const inputs = document.querySelectorAll(`.weekly-color-image-url-${colorIndex}`);
+    cat.colorImages[key] = [];
+    inputs.forEach(el => { const v = String(el.value || '').trim(); if (v) cat.colorImages[key].push(v); });
+  });
   cat.productCode = String(document.getElementById('weekly-category-code')?.value || '').trim();
   cat.productTitle = String(document.getElementById('weekly-category-title')?.value || '').trim();
   cat.mrp = Number(document.getElementById('weekly-category-mrp')?.value || 0);
@@ -8061,13 +8172,14 @@ async function saveWeeklyDropCategoryLink() {
     desc: 'Limited Weekly Drop',
     mrp: Number(cat.mrp || 0),
     price: Number(cat.price || 0),
-    image: url,
-    images: url ? [url] : [],
+    image: (cat.images?.[0] || url || ''),
+    images: Array.isArray(cat.images) ? [...cat.images] : (url ? [url] : []),
     colors: Array.isArray(cat.colors) ? [...cat.colors] : ['Black','White'],
     sizes: Array.isArray(cat.sizes) ? [...cat.sizes] : ['S','M','L','XL'],
     disabledColors: Array.isArray(cat.disabledColors) ? [...cat.disabledColors] : [],
     disabledSizes: Array.isArray(cat.disabledSizes) ? [...cat.disabledSizes] : [],
     colorMeta: cat.colorMeta && typeof cat.colorMeta === 'object' ? {...cat.colorMeta} : {},
+    colorImages: cat.colorImages && typeof cat.colorImages === 'object' ? JSON.parse(JSON.stringify(cat.colorImages)) : {},
     active: true,
     customizeEnabled: true
   }];
@@ -8136,6 +8248,7 @@ function renderAdminProductFormsForCategory(catName) {
     if(!Array.isArray(prod.disabledSizes)) prod.disabledSizes = [];
     if(!Array.isArray(prod.disabledColors)) prod.disabledColors = [];
     if(!prod.colorMeta || typeof prod.colorMeta !== 'object' || Array.isArray(prod.colorMeta)) prod.colorMeta = {};
+    ensureProductColorImages(prod);
     prod.colors.forEach(color => {
       const key = String(color || '').trim();
       const normalized = key.toLowerCase();
@@ -8207,6 +8320,18 @@ function renderAdminProductFormsForCategory(catName) {
               <input type="color" class="prod-color-picker-${cIndex}-${pIndex}" data-color-index="${colorIndex}" value="${hex}" title="Pick ${escapeHtml(colorName)} color" onchange="updateAdminProductColorHex(${cIndex},${pIndex},${colorIndex},this.value)" style="width:42px;height:30px;padding:0;border:1px solid rgba(255,255,255,.2);background:transparent;cursor:pointer;">
               <input type="text" class="prod-color-hex-${cIndex}-${pIndex}" data-color-index="${colorIndex}" value="${hex}" maxlength="7" placeholder="#000000" onchange="updateAdminProductColorHex(${cIndex},${pIndex},${colorIndex},this.value)" style="width:88px;margin:0;padding:.35rem;background:#111;border:1px solid rgba(255,255,255,.16);color:var(--paper);font-family:'Space Mono';font-size:.58rem;">
               <span style="color:#777;">Checked = available · Uncheck = unavailable</span>
+              <div class="admin-color-images-box">
+                <div class="admin-color-images-title">${escapeHtml(colorName)} · Product Images / Slides</div>
+                <div id="prod-color-images-wrap-${cIndex}-${pIndex}-${colorIndex}">
+                  ${(Array.isArray(prod.colorImages[colorKey]) && prod.colorImages[colorKey].length ? prod.colorImages[colorKey] : ['']).map((imgUrl, imgIndex) => `
+                    <div class="admin-color-image-row">
+                      <span style="font-family:'Space Mono';font-size:.54rem;color:#777;min-width:38px;">${imgIndex+1}.</span>
+                      <input type="text" class="admin-input-small prod-color-image-url-${cIndex}-${pIndex}-${colorIndex}" data-color-index="${colorIndex}" data-image-index="${imgIndex}" value="${escapeHtml(imgUrl || '')}" placeholder="Paste image URL for ${escapeHtml(colorName)}" style="margin:0;">
+                      <button type="button" class="btn btn--ghost" style="padding:.2rem .5rem;min-height:30px;font-size:.6rem;color:var(--rebel-red);" onclick="removeProdColorImageUrl(${cIndex},${pIndex},${colorIndex},${imgIndex})">×</button>
+                    </div>`).join('')}
+                </div>
+                <button type="button" class="btn btn--ghost admin-color-images-add" onclick="addProdColorImageUrlInput(${cIndex},${pIndex},${colorIndex})">+ Add Image URL / Slide</button>
+              </div>
             </div>`;
           }).join('')}
         </div>
@@ -8255,7 +8380,7 @@ function addNewCategory() {
     id: 'cat-' + Date.now(),
     name: name,
     products: [
-      { id: 'p' + Date.now(), code: 'NEW1', title: `New ${name} 01`, desc: 'Heavyweight cotton drop.', mrp: 1200, price: 800, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'], customizeEnabled: true }
+      { id: 'p' + Date.now(), code: 'NEW1', title: `New ${name} 01`, desc: 'Heavyweight cotton drop.', mrp: 1200, price: 800, images: [''], colors: ['Yellow', 'White'], colorImages: {yellow:[], white:[]}, sizes: ['S', 'M', 'L', 'XL'], customizeEnabled: true }
     ]
   });
   document.getElementById('new-category-input').value = '';
@@ -8278,6 +8403,7 @@ function addProdToCurrentAdminCategory() {
       price: 713,
       images: [''],
       colors: ['Yellow', 'White'],
+      colorImages: {yellow:[], white:[]},
       sizes: ['S', 'M', 'L', 'XL'],
       disabledSizes: [],
       disabledColors: [],
@@ -8294,6 +8420,32 @@ function deleteProductFromCategory(cIndex, pIndex) {
   cat.products.splice(pIndex, 1);
   renderAdminProductFormsForCategory(cat.name);
   if (!cat.products.length) showToast(`${cat.name} is now empty. You can add products later.`);
+}
+
+function addProdColorImageUrlInput(cIndex, pIndex, colorIndex) {
+  collectCategoryFormValues();
+  const prod = CATEGORIES?.[cIndex]?.products?.[pIndex];
+  if (!prod) return;
+  ensureProductColorImages(prod);
+  const color = String(prod.colors?.[colorIndex] || '').trim();
+  if (!color) return;
+  const key = color.toLowerCase();
+  if (!Array.isArray(prod.colorImages[key])) prod.colorImages[key] = [];
+  prod.colorImages[key].push('');
+  renderAdminProductFormsForCategory(CATEGORIES[cIndex].name);
+}
+
+function removeProdColorImageUrl(cIndex, pIndex, colorIndex, imgIndex) {
+  collectCategoryFormValues();
+  const prod = CATEGORIES?.[cIndex]?.products?.[pIndex];
+  if (!prod) return;
+  ensureProductColorImages(prod);
+  const color = String(prod.colors?.[colorIndex] || '').trim();
+  const key = color.toLowerCase();
+  if (!Array.isArray(prod.colorImages[key])) prod.colorImages[key] = [];
+  if (prod.colorImages[key].length > 1) prod.colorImages[key].splice(imgIndex, 1);
+  else prod.colorImages[key] = [];
+  renderAdminProductFormsForCategory(CATEGORIES[cIndex].name);
 }
 
 function addProdImageUrlInput(cIndex, pIndex) {
@@ -8483,6 +8635,21 @@ function collectCategoryFormValues() {
       const validSizeKeys = new Set((prod.sizes || []).map(s => String(s).trim().toLowerCase()));
       prod.disabledSizes = [...new Set(disabled.filter(s => validSizeKeys.has(String(s).trim().toLowerCase())))];
     }
+
+    ensureProductColorImages(prod);
+    (prod.colors || []).forEach((color, colorIndex) => {
+      const colorKey = String(color || '').trim().toLowerCase();
+      const colorInputs = document.querySelectorAll(`.prod-color-image-url-${cIndex}-${pIndex}-${colorIndex}`);
+      if (colorInputs.length) {
+        prod.colorImages[colorKey] = [];
+        colorInputs.forEach(input => {
+          const val = String(input.value || '').trim();
+          if (val) prod.colorImages[colorKey].push(val);
+        });
+      } else if (!Array.isArray(prod.colorImages[colorKey])) {
+        prod.colorImages[colorKey] = [];
+      }
+    });
 
     const urlInputs = document.querySelectorAll(`.prod-url-${cIndex}-${pIndex}`);
     if (urlInputs.length > 0) {
