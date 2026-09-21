@@ -2776,7 +2776,7 @@ body.profile-account-open .ticker{display:flex !important;}
       </div>
       <div class="admin-drop-preview-card" id="weekly-drop-product-manager" style="margin:0 0 1.5rem;">
         <div class="sub-page-header" style="margin:0 0 .8rem;">
-          <div><h2>🔥 Weekly Drop Product</h2><p style="font-family:'Space Mono';font-size:.62rem;color:var(--grey);margin:.25rem 0 0;">The Next Weekly Drop is a real storefront product. Edit its PNG link, code, price, colors and sizes here. It will appear under the Weekly Drop category and open the normal Product Details page.</p></div>
+          <div><h2>🔥 Weekly Drop Product</h2><p style="font-family:'Space Mono';font-size:.62rem;color:var(--grey);margin:.25rem 0 0;">The Next Weekly Drop is a real product. Edit its PNG link, code, colors and sizes here. Its category visibility is controlled by the Weekly Drop category checkbox in Products.</p></div>
           <span class="admin-mini-label">PRODUCT CATALOGUE</span>
         </div>
         <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.8fr);gap:1rem;align-items:start;">
@@ -3149,6 +3149,12 @@ let DEFAULT_SITE_CONTENT = {
 };
 
 let CATEGORIES = JSON.parse(localStorage.getItem('rebel_categories')) || DEFAULT_CATEGORIES;
+CATEGORIES = Array.isArray(CATEGORIES) ? CATEGORIES : DEFAULT_CATEGORIES;
+CATEGORIES.forEach((cat) => {
+  if (!cat || typeof cat !== 'object') return;
+  if (typeof cat.active !== 'boolean') cat.active = true;
+  if (!Array.isArray(cat.products)) cat.products = [];
+});
 let SITE_CONTENT = JSON.parse(localStorage.getItem('rebel_site_content')) || DEFAULT_SITE_CONTENT;
 // Weekly drop image is cloud-only; never restore its URL from localStorage.
 SITE_CONTENT.dropPreviewImage = '';
@@ -3443,7 +3449,7 @@ function populateShopFilterOptions() {
   const currentCategory = categorySelect.value;
   const currentSize = sizeSelect.value;
   const currentColor = colorSelect.value;
-  const products = getAllStoreProducts();
+  const products = getAllStoreProducts().filter(x => x && x.product && CATEGORIES[x.categoryIndex]?.active !== false);
   const categories = [...new Set(products.map(x => String(x.catName || '').trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b));
   const sizes = [...new Set(products.flatMap(x => Array.isArray(x.product?.sizes) ? x.product.sizes : [] ).map(x => String(x).trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b, undefined, {numeric:true}));
   const colors = [...new Set(products.flatMap(x => Array.isArray(x.product?.colors) ? x.product.colors : [] ).map(x => String(x).trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b));
@@ -3527,10 +3533,11 @@ function resetShopFilters() {
 function ensureWeeklyDropCategory() {
   let cat = CATEGORIES.find(c => String(c?.name || '').trim().toLowerCase() === 'weekly drop');
   if (!cat) {
-    cat = { id: 'weekly-drop-category', name: 'Weekly Drop', products: [] };
+    cat = { id: 'weekly-drop-category', name: 'Weekly Drop', products: [], active: false };
     CATEGORIES.push(cat);
   }
   if (!Array.isArray(cat.products)) cat.products = [];
+  if (typeof cat.active !== 'boolean') cat.active = false;
   let prod = cat.products.find(p => String(p?.id || '') === 'weekly-drop-product');
   if (!prod) {
     prod = {
@@ -3621,7 +3628,7 @@ function renderStorefront() {
   if (!container || !footerLinks) return;
   container.innerHTML = '';
   footerLinks.innerHTML = '<li><a onclick="showHomeView()">Riot Collection</a></li><li><a onclick="showHomeView()">Volt Collection</a></li><li><a onclick="showHomeView()">Bone Collection</a></li>';
-  CATEGORIES.forEach(cat => {
+  CATEGORIES.filter(cat => cat && cat.active !== false && Array.isArray(cat.products) && cat.products.length > 0).forEach(cat => {
     const rowBlock = document.createElement('div');
     rowBlock.className = 'category-row-block';
     const rowTitle = document.createElement('div');
@@ -7872,8 +7879,14 @@ function renderAdminCategoriesMainGrid() {
     card.draggable = true;
     card.dataset.index = index;
     card.innerHTML = `
-      <h3 onclick="openAdminCategoryProducts('${escapeHtml(cat.name)}')">${escapeHtml(cat.name)}</h3>
-      <div class="drag-handle">☰ Drag to Reorder</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.6rem;">
+        <h3 onclick="openAdminCategoryProducts('${escapeHtml(cat.name)}')" style="margin:0;cursor:pointer;">${escapeHtml(cat.name)}</h3>
+        <label style="display:flex;align-items:center;gap:.35rem;font-family:'Space Mono';font-size:.58rem;color:#bbb;cursor:pointer;white-space:nowrap;">
+          <input type="checkbox" ${cat.active !== false ? 'checked' : ''} onchange="toggleCategoryVisibility(${index},this.checked)">
+          Show on Website
+        </label>
+      </div>
+      <div class="drag-handle">☰ Drag to Reorder · ${(cat.products || []).length} product${(cat.products || []).length === 1 ? '' : 's'}</div>
     `;
     card.addEventListener('dragstart', (e) => {
       draggedCategoryIndex = index;
@@ -7909,6 +7922,17 @@ function renderAdminCategoriesMainGrid() {
     </div>
     <div class="drag-handle" style="cursor:pointer;">${CUSTOM_TSHIRT_CATEGORIES.length} custom garment types · sizes · colors</div>`;
   mainGrid.appendChild(customCard);
+}
+
+function toggleCategoryVisibility(index, enabled) {
+  const cat = CATEGORIES[index];
+  if (!cat) return;
+  cat.active = !!enabled;
+  localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
+  renderAdminCategoriesMainGrid();
+  renderStorefront();
+  saveAllCategoriesAndProducts();
+  showToast(`${cat.name} is ${cat.active ? 'visible' : 'hidden'} on the website.`);
 }
 
 function openAdminCategoryProducts(catName) {
@@ -8063,6 +8087,7 @@ function addNewCategory() {
   CATEGORIES.push({
     id: 'cat-' + Date.now(),
     name: name,
+    active: true,
     products: [
       { id: 'p' + Date.now(), code: 'NEW1', title: `New ${name} 01`, desc: 'Heavyweight cotton drop.', mrp: 1200, price: 800, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'], customizeEnabled: true }
     ]
@@ -8098,12 +8123,15 @@ function addProdToCurrentAdminCategory() {
 
 function deleteProductFromCategory(cIndex, pIndex) {
   collectCategoryFormValues();
-  if (CATEGORIES[cIndex].products.length > 1) {
-    CATEGORIES[cIndex].products.splice(pIndex, 1);
-    renderAdminProductFormsForCategory(CATEGORIES[cIndex].name);
-  } else {
-    showToast('Category must have at least one product');
-  }
+  const cat = CATEGORIES[cIndex];
+  if (!cat || !Array.isArray(cat.products)) return;
+  if (pIndex < 0 || pIndex >= cat.products.length) return;
+  cat.products.splice(pIndex, 1);
+  renderAdminProductFormsForCategory(cat.name);
+  renderAdminCategoriesMainGrid();
+  renderStorefront();
+  saveAllCategoriesAndProducts();
+  showToast(cat.products.length ? 'Product deleted.' : 'All products deleted. Category is now empty and can be hidden or reused.');
 }
 
 function addProdImageUrlInput(cIndex, pIndex) {
@@ -8583,6 +8611,7 @@ async function loadCategoriesFromCloud() {
 
     if (data && data.value && Array.isArray(data.value) && data.value.length > 0) {
       CATEGORIES = data.value;
+      CATEGORIES.forEach(cat => { if (cat && typeof cat.active !== 'boolean') cat.active = true; if (cat && !Array.isArray(cat.products)) cat.products = []; });
       ensureWeeklyDropCategory();
       localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
       renderAdminCategoriesMainGrid();
@@ -10482,7 +10511,8 @@ function renderCuratedSection() {
   const pills = document.getElementById('curated-pills');
   const grid = document.getElementById('curated-grid');
   if (!pills || !grid || !Array.isArray(CATEGORIES)) return;
-  const names = CATEGORIES.map(c => c && c.name).filter(Boolean);
+  const visibleCategories = CATEGORIES.filter(c => c && c.active !== false && Array.isArray(c.products) && c.products.length > 0);
+  const names = visibleCategories.map(c => c.name).filter(Boolean);
   if (curatedFilter !== 'all' && !names.includes(curatedFilter)) curatedFilter = 'all';
 
   pills.innerHTML = '';
@@ -10501,7 +10531,7 @@ function renderCuratedSection() {
 
   grid.innerHTML = '';
   let count = 0;
-  CATEGORIES.forEach(cat => {
+  visibleCategories.forEach(cat => {
     if (!cat || (curatedFilter !== 'all' && cat.name !== curatedFilter)) return;
     (cat.products || []).forEach(prod => { grid.appendChild(createProductCard(cat.name, prod, count++)); });
   });
