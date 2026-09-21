@@ -1082,8 +1082,10 @@ h1.hero__title .stroke{-webkit-text-stroke:0;color:#fff}
 @media(min-width:768px){.lux-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(min-width:1024px){.lux-cards{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .lux-empty{grid-column:1/-1;text-align:center;padding:3rem 1rem;border:1px dashed var(--lux-border);border-radius:1.5rem;color:#9ca3af;font-size:.9rem}
-/* the legacy category rows / filter bar are superseded by the curated grid */
-#home-categories-container,#shop-results-grid,.shop-controls{display:none!important}
+/* Keep the curated homepage as the single storefront product list.
+   Legacy category rows stay hidden to avoid duplicate product grids. */
+#home-categories-container{display:none!important}
+#shop-results-grid,.shop-controls{display:none!important}
 .section__head{margin-bottom:1.5rem}
 .section__head h2{font-weight:800;font-size:1.875rem;line-height:1.15;text-transform:none;color:#fff}
 @media(min-width:640px){.section__head h2{font-size:2.5rem}}
@@ -10629,10 +10631,13 @@ function submitProductReview(){
 let curatedFilter = 'all';
 
 function renderCuratedSection() {
+  // Weekly Drop is a normal visible category when its admin checkbox is ON.
+  // Keep its single product record in sync before building the homepage grid.
+  syncWeeklyDropProductFromCategory();
   const pills = document.getElementById('curated-pills');
   const grid = document.getElementById('curated-grid');
   if (!pills || !grid || !Array.isArray(CATEGORIES)) return;
-  const names = CATEGORIES.filter(c => c && String(c.name || '').trim().toLowerCase() !== 'weekly drop' && c.active !== false && (c.products || []).some(p => p && p.active !== false)).map(c => c.name).filter(Boolean);
+  const names = CATEGORIES.filter(c => c && c.active !== false && (c.products || []).some(p => p && p.active !== false)).map(c => c.name).filter(Boolean);
   if (curatedFilter !== 'all' && !names.includes(curatedFilter)) curatedFilter = 'all';
 
   pills.innerHTML = '';
@@ -10652,7 +10657,7 @@ function renderCuratedSection() {
   grid.innerHTML = '';
   let count = 0;
   CATEGORIES.forEach(cat => {
-    if (!cat || String(cat.name || '').trim().toLowerCase() === 'weekly drop' || cat.active === false || (curatedFilter !== 'all' && cat.name !== curatedFilter)) return;
+    if (!cat || cat.active === false || (curatedFilter !== 'all' && cat.name !== curatedFilter)) return;
     (cat.products || []).forEach(prod => {
       if (!prod || prod.active === false) return;
       grid.appendChild(createProductCard(cat.name, prod, count++));
