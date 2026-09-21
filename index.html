@@ -1570,97 +1570,6 @@ body.admin-mode .admin-header-refresh-btn{display:inline-flex;}
 }
 </style>
 
-
-<style id="rebel-mobile-pdp-fix-v1">
-/* MOBILE PRODUCT PAGE — prevent gallery/content from becoming a wide grid */
-@media (max-width: 849px){
-  html,body{width:100%;max-width:100%;overflow-x:hidden;}
-  #product-page{
-    width:100vw!important;
-    max-width:100vw!important;
-    margin:0!important;
-    padding:1.25rem 24px 3rem!important;
-    overflow-x:clip!important;
-  }
-  #product-page .pdp-grid{
-    display:grid!important;
-    grid-template-columns:minmax(0,1fr)!important;
-    width:100%!important;
-    min-width:0!important;
-    gap:1.5rem!important;
-  }
-  #product-page .gallery-container,
-  #product-page .pdp-info{
-    width:100%!important;
-    max-width:100%!important;
-    min-width:0!important;
-    margin:0!important;
-  }
-  #product-page .slider-wrapper{
-    width:100%!important;
-    max-width:none!important;
-    min-width:0!important;
-    margin:0!important;
-    aspect-ratio:1 / 1!important;
-  }
-  #product-page .slider-track{
-    width:100%!important;
-    min-width:0!important;
-  }
-  #product-page .slide-item{
-    min-width:100%!important;
-    width:100%!important;
-    max-width:100%!important;
-  }
-  #product-page .slide-item img{
-    width:100%!important;
-    max-width:100%!important;
-    height:100%!important;
-    object-fit:contain!important;
-  }
-  #product-page .thumb-row{
-    width:100%!important;
-    max-width:100%!important;
-    min-width:0!important;
-    grid-template-columns:repeat(4,minmax(0,1fr))!important;
-  }
-  #product-page .pdp-info{
-    overflow:visible!important;
-  }
-  #product-page .pdp-size-guide{
-    width:100%!important;
-    max-width:100%!important;
-    box-sizing:border-box!important;
-  }
-  #product-page .size-selector{
-    width:100%;
-    max-width:100%;
-    min-width:0;
-  }
-  #product-page .add-to-cart-btn,
-  #product-page .wishlist-pdp-btn{
-    width:100%!important;
-    max-width:100%!important;
-    min-width:0!important;
-    box-sizing:border-box!important;
-  }
-  #product-page .review-section{
-    width:100%!important;
-    max-width:100%!important;
-    box-sizing:border-box!important;
-    margin-left:0!important;
-    margin-right:0!important;
-  }
-}
-
-@media (max-width: 420px){
-  #product-page{padding-left:16px!important;padding-right:16px!important;}
-  #product-page .slider-wrapper{border-radius:1.15rem;}
-  #product-page .thumb-row{gap:.45rem;}
-  #product-page .slide-nav-btn{width:38px;height:38px;}
-}
-</style>
-
 </head>
 <body>
   <div id="cursor" class="custom-cursor" aria-hidden="true"></div>
@@ -2540,18 +2449,16 @@ body.admin-mode .admin-header-refresh-btn{display:inline-flex;}
         <p style="font-family:'Space Mono',monospace;color:var(--grey);font-size:.62rem;line-height:1.6;margin:0 0 1rem;">Paste the Supabase image URL for the next weekly drop. The URL is stored in the cloud site settings only.</p>
         <div class="admin-drop-preview-grid">
           <div class="admin-drop-preview-card">
-            <div class="admin-drop-preview-thumb" id="admin-drop-preview-thumb"><span style="font-family:'Space Mono',monospace;color:var(--grey);font-size:.65rem;">No PNG design uploaded</span></div>
-            <div style="margin-top:.8rem;">
-              <input type="file" id="admin-drop-image-file" accept="image/png" class="admin-input-full">
-              <button type="button" class="btn btn--ghost" id="admin-drop-upload-btn" style="width:100%;justify-content:center;margin-top:.05rem;" onclick="uploadWeeklyDropPreviewImage()">⬆ Upload PNG Design</button>
-            </div>
+            <div class="admin-drop-preview-thumb" id="admin-drop-preview-thumb"><span style="font-family:'Space Mono',monospace;color:var(--grey);font-size:.65rem;">Paste a PNG image link to preview it</span></div>
           </div>
           <div style="display:flex;flex-direction:column;gap:.7rem;justify-content:center;">
-            <input type="hidden" id="cms-drop-image-url" value="">
+            <label class="admin-field-label" for="cms-drop-image-url">Weekly Drop PNG Image Link</label>
+            <input type="url" id="cms-drop-image-url" class="admin-input-full" value="" placeholder="https://your-domain.com/weekly-drop.png" autocomplete="off" inputmode="url">
+            <button type="button" class="btn btn--ghost" id="admin-drop-preview-btn" style="width:100%;justify-content:center;margin-top:.05rem;" onclick="previewWeeklyDropImageUrl()">🔗 Preview Image Link</button>
             <div style="font-family:'Space Mono',monospace;color:var(--grey);font-size:.66rem;line-height:1.65;">
-              Upload a transparent <strong style="color:#fff;">PNG</strong> design only. The homepage will show it inside a larger floating white card with the uploaded PNG kept on a transparent background.
+              Paste the <strong style="color:#fff;">direct PNG image URL</strong>. No file upload is used here. When you paste a valid PNG link, the preview updates in this section; click <strong style="color:#fff;">Save Site Content</strong> to publish it to the homepage.
             </div>
-            <small id="admin-drop-image-status" style="font-family:'Space Mono',monospace;color:var(--grey);font-size:.58rem;min-height:1em;">PNG only · Upload first, then click Save Site Content.</small>
+            <small id="admin-drop-image-status" style="font-family:'Space Mono',monospace;color:var(--grey);font-size:.58rem;min-height:1em;">PNG link only · Paste the link, preview it, then save.</small>
           </div>
         </div>
       </div>
@@ -3221,6 +3128,7 @@ function applySiteContentToDOM() {
   if (document.getElementById('cms-hero-sub')) document.getElementById('cms-hero-sub').value = SITE_CONTENT.heroSub;
   if (document.getElementById('cms-hero-stamp')) document.getElementById('cms-hero-stamp').value = SITE_CONTENT.heroStamp;
   if (document.getElementById('cms-drop-image-url')) document.getElementById('cms-drop-image-url').value = SITE_CONTENT.dropPreviewImage || '';
+  bindWeeklyDropImageLinkPreview();
   const adminDropThumb = document.getElementById('admin-drop-preview-thumb');
   const adminDropImage = safeMediaUrl(SITE_CONTENT.dropPreviewImage || '');
   if (adminDropThumb) {
@@ -3258,72 +3166,65 @@ function updateUserBadgeDisplay() {
   }
 }
 
-async function uploadWeeklyDropPreviewImage() {
-  const fileInput = document.getElementById('admin-drop-image-file');
-  const status = document.getElementById('admin-drop-image-status');
-  const uploadBtn = document.getElementById('admin-drop-upload-btn');
-  const preview = document.getElementById('admin-drop-preview-thumb');
-  const file = fileInput?.files?.[0];
-
-  if (!file) {
-    showToast('Choose a PNG design first.');
-    return;
-  }
-  if (file.type !== 'image/png' && !/\.png$/i.test(file.name)) {
-    showToast('Only PNG files are allowed for the Weekly Drop design.');
-    if (fileInput) fileInput.value = '';
-    return;
-  }
-  if (file.size > 8 * 1024 * 1024) {
-    showToast('PNG is too large. Keep it under 8MB.');
-    return;
-  }
-  if (!supabaseClient) {
-    showToast('Supabase is not connected.');
-    return;
-  }
-
-  const { data: { user } } = await supabaseClient.auth.getUser();
-  if (!user) {
-    showToast('Admin session expired. Please login again.');
-    return;
-  }
-
-  if (uploadBtn) { uploadBtn.disabled = true; uploadBtn.innerText = 'Uploading PNG...'; }
-  if (status) status.textContent = 'Uploading transparent PNG design...';
-
+function isDirectPngUrl(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return false;
   try {
-    const path = `weekly-drop/weekly-drop-${Date.now()}.png`;
-    const { error: uploadError } = await supabaseClient
-      .storage
-      .from('site-assets')
-      .upload(path, file, {
-        contentType: 'image/png',
-        upsert: true
-      });
-
-    if (uploadError) throw uploadError;
-
-    const { data: publicData } = supabaseClient
-      .storage
-      .from('site-assets')
-      .getPublicUrl(path);
-
-    const publicUrl = publicData?.publicUrl || '';
-    if (!publicUrl) throw new Error('Could not create the public PNG URL.');
-
-    const hiddenUrl = document.getElementById('cms-drop-image-url');
-    if (hiddenUrl) hiddenUrl.value = publicUrl;
-    if (preview) preview.innerHTML = `<img src="${escapeHtml(publicUrl)}" alt="Weekly drop PNG preview">`;
-    if (status) status.innerHTML = '<span style="color:#22c55e;">PNG uploaded.</span> Click Save Site Content to publish it to the homepage.';
-    showToast('Weekly Drop PNG uploaded successfully.');
-  } catch (err) {
-    console.error('Weekly Drop PNG upload failed:', err);
-    if (status) status.textContent = 'Upload failed: ' + (err?.message || 'Storage error');
-    showToast(err?.message || 'Weekly Drop PNG upload failed.');
-  } finally {
-    if (uploadBtn) { uploadBtn.disabled = false; uploadBtn.innerText = '⬆ Upload PNG Design'; }
+    const u = new URL(raw, window.location.href);
+    if (u.protocol !== 'https:' && u.protocol !== 'http:') return false;
+    return /\.png(?:$|[?#])/i.test(u.pathname + u.search + u.hash);
+  } catch (_) {
+    return false;
   }
+}
+
+function previewWeeklyDropImageUrl() {
+  const input = document.getElementById('cms-drop-image-url');
+  const preview = document.getElementById('admin-drop-preview-thumb');
+  const status = document.getElementById('admin-drop-image-status');
+  const raw = input?.value?.trim() || '';
+
+  if (!raw) {
+    if (preview) preview.innerHTML = "<span style=\"font-family:'Space Mono',monospace;color:var(--grey);font-size:.65rem;\">Paste a PNG image URL to preview it</span>";
+    if (status) status.textContent = 'PNG link only · Paste the link, preview it, then save.';
+    return false;
+  }
+
+  if (!isDirectPngUrl(raw)) {
+    if (status) status.innerHTML = '<span style="color:#ff6b6b;">Please paste a direct PNG image URL.</span>';
+    showToast('Please paste a direct PNG image URL.');
+    return false;
+  }
+
+  const url = safeMediaUrl(raw);
+  if (!url) {
+    if (status) status.innerHTML = '<span style="color:#ff6b6b;">Invalid image URL.</span>';
+    showToast('Invalid image URL.');
+    return false;
+  }
+
+  if (preview) {
+    preview.innerHTML = `<img src="${escapeHtml(url)}" alt="Weekly drop PNG preview" loading="eager" onerror="this.parentElement.innerHTML='<span style=\"font-family:Space Mono,monospace;color:#ff6b6b;font-size:.65rem;\">PNG link could not be loaded</span>'">`;
+  }
+  if (status) status.innerHTML = '<span style="color:#22c55e;">PNG link preview loaded.</span> Click Save Site Content to publish it to the homepage.';
+  return true;
+}
+
+function bindWeeklyDropImageLinkPreview() {
+  const input = document.getElementById('cms-drop-image-url');
+  if (!input || input.dataset.previewBound === '1') return;
+  input.dataset.previewBound = '1';
+  input.addEventListener('input', () => {
+    const value = input.value.trim();
+    if (!value) {
+      previewWeeklyDropImageUrl();
+      return;
+    }
+    if (isDirectPngUrl(value)) previewWeeklyDropImageUrl();
+  });
+  input.addEventListener('paste', () => {
+    setTimeout(() => previewWeeklyDropImageUrl(), 0);
+  });
 }
 
 async function saveWebsiteContentCMS() {
@@ -3335,11 +3236,11 @@ async function saveWebsiteContentCMS() {
   SITE_CONTENT.heroSub = document.getElementById('cms-hero-sub').value.trim();
   SITE_CONTENT.heroStamp = document.getElementById('cms-hero-stamp').value.trim();
   const weeklyDropImageUrl = document.getElementById('cms-drop-image-url')?.value.trim() || '';
-  if (weeklyDropImageUrl && !/^https?:\/\//i.test(weeklyDropImageUrl)) {
-    showToast('Please upload a valid PNG design first.');
+  if (weeklyDropImageUrl && !isDirectPngUrl(weeklyDropImageUrl)) {
+    showToast('Please paste a direct PNG image URL.');
     return;
   }
-  SITE_CONTENT.dropPreviewImage = weeklyDropImageUrl;
+  SITE_CONTENT.dropPreviewImage = safeMediaUrl(weeklyDropImageUrl);
   SITE_CONTENT.dropPreviewLabel = 'NEXT WEEKLY DROP';
   delete SITE_CONTENT.dropPreviewTitle;
   delete SITE_CONTENT.dropPreviewPrice;
