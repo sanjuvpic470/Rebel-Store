@@ -230,8 +230,8 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .size-btn{min-width:48px;height:46px;background:#18181b;border:1.5px solid rgba(242,240,234,.2);color:var(--paper);font-family:'Space Mono',monospace;font-weight:700;font-size:.88rem;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0 .5rem}
 .size-btn.selected{background:var(--spray-yellow);color:var(--ink);border-color:var(--spray-yellow);box-shadow:none}
 #pdp-color-selector .color-swatch-btn{width:46px;min-width:46px;height:46px;padding:0;border-radius:50%;display:flex;align-items:center;justify-content:center;box-sizing:border-box;position:relative;overflow:hidden;border:2px solid rgba(242,240,234,.3);box-shadow:none;flex:0 0 46px;background:var(--swatch-color)}
-#pdp-color-selector{padding:6px 8px 6px 10px!important;overflow:visible!important;box-sizing:border-box;min-width:72px;}
-#pdp-color-selector .color-swatch-btn{overflow:visible!important;margin:0 2px;}
+#pdp-color-selector{padding:8px 12px 8px 16px!important;overflow:visible!important;box-sizing:border-box;min-width:82px;gap:.7rem!important;}
+#pdp-color-selector .color-swatch-btn{overflow:visible!important;margin:0!important;}
 #pdp-color-selector .color-swatch-btn.selected{border-color:var(--spray-yellow);box-shadow:0 0 0 3px var(--ink),0 0 0 5px var(--spray-yellow);background:var(--swatch-color);color:transparent}
 #pdp-color-selector .color-swatch-btn.is-unavailable{opacity:.35;text-decoration:none;cursor:not-allowed}
 #pdp-color-selector .color-swatch-btn.is-unavailable::after{content:"";position:absolute;left:8%;right:8%;top:50%;border-top:2px solid rgba(255,255,255,.95);transform:rotate(-18deg)}
@@ -1208,8 +1208,8 @@ h1.hero__title .stroke{-webkit-text-stroke:0;color:#fff}
 .option-label{color:#9ca3af;font-size:.75rem;font-weight:500;letter-spacing:.05em}
 .pdp-info>div[style*="dashed"]{border-radius:1rem!important;background:rgba(250,204,21,.08)!important;border:1px dashed rgba(250,204,21,.4)!important;padding:.75rem 1rem!important;font-size:.8rem!important}
 #pdp-color-selector .color-swatch-btn{border:2px solid rgba(255,255,255,.25)}
-#pdp-color-selector{padding-left:10px!important;padding-right:8px!important;overflow:visible!important;}
-#pdp-color-selector .color-swatch-btn{overflow:visible!important;}
+#pdp-color-selector{padding-left:16px!important;padding-right:12px!important;overflow:visible!important;gap:.7rem!important;}
+#pdp-color-selector .color-swatch-btn{overflow:visible!important;margin:0!important;}
 #pdp-color-selector .color-swatch-btn.selected{border-color:#FACC15;box-shadow:0 0 0 3px #080808,0 0 0 5px #FACC15}
 .pdp-size-guide{background:rgba(22,22,22,.6);border:1px solid var(--lux-border);border-radius:1rem}
 .pdp-size-guide-text{color:#9ca3af}
@@ -3035,12 +3035,15 @@ function ensureWeeklyDropCategory() {
     cat = { id:'cat-weekly-drop', name:'Weekly Drop', products:[], active:false, weeklyDropLink:'' };
     CATEGORIES.push(cat);
   }
-  if (!Array.isArray(cat.products)) cat.products = [];
+  // Weekly Drop is a private link-only category. It must never contain normal products.
+  cat.products = [];
   if (typeof cat.active !== 'boolean') cat.active = false;
+  cat.active = false;
   if (typeof cat.weeklyDropLink !== 'string') cat.weeklyDropLink = '';
   return cat;
 }
 ensureWeeklyDropCategory();
+try { localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES)); } catch (e) {}
 let SITE_CONTENT = JSON.parse(localStorage.getItem('rebel_site_content')) || DEFAULT_SITE_CONTENT;
 // Weekly drop image is cloud-only; never restore its URL from localStorage.
 SITE_CONTENT.dropPreviewImage = '';
@@ -3312,6 +3315,7 @@ function getAllStoreProducts() {
   const all = [];
   CATEGORIES.forEach((cat, categoryIndex) => {
     if (!cat || cat.active === false) return;
+    if (String(cat.name || '').trim().toLowerCase() === 'weekly drop') return;
     (cat.products || []).forEach((prod, productIndex) => {
       if (prod && prod.active === false) return;
       all.push({ catName: cat.name, categoryIndex, productIndex, product: prod });
@@ -7756,8 +7760,8 @@ function openAdminCategoryProducts(catName) {
     if (title) title.innerText = 'Weekly Drop';
     if (addBtn) addBtn.style.display = 'none';
     if (secureInfo) secureInfo.style.display = 'none';
-    if (products) products.style.display = 'none';
-    if (stock) stock.style.display = 'none';
+    if (products) { products.innerHTML = ''; products.style.display = 'none'; }
+    if (stock) { stock.innerHTML = ''; stock.style.display = 'none'; }
     if (save) save.style.display = 'none';
     if (weekly) weekly.style.display = 'block';
     renderWeeklyDropCategorySettings();
@@ -7846,7 +7850,11 @@ function backToAdminCategoriesGrid() {
 
 function renderAdminProductFormsForCategory(catName) {
   const container = document.getElementById('admin-categories-container');
-  container.innerHTML = '';
+  if (container) container.innerHTML = '';
+  if (String(catName || '').trim().toLowerCase() === 'weekly drop') {
+    renderWeeklyDropCategorySettings();
+    return;
+  }
   const catObj = CATEGORIES.find(c => c.name === catName);
   if (!catObj) return;
   const cIndex = CATEGORIES.indexOf(catObj);
@@ -10355,7 +10363,7 @@ function renderCuratedSection() {
   const pills = document.getElementById('curated-pills');
   const grid = document.getElementById('curated-grid');
   if (!pills || !grid || !Array.isArray(CATEGORIES)) return;
-  const names = CATEGORIES.filter(c => c && c.active !== false && (c.products || []).some(p => p && p.active !== false)).map(c => c.name).filter(Boolean);
+  const names = CATEGORIES.filter(c => c && String(c.name || '').trim().toLowerCase() !== 'weekly drop' && c.active !== false && (c.products || []).some(p => p && p.active !== false)).map(c => c.name).filter(Boolean);
   if (curatedFilter !== 'all' && !names.includes(curatedFilter)) curatedFilter = 'all';
 
   pills.innerHTML = '';
@@ -10375,7 +10383,7 @@ function renderCuratedSection() {
   grid.innerHTML = '';
   let count = 0;
   CATEGORIES.forEach(cat => {
-    if (!cat || cat.active === false || (curatedFilter !== 'all' && cat.name !== curatedFilter)) return;
+    if (!cat || String(cat.name || '').trim().toLowerCase() === 'weekly drop' || cat.active === false || (curatedFilter !== 'all' && cat.name !== curatedFilter)) return;
     (cat.products || []).forEach(prod => {
       if (!prod || prod.active === false) return;
       grid.appendChild(createProductCard(cat.name, prod, count++));
