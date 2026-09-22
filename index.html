@@ -1983,20 +1983,20 @@ body.admin-mode .admin-header-refresh-btn{display:inline-flex;}
         <div class="fit-finder-grid">
           <div class="fit-finder-field">
             <label class="fit-finder-label" for="fit-height">Height (cm)</label>
-            <input id="fit-height" type="number" min="120" max="230" step="1" placeholder="e.g. 172">
+            <input id="fit-height" type="number" min="120" max="230" step="1" placeholder="Enter height">
           </div>
           <div class="fit-finder-field">
             <label class="fit-finder-label" for="fit-weight">Weight (kg)</label>
-            <input id="fit-weight" type="number" min="30" max="180" step="0.5" placeholder="e.g. 72">
+            <input id="fit-weight" type="number" min="30" max="180" step="0.5" placeholder="Enter weight">
           </div>
           <div class="fit-finder-field">
             <label class="fit-finder-label" for="fit-chest">Chest (cm) — optional</label>
-            <input id="fit-chest" type="number" min="60" max="180" step="1" placeholder="More accurate if you know it">
+            <input id="fit-chest" type="number" min="60" max="180" step="1" placeholder="Optional">
             <div class="fit-finder-help">Measure around the fullest part of your chest, tape level and relaxed.</div>
           </div>
           <div class="fit-finder-field">
             <label class="fit-finder-label" for="fit-build">Body build</label>
-            <select id="fit-build"><option value="slim">Slim</option><option value="average" selected>Average</option><option value="broad">Broad / Athletic</option><option value="plus">Larger build</option></select>
+            <select id="fit-build"><option value="" selected>Select your build</option><option value="slim">Slim</option><option value="average">Average</option><option value="broad">Broad / Athletic</option><option value="plus">Larger build</option></select>
           </div>
           <div class="fit-finder-field full">
             <span class="fit-finder-label">How do you want it to fit?</span>
@@ -2013,7 +2013,7 @@ body.admin-mode .admin-header-refresh-btn{display:inline-flex;}
       </div>
       <div class="fit-finder-result" id="fit-finder-result">
         <div class="fit-finder-result-kicker">OUR RECOMMENDATION FOR THIS PRODUCT</div>
-        <div class="fit-finder-result-size" id="fit-finder-result-size">M</div>
+        <div class="fit-finder-result-size" id="fit-finder-result-size">—</div>
         <div class="fit-finder-result-title" id="fit-finder-result-title">Recommended size</div>
         <div class="fit-finder-metrics">
           <div class="fit-finder-metric"><b id="fit-result-stock">—</b><span>LIVE STOCK</span></div>
@@ -10612,109 +10612,50 @@ let fitFinderPreference = 'regular';
 let fitFinderLastResult = null;
 
 window.openFitFinder=function(){
-  const modal=document.getElementById('fit-finder-modal');
-  if(!modal) return;
-  modal.style.display='flex';
-  document.body.style.overflow='hidden';
-  const step=document.getElementById('fit-finder-step'); if(step) step.innerText='STEP 1 OF 2';
-  const result=document.getElementById('fit-finder-result'); if(result) result.classList.remove('show');
-  const form=document.getElementById('fit-finder-form'); if(form) form.style.display='block';
-}
-function closeFitFinder(){
   const modal=document.getElementById('fit-finder-modal'); if(!modal) return;
-  modal.style.display='none'; document.body.style.overflow='';
-}
-function resetFitFinder(){
-  fitFinderLastResult=null;
+  modal.style.display='flex'; document.body.style.overflow='hidden';
+  const step=document.getElementById('fit-finder-step'); if(step) step.innerText='STEP 1 OF 2';
   const result=document.getElementById('fit-finder-result'); if(result) result.classList.remove('show');
   const form=document.getElementById('fit-finder-form'); if(form) form.style.display='block';
-  const step=document.getElementById('fit-finder-step'); if(step) step.innerText='STEP 1 OF 2';
-}
-function selectFitPreference(pref){
-  fitFinderPreference=pref;
-  document.querySelectorAll('#fit-finder-fit-options .fit-finder-option').forEach(b=>b.classList.toggle('active',b.dataset.fit===pref));
-}
-function fitFinderChartForProduct(){
-  return getRebelSizeChart(currentProduct).map(x=>({
-    size:String(x.size||''),
-    chestWidth:Number(x.chestWidth||0),
-    frontLength:Number(x.frontLength||0),
-    backLength:Number(x.backLength||0),
-    shoulder:Number(x.shoulder||0),
-    sleeveLength:Number(x.sleeveLength||0),
-    sleeveOpening:Number(x.sleeveOpening||0)
-  })).filter(x=>x.size&&x.chestWidth);
-}
-function fitFinderLiveStock(size){
-  if(currentProduct && Array.isArray(currentProduct.stockVariants) && typeof currentProduct.getStockForSelection==='function' && !currentProduct.stockLoadFailed){
-    return Number(currentProduct.getStockForSelection(size, selectedColor)||0);
-  }
-  return 0;
-}
-function estimateChestInches(heightCm, weightKg, build, suppliedChestCm){
-  if(suppliedChestCm && suppliedChestCm>0) return suppliedChestCm/2.54;
-  /*
-   * Height/weight-only sizing is an estimate, so keep it in a realistic
-   * body-chest range. The previous formula produced unrealistically large
-   * chest values (and therefore selected XL for almost everyone).
-   * This estimate is calibrated against the Rebel garment chart:
-   * S 20" PtP, M 21", L 22", XL 23.5" PtP.
-   */
-  const baseCm=(0.45*heightCm) + (0.40*weightKg);
-  const adjustmentCm={slim:-4,average:0,broad:4,plus:8}[build]||0;
-  const estimatedCm=baseCm+adjustmentCm;
-  return Math.max(30,Math.min(52,estimatedCm/2.54));
-}
-function fitEaseForPreference(pref){
-  /* Extra garment room added to the user's estimated body chest width. */
-  return {regular:2.5,loose:3.5,oversized:4.5,boxy:4.0}[pref] || 2.5;
-}
-function fitTargetLengthFactor(pref){ return {regular:.395,loose:.405,oversized:.415,boxy:.395}[pref] || .395; }
+  ['fit-height','fit-weight','fit-chest'].forEach(id=>{const el=document.getElementById(id); if(el) el.value='';});
+  const build=document.getElementById('fit-build'); if(build) build.value='';
+  fitFinderPreference='regular';
+  document.querySelectorAll('#fit-finder-fit-options .fit-finder-option').forEach(b=>b.classList.toggle('active',b.dataset.fit==='regular'));
+};
+function closeFitFinder(){const modal=document.getElementById('fit-finder-modal');if(!modal)return;modal.style.display='none';document.body.style.overflow='';}
+function resetFitFinder(){fitFinderLastResult=null;const result=document.getElementById('fit-finder-result');if(result)result.classList.remove('show');const form=document.getElementById('fit-finder-form');if(form)form.style.display='block';const step=document.getElementById('fit-finder-step');if(step)step.innerText='STEP 1 OF 2';['fit-height','fit-weight','fit-chest'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});const build=document.getElementById('fit-build');if(build)build.value='';}
+function selectFitPreference(pref){fitFinderPreference=pref;document.querySelectorAll('#fit-finder-fit-options .fit-finder-option').forEach(b=>b.classList.toggle('active',b.dataset.fit===pref));}
+function fitFinderChartForProduct(){return getRebelSizeChart(currentProduct).map(x=>({size:String(x.size||''),chestWidth:Number(x.chestWidth||0),frontLength:Number(x.frontLength||0),backLength:Number(x.backLength||0),shoulder:Number(x.shoulder||0),sleeveLength:Number(x.sleeveLength||0),sleeveOpening:Number(x.sleeveOpening||0)})).filter(x=>x.size&&x.chestWidth);}
+function fitFinderLiveStock(size){if(currentProduct&&Array.isArray(currentProduct.stockVariants)&&typeof currentProduct.getStockForSelection==='function'&&!currentProduct.stockLoadFailed)return Number(currentProduct.getStockForSelection(size,selectedColor)||0);return null;}
+function fitFinderSizeIsDisabled(size){const key=String(size||'').trim().toLowerCase();const disabled=new Set((Array.isArray(currentProduct?.disabledSizes)?currentProduct.disabledSizes:[]).map(v=>String(v).trim().toLowerCase()));return disabled.has(key);}
+function estimateChestInches(heightCm,weightKg,build,suppliedChestCm){if(suppliedChestCm>0)return suppliedChestCm/2.54;const bmi=weightKg/Math.pow(heightCm/100,2);const baseCm=(0.32*heightCm)+(0.18*weightKg)+31;const bmiAdjustment=(bmi-22)*1.2;const buildAdjustmentCm={slim:-2.5,average:0,broad:2.5,plus:5}[build]||0;return Math.max(30,Math.min(140,(baseCm+bmiAdjustment+buildAdjustmentCm)/2.54));}
+function fitEaseForPreference(pref){return {regular:2.5,loose:3.0,oversized:3.5,boxy:3.25}[pref]||2.5;}
 function calculateFitFinder(){
   if(!currentProduct){showToast('Open a product first.');return;}
-  const h=Number(document.getElementById('fit-height')?.value||0);
-  const w=Number(document.getElementById('fit-weight')?.value||0);
-  const chestCm=Number(document.getElementById('fit-chest')?.value||0);
-  const build=document.getElementById('fit-build')?.value||'average';
-  if(h<120||h>230||w<30||w>180){showToast('Please enter a valid height and weight.');return;}
-  const chart=fitFinderChartForProduct();
-  if(!chart.length){showToast('Size chart is not available for this product.');return;}
-  const bodyChestCirc=estimateChestInches(h,w,build,chestCm);
-  const bodyChestWidth=bodyChestCirc/2;
-  const ease=fitEaseForPreference(fitFinderPreference);
-  const targetChest=bodyChestWidth+ease;
-  const targetLengthCm=h*fitTargetLengthFactor(fitFinderPreference);
-  const targetLengthIn=targetLengthCm/2.54;
-  const available=chart.map(row=>({...row,stock:fitFinderLiveStock(row.size),available:fitFinderLiveStock(row.size)>0}));
-  const inStock=available.filter(x=>x.available);
-  const pool=inStock.length?inStock:available;
-  const scored=pool.map(row=>{
-    const chestPenalty=Math.abs(row.chestWidth-targetChest)*7;
-    const lengthPenalty=Math.abs((row.frontLength+row.backLength)/2-targetLengthIn)*1.5;
-    const sizeOrder=Math.max(0, chart.findIndex(x=>x.size===row.size))*0.05;
-    return {...row,score:chestPenalty+lengthPenalty+sizeOrder};
-  }).sort((a,b)=>a.score-b.score);
-  const rec=scored[0];
-  const exactIdeal=rec && rec.chestWidth>=targetChest-0.01;
-  fitFinderLastResult={rec,chart,bodyChest,targetChest,fitFinderPreference,hasChest:chestCm>0,inStockCount:inStock.length};
-  const result=document.getElementById('fit-finder-result'); const form=document.getElementById('fit-finder-form'); const step=document.getElementById('fit-finder-step');
-  if(form) form.style.display='none'; if(result) result.classList.add('show'); if(step) step.innerText='STEP 2 OF 2';
-  document.getElementById('fit-finder-result-size').innerText=rec?.size||'—';
-  document.getElementById('fit-finder-result-title').innerText=rec?.available ? `${fitFinderPreference.charAt(0).toUpperCase()+fitFinderPreference.slice(1)} fit recommendation` : 'Closest match — currently out of stock';
-  document.getElementById('fit-result-stock').innerText=rec?.stock>0?`${rec.stock} left`:'OUT OF STOCK';
-  document.getElementById('fit-result-chest').innerText=rec?.chestWidth?`${rec.chestWidth}" PtP`: '—';
-  document.getElementById('fit-result-length').innerText=rec?.frontLength?`${rec.frontLength}" F / ${rec.backLength}" B`:'—';
-  document.getElementById('fit-finder-result-copy').innerText=`Based on ${h} cm / ${w} kg, ${build} build and a ${fitFinderPreference} preference, we target about ${targetChest.toFixed(1)}" of garment chest width (pit-to-pit). ${chestCm>0?'Your chest measurement was used directly.':'Chest was estimated because you did not enter a chest measurement.'}`;
-  const warning=document.getElementById('fit-finder-result-warning');
-  warning.innerText=rec?.available ? (exactIdeal?'This is an in-stock match.':'This is the closest in-stock match to your profile.') : 'Your closest size is currently out of stock. Choose another available size from the table or use Notify Me.';
-  const body=document.getElementById('fit-finder-chart-body'); body.innerHTML=available.map(r=>`<tr class="${r.size===rec?.size?'recommended':''}"><td>${escapeHtml(r.size)}</td><td>${Number(r.chestWidth)}" PtP</td><td>${Number(r.frontLength)}" / ${Number(r.backLength)}"</td><td>${r.stock>0?r.stock+' left':'Out'}</td></tr>`).join('');
+  const h=Number(document.getElementById('fit-height')?.value||0),w=Number(document.getElementById('fit-weight')?.value||0),chestCm=Number(document.getElementById('fit-chest')?.value||0),build=document.getElementById('fit-build')?.value||'';
+  if(!h||h<120||h>230){showToast('Enter your height in cm.');return;}
+  if(!w||w<30||w>180){showToast('Enter your weight in kg.');return;}
+  if(!build){showToast('Select your body build.');return;}
+  if(chestCm&&(chestCm<60||chestCm>180)){showToast('Enter a valid chest measurement in cm.');return;}
+  const chart=fitFinderChartForProduct(); if(!chart.length){showToast('Size chart is not available for this product.');return;}
+  const bodyChestCircIn=estimateChestInches(h,w,build,chestCm)*2;
+  const targetChest=(bodyChestCircIn/2)+fitEaseForPreference(fitFinderPreference);
+  const targetLengthIn=(h*({regular:.395,loose:.405,oversized:.415,boxy:.395}[fitFinderPreference]||.395))/2.54;
+  const available=chart.map(row=>{const stock=fitFinderLiveStock(row.size),disabled=fitFinderSizeIsDisabled(row.size),live=stock!==null;return {...row,stock,disabled,available:!disabled&&(!live||stock>0)};});
+  const pool=available.filter(x=>x.available); if(!pool.length){showToast('No selectable sizes are available for this product.');return;}
+  const scored=pool.map(row=>({...row,score:Math.abs(row.chestWidth-targetChest)*10+Math.abs(((row.frontLength||0)+(row.backLength||0))/2-targetLengthIn)*0.75})).sort((a,b)=>a.score-b.score);
+  const rec=scored[0]; fitFinderLastResult={rec,chart,bodyChestCircIn,targetChest,fitFinderPreference,hasChest:chestCm>0,inStockCount:pool.length};
+  const result=document.getElementById('fit-finder-result'),form=document.getElementById('fit-finder-form'),step=document.getElementById('fit-finder-step'); if(form)form.style.display='none';if(result)result.classList.add('show');if(step)step.innerText='STEP 2 OF 2';
+  document.getElementById('fit-finder-result-size').innerText=rec.size;
+  document.getElementById('fit-finder-result-title').innerText=`${fitFinderPreference.charAt(0).toUpperCase()+fitFinderPreference.slice(1)} fit recommendation`;
+  document.getElementById('fit-result-stock').innerText=rec.stock===null?'Stock checked at checkout':(rec.stock>0?`${rec.stock} left`:'OUT OF STOCK');
+  document.getElementById('fit-result-chest').innerText=`${rec.chestWidth}" PtP`;
+  document.getElementById('fit-result-length').innerText=`${rec.frontLength}" F / ${rec.backLength}" B`;
+  document.getElementById('fit-finder-result-copy').innerText=`Based on your measurements and selected fit preference, the closest match is ${rec.size}. ${chestCm>0?'Your chest measurement was used directly.':'Height, weight and build were used as an estimate.'}`;
+  document.getElementById('fit-finder-result-warning').innerText=rec.stock===null?'Size recommendation is based on the product measurement chart. Confirm live stock before checkout.':(rec.stock>0?'This size is currently in stock.':'This size is currently out of stock.');
+  document.getElementById('fit-finder-chart-body').innerHTML=available.map(r=>`<tr class="${r.size===rec.size?'recommended':''}"><td>${escapeHtml(r.size)}</td><td>${Number(r.chestWidth)}" PtP</td><td>${Number(r.frontLength)}" / ${Number(r.backLength)}"</td><td>${r.stock===null?'Check':(r.stock>0?r.stock+' left':'Out')}</td></tr>`).join('');
 }
-function useFitFinderSize(){
-  const size=fitFinderLastResult?.rec?.size; if(!size||!currentProduct) return;
-  const btn=[...document.querySelectorAll('#pdp-size-selector .size-btn')].find(b=>String(b.innerText||'').trim().toLowerCase()===String(size).toLowerCase());
-  if(btn && !btn.disabled){ selectSize(btn,size); closeFitFinder(); showToast(`${size} selected based on your fit profile.`); }
-  else { showToast(`${size} is currently unavailable. Please choose an in-stock size.`); }
-}
+function useFitFinderSize(){const size=fitFinderLastResult?.rec?.size;if(!size||!currentProduct)return;const btn=[...document.querySelectorAll('#pdp-size-selector .size-btn')].find(b=>String(b.innerText||'').trim().toLowerCase()===String(size).toLowerCase());if(btn&&!btn.disabled){selectSize(btn,size);closeFitFinder();showToast(`${size} selected based on your fit profile.`);}else showToast(`${size} is currently unavailable. Please choose an in-stock size.`);}
 window.addEventListener('keydown',e=>{if(e.key==='Escape'){const m=document.getElementById('fit-finder-modal');if(m&&m.style.display==='flex')closeFitFinder();}});
 
 /* Reliable click binding: avoids inline-handler/CSP/theme conflicts. */
