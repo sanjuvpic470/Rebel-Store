@@ -10653,12 +10653,22 @@ function fitFinderLiveStock(size){
 }
 function estimateChestInches(heightCm, weightKg, build, suppliedChestCm){
   if(suppliedChestCm && suppliedChestCm>0) return suppliedChestCm/2.54;
-  /* Estimate only when chest is not supplied. This is intentionally conservative. */
-  const base=0.50*heightCm + 0.09*weightKg - 18;
-  const adjustment={slim:-1.0,average:0,broad:1.5,plus:3.0}[build]||0;
-  return Math.max(30,Math.min(58,base+adjustment));
+  /*
+   * Height/weight-only sizing is an estimate, so keep it in a realistic
+   * body-chest range. The previous formula produced unrealistically large
+   * chest values (and therefore selected XL for almost everyone).
+   * This estimate is calibrated against the Rebel garment chart:
+   * S 20" PtP, M 21", L 22", XL 23.5" PtP.
+   */
+  const baseCm=(0.45*heightCm) + (0.40*weightKg);
+  const adjustmentCm={slim:-4,average:0,broad:4,plus:8}[build]||0;
+  const estimatedCm=baseCm+adjustmentCm;
+  return Math.max(30,Math.min(52,estimatedCm/2.54));
 }
-function fitEaseForPreference(pref){ return {regular:1.5,loose:2.5,oversized:3.5,boxy:3.0}[pref] || 1.5; }
+function fitEaseForPreference(pref){
+  /* Extra garment room added to the user's estimated body chest width. */
+  return {regular:2.5,loose:3.5,oversized:4.5,boxy:4.0}[pref] || 2.5;
+}
 function fitTargetLengthFactor(pref){ return {regular:.395,loose:.405,oversized:.415,boxy:.395}[pref] || .395; }
 function calculateFitFinder(){
   if(!currentProduct){showToast('Open a product first.');return;}
