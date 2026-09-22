@@ -216,7 +216,7 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .size-chart-table td:first-child{font-weight:700;color:var(--paper);}
 .fit-guide{margin-top:1.2rem;padding:1rem;background:#18181c;border-left:3px solid var(--spray-yellow);font-family:'Space Mono',monospace;font-size:.68rem;color:var(--grey);line-height:1.65;}
 .fit-guide strong{color:var(--paper);}
-@media(max-width:600px){.pdp-size-guide{align-items:flex-start;flex-direction:column}.size-chart-btn{width:100%}.size-chart-box{padding:1rem}.size-chart-table{font-size:.62rem}.size-chart-table th,.size-chart-table td{padding:.55rem .35rem}}
+@media(max-width:600px){.pdp-size-guide{align-items:flex-start;flex-direction:column}.size-chart-btn{width:100%}.size-chart-box{padding:1rem}.size-chart-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}.size-chart-table{font-size:.62rem;min-width:760px}.size-chart-table th,.size-chart-table td{padding:.55rem .35rem;white-space:nowrap}}
  .pdp-selection-status{margin:.45rem 0 .85rem;font-family:'Space Mono',monospace;font-size:.68rem;color:var(--grey);min-height:1.2em}.pdp-selection-status strong{color:var(--spray-yellow)} .size-btn.is-unavailable{opacity:.35;text-decoration:line-through;cursor:not-allowed;position:relative}.size-btn.is-unavailable::after{content:"";position:absolute;left:8%;right:8%;top:50%;border-top:1px solid currentColor;transform:rotate(-18deg)} .pdp-stock-note{display:flex;align-items:center;gap:.5rem;margin:.75rem 0 1rem;font-family:'Space Mono',monospace;font-size:.68rem;text-transform:uppercase;letter-spacing:.04em}.pdp-stock-dot{width:8px;height:8px;border-radius:50%;background:#7cff8a;display:inline-block}.pdp-stock-dot.low{background:var(--spray-yellow)}.pdp-stock-dot.out{background:#ff6b6b}.pdp-zoom-btn{position:absolute;right:12px;bottom:12px;z-index:4;background:rgba(0,0,0,.72);color:#fff;border:1px solid rgba(255,255,255,.3);padding:.55rem .7rem;font-family:'Space Mono',monospace;font-size:.65rem;text-transform:uppercase;cursor:pointer}.pdp-zoom-modal{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;display:none;align-items:center;justify-content:center;padding:1rem}.pdp-zoom-modal img{max-width:94vw;max-height:90vh;object-fit:contain;cursor:zoom-out}.pdp-zoom-close{position:absolute;top:18px;right:20px;background:transparent;color:#fff;border:0;font-size:2rem;cursor:pointer}.pdp-zoom-caption{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-family:'Space Mono',monospace;color:#fff;font-size:.65rem;text-transform:uppercase;white-space:nowrap}.pdp-info{width:100%;box-sizing:border-box;overflow:hidden;}
 .pdp-info h1{font-family:'Anton',sans-serif;font-size:clamp(2rem,5vw,3rem);text-transform:uppercase;line-height:1;margin-bottom:.4rem;word-break:break-word;}
 .pdp-tag{font-family:'Space Mono',monospace;color:var(--spray-yellow);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.8rem;display:block}
@@ -1450,6 +1450,11 @@ footer a:hover{color:#FACC15}
 
 <style id="rebel-mobile-final-fixes">
 @media(max-width:767px){
+  #product-page{display:block;min-height:100vh;overflow-x:hidden!important}
+  #product-page .pdp-grid{display:grid!important;grid-template-columns:1fr!important;visibility:visible!important;opacity:1!important;gap:1.25rem!important}
+  #product-page .gallery-container{display:flex!important;visibility:visible!important;opacity:1!important;width:100%!important;min-width:0!important;order:1!important}
+  #product-page .pdp-info{display:block!important;visibility:visible!important;opacity:1!important;min-width:0!important;order:2!important}
+  #product-page .slider-wrapper{display:block!important;visibility:visible!important;opacity:1!important;min-height:0!important}
   .pdp-grid{gap:1.25rem!important}
   .gallery-container{width:100%!important}
   .slider-wrapper{width:min(100%,520px)!important;margin:0 auto!important}
@@ -1954,18 +1959,14 @@ body.admin-mode .admin-header-refresh-btn{display:inline-flex;}
         <h3 id="size-chart-title">Tee Size Chart</h3>
         <button type="button" class="size-chart-close" onclick="closeSizeChart()" aria-label="Close size chart">×</button>
       </div>
-      <p class="size-chart-note">Measurements are in inches. Measure a similar T-shirt flat and compare with the chart below. For a relaxed oversized look, consider one size up.</p>
-      <table class="size-chart-table">
-        <thead><tr><th>Size</th><th>Chest</th><th>Length</th><th>Shoulder</th></tr></thead>
-        <tbody>
-          <tr><td>S</td><td>38</td><td>27</td><td>17</td></tr>
-          <tr><td>M</td><td>40</td><td>28</td><td>18</td></tr>
-          <tr><td>L</td><td>42</td><td>29</td><td>19</td></tr>
-          <tr><td>XL</td><td>44</td><td>30</td><td>20</td></tr>
-          <tr><td>XXL</td><td>46</td><td>31</td><td>21</td></tr>
-        </tbody>
-      </table>
-      <div class="fit-guide"><strong>Fit Guide:</strong> Chest = armpit-to-armpit × 2. Length = highest shoulder point to bottom hem. If you are between two sizes, choose the larger size for a relaxed fit.</div>
+      <p class="size-chart-note">Measurements are in inches. Lay the T-shirt flat and measure exactly as shown in the measurement guide. Chest Width is pit-to-pit (not doubled).</p>
+      <div class="size-chart-scroll">
+        <table class="size-chart-table" id="rebel-size-chart-table">
+          <thead><tr><th>Size</th><th>Shoulder</th><th>Chest Width<br><small>PtP</small></th><th>Front Length</th><th>Back Length</th><th>Sleeve Length</th><th>Sleeve Opening</th></tr></thead>
+          <tbody id="rebel-size-chart-body"></tbody>
+        </table>
+      </div>
+      <div class="fit-guide"><strong>How to measure:</strong> Shoulder = seam to seam · Chest Width = armpit to armpit · Front/Back Length = highest shoulder point to hem · Sleeve Length = shoulder seam to sleeve end · Sleeve Opening = sleeve hem width.</div>
     </div>
   </div>
 
@@ -2016,12 +2017,12 @@ body.admin-mode .admin-header-refresh-btn{display:inline-flex;}
         <div class="fit-finder-result-title" id="fit-finder-result-title">Recommended size</div>
         <div class="fit-finder-metrics">
           <div class="fit-finder-metric"><b id="fit-result-stock">—</b><span>LIVE STOCK</span></div>
-          <div class="fit-finder-metric"><b id="fit-result-chest">—</b><span>GARMENT CHEST</span></div>
-          <div class="fit-finder-metric"><b id="fit-result-length">—</b><span>GARMENT LENGTH</span></div>
+          <div class="fit-finder-metric"><b id="fit-result-chest">—</b><span>CHEST WIDTH (PTP)</span></div>
+          <div class="fit-finder-metric"><b id="fit-result-length">—</b><span>FRONT / BACK LENGTH</span></div>
         </div>
         <div class="fit-finder-result-copy" id="fit-finder-result-copy"></div>
         <div class="fit-finder-result-copy fit-finder-warning" id="fit-finder-result-warning"></div>
-        <table class="fit-finder-chart"><thead><tr><th>Size</th><th>Chest</th><th>Length</th><th>Stock</th></tr></thead><tbody id="fit-finder-chart-body"></tbody></table>
+        <table class="fit-finder-chart"><thead><tr><th>Size</th><th>Chest PtP</th><th>Front / Back</th><th>Stock</th></tr></thead><tbody id="fit-finder-chart-body"></tbody></table>
         <div class="fit-finder-actions"><button type="button" class="fit-finder-secondary" onclick="resetFitFinder()">TRY AGAIN</button><button type="button" class="fit-finder-primary" onclick="useFitFinderSize()">USE THIS SIZE →</button></div>
       </div>
     </div>
@@ -4018,9 +4019,36 @@ function closeProductImageZoom() {
   document.body.style.overflow = '';
 }
 
+const REBEL_TEE_SIZE_CHART = [
+  {size:'S', shoulder:19, chestWidth:20, frontLength:21.5, backLength:26, sleeveLength:10, sleeveOpening:7},
+  {size:'M', shoulder:19.5, chestWidth:21, frontLength:23, backLength:27, sleeveLength:10.5, sleeveOpening:7.5},
+  {size:'L', shoulder:20.5, chestWidth:22, frontLength:24, backLength:27.5, sleeveLength:11, sleeveOpening:8.5},
+  {size:'XL', shoulder:21.5, chestWidth:23.5, frontLength:24.5, backLength:28, sleeveLength:10.5, sleeveOpening:9}
+];
+
+function getRebelSizeChart(product){
+  const raw=product?.sizeChart || product?.size_chart;
+  if(Array.isArray(raw) && raw.length){
+    return raw.map(x=>({
+      size:String(x.size||''), shoulder:Number(x.shoulder||0), chestWidth:Number(x.chestWidth||x.chest_width||x.width||x.chest||0),
+      frontLength:Number(x.frontLength||x.front_length||x.length||0), backLength:Number(x.backLength||x.back_length||x.length||0),
+      sleeveLength:Number(x.sleeveLength||x.sleeve_length||0), sleeveOpening:Number(x.sleeveOpening||x.sleeve_opening||0)
+    })).filter(x=>x.size);
+  }
+  return REBEL_TEE_SIZE_CHART.map(x=>({...x}));
+}
+
+function renderRebelSizeChart(){
+  const body=document.getElementById('rebel-size-chart-body');
+  if(!body) return;
+  const chart=getRebelSizeChart(currentProduct);
+  body.innerHTML=chart.map(r=>`<tr><td><strong>${escapeHtml(r.size)}</strong></td><td>${Number(r.shoulder).toFixed(1).replace(/\.0$/,'')}</td><td>${Number(r.chestWidth).toFixed(1).replace(/\.0$/,'')}</td><td>${Number(r.frontLength).toFixed(1).replace(/\.0$/,'')}</td><td>${Number(r.backLength).toFixed(1).replace(/\.0$/,'')}</td><td>${Number(r.sleeveLength).toFixed(1).replace(/\.0$/,'')}</td><td>${Number(r.sleeveOpening).toFixed(1).replace(/\.0$/,'')}</td></tr>`).join('');
+}
+
 function openSizeChart() {
   const modal = document.getElementById('size-chart-modal');
   if (!modal) return;
+  renderRebelSizeChart();
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
@@ -4047,6 +4075,7 @@ function openProductByDetails(catName, productId) {
   if (!foundProd) { foundCat = CATEGORIES[0]; foundProd = CATEGORIES[0].products[0]; }
   lastViewedProductId = foundProd.id;
   currentProduct = foundProd;
+  if(!Array.isArray(foundProd.sizeChart) || !foundProd.sizeChart.length){ foundProd.sizeChart = REBEL_TEE_SIZE_CHART.map(x=>({...x})); }
   
   selectedQty = 1;
   const qtyEl = document.getElementById('pdp-qty');
@@ -4123,14 +4152,16 @@ function openProductByDetails(catName, productId) {
   // The legacy catalogue only knows which sizes/colors exist; it does not know stock.
   loadPdpStockForCurrentProduct(foundProd);
 
-  renderProductGalleryForColor(foundProd, selectedColor, 0);
-
   document.getElementById('home-view').style.display = 'none';
   document.getElementById('custom-order-page').style.display = 'none';
   document.getElementById('shipping-billing-page').style.display = 'none';
   document.getElementById('category-page').style.display = 'none';
   document.getElementById('admin-view').style.display = 'none';
   document.getElementById('product-page').style.display = 'block';
+
+  // Render after the PDP is visible so mobile browsers calculate the 4:5 gallery width/height correctly.
+  renderProductGalleryForColor(foundProd, selectedColor, 0);
+  requestAnimationFrame(()=>renderProductGalleryForColor(foundProd, selectedColor, currentSlideIndex));
   
   const catSlug = foundCat.name.toLowerCase().replace(/\s+/g, '-');
   const prodSlug = foundProd.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -10604,16 +10635,15 @@ function selectFitPreference(pref){
   document.querySelectorAll('#fit-finder-fit-options .fit-finder-option').forEach(b=>b.classList.toggle('active',b.dataset.fit===pref));
 }
 function fitFinderChartForProduct(){
-  const fallback=[
-    {size:'S',chest:38,length:27,shoulder:17},{size:'M',chest:40,length:28,shoulder:18},{size:'L',chest:42,length:29,shoulder:19},{size:'XL',chest:44,length:30,shoulder:20},{size:'XXL',chest:46,length:31,shoulder:21}
-  ];
-  const raw=currentProduct?.sizeChart || currentProduct?.size_chart;
-  if(Array.isArray(raw) && raw.length){
-    return raw.map(x=>({size:String(x.size||''),chest:Number(x.chest||x.width||0),length:Number(x.length||0),shoulder:Number(x.shoulder||0)})).filter(x=>x.size&&x.chest);
-  }
-  const sizes = new Set((currentProduct?.sizes || []).map(x => String(x).trim().toUpperCase()));
-  if (Array.isArray(currentProduct?.stockVariants)) currentProduct.stockVariants.forEach(v => { const s=String(v.size||'').trim().toUpperCase(); if(s) sizes.add(s); });
-  return fallback.filter(x=>sizes.size===0 || sizes.has(x.size.toUpperCase()));
+  return getRebelSizeChart(currentProduct).map(x=>({
+    size:String(x.size||''),
+    chestWidth:Number(x.chestWidth||0),
+    frontLength:Number(x.frontLength||0),
+    backLength:Number(x.backLength||0),
+    shoulder:Number(x.shoulder||0),
+    sleeveLength:Number(x.sleeveLength||0),
+    sleeveOpening:Number(x.sleeveOpening||0)
+  })).filter(x=>x.size&&x.chestWidth);
 }
 function fitFinderLiveStock(size){
   if(currentProduct && Array.isArray(currentProduct.stockVariants) && typeof currentProduct.getStockForSelection==='function' && !currentProduct.stockLoadFailed){
@@ -10628,7 +10658,7 @@ function estimateChestInches(heightCm, weightKg, build, suppliedChestCm){
   const adjustment={slim:-1.0,average:0,broad:1.5,plus:3.0}[build]||0;
   return Math.max(30,Math.min(58,base+adjustment));
 }
-function fitEaseForPreference(pref){ return {regular:2.5,loose:4.5,oversized:6.5,boxy:5.5}[pref] || 2.5; }
+function fitEaseForPreference(pref){ return {regular:1.5,loose:2.5,oversized:3.5,boxy:3.0}[pref] || 1.5; }
 function fitTargetLengthFactor(pref){ return {regular:.395,loose:.405,oversized:.415,boxy:.395}[pref] || .395; }
 function calculateFitFinder(){
   if(!currentProduct){showToast('Open a product first.');return;}
@@ -10639,34 +10669,35 @@ function calculateFitFinder(){
   if(h<120||h>230||w<30||w>180){showToast('Please enter a valid height and weight.');return;}
   const chart=fitFinderChartForProduct();
   if(!chart.length){showToast('Size chart is not available for this product.');return;}
-  const bodyChest=estimateChestInches(h,w,build,chestCm);
+  const bodyChestCirc=estimateChestInches(h,w,build,chestCm);
+  const bodyChestWidth=bodyChestCirc/2;
   const ease=fitEaseForPreference(fitFinderPreference);
-  const targetChest=bodyChest+ease;
+  const targetChest=bodyChestWidth+ease;
   const targetLengthCm=h*fitTargetLengthFactor(fitFinderPreference);
   const targetLengthIn=targetLengthCm/2.54;
   const available=chart.map(row=>({...row,stock:fitFinderLiveStock(row.size),available:fitFinderLiveStock(row.size)>0}));
   const inStock=available.filter(x=>x.available);
   const pool=inStock.length?inStock:available;
   const scored=pool.map(row=>{
-    const chestPenalty=Math.abs(row.chest-targetChest)*5;
-    const lengthPenalty=Math.abs(row.length-targetLengthIn)*1.5;
+    const chestPenalty=Math.abs(row.chestWidth-targetChest)*7;
+    const lengthPenalty=Math.abs((row.frontLength+row.backLength)/2-targetLengthIn)*1.5;
     const sizeOrder=Math.max(0, chart.findIndex(x=>x.size===row.size))*0.05;
     return {...row,score:chestPenalty+lengthPenalty+sizeOrder};
   }).sort((a,b)=>a.score-b.score);
   const rec=scored[0];
-  const exactIdeal=rec && rec.chest>=targetChest-0.01;
+  const exactIdeal=rec && rec.chestWidth>=targetChest-0.01;
   fitFinderLastResult={rec,chart,bodyChest,targetChest,fitFinderPreference,hasChest:chestCm>0,inStockCount:inStock.length};
   const result=document.getElementById('fit-finder-result'); const form=document.getElementById('fit-finder-form'); const step=document.getElementById('fit-finder-step');
   if(form) form.style.display='none'; if(result) result.classList.add('show'); if(step) step.innerText='STEP 2 OF 2';
   document.getElementById('fit-finder-result-size').innerText=rec?.size||'—';
   document.getElementById('fit-finder-result-title').innerText=rec?.available ? `${fitFinderPreference.charAt(0).toUpperCase()+fitFinderPreference.slice(1)} fit recommendation` : 'Closest match — currently out of stock';
   document.getElementById('fit-result-stock').innerText=rec?.stock>0?`${rec.stock} left`:'OUT OF STOCK';
-  document.getElementById('fit-result-chest').innerText=rec?.chest?`${rec.chest}"`: '—';
-  document.getElementById('fit-result-length').innerText=rec?.length?`${rec.length}"`:'—';
-  document.getElementById('fit-finder-result-copy').innerText=`Based on ${h} cm / ${w} kg, ${build} build and a ${fitFinderPreference} preference, we target about ${targetChest.toFixed(1)}" of garment chest. ${chestCm>0?'Your chest measurement was used directly.':'Chest was estimated because you did not enter a chest measurement.'}`;
+  document.getElementById('fit-result-chest').innerText=rec?.chestWidth?`${rec.chestWidth}" PtP`: '—';
+  document.getElementById('fit-result-length').innerText=rec?.frontLength?`${rec.frontLength}" F / ${rec.backLength}" B`:'—';
+  document.getElementById('fit-finder-result-copy').innerText=`Based on ${h} cm / ${w} kg, ${build} build and a ${fitFinderPreference} preference, we target about ${targetChest.toFixed(1)}" of garment chest width (pit-to-pit). ${chestCm>0?'Your chest measurement was used directly.':'Chest was estimated because you did not enter a chest measurement.'}`;
   const warning=document.getElementById('fit-finder-result-warning');
   warning.innerText=rec?.available ? (exactIdeal?'This is an in-stock match.':'This is the closest in-stock match to your profile.') : 'Your closest size is currently out of stock. Choose another available size from the table or use Notify Me.';
-  const body=document.getElementById('fit-finder-chart-body'); body.innerHTML=available.map(r=>`<tr class="${r.size===rec?.size?'recommended':''}"><td>${escapeHtml(r.size)}</td><td>${Number(r.chest)}"</td><td>${Number(r.length)}"</td><td>${r.stock>0?r.stock+' left':'Out'}</td></tr>`).join('');
+  const body=document.getElementById('fit-finder-chart-body'); body.innerHTML=available.map(r=>`<tr class="${r.size===rec?.size?'recommended':''}"><td>${escapeHtml(r.size)}</td><td>${Number(r.chestWidth)}" PtP</td><td>${Number(r.frontLength)}" / ${Number(r.backLength)}"</td><td>${r.stock>0?r.stock+' left':'Out'}</td></tr>`).join('');
 }
 function useFitFinderSize(){
   const size=fitFinderLastResult?.rec?.size; if(!size||!currentProduct) return;
