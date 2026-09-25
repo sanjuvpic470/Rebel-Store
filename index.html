@@ -11002,5 +11002,59 @@ document.addEventListener('keydown', (e) => {
 })();
 </script>
 
+<style id="rebel-minimal-header-hero-final-2026-09-25">
+/* FINAL REQUESTED VISUAL TUNE — header breathing room + 3-line hero title only */
+@media(min-width:1100px){
+  /* Keep the header clean and minimal instead of oversized/tight. */
+  .lux-nav-inner{
+    min-height:88px!important;
+    padding-left:2.5rem!important;
+    padding-right:2.5rem!important;
+    gap:1.75rem!important;
+  }
+  .rebel-brand-logo{
+    width:205px!important;
+    height:64px!important;
+  }
+  .rebel-brand-logo img,.rebel-brand-logo svg{
+    transform:scale(2.15)!important;
+    transform-origin:left center!important;
+  }
+  .lux-nav-links{
+    gap:1.8rem!important;
+    font-size:.92rem!important;
+  }
+  .header-actions{gap:.75rem!important;}
+  .lux-shop-btn{padding:.68rem 1.55rem!important;font-size:.9rem!important;}
+
+  /* Restore the original clean 3-line hero composition. */
+  h1.hero__title{
+    font-size:clamp(3.2rem,5.2vw,5.35rem)!important;
+    line-height:1.02!important;
+  }
+  h1.hero__title .stroke{
+    white-space:nowrap!important;
+  }
+}
+
+@media(min-width:768px) and (max-width:1099px){
+  .lux-nav-inner{
+    min-height:86px!important;
+    padding-left:1.5rem!important;
+    padding-right:1.5rem!important;
+    gap:1.25rem!important;
+  }
+  .rebel-brand-logo{width:195px!important;height:64px!important;}
+  .rebel-brand-logo img,.rebel-brand-logo svg{transform:scale(2.1)!important;}
+  h1.hero__title .stroke{white-space:nowrap!important;}
+}
+
+@media(max-width:767px){
+  /* Keep mobile spacing comfortable without changing the mobile structure. */
+  .lux-nav-inner{padding-left:1rem!important;padding-right:1rem!important;}
+  h1.hero__title .stroke{white-space:normal!important;}
+}
+</style>
+
 </body>
 </html>
