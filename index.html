@@ -1608,141 +1608,100 @@ body.admin-mode .admin-header-refresh-btn{display:inline-flex;}
 @keyframes rebelWeeklyPngFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-12px) rotate(.6deg)}}
 </style>
 
-<style id="rebel-home-layout-fix-2026-09-25">
-:root{--rebel-ticker-h:34px;}
-html{scroll-padding-top:calc(var(--rebel-ticker-h) + 96px);}
-body{padding-top:var(--rebel-ticker-h);}
-body>.ticker{position:fixed!important;top:0!important;left:0!important;right:0!important;width:100%!important;height:var(--rebel-ticker-h)!important;min-height:var(--rebel-ticker-h)!important;z-index:1000!important;display:flex!important;align-items:center!important;overflow:hidden!important;}
-body>.ticker .ticker__track{width:max-content!important;flex:0 0 auto!important;animation:scrollTicker 24s linear infinite!important;will-change:transform;}
-body>.ticker .ticker__track span{padding:.52rem 1.75rem!important;line-height:1!important;}
-header#navbar{position:sticky!important;top:var(--rebel-ticker-h)!important;z-index:990!important;}
-.lux-nav-inner{min-height:100px!important;padding-left:1.5rem!important;padding-right:1.5rem!important;gap:1.25rem!important;}
-.rebel-brand-logo{width:230px!important;height:74px!important;}
-.rebel-brand-logo svg,.rebel-brand-logo img{transform:scale(2.55)!important;transform-origin:left center!important;}
-.lux-nav-links{font-size:.96rem!important;gap:2rem!important;}
-.header-actions{gap:.8rem!important;}
-#user-avatar-icon,.wishlist-icon-btn,.cart-btn{width:2.65rem!important;height:2.65rem!important;}
-#user-avatar-icon svg,.wishlist-icon-btn svg,.cart-btn svg{width:1.3rem!important;height:1.3rem!important;}
-.lux-shop-btn{font-size:.92rem!important;padding:.7rem 1.65rem!important;}
-.lux-hero{min-height:0!important;padding:2.5rem 1.5rem 2.75rem!important;}
-.lux-hero-grid{gap:2.5rem!important;}
-.lux-hero-copy{gap:1.55rem!important;}
-.lux-metrics{padding-top:1.5rem!important;}
-@media(max-width:1099px) and (min-width:768px){.lux-nav-inner{padding-left:1rem!important;padding-right:1rem!important;}.rebel-brand-logo{width:200px!important;height:68px!important;}.lux-nav-links{gap:1.25rem!important;font-size:.88rem!important;}}
-@media(max-width:767px){:root{--rebel-ticker-h:31px;}body{padding-top:var(--rebel-ticker-h);}header#navbar{top:var(--rebel-ticker-h)!important;}.lux-nav-inner{min-height:78px!important;padding-left:.75rem!important;padding-right:.75rem!important;}#header-logo-container{width:132px!important;height:54px!important;}#header-logo-container img{transform:scale(1.7)!important;transform-origin:left center!important;}.lux-hero{padding:1.75rem .9rem 2rem!important;}.lux-hero-grid{gap:2rem!important;}}
-</style>
+<style id="rebel-layout-final">
+/* Final Rebel Store homepage layout tuning — preserves existing functionality. */
+@media (min-width: 768px){
+  .lux-nav-inner{
+    min-height:92px;
+    padding-left:2rem;
+    padding-right:2rem;
+    gap:1.25rem;
+  }
+  #header-logo-container{width:200px!important;height:66px!important;}
+  #header-logo-container img,#header-logo-container svg{
+    transform:scale(2.25)!important;
+    transform-origin:left center!important;
+  }
+  .lux-nav-links{gap:1.8rem;font-size:.9rem;}
+  .header-actions{gap:.8rem;}
+}
 
-<style id="rebel-final-layout-fix-2026-09-25">
-/* FINAL FRONT-END FIXES — layout only; catalog/admin/payment logic untouched */
-
-/* Keep the offer ticker continuously moving and permanently visible. */
-:root{--rebel-ticker-h:34px!important;}
-html{scroll-padding-top:calc(var(--rebel-ticker-h) + 100px)!important;}
-body{padding-top:var(--rebel-ticker-h)!important;}
-
-/* Header stays directly under the ticker and is larger on desktop. */
-body>.ticker{
-  position:fixed!important;
-  inset:0 0 auto 0!important;
-  width:100%!important;
-  height:var(--rebel-ticker-h)!important;
-  min-height:var(--rebel-ticker-h)!important;
-  z-index:10000!important;
-}
-body>.ticker .ticker__track{
-  width:max-content!important;
-  flex:0 0 auto!important;
-  animation:scrollTicker 24s linear infinite!important;
-  will-change:transform;
-}
-header#navbar{
-  position:sticky!important;
-  top:var(--rebel-ticker-h)!important;
-  z-index:9990!important;
-}
-.lux-nav-inner{
-  max-width:92rem!important;
-  min-height:104px!important;
-  padding-left:2rem!important;
-  padding-right:2rem!important;
-  gap:1.5rem!important;
-}
-.rebel-brand-logo{width:250px!important;height:78px!important;}
-.rebel-brand-logo img,.rebel-brand-logo svg{
-  transform:scale(2.7)!important;
-  transform-origin:left center!important;
-}
-.lux-nav-links{font-size:1rem!important;gap:2.15rem!important;}
-.header-actions{gap:.9rem!important;}
-#user-avatar-icon,.wishlist-icon-btn,.cart-btn{
-  width:2.75rem!important;height:2.75rem!important;
-}
-#user-avatar-icon svg,.wishlist-icon-btn svg,.cart-btn svg{
-  width:1.35rem!important;height:1.35rem!important;
-}
-.lux-shop-btn{font-size:.95rem!important;padding:.75rem 1.75rem!important;}
-
-/* Remove the old viewport-height scaling. Hero height is content-driven. */
+/* The desktop hero should feel compact and intentional, not vertically stretched. */
 .lux-hero{
-  min-height:0!important;
-  height:auto!important;
-  padding:1.75rem 2rem 2.5rem!important;
+  padding:3.2rem 1.5rem 2.5rem;
+  min-height:0;
 }
 .lux-hero-grid{
-  width:100%!important;
-  max-width:92rem!important;
-  gap:3rem!important;
+  max-width:80rem;
+  gap:3.5rem;
 }
-.lux-hero-copy{gap:1.25rem!important;}
+.lux-hero-copy{gap:1.45rem;}
+.lux-pill{margin-bottom:.15rem;}
 h1.hero__title{
-  font-size:clamp(3.2rem,6.1vw,6.4rem)!important;
+  font-size:clamp(2.8rem,5.1vw,4.25rem);
+  line-height:1.08;
+  letter-spacing:-.035em;
 }
-.hero__sub{max-width:46ch!important;}
+.hero__sub{
+  margin-top:.15rem;
+  max-width:40rem;
+  line-height:1.55;
+}
+.hero__cta{
+  margin-top:.15rem;
+  padding-top:.45rem;
+}
+.lux-metrics{
+  margin-top:.55rem;
+  padding-top:1.65rem;
+}
+
+/* Match the supplied reference: slightly larger card, with balanced breathing room. */
 .lux-hero-card{
-  max-width:31rem!important;
+  max-width:29rem;
+  padding:2rem;
 }
-.lux-metrics{padding-top:1.15rem!important;}
+.lux-hero-stage{margin:1.1rem 0 1.35rem;}
 
-/* T-Shirt Lab: keep only the lab content and use the full row. */
-.lux-lab-grid{grid-template-columns:1fr!important;}
-.lux-lab-copy{grid-column:1/-1!important;max-width:64rem!important;width:100%!important;}
-.lux-lab-form{display:none!important;}
-
-/* Make the mobile account/menu state deterministic. */
-.user-dropdown-menu{z-index:10020!important;}
-.lux-mobile-menu{z-index:9995!important;}
-
-@media(max-width:1099px) and (min-width:768px){
-  .lux-nav-inner{min-height:92px!important;padding-left:1.25rem!important;padding-right:1.25rem!important;}
-  .rebel-brand-logo{width:215px!important;height:70px!important;}
-  .rebel-brand-logo img,.rebel-brand-logo svg{transform:scale(2.35)!important;}
-  .lux-nav-links{gap:1.25rem!important;font-size:.9rem!important;}
-  .lux-hero{padding:1.5rem 1.25rem 2.25rem!important;}
+/* Give the Explore Collection CTA a little more separation from the metric row. */
+@media (min-width:1024px){
+  .hero__cta{margin-bottom:.2rem;}
+  .lux-metrics{margin-top:.7rem;}
 }
 
-@media(max-width:767px){
-  :root{--rebel-ticker-h:31px!important;}
-  html{scroll-padding-top:calc(var(--rebel-ticker-h) + 82px)!important;}
-  body{padding-top:var(--rebel-ticker-h)!important;}
-  header#navbar{top:var(--rebel-ticker-h)!important;}
-  .lux-nav-inner{min-height:78px!important;padding-left:.75rem!important;padding-right:.75rem!important;gap:.5rem!important;}
-  #header-logo-container{width:132px!important;height:54px!important;}
-  #header-logo-container img,#header-logo-container svg{transform:scale(1.7)!important;transform-origin:left center!important;}
-  .lux-hero{padding:1.25rem .9rem 1.75rem!important;}
-  .lux-hero-grid{gap:1.5rem!important;}
-  h1.hero__title{font-size:clamp(2.6rem,11vw,4rem)!important;}
-  .lux-hero-card{max-width:27rem!important;}
-  .lux-lab-box{padding:1.5rem!important;}
-  .lux-lab-copy{max-width:none!important;}
+/* Homepage lab now intentionally contains only the T-Shirt Lab block. */
+#lab .lux-lab-grid{
+  grid-template-columns:1fr;
+}
+#lab .lux-lab-copy{
+  max-width:52rem;
 }
 
-@media(max-width:420px){
-  .lux-nav-inner{min-height:72px!important;}
-  #header-logo-container{width:120px!important;}
-  .lux-hero{padding-top:1rem!important;}
+/* Footer is kept compact after removing TikTok. */
+footer .footer-grid{gap:2.2rem;}
+
+/* Mobile: keep the logo readable without letting the header grow too tall. */
+@media (max-width:767px){
+  .lux-nav-inner{min-height:70px!important;padding:0 .85rem!important;}
+  #header-logo-container{width:128px!important;height:50px!important;}
+  #header-logo-container img,#header-logo-container svg{
+    transform:scale(1.5)!important;
+    transform-origin:left center!important;
+  }
+  .lux-hero{padding:2.2rem .9rem 2rem;min-height:0;}
+  .lux-hero-grid{gap:2.1rem;}
+  .lux-hero-copy{gap:1.2rem;}
+  h1.hero__title{font-size:clamp(2.35rem,12vw,3.35rem);line-height:1.06;}
+  .hero__sub{font-size:1rem;line-height:1.5;}
+  .hero__cta{padding-top:.25rem;margin-top:.15rem;}
+  .lux-metrics{margin-top:.45rem;padding-top:1.35rem;gap:.8rem;}
+  .lux-metrics h4{font-size:1.2rem;}
+  .lux-hero-card{max-width:26rem;padding:1.35rem;border-radius:1.25rem;}
 }
+
+/* Make header popovers close whenever a destination is selected on mobile/desktop. */
+.lux-mobile-menu.open{z-index:95;}
 </style>
-
 </head>
 <body>
   <div id="cursor" class="custom-cursor" aria-hidden="true"></div>
@@ -1794,10 +1753,10 @@ h1.hero__title{
           <span id="user-name" style="display:none;">Login</span>
         </div>
         <div class="user-dropdown-menu" id="user-dropdown-menu">
-          <div class="user-dropdown-item" onclick="closeUserDropdown();openProfileModal()">👤 Profile</div>
-          <div class="user-dropdown-item" onclick="closeUserDropdown();openOrdersModal()">📦 My Orders</div>
-          <div class="user-dropdown-item" onclick="closeUserDropdown();openSavedAddressesModal()">📍 Saved Address</div>
-          <div class="user-dropdown-item" onclick="closeUserDropdown();logoutUser()" style="color:var(--rebel-red);">🚪 Logout</div>
+          <div class="user-dropdown-item" onclick="openProfileModal()">👤 Profile</div>
+          <div class="user-dropdown-item" onclick="openOrdersModal()">📦 My Orders</div>
+          <div class="user-dropdown-item" onclick="openSavedAddressesModal()">📍 Saved Address</div>
+          <div class="user-dropdown-item" onclick="logoutUser()" style="color:var(--rebel-red);">🚪 Logout</div>
         </div>
         <button class="cart-btn" onclick="toggleCartDrawer(true)" aria-label="Open shopping bag"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><span class="cart-badge" id="cart-count-header" style="display:none;">0</span></button>
         <a class="lux-shop-btn" onclick="handleNavShopClick()" role="link" tabindex="0">Shop Drops</a>
@@ -9505,6 +9464,7 @@ async function loadOfferSettingsFromCloud() {
 
 function handleAuthClick(e) {
   if(e) e.stopPropagation();
+  closeMobileMenu();
   if (loggedInUser) {
     toggleUserDropdown(e);
   } else {
@@ -9643,11 +9603,6 @@ async function updateRecoveredPassword() {
   } finally {
     if (btn) { btn.disabled = false; btn.innerText = 'Set New Password →'; }
   }
-}
-
-function closeUserDropdown() {
-  const menu = document.getElementById('user-dropdown-menu');
-  if (menu) menu.classList.remove('open');
 }
 
 function toggleUserDropdown(e) {
@@ -9975,7 +9930,8 @@ function renderWishlistInsideProfile() {
 }
 
 async function openProfileModal(initialTab = 'profile', syncHash = true) {
-  closeUserDropdown();
+  const headerMenu = document.getElementById('user-dropdown-menu');
+  if (headerMenu) headerMenu.classList.remove('open');
   closeMobileMenu();
   if (!loggedInUser || !supabaseClient) return;
 
@@ -10963,13 +10919,6 @@ function closeMobileMenu() {
   if (b) b.setAttribute('aria-expanded', 'false');
 }
 
-document.addEventListener('pointerdown', (e) => {
-  const menu = document.getElementById('user-dropdown-menu');
-  const badge = document.getElementById('user-badge');
-  if (menu && menu.classList.contains('open') && !menu.contains(e.target) && !badge?.contains(e.target)) {
-    menu.classList.remove('open');
-  }
-});
 // keyboard access for the link-style controls
 document.addEventListener('keydown', (e) => {
   if ((e.key === 'Enter' || e.key === ' ') && e.target && e.target.matches && e.target.matches('a[role="link"][onclick], .user-badge[role="button"]')) {
@@ -11001,60 +10950,6 @@ document.addEventListener('keydown', (e) => {
   });
 })();
 </script>
-
-<style id="rebel-minimal-header-hero-final-2026-09-25">
-/* FINAL REQUESTED VISUAL TUNE — header breathing room + 3-line hero title only */
-@media(min-width:1100px){
-  /* Keep the header clean and minimal instead of oversized/tight. */
-  .lux-nav-inner{
-    min-height:88px!important;
-    padding-left:2.5rem!important;
-    padding-right:2.5rem!important;
-    gap:1.75rem!important;
-  }
-  .rebel-brand-logo{
-    width:205px!important;
-    height:64px!important;
-  }
-  .rebel-brand-logo img,.rebel-brand-logo svg{
-    transform:scale(2.15)!important;
-    transform-origin:left center!important;
-  }
-  .lux-nav-links{
-    gap:1.8rem!important;
-    font-size:.92rem!important;
-  }
-  .header-actions{gap:.75rem!important;}
-  .lux-shop-btn{padding:.68rem 1.55rem!important;font-size:.9rem!important;}
-
-  /* Restore the original clean 3-line hero composition. */
-  h1.hero__title{
-    font-size:clamp(3.2rem,5.2vw,5.35rem)!important;
-    line-height:1.02!important;
-  }
-  h1.hero__title .stroke{
-    white-space:nowrap!important;
-  }
-}
-
-@media(min-width:768px) and (max-width:1099px){
-  .lux-nav-inner{
-    min-height:86px!important;
-    padding-left:1.5rem!important;
-    padding-right:1.5rem!important;
-    gap:1.25rem!important;
-  }
-  .rebel-brand-logo{width:195px!important;height:64px!important;}
-  .rebel-brand-logo img,.rebel-brand-logo svg{transform:scale(2.1)!important;}
-  h1.hero__title .stroke{white-space:nowrap!important;}
-}
-
-@media(max-width:767px){
-  /* Keep mobile spacing comfortable without changing the mobile structure. */
-  .lux-nav-inner{padding-left:1rem!important;padding-right:1rem!important;}
-  h1.hero__title .stroke{white-space:normal!important;}
-}
-</style>
 
 </body>
 </html>
