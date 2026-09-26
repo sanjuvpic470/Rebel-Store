@@ -1593,6 +1593,13 @@ body.admin-mode .admin-header-refresh-btn{display:inline-flex;}
 </style>
 
 
+<style id="weekly-drop-category-responsive-fix">
+@media(max-width:650px){
+  #weekly-drop-category-settings>div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important;}
+  #weekly-drop-category-settings>div[style*="grid-template-columns:minmax(260px,1fr) auto"]{grid-template-columns:1fr!important;}
+}
+</style>
+
 <style id="weekly-drop-transparent-final">
 /* Weekly Drop: transparent PNG only; no white poster/background */
 .lux-hero-card .hero-poster{background:transparent!important;box-shadow:none!important;border:0!important;overflow:visible!important;}
@@ -2814,7 +2821,65 @@ footer .footer-grid{gap:2.2rem;}
 
       <div id="admin-category-detail-view" style="display:none; margin-top:1.5rem;">
         <button class="back-btn" onclick="backToAdminCategoriesGrid()">← Back to Categories</button>
-        
+        <div id="weekly-drop-category-settings" style="display:none;margin-top:1rem;background:#0d0d0f;border:1px solid rgba(250,204,21,.22);padding:1rem 1.1rem;border-radius:10px;">
+  <span class="admin-mini-label">WEEKLY DROP</span>
+  <h3 style="margin:.25rem 0 .35rem;color:var(--spray-yellow);font-family:'Anton',sans-serif;text-transform:uppercase;">Weekly Drop Settings</h3>
+  <p style="margin:0 0 .8rem;font-family:'Space Mono';font-size:.62rem;color:#999;line-height:1.5;">This category is reserved for the homepage Weekly Drop. It has no normal product cards. Manage only the PNG link, available colors and available sizes here.</p>
+  <div style="display:grid;grid-template-columns:minmax(260px,1fr) auto;gap:.6rem;align-items:end;">
+    <div>
+      <label class="admin-field-label">Homepage / Default Image Links</label>
+      <div id="weekly-category-images-wrap"></div>
+      <button type="button" class="btn btn--ghost admin-color-images-add" onclick="addWeeklyDropImageUrl()">+ Add Image URL / Slide</button>
+      <input type="hidden" id="weekly-category-header-link" value="">
+    </div>
+    <button type="button" class="btn btn--solid" style="min-height:40px;" onclick="saveWeeklyDropCategoryLink()">Save Weekly Drop 💾</button>
+  </div>
+  <div id="weekly-category-link-preview" style="margin-top:.8rem;min-height:100px;border:1px dashed rgba(242,240,234,.14);display:flex;align-items:center;justify-content:center;background:#080808;border-radius:8px;overflow:hidden;"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:1rem;">
+    <div>
+      <label class="admin-field-label">Product Code</label>
+      <input type="text" id="weekly-category-code" class="admin-input-small" placeholder="WD-001" style="margin:0;">
+    </div>
+    <div>
+      <label class="admin-field-label">Product Title</label>
+      <input type="text" id="weekly-category-title" class="admin-input-small" placeholder="Weekly Drop T-Shirt" style="margin:0;">
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:.8rem;">
+    <div>
+      <label class="admin-field-label">MRP / Actual Price</label>
+      <input type="number" id="weekly-category-mrp" class="admin-input-small" placeholder="1070" style="margin:0;">
+    </div>
+    <div>
+      <label class="admin-field-label">Selling Price</label>
+      <input type="number" id="weekly-category-price" class="admin-input-small" placeholder="713" style="margin:0;">
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:1rem;">
+    <div>
+      <label class="admin-field-label">Colors (Comma separated)</label>
+      <div style="display:flex;gap:.4rem;">
+        <input type="text" id="weekly-category-colors" class="admin-input-small" placeholder="Black, White, Yellow" style="margin:0;flex:1;">
+      </div>
+      <div style="font-family:'Space Mono';font-size:.58rem;color:#888;margin-top:.3rem;">Add the colors you want, separated by commas.</div>
+    </div>
+    <div>
+      <label class="admin-field-label">Sizes (Comma separated)</label>
+      <div style="display:flex;gap:.4rem;">
+        <input type="text" id="weekly-category-sizes" class="admin-input-small" placeholder="S, M, L, XL, XXL" style="margin:0;flex:1;">
+      </div>
+      <div style="font-family:'Space Mono';font-size:.58rem;color:#888;margin-top:.3rem;">Add the sizes you want, separated by commas.</div>
+    </div>
+  </div>
+  <div style="margin-top:1rem;">
+    <label class="admin-field-label">Available / Unavailable Colors</label>
+    <div id="weekly-category-color-toggles" style="display:flex;flex-direction:column;gap:.45rem;margin-top:.35rem;"></div>
+  </div>
+  <div style="margin-top:1rem;">
+    <label class="admin-field-label">Available / Unavailable Sizes</label>
+    <div id="weekly-category-size-toggles" style="display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.35rem;"></div>
+  </div>
+</div>
 <div class="sub-page-header" style="margin-top:1rem;">
           <h2 id="adm-cat-detail-title">Category Products</h2>
           <button class="btn btn--solid" style="padding:.4rem .8rem; font-size:.7rem;" onclick="addProdToCurrentAdminCategory()">+ Add Product</button>
@@ -3137,17 +3202,33 @@ CATEGORIES = Array.isArray(CATEGORIES) ? CATEGORIES : [];
 CATEGORIES.forEach(cat => { if (cat && typeof cat.active !== 'boolean') cat.active = true; });
 
 function ensureWeeklyDropCategory() {
-  // Compatibility object only. Weekly Drop is no longer stored as a storefront category.
-  if (!window.WEEKLY_DROP_CONFIG || typeof window.WEEKLY_DROP_CONFIG !== 'object') {
-    window.WEEKLY_DROP_CONFIG = {
-      weeklyDropLink: String(SITE_CONTENT.dropPreviewImage || ''),
-      productCode: String(SITE_CONTENT.nextWeeklyDropProductCode || ''),
-      productTitle: 'Weekly Drop T-Shirt',
-      mrp: 0, price: 0, colors: ['Black','White'], sizes: ['S','M','L','XL'],
-      disabledColors: [], disabledSizes: [], colorMeta: {}, colorImages: {}, images: []
-    };
+  let cat = CATEGORIES.find(c => String(c?.name || '').trim().toLowerCase() === 'weekly drop');
+  if (!cat) {
+    cat = { id:'cat-weekly-drop', name:'Weekly Drop', products:[], active:true, weeklyDropLink:'', productCode:'', productTitle:'Weekly Drop T-Shirt', mrp:0, price:0, colors:['Black','White'], sizes:['S','M','L','XL'], disabledColors:[], disabledSizes:[], colorMeta:{} };
+    CATEGORIES.push(cat);
   }
-  return window.WEEKLY_DROP_CONFIG;
+  // Weekly Drop is a real, dedicated category. Keep its single virtual product in this category
+  // so it can be listed here, while the global Shop search still excludes it.
+  if (!Array.isArray(cat.products)) cat.products = [];
+  if (typeof cat.active !== 'boolean') cat.active = true;
+  if (typeof cat.weeklyDropLink !== 'string') cat.weeklyDropLink = '';
+  if (!Array.isArray(cat.colors) || !cat.colors.length) cat.colors = ['Black','White'];
+  if (!Array.isArray(cat.sizes) || !cat.sizes.length) cat.sizes = ['S','M','L','XL'];
+  if (!Array.isArray(cat.disabledColors)) cat.disabledColors = [];
+  if (!Array.isArray(cat.disabledSizes)) cat.disabledSizes = [];
+  if (!cat.colorMeta || typeof cat.colorMeta !== 'object' || Array.isArray(cat.colorMeta)) cat.colorMeta = {};
+  if (!cat.colorImages || typeof cat.colorImages !== 'object' || Array.isArray(cat.colorImages)) cat.colorImages = {};
+  cat.colors.forEach(color => {
+    const colorKey = String(color || '').trim().toLowerCase();
+    if (colorKey && !Array.isArray(cat.colorImages[colorKey])) cat.colorImages[colorKey] = [];
+  });
+  cat.colors.forEach(color => {
+    const key = String(color || '').trim().toLowerCase();
+    if (key && !/^#[0-9a-f]{6}$/i.test(String(cat.colorMeta[key] || ''))) cat.colorMeta[key] = getAdminDefaultColorHex(color);
+  });
+  cat.disabledColors = cat.disabledColors.filter(v => cat.colors.some(c => String(c).trim().toLowerCase() === String(v).trim().toLowerCase()));
+  cat.disabledSizes = cat.disabledSizes.filter(v => cat.sizes.some(sz => String(sz).trim().toLowerCase() === String(v).trim().toLowerCase()));
+  return cat;
 }
 ensureWeeklyDropCategory();
 try { localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES)); } catch (e) {}
@@ -3633,29 +3714,46 @@ function syncCurrentProductGalleryToColor() {
 }
 
 function openWeeklyDropProduct() {
-  const code = String(SITE_CONTENT.nextWeeklyDropProductCode || '').trim().toUpperCase();
-  let owner = null;
-  CATEGORIES.some(cat => (cat.products || []).some(prod => {
-    if (prod && ((code && String(prod.code || '').trim().toUpperCase() === code) || prod.isNextWeeklyDrop === true)) { owner = {cat, prod}; return true; }
-    return false;
-  }));
-  if (!owner) { showToast('No product is selected for the Weekly Drop yet.'); return; }
-  openProductByDetails(owner.cat.name, owner.prod.id);
+  // The hero CTA must open the Weekly Drop product directly.
+  // Do not route through the collection/category section.
+  const product = syncWeeklyDropProductFromCategory();
+  const weeklyCat = CATEGORIES.find(
+    c => String(c?.name || '').trim().toLowerCase() === 'weekly drop'
+  );
+
+  if (!weeklyCat || !product) {
+    showToast('Weekly Drop product is not available yet.');
+    return;
+  }
+
+  openProductByDetails(weeklyCat.name, product.id);
 }
 
 function syncWeeklyDropProductFromCategory() {
-  const preferredCode = String(SITE_CONTENT.nextWeeklyDropProductCode || '').trim().toUpperCase();
-  let found = null;
-  CATEGORIES.some(cat => (cat.products || []).some(prod => {
-    if (!prod) return false;
-    if ((preferredCode && String(prod.code || '').trim().toUpperCase() === preferredCode) || prod.isNextWeeklyDrop === true) { found = prod; return true; }
-    return false;
-  }));
-  if (!found) return null;
-  CATEGORIES.forEach(cat => (cat.products || []).forEach(prod => { prod.isNextWeeklyDrop = prod === found; }));
-  SITE_CONTENT.nextWeeklyDropProductCode = String(found.code || '').trim().toUpperCase();
-  if (!SITE_CONTENT.dropPreviewImage) SITE_CONTENT.dropPreviewImage = String((Array.isArray(found.images) ? found.images.find(v => String(v || '').trim()) : '') || '').trim();
-  return found;
+  const cat = CATEGORIES.find(c => String(c?.name || '').trim().toLowerCase() === 'weekly drop');
+  if (!cat) return null;
+  if (!Array.isArray(cat.products)) cat.products = [];
+  const existing = cat.products.find(p => p && String(p.id) === 'weekly-drop-product') || cat.products[0] || null;
+  const product = existing || { id:'weekly-drop-product' };
+  product.id = 'weekly-drop-product';
+  product.code = cat.productCode || product.code || 'WEEKLY-DROP';
+  product.product_code = product.code;
+  product.title = cat.productTitle || product.title || 'Weekly Drop T-Shirt';
+  product.desc = product.desc || 'Limited Weekly Drop';
+  product.mrp = Number(cat.mrp || product.mrp || 0);
+  product.price = Number(cat.price || product.price || 0);
+  product.image = cat.weeklyDropLink || product.image || '';
+  product.images = Array.isArray(cat.images) && cat.images.length ? [...cat.images] : (product.image ? [product.image] : (Array.isArray(product.images) ? product.images : []));
+  product.colors = Array.isArray(cat.colors) && cat.colors.length ? [...cat.colors] : ['Black','White'];
+  product.sizes = Array.isArray(cat.sizes) && cat.sizes.length ? [...cat.sizes] : ['S','M','L','XL'];
+  product.disabledColors = Array.isArray(cat.disabledColors) ? [...cat.disabledColors] : [];
+  product.disabledSizes = Array.isArray(cat.disabledSizes) ? [...cat.disabledSizes] : [];
+  product.colorMeta = cat.colorMeta && typeof cat.colorMeta === 'object' ? {...cat.colorMeta} : {};
+  product.colorImages = cat.colorImages && typeof cat.colorImages === 'object' ? JSON.parse(JSON.stringify(cat.colorImages)) : {};
+  product.active = true;
+  product.customizeEnabled = true;
+  cat.products = [product];
+  return product;
 }
 
 function renderStorefront() {
@@ -7956,6 +8054,7 @@ function updateCustomTshirtLabDropdownOnly(preferredValue = '') {
 function renderAdminCategoriesMainGrid() {
   const mainGrid = document.getElementById('admin-category-main-grid');
   if (!mainGrid) return;
+  ensureWeeklyDropCategory();
   mainGrid.innerHTML = '';
   const customPanel = document.getElementById('admin-custom-garment-view');
   const detailPanel = document.getElementById('admin-category-detail-view');
@@ -8018,6 +8117,10 @@ async function toggleCategoryVisibility(index, checked) {
   const cat = CATEGORIES[index];
   if (!cat) return;
   cat.active = !!checked;
+  if (String(cat.name || '').trim().toLowerCase() === 'weekly drop') {
+    // Weekly Drop visibility is controlled by this checkbox just like every other category.
+    // It remains excluded from the global Shop/search results; it is only listed in its own category.
+  }
   localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
   renderAdminCategoriesMainGrid();
   renderStorefront();
@@ -8299,30 +8402,13 @@ function backToAdminCategoriesGrid() {
   renderCustomTshirtCategoriesAdmin();
 }
 
-function setNextWeeklyDropProduct(cIndex, pIndex, enabled) {
-  const target = CATEGORIES?.[cIndex]?.products?.[pIndex];
-  if (!target) return;
-  CATEGORIES.forEach(cat => (cat.products || []).forEach(prod => { prod.isNextWeeklyDrop = false; }));
-  target.isNextWeeklyDrop = !!enabled;
-  if (enabled) {
-    SITE_CONTENT.nextWeeklyDropProductCode = String(target.code || '').trim().toUpperCase();
-    SITE_CONTENT.dropPreviewImage = String((Array.isArray(target.images) ? target.images.find(v => String(v || '').trim()) : '') || '').trim();
-  } else if (String(SITE_CONTENT.nextWeeklyDropProductCode || '').trim().toUpperCase() === String(target.code || '').trim().toUpperCase()) {
-    SITE_CONTENT.nextWeeklyDropProductCode = '';
-    SITE_CONTENT.dropPreviewImage = '';
-  }
-  localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
-  const contentForStorage = {...SITE_CONTENT};
-  delete contentForStorage.dropPreviewImage;
-  localStorage.setItem('rebel_site_content', JSON.stringify(contentForStorage));
-  applySiteContentToDOM();
-  renderStorefront();
-  renderAdminProductFormsForCategory(CATEGORIES[cIndex]?.name || activeAdminEditingCategoryName);
-}
-
 function renderAdminProductFormsForCategory(catName) {
   const container = document.getElementById('admin-categories-container');
   if (container) container.innerHTML = '';
+  if (String(catName || '').trim().toLowerCase() === 'weekly drop') {
+    renderWeeklyDropCategorySettings();
+    return;
+  }
   const catObj = CATEGORIES.find(c => c.name === catName);
   if (!catObj) return;
   const cIndex = CATEGORIES.indexOf(catObj);
@@ -8362,17 +8448,8 @@ function renderAdminProductFormsForCategory(catName) {
         <div><label class="admin-field-label">Code</label><input type="text" id="prod-code-${cIndex}-${pIndex}" class="admin-input-small" value="${prod.code}"></div>
         <div><label class="admin-field-label">Product Title (Editable Name)</label><input type="text" id="prod-title-${cIndex}-${pIndex}" class="admin-input-small" value="${prod.title}"></div>
       </div>
-      <div style="display:grid; grid-template-columns:1fr; gap:.8rem; margin-bottom:.5rem;">
-        <div>
-          <label class="admin-field-label">Next Weekly Drop</label>
-          <label style="display:flex;align-items:center;gap:.55rem;background:#111113;border:1px solid rgba(255,213,0,.22);padding:.55rem .65rem;font-family:'Space Mono';font-size:.62rem;color:var(--paper);cursor:pointer;min-height:38px;">
-            <input type="checkbox" id="prod-weekly-drop-${cIndex}-${pIndex}" ${prod.isNextWeeklyDrop ? 'checked' : ''} onchange="setNextWeeklyDropProduct(${cIndex},${pIndex},this.checked)">
-            <span>Use this product for Next Weekly Drop</span>
-          </label>
-          <div style="font-family:'Space Mono';font-size:.56rem;color:#888;margin-top:.25rem;line-height:1.4;">Only ONE product can be selected. Selecting this automatically removes the Weekly Drop flag from every other product.</div>
-        </div>
-      </div>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:.8rem; margin-bottom:.5rem;"><div><label class="admin-field-label">MRP</label><input type="number" id="prod-mrp-${cIndex}-${pIndex}" class="admin-input-small" value="${prod.mrp}"></div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:.8rem; margin-bottom:.5rem;">
+        <div><label class="admin-field-label">MRP</label><input type="number" id="prod-mrp-${cIndex}-${pIndex}" class="admin-input-small" value="${prod.mrp}"></div>
         <div><label class="admin-field-label">Price</label><input type="number" id="prod-price-${cIndex}-${pIndex}" class="admin-input-small" value="${prod.price}"></div>
       </div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:.8rem; margin-bottom:.5rem;">
@@ -8474,7 +8551,7 @@ function addNewCategory() {
     id: 'cat-' + Date.now(),
     name: name,
     products: [
-      { id: 'p' + Date.now(), code: 'NEW1', title: `New ${name} 01`, desc: 'Heavyweight cotton drop.', mrp: 1200, price: 800, images: [''], colors: ['Yellow', 'White'], colorImages: {yellow:[], white:[]}, sizes: ['S', 'M', 'L', 'XL'], customizeEnabled: true, isNextWeeklyDrop: false }
+      { id: 'p' + Date.now(), code: 'NEW1', title: `New ${name} 01`, desc: 'Heavyweight cotton drop.', mrp: 1200, price: 800, images: [''], colors: ['Yellow', 'White'], colorImages: {yellow:[], white:[]}, sizes: ['S', 'M', 'L', 'XL'], customizeEnabled: true }
     ]
   });
   document.getElementById('new-category-input').value = '';
@@ -8690,10 +8767,8 @@ function collectCategoryFormValues() {
     const sizesInput = document.getElementById(`prod-sizes-${cIndex}-${pIndex}`);
     const disabledSizesInput = document.getElementById(`prod-disabled-sizes-${cIndex}-${pIndex}`);
     const customizeInput = document.getElementById(`prod-customize-${cIndex}-${pIndex}`);
-    const weeklyDropInput = document.getElementById(`prod-weekly-drop-${cIndex}-${pIndex}`);
 
     if (customizeInput) prod.customizeEnabled = !!customizeInput.checked;
-    if (weeklyDropInput) prod.isNextWeeklyDrop = !!weeklyDropInput.checked;
     if (codeInput) prod.code = codeInput.value.trim().toUpperCase();
     if (titleInput) prod.title = titleInput.value.trim();
     if (mrpInput) prod.mrp = parseInt(mrpInput.value) || 1070;
@@ -8910,16 +8985,6 @@ async function loadAdminStockHistory(productId) {
 }
 
 async function saveAllCategoriesAndProducts() {
-  let weeklyOwner = null;
-  CATEGORIES.forEach(cat => (cat.products || []).forEach(prod => {
-    if (prod.isNextWeeklyDrop === true) {
-      if (!weeklyOwner) weeklyOwner = prod;
-      else prod.isNextWeeklyDrop = false;
-    }
-  }));
-  SITE_CONTENT.nextWeeklyDropProductCode = weeklyOwner ? String(weeklyOwner.code || '').trim().toUpperCase() : '';
-  SITE_CONTENT.dropPreviewImage = weeklyOwner ? String((Array.isArray(weeklyOwner.images) ? weeklyOwner.images.find(v => String(v || '').trim()) : '') || '').trim() : '';
-
   collectCategoryFormValues();
 
   const saveBtn = document.getElementById('save-categories-btn');
@@ -9046,12 +9111,8 @@ async function loadCategoriesFromCloud() {
     if (data && data.value && Array.isArray(data.value) && data.value.length > 0) {
       CATEGORIES = Array.isArray(data.value) ? data.value : [];
       CATEGORIES.forEach(cat => { if (cat && typeof cat.active !== 'boolean') cat.active = true; });
-      const hadLegacyWeeklyDropCategory = CATEGORIES.some(cat => String(cat?.name || '').trim().toLowerCase() === 'weekly drop');
-      CATEGORIES = CATEGORIES.filter(cat => String(cat?.name || '').trim().toLowerCase() !== 'weekly drop');
+      ensureWeeklyDropCategory();
       localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
-      if (hadLegacyWeeklyDropCategory) {
-        try { await supabaseClient.from('store_settings').upsert({ key:'store_categories', value:CATEGORIES }, { onConflict:'key' }); } catch (_) {}
-      }
       renderAdminCategoriesMainGrid();
       renderStorefront();
     }
@@ -10876,7 +10937,8 @@ function submitProductReview(){
 let curatedFilter = 'all';
 
 function renderCuratedSection() {
-  // Keep the selected product synced for the homepage Weekly Drop hero.
+  // Weekly Drop is a normal visible category when its admin checkbox is ON.
+  // Keep its single product record in sync before building the homepage grid.
   syncWeeklyDropProductFromCategory();
   const pills = document.getElementById('curated-pills');
   const grid = document.getElementById('curated-grid');
