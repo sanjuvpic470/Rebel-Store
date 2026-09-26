@@ -2109,14 +2109,14 @@ footer .footer-grid{gap:2.2rem;}
         <h3 id="size-chart-title">Tee Size Chart</h3>
         <button type="button" class="size-chart-close" onclick="closeSizeChart()" aria-label="Close size chart">×</button>
       </div>
-      <p class="size-chart-note">Measurements are in inches. Lay the T-shirt flat and measure exactly as shown in the measurement guide. Chest Width is pit-to-pit (not doubled).</p>
+      <p class="size-chart-note">Measurements are in inches. This oversized T-shirt chart uses the garment chest circumference, length, shoulder and sleeve measurements shown below.</p>
       <div class="size-chart-scroll">
         <table class="size-chart-table" id="rebel-size-chart-table">
-          <thead><tr><th>Size</th><th>Shoulder</th><th>Chest Width<br><small>PtP</small></th><th>Front Length</th><th>Back Length</th><th>Sleeve Length</th><th>Sleeve Opening</th></tr></thead>
+          <thead><tr><th>Size</th><th>Chest</th><th>Length</th><th>Shoulder</th><th>Sleeve</th></tr></thead>
           <tbody id="rebel-size-chart-body"></tbody>
         </table>
       </div>
-      <div class="fit-guide"><strong>How to measure:</strong> Shoulder = seam to seam · Chest Width = armpit to armpit · Front/Back Length = highest shoulder point to hem · Sleeve Length = shoulder seam to sleeve end · Sleeve Opening = sleeve hem width.</div>
+      <div class="fit-guide"><strong>How to measure:</strong> Chest = garment chest measurement · Length = shoulder/highest point to hem · Shoulder = seam to seam · Sleeve = shoulder seam to sleeve end.</div>
     </div>
   </div>
 
@@ -2129,7 +2129,7 @@ footer .footer-grid{gap:2.2rem;}
         <button type="button" class="fit-finder-close" onclick="closeFitFinder()" aria-label="Close">×</button>
       </div>
       <div id="fit-finder-form">
-        <p class="fit-finder-intro">Tell us a few details and how you want the tee to sit. We’ll compare your profile with this product’s size chart and live in-stock sizes.</p>
+        <p class="fit-finder-intro">Enter your measurements. We’ll match your profile to this oversized T-shirt’s actual size chart and show the closest size.</p>
         <div class="fit-finder-grid">
           <div class="fit-finder-field">
             <label class="fit-finder-label" for="fit-height">Height (cm)</label>
@@ -2148,16 +2148,6 @@ footer .footer-grid{gap:2.2rem;}
             <label class="fit-finder-label" for="fit-build">Body build</label>
             <select id="fit-build"><option value="" selected>Select your build</option><option value="slim">Slim</option><option value="average">Average</option><option value="broad">Broad / Athletic</option><option value="plus">Larger build</option></select>
           </div>
-          <div class="fit-finder-field full">
-            <span class="fit-finder-label">How do you want it to fit?</span>
-            <div class="fit-finder-options" id="fit-finder-fit-options">
-              <button type="button" class="fit-finder-option active" data-fit="regular" onclick="selectFitPreference('regular')">Regular</button>
-              <button type="button" class="fit-finder-option" data-fit="loose" onclick="selectFitPreference('loose')">Loose</button>
-              <button type="button" class="fit-finder-option" data-fit="oversized" onclick="selectFitPreference('oversized')">Oversized</button>
-              <button type="button" class="fit-finder-option" data-fit="boxy" onclick="selectFitPreference('boxy')">Boxy</button>
-            </div>
-            <div class="fit-finder-help">Regular = closer to body · Loose = relaxed · Oversized = extra room · Boxy = wider body with a shorter-looking proportion.</div>
-          </div>
         </div>
         <div class="fit-finder-actions"><button type="button" class="fit-finder-secondary" onclick="closeFitFinder()">CANCEL</button><button type="button" class="fit-finder-primary" onclick="calculateFitFinder()">FIND MY SIZE →</button></div>
       </div>
@@ -2172,7 +2162,7 @@ footer .footer-grid{gap:2.2rem;}
         </div>
         <div class="fit-finder-result-copy" id="fit-finder-result-copy"></div>
         <div class="fit-finder-result-copy fit-finder-warning" id="fit-finder-result-warning"></div>
-        <table class="fit-finder-chart"><thead><tr><th>Size</th><th>Chest PtP</th><th>Front / Back</th><th>Stock</th></tr></thead><tbody id="fit-finder-chart-body"></tbody></table>
+        <table class="fit-finder-chart"><thead><tr><th>Size</th><th>Chest</th><th>Length</th><th>Stock</th></tr></thead><tbody id="fit-finder-chart-body"></tbody></table>
         <div class="fit-finder-actions"><button type="button" class="fit-finder-secondary" onclick="resetFitFinder()">TRY AGAIN</button><button type="button" class="fit-finder-primary" onclick="useFitFinderSize()">USE THIS SIZE →</button></div>
       </div>
     </div>
@@ -4145,20 +4135,23 @@ function closeProductImageZoom() {
 }
 
 const REBEL_TEE_SIZE_CHART = [
-  {size:'S', shoulder:19, chestWidth:20, frontLength:21.5, backLength:26, sleeveLength:10, sleeveOpening:7},
-  {size:'M', shoulder:19.5, chestWidth:21, frontLength:23, backLength:27, sleeveLength:10.5, sleeveOpening:7.5},
-  {size:'L', shoulder:20.5, chestWidth:22, frontLength:24, backLength:27.5, sleeveLength:11, sleeveOpening:8.5},
-  {size:'XL', shoulder:21.5, chestWidth:23.5, frontLength:24.5, backLength:28, sleeveLength:10.5, sleeveOpening:9}
+  {size:'S', chest:44, length:27, shoulder:20.5, sleeve:8.5},
+  {size:'M', chest:46, length:28, shoulder:21.5, sleeve:9},
+  {size:'L', chest:48, length:29, shoulder:22.5, sleeve:9.5},
+  {size:'XL', chest:50, length:30, shoulder:23.5, sleeve:10},
+  {size:'XXL', chest:52, length:31, shoulder:24.5, sleeve:10}
 ];
 
 function getRebelSizeChart(product){
   const raw=product?.sizeChart || product?.size_chart;
   if(Array.isArray(raw) && raw.length){
     return raw.map(x=>({
-      size:String(x.size||''), shoulder:Number(x.shoulder||0), chestWidth:Number(x.chestWidth||x.chest_width||x.width||x.chest||0),
-      frontLength:Number(x.frontLength||x.front_length||x.length||0), backLength:Number(x.backLength||x.back_length||x.length||0),
-      sleeveLength:Number(x.sleeveLength||x.sleeve_length||0), sleeveOpening:Number(x.sleeveOpening||x.sleeve_opening||0)
-    })).filter(x=>x.size);
+      size:String(x.size||''),
+      chest:Number(x.chest||x.chestCircumference||x.chest_circumference||x.chestWidth||x.chest_width||0),
+      length:Number(x.length||x.frontLength||x.front_length||0),
+      shoulder:Number(x.shoulder||0),
+      sleeve:Number(x.sleeve||x.sleeveLength||x.sleeve_length||0)
+    })).filter(x=>x.size && x.chest);
   }
   return REBEL_TEE_SIZE_CHART.map(x=>({...x}));
 }
@@ -4167,7 +4160,7 @@ function renderRebelSizeChart(){
   const body=document.getElementById('rebel-size-chart-body');
   if(!body) return;
   const chart=getRebelSizeChart(currentProduct);
-  body.innerHTML=chart.map(r=>`<tr><td><strong>${escapeHtml(r.size)}</strong></td><td>${Number(r.shoulder).toFixed(1).replace(/\.0$/,'')}</td><td>${Number(r.chestWidth).toFixed(1).replace(/\.0$/,'')}</td><td>${Number(r.frontLength).toFixed(1).replace(/\.0$/,'')}</td><td>${Number(r.backLength).toFixed(1).replace(/\.0$/,'')}</td><td>${Number(r.sleeveLength).toFixed(1).replace(/\.0$/,'')}</td><td>${Number(r.sleeveOpening).toFixed(1).replace(/\.0$/,'')}</td></tr>`).join('');
+  body.innerHTML=chart.map(r=>`<tr><td><strong>${escapeHtml(r.size)}</strong></td><td>${Number(r.chest).toFixed(1).replace(/\.0$/,'')}</td><td>${Number(r.length).toFixed(1).replace(/\.0$/,'')}</td><td>${Number(r.shoulder).toFixed(1).replace(/\.0$/,'')}</td><td>${Number(r.sleeve).toFixed(1).replace(/\.0$/,'')}</td></tr>`).join('');
 }
 
 function openSizeChart() {
@@ -10586,10 +10579,9 @@ if(typeof window!=='undefined'){window.openOffersPanel=openOffersPanel;window.cl
 <script id="rebel-fit-finder-js">
 /* ============================================================
    REBEL STORE — FIND MY T-SHIRT SIZE
-   Frontend-only estimator using product garment chart + live stock.
-   Height/weight/build are an estimate; chest measurement is preferred.
+   Oversized tee recommender based on the supplied garment chart.
+   The fit selector is intentionally removed: this product is already oversized.
    ============================================================ */
-let fitFinderPreference = 'regular';
 let fitFinderLastResult = null;
 
 window.openFitFinder=function(){
@@ -10600,60 +10592,114 @@ window.openFitFinder=function(){
   const form=document.getElementById('fit-finder-form'); if(form) form.style.display='block';
   ['fit-height','fit-weight','fit-chest'].forEach(id=>{const el=document.getElementById(id); if(el) el.value='';});
   const build=document.getElementById('fit-build'); if(build) build.value='';
-  fitFinderPreference='regular';
-  document.querySelectorAll('#fit-finder-fit-options .fit-finder-option').forEach(b=>b.classList.toggle('active',b.dataset.fit==='regular'));
+  fitFinderLastResult=null;
 };
 function closeFitFinder(){const modal=document.getElementById('fit-finder-modal');if(!modal)return;modal.style.display='none';document.body.style.overflow='';}
-function resetFitFinder(){fitFinderLastResult=null;const result=document.getElementById('fit-finder-result');if(result)result.classList.remove('show');const form=document.getElementById('fit-finder-form');if(form)form.style.display='block';const step=document.getElementById('fit-finder-step');if(step)step.innerText='STEP 1 OF 2';['fit-height','fit-weight','fit-chest'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});const build=document.getElementById('fit-build');if(build)build.value='';}
-function selectFitPreference(pref){fitFinderPreference=pref;document.querySelectorAll('#fit-finder-fit-options .fit-finder-option').forEach(b=>b.classList.toggle('active',b.dataset.fit===pref));}
-function fitFinderChartForProduct(){return getRebelSizeChart(currentProduct).map(x=>({size:String(x.size||''),chestWidth:Number(x.chestWidth||0),frontLength:Number(x.frontLength||0),backLength:Number(x.backLength||0),shoulder:Number(x.shoulder||0),sleeveLength:Number(x.sleeveLength||0),sleeveOpening:Number(x.sleeveOpening||0)})).filter(x=>x.size&&x.chestWidth);}
-function fitFinderLiveStock(size){if(currentProduct&&Array.isArray(currentProduct.stockVariants)&&typeof currentProduct.getStockForSelection==='function'&&!currentProduct.stockLoadFailed)return Number(currentProduct.getStockForSelection(size,selectedColor)||0);return null;}
-function fitFinderSizeIsDisabled(size){const key=String(size||'').trim().toLowerCase();const disabled=new Set((Array.isArray(currentProduct?.disabledSizes)?currentProduct.disabledSizes:[]).map(v=>String(v).trim().toLowerCase()));return disabled.has(key);}
-function estimateChestInches(heightCm,weightKg,build,suppliedChestCm){if(suppliedChestCm>0)return suppliedChestCm/2.54;const bmi=weightKg/Math.pow(heightCm/100,2);const baseCm=(0.32*heightCm)+(0.18*weightKg)+31;const bmiAdjustment=(bmi-22)*1.2;const buildAdjustmentCm={slim:-2.5,average:0,broad:2.5,plus:5}[build]||0;return Math.max(30,Math.min(140,(baseCm+bmiAdjustment+buildAdjustmentCm)/2.54));}
-function fitEaseForPreference(pref){return {regular:2.5,loose:3.0,oversized:3.5,boxy:3.25}[pref]||2.5;}
+function resetFitFinder(){window.openFitFinder();}
+
+function fitFinderChartForProduct(){
+  const productChart=getRebelSizeChart(currentProduct);
+  const productSizes=(Array.isArray(currentProduct?.sizes)?currentProduct.sizes:[]).map(v=>String(v).trim().toLowerCase());
+  const filtered=productSizes.length
+    ? productChart.filter(x=>productSizes.includes(String(x.size).trim().toLowerCase()))
+    : productChart;
+  return (filtered.length?filtered:productChart).map(x=>({
+    size:String(x.size||''), chest:Number(x.chest||0), length:Number(x.length||0), shoulder:Number(x.shoulder||0), sleeve:Number(x.sleeve||0)
+  })).filter(x=>x.size&&x.chest);
+}
+
+function fitFinderLiveStock(size){
+  if(currentProduct&&Array.isArray(currentProduct.stockVariants)&&typeof currentProduct.getStockForSelection==='function'&&!currentProduct.stockLoadFailed){
+    return Number(currentProduct.getStockForSelection(size,selectedColor)||0);
+  }
+  return null;
+}
+
+function fitFinderSizeIsDisabled(size){
+  const key=String(size||'').trim().toLowerCase();
+  const disabled=new Set((Array.isArray(currentProduct?.disabledSizes)?currentProduct.disabledSizes:[]).map(v=>String(v).trim().toLowerCase()));
+  return disabled.has(key);
+}
+
+function estimateBodyChestCm(heightCm,weightKg,build,suppliedChestCm){
+  if(suppliedChestCm>0) return suppliedChestCm;
+  // Estimate body chest circumference only when the shopper does not provide it.
+  const base=(0.32*heightCm)+(0.18*weightKg)+31;
+  const buildAdjustment={slim:-3,average:0,broad:3,plus:6}[build]||0;
+  return Math.max(70,Math.min(145,base+buildAdjustment));
+}
+
 function calculateFitFinder(){
   if(!currentProduct){showToast('Open a product first.');return;}
-  const h=Number(document.getElementById('fit-height')?.value||0),w=Number(document.getElementById('fit-weight')?.value||0),chestCm=Number(document.getElementById('fit-chest')?.value||0),build=document.getElementById('fit-build')?.value||'';
+  const h=Number(document.getElementById('fit-height')?.value||0);
+  const w=Number(document.getElementById('fit-weight')?.value||0);
+  const chestCm=Number(document.getElementById('fit-chest')?.value||0);
+  const build=document.getElementById('fit-build')?.value||'';
   if(!h||h<120||h>230){showToast('Enter your height in cm.');return;}
   if(!w||w<30||w>180){showToast('Enter your weight in kg.');return;}
   if(!build){showToast('Select your body build.');return;}
   if(chestCm&&(chestCm<60||chestCm>180)){showToast('Enter a valid chest measurement in cm.');return;}
-  const chart=fitFinderChartForProduct(); if(!chart.length){showToast('Size chart is not available for this product.');return;}
-  const bodyChestCircIn=estimateChestInches(h,w,build,chestCm)*2;
-  const targetChest=(bodyChestCircIn/2)+fitEaseForPreference(fitFinderPreference);
-  const targetLengthIn=(h*({regular:.395,loose:.405,oversized:.415,boxy:.395}[fitFinderPreference]||.395))/2.54;
-  const available=chart.map(row=>{const stock=fitFinderLiveStock(row.size),disabled=fitFinderSizeIsDisabled(row.size),live=stock!==null;return {...row,stock,disabled,available:!disabled&&(!live||stock>0)};});
-  const pool=available.filter(x=>x.available); if(!pool.length){showToast('No selectable sizes are available for this product.');return;}
-  const scored=pool.map(row=>({...row,score:Math.abs(row.chestWidth-targetChest)*10+Math.abs(((row.frontLength||0)+(row.backLength||0))/2-targetLengthIn)*0.75})).sort((a,b)=>a.score-b.score);
-  const rec=scored[0]; fitFinderLastResult={rec,chart,bodyChestCircIn,targetChest,fitFinderPreference,hasChest:chestCm>0,inStockCount:pool.length};
-  const result=document.getElementById('fit-finder-result'),form=document.getElementById('fit-finder-form'),step=document.getElementById('fit-finder-step'); if(form)form.style.display='none';if(result)result.classList.add('show');if(step)step.innerText='STEP 2 OF 2';
+
+  const chart=fitFinderChartForProduct();
+  if(!chart.length){showToast('Size chart is not available for this product.');return;}
+
+  const bodyChestCm=estimateBodyChestCm(h,w,build,chestCm);
+  // This is an oversized tee, so use a fixed generous garment ease instead of a user-selected fit mode.
+  const targetGarmentChestCm=bodyChestCm+25.4; // +10 inches ease
+  const targetLengthIn=27 + Math.max(0,Math.min(4,(h-160)/20));
+  const disabledOnly=chart.filter(row=>!fitFinderSizeIsDisabled(row.size));
+  const scoringPool=disabledOnly.length?disabledOnly:chart;
+
+  const scored=scoringPool.map(row=>{
+    const stock=fitFinderLiveStock(row.size);
+    const chestDiff=Math.abs((row.chest*2.54)-targetGarmentChestCm);
+    const lengthDiff=Math.abs(row.length-targetLengthIn);
+    return {...row,stock,disabled:fitFinderSizeIsDisabled(row.size),score:(chestDiff*10)+(lengthDiff*2)};
+  }).sort((a,b)=>a.score-b.score);
+
+  const rec=scored[0];
+  fitFinderLastResult={rec,chart,bodyChestCm,targetGarmentChestCm,targetLengthIn};
+
+  const result=document.getElementById('fit-finder-result');
+  const form=document.getElementById('fit-finder-form');
+  const step=document.getElementById('fit-finder-step');
+  if(form)form.style.display='none';
+  if(result)result.classList.add('show');
+  if(step)step.innerText='STEP 2 OF 2';
+
   document.getElementById('fit-finder-result-size').innerText=rec.size;
-  document.getElementById('fit-finder-result-title').innerText=`${fitFinderPreference.charAt(0).toUpperCase()+fitFinderPreference.slice(1)} fit recommendation`;
+  document.getElementById('fit-finder-result-title').innerText='Recommended oversized fit';
   document.getElementById('fit-result-stock').innerText=rec.stock===null?'Stock checked at checkout':(rec.stock>0?`${rec.stock} left`:'OUT OF STOCK');
-  document.getElementById('fit-result-chest').innerText=`${rec.chestWidth}" PtP`;
-  document.getElementById('fit-result-length').innerText=`${rec.frontLength}" F / ${rec.backLength}" B`;
-  document.getElementById('fit-finder-result-copy').innerText=`Based on your measurements and selected fit preference, the closest match is ${rec.size}. ${chestCm>0?'Your chest measurement was used directly.':'Height, weight and build were used as an estimate.'}`;
-  document.getElementById('fit-finder-result-warning').innerText=rec.stock===null?'Size recommendation is based on the product measurement chart. Confirm live stock before checkout.':(rec.stock>0?'This size is currently in stock.':'This size is currently out of stock.');
-  document.getElementById('fit-finder-chart-body').innerHTML=available.map(r=>`<tr class="${r.size===rec.size?'recommended':''}"><td>${escapeHtml(r.size)}</td><td>${Number(r.chestWidth)}" PtP</td><td>${Number(r.frontLength)}" / ${Number(r.backLength)}"</td><td>${r.stock===null?'Check':(r.stock>0?r.stock+' left':'Out')}</td></tr>`).join('');
+  document.getElementById('fit-result-chest').innerText=`${rec.chest}" Chest`;
+  document.getElementById('fit-result-length').innerText=`${rec.length}" Length`;
+  document.getElementById('fit-finder-result-copy').innerText=`Based on your ${chestCm>0?'chest measurement':'height, weight and build'}, the closest match in our oversized chart is ${rec.size}.`;
+  document.getElementById('fit-finder-result-warning').innerText=rec.stock===null?'The recommendation uses the garment size chart. Stock is checked separately before checkout.':(rec.stock>0?'This size is currently in stock.':'This size is currently out of stock.');
+  document.getElementById('fit-finder-chart-body').innerHTML=chart.map(r=>{
+    const stock=fitFinderLiveStock(r.size);
+    const unavailable=fitFinderSizeIsDisabled(r.size);
+    return `<tr class="${r.size===rec.size?'recommended':''}"><td>${escapeHtml(r.size)}</td><td>${Number(r.chest)}"</td><td>${Number(r.length)}"</td><td>${unavailable?'Unavailable':(stock===null?'Check':(stock>0?stock+' left':'Out'))}</td></tr>`;
+  }).join('');
 }
-function useFitFinderSize(){const size=fitFinderLastResult?.rec?.size;if(!size||!currentProduct)return;const btn=[...document.querySelectorAll('#pdp-size-selector .size-btn')].find(b=>String(b.innerText||'').trim().toLowerCase()===String(size).toLowerCase());if(btn&&!btn.disabled){selectSize(btn,size);closeFitFinder();showToast(`${size} selected based on your fit profile.`);}else showToast(`${size} is currently unavailable. Please choose an in-stock size.`);}
+
+function useFitFinderSize(){
+  const size=fitFinderLastResult?.rec?.size;
+  if(!size||!currentProduct)return;
+  const btn=[...document.querySelectorAll('#pdp-size-selector .size-btn')].find(b=>String(b.innerText||'').trim().toLowerCase()===String(size).toLowerCase());
+  if(btn&&!btn.disabled){selectSize(btn,size);closeFitFinder();showToast(`${size} selected based on your size profile.`);}
+  else {closeFitFinder();showToast(`${size} is the recommended size. Please select it when it becomes available.`);}
+}
+
 window.addEventListener('keydown',e=>{if(e.key==='Escape'){const m=document.getElementById('fit-finder-modal');if(m&&m.style.display==='flex')closeFitFinder();}});
 
-/* Reliable click binding: avoids inline-handler/CSP/theme conflicts. */
 (function(){
   function bindFitFinderButton(){
     const btn=document.getElementById('fit-finder-open-btn');
-    if(!btn || btn.dataset.fitFinderBound==='1') return;
-    btn.dataset.fitFinderBound='1';
-    btn.addEventListener('click',function(e){
-      e.preventDefault(); e.stopPropagation();
-      if(typeof window.openFitFinder==='function') window.openFitFinder();
-    });
+    if(btn&&!btn.dataset.bound){btn.dataset.bound='1';btn.addEventListener('click',window.openFitFinder);}
   }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bindFitFinderButton);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindFitFinderButton);
   else bindFitFinderButton();
+  setTimeout(bindFitFinderButton,300);
 })();
-
 </script>
 
 
