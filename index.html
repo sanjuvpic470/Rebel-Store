@@ -402,7 +402,7 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .admin-category-grid > *{border-radius:9px!important}
 #subpage-content-cms>div:not(.sub-page-header),#subpage-offers>div:not(.sub-page-header),#subpage-staff>div:not(.sub-page-header){background:#151518!important;border:1px solid rgba(242,240,234,.1)!important;border-radius:9px!important;padding:1rem!important}
 #subpage-products>div:not(.sub-page-header),#subpage-products #admin-category-detail-view{border-radius:9px!important}
-#subpage-products #admin-category-main-grid{margin-bottom:.7rem}
+#subpage-products #admin-category-main-grid{margin-bottom:.7rem;display:flex;flex-direction:column}
 @media(max-width:650px){.admin-dispatch-grid{grid-template-columns:1fr}.admin-order-toolbar{position:static}.sub-page-header{padding:.75rem}.sub-page-header h2{font-size:1.1rem}}
 
 @media(max-width:1050px){.admin-nav-grid-new{grid-template-columns:repeat(3,minmax(0,1fr))}.admin-kpi-grid{grid-template-columns:repeat(2,1fr)}.admin-dashboard-grid{grid-template-columns:1fr}}
@@ -451,6 +451,48 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .graph-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end}
 .graph-bar{width:100%;background:var(--spray-yellow);border-radius:2px 2px 0 0;transition:height .3s}
 .graph-label{font-family:'Space Mono',monospace;font-size:.65rem;color:var(--grey);margin-top:4px}
+
+/* Compact product-management UI: categories collapse/expand, products are visual cards, details open separately. */
+#subpage-products #admin-category-main-grid{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+.admin-category-accordion{display:block!important;background:rgba(255,255,255,.025)!important;color:var(--paper)!important;border:1px solid rgba(250,204,21,.25)!important;border-radius:12px!important;padding:0!important;overflow:hidden;cursor:default!important;user-select:none;box-shadow:none!important}
+.admin-category-accordion.dragging{opacity:.45;transform:scale(.995)}
+.admin-category-accordion-head{display:flex;align-items:center;gap:.65rem;padding:.8rem .9rem;background:linear-gradient(180deg,rgba(250,204,21,.08),rgba(255,255,255,.02));min-height:62px}
+.admin-category-expand-btn{width:34px;height:34px;flex:0 0 34px;border:1px solid rgba(250,204,21,.35);background:#111;color:var(--spray-yellow);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.72rem}
+.admin-category-expand-btn:hover{background:rgba(250,204,21,.12)}
+.admin-category-chevron{line-height:1}
+.admin-category-title-wrap{display:flex;align-items:center;gap:.6rem;min-width:0;flex:1}
+.admin-category-title-wrap h3{font-family:'Archivo Black',sans-serif!important;font-size:1rem!important;text-transform:none!important;color:var(--paper)!important;margin:0!important;cursor:default!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.admin-category-count{font-family:'Space Mono',monospace;font-size:.56rem;color:var(--ink);background:var(--spray-yellow);padding:.22rem .45rem;border-radius:999px;white-space:nowrap}
+.admin-category-actions{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;justify-content:flex-end}
+.admin-category-visibility{display:flex;align-items:center;gap:.3rem;font-family:'Space Mono',monospace;font-size:.55rem;color:#aaa;white-space:nowrap;cursor:pointer}
+.admin-category-add-btn{min-height:32px!important;padding:.3rem .55rem!important;font-size:.58rem!important;white-space:nowrap}
+.admin-category-accordion .drag-handle{padding:7px 9px;font-size:.6rem;border:1px solid rgba(250,204,21,.2);background:#0d0d0f;color:var(--spray-yellow);cursor:grab}
+.admin-category-accordion-body{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.65rem;padding:.75rem;border-top:1px solid rgba(242,240,234,.08);background:rgba(0,0,0,.12)}
+.admin-product-mini-card{position:relative;display:flex;align-items:center;gap:.65rem;text-align:left;width:100%;min-width:0;padding:.55rem;background:#111114;border:1px solid rgba(242,240,234,.12);border-radius:10px;color:var(--paper);cursor:pointer;transition:border-color .15s,transform .15s,background .15s}
+.admin-product-mini-card:hover{border-color:rgba(250,204,21,.75);background:#17171a;transform:translateY(-1px)}
+.admin-product-mini-image{width:66px;height:78px;flex:0 0 66px;border:1px solid rgba(242,240,234,.12);background:#0a0a0c;border-radius:7px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.admin-product-mini-image img{width:100%;height:100%;object-fit:contain;display:block}
+.admin-product-thumb-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;font-family:'Space Mono',monospace;font-size:.45rem;color:#666;padding:.3rem;box-sizing:border-box}
+.admin-product-mini-copy{min-width:0;flex:1;display:flex;flex-direction:column;gap:.18rem}
+.admin-product-mini-copy strong{font-family:'Archivo Black',sans-serif;font-size:.72rem;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.admin-product-mini-copy>span{font-family:'Space Mono',monospace;font-size:.55rem;color:#999;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.admin-product-mini-meta{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.15rem}
+.admin-product-status,.admin-product-weekly-badge{font-family:'Space Mono',monospace;font-size:.43rem;padding:.16rem .3rem;border-radius:999px;white-space:nowrap}
+.admin-product-status.is-active{background:rgba(34,197,94,.14);color:#65e48a;border:1px solid rgba(34,197,94,.35)}
+.admin-product-status.is-hidden{background:rgba(255,80,80,.1);color:#ff8585;border:1px solid rgba(255,80,80,.35)}
+.admin-product-weekly-badge{background:rgba(250,204,21,.12);color:var(--spray-yellow);border:1px solid rgba(250,204,21,.35)}
+.admin-product-mini-arrow{font-size:1rem;color:var(--spray-yellow);flex:0 0 auto}
+.admin-empty-products{grid-column:1/-1;padding:1rem;border:1px dashed rgba(242,240,234,.16);font-family:'Space Mono',monospace;font-size:.58rem;color:#888;text-align:center}
+.admin-empty-products strong{color:var(--spray-yellow)}
+.admin-product-editor-back{margin-bottom:.4rem}
+#admin-category-detail-view .admin-product-row{max-width:none}
+@media(max-width:760px){
+  .admin-category-accordion-head{align-items:flex-start;flex-wrap:wrap}
+  .admin-category-title-wrap{order:1;flex:1 1 calc(100% - 48px)}
+  .admin-category-actions{order:3;width:100%;justify-content:flex-start;padding-left:40px}
+  .admin-category-accordion-body{grid-template-columns:1fr}
+}
+
 .admin-category-grid{display:flex;flex-direction:column;gap:1rem;margin-top:1.5rem}
 .admin-category-card{background:var(--spray-yellow);color:var(--ink);border:2px solid var(--paper);padding:1.2rem 1.5rem;border-radius:4px;display:flex;align-items:center;justify-content:space-between;box-shadow:none;cursor:grab;user-select:none;transition:background .15s}
 .admin-category-card:active{cursor:grabbing}
@@ -2805,7 +2847,7 @@ footer .footer-grid{gap:2.2rem;}
       </div>
 
       <div id="admin-category-detail-view" style="display:none; margin-top:1.5rem;">
-        <button class="back-btn" onclick="backToAdminCategoriesGrid()">← Back to Categories</button>
+        <button class="back-btn admin-product-editor-back" onclick="backToAdminCategoriesGrid()">← Back to Products</button>
         
 <div class="sub-page-header" style="margin-top:1rem;">
           <h2 id="adm-cat-detail-title">Category Products</h2>
@@ -3189,7 +3231,7 @@ function setNextWeeklyDropProduct(cIndex, pIndex, enabled) {
     localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
     const localSiteContent = { ...SITE_CONTENT }; delete localSiteContent.dropPreviewImage;
     localStorage.setItem('rebel_site_content', JSON.stringify(localSiteContent));
-    renderAdminProductFormsForCategory(CATEGORIES[cIndex].name);
+    renderAdminProductFormsForCategory(CATEGORIES[cIndex].name, activeAdminEditingProductIndex);
     applySiteContentToDOM();
     renderStorefront();
     saveAllCategoriesAndProducts();
@@ -3243,6 +3285,8 @@ let wishlist = JSON.parse(localStorage.getItem('rebel_wishlist')) || [];
 let currentRole = 'customer';
 let lastViewedProductId = null;
 let activeAdminEditingCategoryName = 'Oversized Tee';
+let activeAdminEditingProductIndex = null;
+let expandedAdminCategoryIds = new Set();
 let activeOfferCode = 'REBELS20';
 let activeDiscountPercent = 20;
 let isCouponApplied = false;
@@ -7974,44 +8018,129 @@ function updateCustomTshirtLabDropdownOnly(preferredValue = '') {
 function renderAdminCategoriesMainGrid() {
   const mainGrid = document.getElementById('admin-category-main-grid');
   if (!mainGrid) return;
-  mainGrid.innerHTML = '';
   const customPanel = document.getElementById('admin-custom-garment-view');
   const detailPanel = document.getElementById('admin-category-detail-view');
   if (customPanel) customPanel.style.display = 'none';
   if (detailPanel) detailPanel.style.display = 'none';
-  mainGrid.style.display = 'grid';
+  mainGrid.style.display = 'flex';
+  mainGrid.innerHTML = '';
+
+  const makeProductCard = (cat, catIndex, prod, pIndex) => {
+    const image = safeMediaUrl(Array.isArray(prod?.images) ? prod.images[0] : '');
+    const title = String(prod?.title || prod?.name || 'Untitled Product').trim();
+    const code = String(prod?.code || 'NO-CODE').trim().toUpperCase();
+    const active = prod?.active !== false;
+    const weekly = !!prod?.isNextWeeklyDrop;
+    const imageHtml = image
+      ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(title)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"><div class="admin-product-thumb-placeholder" style="display:none;">NO IMAGE</div>`
+      : `<div class="admin-product-thumb-placeholder">NO IMAGE</div>`;
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'admin-product-mini-card';
+    card.dataset.productIndex = String(pIndex);
+    card.innerHTML = `
+      <div class="admin-product-mini-image">${imageHtml}</div>
+      <div class="admin-product-mini-copy">
+        <strong>${escapeHtml(title)}</strong>
+        <span>${escapeHtml(code)}</span>
+        <div class="admin-product-mini-meta">
+          <span class="admin-product-status ${active ? 'is-active' : 'is-hidden'}">${active ? 'Active' : 'Hidden'}</span>
+          ${weekly ? '<span class="admin-product-weekly-badge">NEXT WEEKLY DROP</span>' : ''}
+        </div>
+      </div>
+      <span class="admin-product-mini-arrow">→</span>
+    `;
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openAdminProductEditor(cat.name, pIndex);
+    });
+    card.addEventListener('dragstart', e => e.stopPropagation());
+    return card;
+  };
+
   CATEGORIES.forEach((cat, index) => {
-    const card = document.createElement('div');
-    card.className = 'admin-category-card';
+    if (!cat || !String(cat.name || '').trim()) return;
+    const card = document.createElement('section');
+    card.className = 'admin-category-card admin-category-accordion';
     card.draggable = true;
     card.dataset.index = index;
+    card.dataset.categoryId = String(cat.id || cat.name);
     const isVisible = cat.active !== false;
+    const categoryId = String(cat.id || cat.name);
+    const isExpanded = expandedAdminCategoryIds.has(categoryId);
+    const products = Array.isArray(cat.products) ? cat.products : [];
+
     card.innerHTML = `
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:.7rem;">
-        <h3 onclick="openAdminCategoryProducts('${escapeHtml(cat.name)}')" style="cursor:pointer;">${escapeHtml(cat.name)}</h3>
-        <label style="display:flex;align-items:center;gap:.4rem;font-family:'Space Mono';font-size:.58rem;color:#bbb;white-space:nowrap;cursor:pointer;" onclick="event.stopPropagation()">
-          <input type="checkbox" ${isVisible ? 'checked' : ''} onchange="toggleCategoryVisibility(${index}, this.checked)" style="accent-color:var(--spray-yellow);width:17px;height:17px;">
-          Show on Website
-        </label>
+      <div class="admin-category-accordion-head">
+        <button type="button" class="admin-category-expand-btn" aria-expanded="${isExpanded ? 'true' : 'false'}" aria-label="Toggle ${escapeHtml(cat.name)} products">
+          <span class="admin-category-chevron">${isExpanded ? '▼' : '▶'}</span>
+        </button>
+        <div class="admin-category-title-wrap">
+          <h3>${escapeHtml(cat.name)}</h3>
+          <span class="admin-category-count">${products.length} product${products.length === 1 ? '' : 's'}</span>
+        </div>
+        <div class="admin-category-actions">
+          <label class="admin-category-visibility" onclick="event.stopPropagation()">
+            <input type="checkbox" ${isVisible ? 'checked' : ''} onchange="toggleCategoryVisibility(${index}, this.checked)" style="accent-color:var(--spray-yellow);width:17px;height:17px;">
+            <span>Show on Website</span>
+          </label>
+          <button type="button" class="btn btn--solid admin-category-add-btn" onclick="event.stopPropagation();addProductToCategoryAndOpen('${escapeHtml(cat.name)}')">+ Add Product</button>
+          <span class="drag-handle" title="Drag to reorder category">☰</span>
+        </div>
       </div>
-      <div class="drag-handle">☰ Drag to Reorder · ${isVisible ? 'VISIBLE' : 'HIDDEN'}</div>
+      <div class="admin-category-accordion-body" style="display:${isExpanded ? 'grid' : 'none'};"></div>
     `;
+
+    const head = card.querySelector('.admin-category-accordion-head');
+    const expandBtn = card.querySelector('.admin-category-expand-btn');
+    const body = card.querySelector('.admin-category-accordion-body');
+    const toggleExpanded = () => {
+      if (expandedAdminCategoryIds.has(categoryId)) expandedAdminCategoryIds.delete(categoryId);
+      else expandedAdminCategoryIds.add(categoryId);
+      renderAdminCategoriesMainGrid();
+    };
+    head.addEventListener('click', (e) => {
+      if (e.target.closest('button, input, label, .drag-handle')) return;
+      toggleExpanded();
+    });
+    expandBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleExpanded();
+    });
+
+    if (isExpanded) {
+      if (!products.length) {
+        body.innerHTML = '<div class="admin-empty-products">No products in this category yet. Use <strong>+ Add Product</strong> to create one.</div>';
+      } else {
+        products.forEach((prod, pIndex) => body.appendChild(makeProductCard(cat, index, prod, pIndex)));
+      }
+    }
+
     card.addEventListener('dragstart', (e) => {
+      if (e.target.closest('.admin-product-mini-card, input, button')) {
+        e.preventDefault();
+        return;
+      }
       draggedCategoryIndex = index;
       card.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
     });
-    card.addEventListener('dragend', (e) => {
+    card.addEventListener('dragend', () => {
       card.classList.remove('dragging');
       draggedCategoryIndex = null;
     });
     card.addEventListener('dragover', (e) => {
       e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
     });
     card.addEventListener('drop', (e) => {
       e.preventDefault();
       if (draggedCategoryIndex === null || draggedCategoryIndex === index) return;
       const movedCategory = CATEGORIES.splice(draggedCategoryIndex, 1)[0];
       CATEGORIES.splice(index, 0, movedCategory);
+      localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
       renderAdminCategoriesMainGrid();
       renderStorefront();
       saveAllCategoriesAndProducts();
@@ -8024,11 +8153,10 @@ function renderAdminCategoriesMainGrid() {
   customCard.className = 'admin-category-card admin-custom-garment-card';
   customCard.onclick = openCustomTshirtManager;
   customCard.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.6rem;">
-      <div><span class="admin-mini-label">T-SHIRT LAB</span><h3 style="margin:.2rem 0 0;cursor:pointer;">🎨 Custom T-shirt Orders</h3></div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.6rem;width:100%;">
+      <div><span class="admin-mini-label">T-SHIRT LAB</span><h3 style="margin:.2rem 0 0;cursor:pointer;">🎨 Custom T-shirt Orders</h3><div class="drag-handle" style="display:inline-block;margin-top:.55rem;cursor:pointer;">${CUSTOM_TSHIRT_CATEGORIES.length} custom garment types · sizes · colors</div></div>
       <span style="font-size:1.2rem;color:var(--spray-yellow);">→</span>
-    </div>
-    <div class="drag-handle" style="cursor:pointer;">${CUSTOM_TSHIRT_CATEGORIES.length} custom garment types · sizes · colors</div>`;
+    </div>`;
   mainGrid.appendChild(customCard);
 }
 
@@ -8048,8 +8176,24 @@ async function toggleCategoryVisibility(index, checked) {
 }
 
 function openAdminCategoryProducts(catName) {
-  activeAdminEditingCategoryName = catName;
-  const isWeeklyDrop = false;
+  const catObj = CATEGORIES.find(c => String(c?.name || '') === String(catName || ''));
+  if (!catObj) return;
+  activeAdminEditingCategoryName = catObj.name;
+  activeAdminEditingProductIndex = null;
+  expandedAdminCategoryIds.add(String(catObj.id || catObj.name));
+  renderAdminCategoriesMainGrid();
+  requestAnimationFrame(() => {
+    const card = [...document.querySelectorAll('.admin-category-accordion')].find(el => String(el.dataset.categoryId) === String(catObj.id || catObj.name));
+    card?.scrollIntoView({ behavior:'smooth', block:'center' });
+  });
+}
+
+function openAdminProductEditor(catName, pIndex) {
+  collectCategoryFormValues();
+  const catObj = CATEGORIES.find(c => String(c?.name || '') === String(catName || ''));
+  if (!catObj || !catObj.products?.[pIndex]) return;
+  activeAdminEditingCategoryName = catObj.name;
+  activeAdminEditingProductIndex = Number(pIndex);
   const main = document.getElementById('admin-category-main-grid');
   const detail = document.getElementById('admin-category-detail-view');
   const custom = document.getElementById('admin-custom-garment-view');
@@ -8063,19 +8207,23 @@ function openAdminCategoryProducts(catName) {
   const products = document.getElementById('admin-categories-container');
   const stock = document.getElementById('admin-stock-management');
   const save = document.getElementById('save-categories-btn');
+  const backBtn = detail?.querySelector('.admin-product-editor-back');
 
-  if (title) title.innerText = `${catName} Products Manager`;
-  if (addBtn) addBtn.style.display = '';
+  const prod = catObj.products[pIndex];
+  if (title) title.innerText = `Edit Product · ${prod.title || prod.code || 'Untitled'}`;
+  if (addBtn) addBtn.style.display = 'none';
   if (secureInfo) secureInfo.style.display = '';
   if (products) products.style.display = 'flex';
   if (stock) stock.style.display = 'block';
   if (save) save.style.display = 'flex';
-  renderAdminProductFormsForCategory(catName);
+  if (backBtn) backBtn.innerHTML = `← Back to ${catObj.name}`;
+  renderAdminProductFormsForCategory(catObj.name, pIndex);
   setTimeout(() => loadAdminStockForCurrentCategory(), 0);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function backToAdminCategoriesGrid() {
-  if (String(activeAdminEditingCategoryName || '').trim().toLowerCase() !== 'weekly drop') collectCategoryFormValues();
+  collectCategoryFormValues();
   const detail = document.getElementById('admin-category-detail-view');
   const custom = document.getElementById('admin-custom-garment-view');
   const main = document.getElementById('admin-category-main-grid');
@@ -8086,23 +8234,27 @@ function backToAdminCategoriesGrid() {
   const save = document.getElementById('save-categories-btn');
   if (detail) detail.style.display = 'none';
   if (custom) custom.style.display = 'none';
-  if (main) main.style.display = 'grid';
+  if (main) main.style.display = 'flex';
   if (addBtn) addBtn.style.display = '';
   if (secureInfo) secureInfo.style.display = '';
   if (products) products.style.display = 'flex';
   if (stock) stock.style.display = 'block';
   if (save) save.style.display = 'flex';
+  activeAdminEditingProductIndex = null;
   renderAdminCategoriesMainGrid();
   renderCustomTshirtCategoriesAdmin();
 }
 
-function renderAdminProductFormsForCategory(catName) {
+function renderAdminProductFormsForCategory(catName, productIndex = null) {
   const container = document.getElementById('admin-categories-container');
   if (container) container.innerHTML = '';
   const catObj = CATEGORIES.find(c => c.name === catName);
   if (!catObj) return;
   const cIndex = CATEGORIES.indexOf(catObj);
-  catObj.products.forEach((prod, pIndex) => {
+  const productIndexes = Number.isInteger(productIndex) ? [productIndex] : catObj.products.map((_, i) => i);
+  productIndexes.forEach((pIndex) => {
+    const prod = catObj.products[pIndex];
+    if (!prod) return;
     if(!prod.colors) prod.colors = ['Yellow', 'White'];
     if(!prod.sizes) prod.sizes = ['S', 'M', 'L', 'XL'];
     if(typeof prod.customizeEnabled !== 'boolean') prod.customizeEnabled = true;
@@ -8130,8 +8282,8 @@ function renderAdminProductFormsForCategory(catName) {
     const row = document.createElement('div');
     row.className = 'admin-product-row';
     row.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:.5rem;">
-        <strong style="font-family:'Space Mono'; color:var(--spray-yellow); font-size:0.85rem;">Product #${pIndex+1}</strong>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:.8rem; gap:.8rem; flex-wrap:wrap;">
+        <div><span class="admin-mini-label">PRODUCT ${String(pIndex+1).padStart(2,'0')}</span><strong style="display:block;font-family:'Space Mono'; color:var(--spray-yellow); font-size:.9rem;margin-top:.15rem;">${escapeHtml(prod.title || 'Untitled Product')} · ${escapeHtml(prod.code || 'NO-CODE')}</strong></div>
         <button class="btn btn--ghost" style="padding:.2rem .5rem; min-height:auto; font-size:0.7rem; color:var(--rebel-red);" onclick="deleteProductFromCategory(${cIndex}, ${pIndex})">Delete 🗑️</button>
       </div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:.8rem; margin-bottom:.5rem;">
@@ -8275,19 +8427,40 @@ function addProdToCurrentAdminCategory() {
       sizes: ['S', 'M', 'L', 'XL'],
       disabledSizes: [],
       disabledColors: [],
-      colorMeta: {}, disabledSizes: [], customizeEnabled: true, isNextWeeklyDrop: false
+      colorMeta: {}, customizeEnabled: true, isNextWeeklyDrop: false
     });
-    renderAdminProductFormsForCategory(activeAdminEditingCategoryName);
+    const newIndex = catObj.products.length - 1;
+    openAdminProductEditor(catObj.name, newIndex);
   }
+}
+
+function addProductToCategoryAndOpen(catName) {
+  const catObj = CATEGORIES.find(c => String(c?.name || '') === String(catName || ''));
+  if (!catObj) return;
+  activeAdminEditingCategoryName = catObj.name;
+  addProdToCurrentAdminCategory();
 }
 
 function deleteProductFromCategory(cIndex, pIndex) {
   collectCategoryFormValues();
   const cat = CATEGORIES[cIndex];
   if (!cat || !Array.isArray(cat.products)) return;
+  const deleted = cat.products[pIndex];
+  const wasWeekly = !!deleted?.isNextWeeklyDrop;
   cat.products.splice(pIndex, 1);
-  renderAdminProductFormsForCategory(cat.name);
-  if (!cat.products.length) showToast(`${cat.name} is now empty. You can add products later.`);
+  if (wasWeekly) {
+    SITE_CONTENT.dropPreviewImage = getNextWeeklyDropImage();
+    applySiteContentToDOM();
+  }
+  if (!cat.products.length) {
+    backToAdminCategoriesGrid();
+    showToast(`${cat.name} is now empty. You can add products later.`);
+    return;
+  }
+  const nextIndex = Math.min(pIndex, cat.products.length - 1);
+  activeAdminEditingProductIndex = nextIndex;
+  renderAdminProductFormsForCategory(cat.name, nextIndex);
+  loadAdminStockForCurrentCategory();
 }
 
 function addProdColorImageUrlInput(cIndex, pIndex, colorIndex) {
@@ -8300,7 +8473,7 @@ function addProdColorImageUrlInput(cIndex, pIndex, colorIndex) {
   const key = color.toLowerCase();
   if (!Array.isArray(prod.colorImages[key])) prod.colorImages[key] = [];
   prod.colorImages[key].push('');
-  renderAdminProductFormsForCategory(CATEGORIES[cIndex].name);
+  renderAdminProductFormsForCategory(CATEGORIES[cIndex].name, activeAdminEditingProductIndex);
 }
 
 function removeProdColorImageUrl(cIndex, pIndex, colorIndex, imgIndex) {
@@ -8313,20 +8486,20 @@ function removeProdColorImageUrl(cIndex, pIndex, colorIndex, imgIndex) {
   if (!Array.isArray(prod.colorImages[key])) prod.colorImages[key] = [];
   if (prod.colorImages[key].length > 1) prod.colorImages[key].splice(imgIndex, 1);
   else prod.colorImages[key] = [];
-  renderAdminProductFormsForCategory(CATEGORIES[cIndex].name);
+  renderAdminProductFormsForCategory(CATEGORIES[cIndex].name, activeAdminEditingProductIndex);
 }
 
 function addProdImageUrlInput(cIndex, pIndex) {
   collectCategoryFormValues();
   CATEGORIES[cIndex].products[pIndex].images.push('');
-  renderAdminProductFormsForCategory(CATEGORIES[cIndex].name);
+  renderAdminProductFormsForCategory(CATEGORIES[cIndex].name, activeAdminEditingProductIndex);
 }
 
 function removeProdImageUrl(cIndex, pIndex, imgIndex) {
   collectCategoryFormValues();
   if (CATEGORIES[cIndex].products[pIndex].images.length > 1) {
     CATEGORIES[cIndex].products[pIndex].images.splice(imgIndex, 1);
-    renderAdminProductFormsForCategory(CATEGORIES[cIndex].name);
+    renderAdminProductFormsForCategory(CATEGORIES[cIndex].name, activeAdminEditingProductIndex);
   } else {
     showToast('At least one image URL required');
   }
@@ -8358,7 +8531,7 @@ function syncAdminProductColorRows(cIndex, pIndex) {
     prod.colorMeta[key] = /^#[0-9a-f]{6}$/i.test(String(previousMeta[key] || '')) ? previousMeta[key] : getAdminDefaultColorHex(color);
   });
   prod.disabledColors = previousDisabled.filter(disabled => prod.colors.some(color => String(color).trim().toLowerCase() === String(disabled).trim().toLowerCase()));
-  renderAdminProductFormsForCategory(activeAdminEditingCategoryName);
+  renderAdminProductFormsForCategory(activeAdminEditingCategoryName, activeAdminEditingProductIndex);
 }
 
 function syncAdminProductSizeRows(cIndex, pIndex) {
@@ -8382,7 +8555,7 @@ function syncAdminProductSizeRows(cIndex, pIndex) {
   prod.sizes = nextSizes;
   prod.disabledSizes = nextSizes.filter(size => previousDisabledKeys.has(String(size).trim().toLowerCase()));
 
-  renderAdminProductFormsForCategory(activeAdminEditingCategoryName);
+  renderAdminProductFormsForCategory(activeAdminEditingCategoryName, activeAdminEditingProductIndex);
   showToast(nextSizes.length ? `Sizes updated: ${nextSizes.join(', ')}` : 'No sizes entered.');
 }
 
