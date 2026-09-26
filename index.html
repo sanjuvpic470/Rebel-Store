@@ -3847,14 +3847,23 @@ function bindLaunchModeSecretTap() {
 
 function syncLaunchModeControlUI() {
   const checkbox = document.getElementById('launch-mode-enabled');
-  const textInput = document.getElementById('launch-mode-text');
   const statusBtn = document.getElementById('launch-mode-status-btn');
   const statusText = document.getElementById('launch-mode-status-text');
-  if (checkbox) checkbox.checked = !!LAUNCH_MODE.enabled;
-  if (textInput) textInput.value = String(LAUNCH_MODE.text || 'Launching Soon');
-  const enabled = !!LAUNCH_MODE.enabled;
+  // IMPORTANT: when this runs from the checkbox onchange handler, do not write
+  // LAUNCH_MODE.enabled back into the checkbox. Doing that immediately reverted
+  // the user's click before Apply could read it. The checkbox is the pending UI
+  // value; Apply commits it to LAUNCH_MODE.
+  const enabled = checkbox ? !!checkbox.checked : !!LAUNCH_MODE.enabled;
   if (statusBtn) statusBtn.classList.toggle('is-live', !enabled);
   if (statusText) statusText.textContent = enabled ? 'LAUNCH MODE' : 'LIVE';
+}
+
+function loadLaunchModeControlFromState() {
+  const checkbox = document.getElementById('launch-mode-enabled');
+  const textInput = document.getElementById('launch-mode-text');
+  if (checkbox) checkbox.checked = !!LAUNCH_MODE.enabled;
+  if (textInput) textInput.value = String(LAUNCH_MODE.text || 'Launching Soon');
+  syncLaunchModeControlUI();
 }
 
 function toggleLaunchModeFromStatusButton() {
@@ -3892,7 +3901,7 @@ async function loadLaunchModeFromCloud() {
   } catch (_) {}
   bindLaunchModeSecretTap();
   updateLaunchModeOverlay();
-  syncLaunchModeControlUI();
+  loadLaunchModeControlFromState();
   if (!supabaseClient) { launchModeLoaded = true; return; }
   try {
     const { data, error } = await supabaseClient.from('store_settings').select('value').eq('key','launch_mode').maybeSingle();
@@ -3906,7 +3915,7 @@ async function loadLaunchModeFromCloud() {
   launchModeLoaded = true;
   bindLaunchModeSecretTap();
   updateLaunchModeOverlay();
-  syncLaunchModeControlUI();
+  loadLaunchModeControlFromState();
 }
 
 function renderStorefront() {
