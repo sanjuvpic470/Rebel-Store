@@ -2106,10 +2106,10 @@ footer .footer-grid{gap:2.2rem;}
   <div class="size-chart-modal" id="size-chart-modal" onclick="if(event.target===this) closeSizeChart()">
     <div class="size-chart-box" role="dialog" aria-modal="true" aria-labelledby="size-chart-title">
       <div class="size-chart-head">
-        <h3 id="size-chart-title">Tee Size Chart</h3>
+        <h3 id="size-chart-title">Product Size Chart</h3>
         <button type="button" class="size-chart-close" onclick="closeSizeChart()" aria-label="Close size chart">×</button>
       </div>
-      <p class="size-chart-note">Measurements are in inches. This oversized T-shirt chart uses the garment chest circumference, length, shoulder and sleeve measurements shown below.</p>
+      <p class="size-chart-note">Measurements are in inches. This chart uses the current product's own garment measurements. Each product can have its own size chart.</p>
       <div class="size-chart-scroll">
         <table class="size-chart-table" id="rebel-size-chart-table">
           <thead><tr><th>Size</th><th>Chest</th><th>Length</th><th>Shoulder</th><th>Sleeve</th></tr></thead>
@@ -2129,7 +2129,7 @@ footer .footer-grid{gap:2.2rem;}
         <button type="button" class="fit-finder-close" onclick="closeFitFinder()" aria-label="Close">×</button>
       </div>
       <div id="fit-finder-form">
-        <p class="fit-finder-intro">Enter your measurements. We’ll match your profile to this oversized T-shirt’s actual size chart and show the closest size.</p>
+        <p class="fit-finder-intro">Enter your measurements. We’ll match your profile to this product’s actual size chart and show the closest size.</p>
         <div class="fit-finder-grid">
           <div class="fit-finder-field">
             <label class="fit-finder-label" for="fit-height">Height (cm)</label>
@@ -2156,13 +2156,12 @@ footer .footer-grid{gap:2.2rem;}
         <div class="fit-finder-result-size" id="fit-finder-result-size">—</div>
         <div class="fit-finder-result-title" id="fit-finder-result-title">Recommended size</div>
         <div class="fit-finder-metrics">
-          <div class="fit-finder-metric"><b id="fit-result-stock">—</b><span>LIVE STOCK</span></div>
-          <div class="fit-finder-metric"><b id="fit-result-chest">—</b><span>CHEST WIDTH (PTP)</span></div>
-          <div class="fit-finder-metric"><b id="fit-result-length">—</b><span>FRONT / BACK LENGTH</span></div>
+          <div class="fit-finder-metric"><b id="fit-result-chest">—</b><span>CHEST</span></div>
+          <div class="fit-finder-metric"><b id="fit-result-length">—</b><span>LENGTH</span></div>
         </div>
         <div class="fit-finder-result-copy" id="fit-finder-result-copy"></div>
         <div class="fit-finder-result-copy fit-finder-warning" id="fit-finder-result-warning"></div>
-        <table class="fit-finder-chart"><thead><tr><th>Size</th><th>Chest</th><th>Length</th><th>Stock</th></tr></thead><tbody id="fit-finder-chart-body"></tbody></table>
+        <table class="fit-finder-chart"><thead><tr><th>Size</th><th>Chest</th><th>Length</th></tr></thead><tbody id="fit-finder-chart-body"></tbody></table>
         <div class="fit-finder-actions"><button type="button" class="fit-finder-secondary" onclick="resetFitFinder()">TRY AGAIN</button><button type="button" class="fit-finder-primary" onclick="useFitFinderSize()">USE THIS SIZE →</button></div>
       </div>
     </div>
@@ -3097,7 +3096,7 @@ let DEFAULT_CATEGORIES = [
     id: 'cat-oversized',
     name: 'Oversized Tee',
     products: [
-      { id: 'o1', code: 'RIOT', title: 'The Riot Oversized Tee', desc: 'Acid Yellow & Distressed Grunge Graphic. 240 GSM.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
+      { id: 'o1', code: 'RIOT', title: 'The Riot Oversized Tee', desc: 'Acid Yellow & Distressed Grunge Graphic. 240 GSM.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
       { id: 'o2', code: 'VOLT', title: 'The Volt Oversized Tee', desc: 'Stealth Black with High-Voltage Neon Typography.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL'] },
       { id: 'o3', code: 'VOID', title: 'The Void Acid Tee', desc: 'Acid wash dark grey streetwear style.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['M', 'L', 'XL'] },
       { id: 'o4', code: 'REB1', title: 'Rebel Heavyweight Tee 01', desc: '240 GSM heavy combed cotton.', mrp: 1070, price: 713, images: [''], colors: ['Yellow', 'White'], sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
@@ -4142,6 +4141,12 @@ const REBEL_TEE_SIZE_CHART = [
   {size:'XXL', chest:52, length:31, shoulder:24.5, sleeve:10}
 ];
 
+function isOversizedTeeProduct(product){
+  const cat = String(product?._categoryName || product?.categoryName || '').toLowerCase();
+  const title = String(product?.title || '').toLowerCase();
+  return /oversized\s*tee|oversized\s*t-?shirt/.test(cat) || /oversized\s*tee|oversized\s*t-?shirt/.test(title);
+}
+
 function getRebelSizeChart(product){
   const raw=product?.sizeChart || product?.size_chart;
   if(Array.isArray(raw) && raw.length){
@@ -4151,15 +4156,38 @@ function getRebelSizeChart(product){
       length:Number(x.length||x.frontLength||x.front_length||0),
       shoulder:Number(x.shoulder||0),
       sleeve:Number(x.sleeve||x.sleeveLength||x.sleeve_length||0)
-    })).filter(x=>x.size && x.chest);
+    })).filter(x=>x.size);
   }
-  return REBEL_TEE_SIZE_CHART.map(x=>({...x}));
+  // The supplied chart is the default only for the current Oversized Tee range.
+  // Other products (for example future hoodies) use their own product.sizeChart.
+  if(isOversizedTeeProduct(product)) return REBEL_TEE_SIZE_CHART.map(x=>({...x}));
+  return [];
+}
+
+function ensureProductSizeChartForAdmin(prod){
+  if(!prod || !Array.isArray(prod.sizes)) return;
+  const existing = Array.isArray(prod.sizeChart) ? prod.sizeChart : [];
+  const bySize = new Map(existing.map(row => [String(row?.size || '').trim().toLowerCase(), row]));
+  const defaults = isOversizedTeeProduct(prod) ? new Map(REBEL_TEE_SIZE_CHART.map(row => [row.size.toLowerCase(), row])) : new Map();
+  prod.sizeChart = prod.sizes.map(size => {
+    const key=String(size || '').trim().toLowerCase();
+    const row=bySize.get(key) || defaults.get(key) || {};
+    return {
+      size:String(size || '').trim(),
+      chest:Number(row.chest || 0),
+      length:Number(row.length || 0),
+      shoulder:Number(row.shoulder || 0),
+      sleeve:Number(row.sleeve || 0)
+    };
+  }).filter(row=>row.size);
 }
 
 function renderRebelSizeChart(){
   const body=document.getElementById('rebel-size-chart-body');
   if(!body) return;
   const chart=getRebelSizeChart(currentProduct);
+  const title=document.getElementById('size-chart-title');
+  if(title) title.innerText = `${currentProduct?.title || 'Product'} — Size Chart`;
   body.innerHTML=chart.map(r=>`<tr><td><strong>${escapeHtml(r.size)}</strong></td><td>${Number(r.chest).toFixed(1).replace(/\.0$/,'')}</td><td>${Number(r.length).toFixed(1).replace(/\.0$/,'')}</td><td>${Number(r.shoulder).toFixed(1).replace(/\.0$/,'')}</td><td>${Number(r.sleeve).toFixed(1).replace(/\.0$/,'')}</td></tr>`).join('');
 }
 
@@ -4193,7 +4221,19 @@ function openProductByDetails(catName, productId) {
   if (!foundProd) { foundCat = CATEGORIES[0]; foundProd = CATEGORIES[0].products[0]; }
   lastViewedProductId = foundProd.id;
   currentProduct = foundProd;
-  if(!Array.isArray(foundProd.sizeChart) || !foundProd.sizeChart.length){ foundProd.sizeChart = REBEL_TEE_SIZE_CHART.map(x=>({...x})); }
+  foundProd._categoryName = foundCat?.name || '';
+  if(isOversizedTeeProduct(foundProd)){
+    const existingChart = Array.isArray(foundProd.sizeChart) ? foundProd.sizeChart : [];
+    const bySize = new Map(existingChart.map(row=>[String(row?.size||'').trim().toLowerCase(), row]));
+    REBEL_TEE_SIZE_CHART.forEach(def=>{
+      const key=def.size.toLowerCase();
+      if(!bySize.has(key)) bySize.set(key, {...def});
+    });
+    foundProd.sizeChart = Array.from(bySize.values());
+    if(!Array.isArray(foundProd.sizes)) foundProd.sizes=[];
+    const existingSizeKeys = new Set(foundProd.sizes.map(v=>String(v).trim().toLowerCase()));
+    foundProd.sizeChart.forEach(row=>{ const sz=String(row?.size||'').trim(); if(sz && !existingSizeKeys.has(sz.toLowerCase())) foundProd.sizes.push(sz); });
+  }
   
   selectedQty = 1;
   const qtyEl = document.getElementById('pdp-qty');
@@ -8321,6 +8361,8 @@ function renderAdminProductFormsForCategory(catName, productIndex = null) {
     if(!Array.isArray(prod.disabledColors)) prod.disabledColors = [];
     if(!prod.colorMeta || typeof prod.colorMeta !== 'object' || Array.isArray(prod.colorMeta)) prod.colorMeta = {};
     ensureProductColorImages(prod);
+    prod._categoryName = catObj.name;
+    ensureProductSizeChartForAdmin(prod);
     prod.colors.forEach(color => {
       const key = String(color || '').trim();
       const normalized = key.toLowerCase();
@@ -8411,6 +8453,23 @@ function renderAdminProductFormsForCategory(catName, productIndex = null) {
         <input type="hidden" id="prod-disabled-colors-${cIndex}-${pIndex}" value="${escapeHtml(prod.disabledColors.join(', '))}">
         <div style="font-family:'Space Mono';font-size:.62rem;color:#888;margin-top:.3rem;line-height:1.45;">Pick the real color with the palette. Disabled colors stay visible on the website but are crossed out and cannot be selected or ordered.</div>
       </div>
+      <div style="margin-bottom:.7rem;padding:.7rem;border:1px solid rgba(255,213,0,.16);background:rgba(255,213,0,.025);">
+        <label class="admin-field-label">Find My Size — Product Size Measurements (inches)</label>
+        <div style="font-family:'Space Mono';font-size:.58rem;color:#888;margin:.25rem 0 .55rem;line-height:1.45;">Enter this product's own garment measurements. For a future Hoodie, just add its sizes above and enter the Hoodie measurements here. Find My Size will use these values for that product.</div>
+        <div id="prod-size-chart-wrap-${cIndex}-${pIndex}" style="display:grid;gap:.4rem;">
+          ${prod.sizeChart.map((row, sizeIndex) => `
+            <div style="display:grid;grid-template-columns:72px repeat(4,minmax(90px,1fr));gap:.4rem;align-items:center;">
+              <strong style="font-family:'Space Mono';font-size:.62rem;color:var(--spray-yellow);">${escapeHtml(row.size)}</strong>
+              <input type="number" step="0.1" min="0" class="admin-input-small" id="prod-chart-${cIndex}-${pIndex}-${sizeIndex}-chest" value="${Number(row.chest||0)||''}" placeholder="Chest">
+              <input type="number" step="0.1" min="0" class="admin-input-small" id="prod-chart-${cIndex}-${pIndex}-${sizeIndex}-length" value="${Number(row.length||0)||''}" placeholder="Length">
+              <input type="number" step="0.1" min="0" class="admin-input-small" id="prod-chart-${cIndex}-${pIndex}-${sizeIndex}-shoulder" value="${Number(row.shoulder||0)||''}" placeholder="Shoulder">
+              <input type="number" step="0.1" min="0" class="admin-input-small" id="prod-chart-${cIndex}-${pIndex}-${sizeIndex}-sleeve" value="${Number(row.sleeve||0)||''}" placeholder="Sleeve">
+            </div>`).join('')}
+        </div>
+        <div style="display:grid;grid-template-columns:72px repeat(4,minmax(90px,1fr));gap:.4rem;margin-top:.25rem;font-family:'Space Mono';font-size:.5rem;color:#777;">
+          <span></span><span>Chest</span><span>Length</span><span>Shoulder</span><span>Sleeve</span>
+        </div>
+      </div>
       <div style="margin-bottom:.5rem;">
         <label class="admin-field-label">Available / Disabled Sizes</label>
         <div id="prod-size-toggle-wrap-${cIndex}-${pIndex}" style="display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.35rem;">
@@ -8462,7 +8521,7 @@ function addNewCategory() {
     id: 'cat-' + Date.now(),
     name: name,
     products: [
-      { id: 'p' + Date.now(), code: 'NEW1', title: `New ${name} 01`, desc: 'Heavyweight cotton drop.', mrp: 1200, price: 800, images: [''], colors: ['Yellow', 'White'], colorImages: {yellow:[], white:[]}, sizes: ['S', 'M', 'L', 'XL'], customizeEnabled: true, isNextWeeklyDrop: false, active: true }
+      { id: 'p' + Date.now(), code: 'NEW1', title: `New ${name} 01`, desc: 'Heavyweight cotton drop.', mrp: 1200, price: 800, images: [''], colors: ['Yellow', 'White'], colorImages: {yellow:[], white:[]}, sizes: ['S', 'M', 'L', 'XL'], sizeChart: [], customizeEnabled: true, isNextWeeklyDrop: false, active: true }
     ]
   });
   document.getElementById('new-category-input').value = '';
@@ -8487,6 +8546,7 @@ function addProdToCurrentAdminCategory() {
       colors: ['Yellow', 'White'],
       colorImages: {yellow:[], white:[]},
       sizes: ['S', 'M', 'L', 'XL'],
+      sizeChart: [],
       disabledSizes: [],
       disabledColors: [],
       colorMeta: {}, customizeEnabled: true, isNextWeeklyDrop: false, active: true
@@ -8701,6 +8761,23 @@ function collectCategoryFormValues() {
     const sizesInput = document.getElementById(`prod-sizes-${cIndex}-${pIndex}`);
     const disabledSizesInput = document.getElementById(`prod-disabled-sizes-${cIndex}-${pIndex}`);
     const customizeInput = document.getElementById(`prod-customize-${cIndex}-${pIndex}`);
+
+    ensureProductSizeChartForAdmin(prod);
+    prod.sizeChart = (prod.sizes || []).map((size, sizeIndex) => {
+      const prev = Array.isArray(prod.sizeChart) ? (prod.sizeChart[sizeIndex] || {}) : {};
+      const readNum = (suffix) => {
+        const el = document.getElementById(`prod-chart-${cIndex}-${pIndex}-${sizeIndex}-${suffix}`);
+        const n = Number(el?.value || 0);
+        return Number.isFinite(n) ? n : 0;
+      };
+      return {
+        size:String(size || '').trim(),
+        chest:readNum('chest') || Number(prev.chest || 0),
+        length:readNum('length') || Number(prev.length || 0),
+        shoulder:readNum('shoulder') || Number(prev.shoulder || 0),
+        sleeve:readNum('sleeve') || Number(prev.sleeve || 0)
+      };
+    }).filter(row=>row.size);
 
     if (customizeInput) prod.customizeEnabled = !!customizeInput.checked;
     if (codeInput) prod.code = codeInput.value.trim().toUpperCase();
@@ -10600,18 +10677,17 @@ function resetFitFinder(){window.openFitFinder();}
 function fitFinderChartForProduct(){
   const productChart=getRebelSizeChart(currentProduct);
   const productSizes=(Array.isArray(currentProduct?.sizes)?currentProduct.sizes:[]).map(v=>String(v).trim().toLowerCase());
-  const filtered=productSizes.length
-    ? productChart.filter(x=>productSizes.includes(String(x.size).trim().toLowerCase()))
-    : productChart;
+  const filtered = isOversizedTeeProduct(currentProduct)
+    ? productChart
+    : (productSizes.length ? productChart.filter(x=>productSizes.includes(String(x.size).trim().toLowerCase())) : productChart);
   return (filtered.length?filtered:productChart).map(x=>({
     size:String(x.size||''), chest:Number(x.chest||0), length:Number(x.length||0), shoulder:Number(x.shoulder||0), sleeve:Number(x.sleeve||0)
   })).filter(x=>x.size&&x.chest);
 }
 
 function fitFinderLiveStock(size){
-  if(currentProduct&&Array.isArray(currentProduct.stockVariants)&&typeof currentProduct.getStockForSelection==='function'&&!currentProduct.stockLoadFailed){
-    return Number(currentProduct.getStockForSelection(size,selectedColor)||0);
-  }
+  // Stock management is disabled. Size recommendation must never become
+  // unavailable just because inventory rows are missing or zero.
   return null;
 }
 
@@ -10637,24 +10713,24 @@ function calculateFitFinder(){
   const build=document.getElementById('fit-build')?.value||'';
   if(!h||h<120||h>230){showToast('Enter your height in cm.');return;}
   if(!w||w<30||w>180){showToast('Enter your weight in kg.');return;}
-  if(!build){showToast('Select your body build.');return;}
+  if(!build){showToast('Select your build.');return;}
   if(chestCm&&(chestCm<60||chestCm>180)){showToast('Enter a valid chest measurement in cm.');return;}
 
-  const chart=fitFinderChartForProduct();
-  if(!chart.length){showToast('Size chart is not available for this product.');return;}
+  const chart=fitFinderChartForProduct().filter(row=>Number(row.chest)>0&&Number(row.length)>0);
+  if(!chart.length){showToast('Size chart is not available for this product yet.');return;}
 
   const bodyChestCm=estimateBodyChestCm(h,w,build,chestCm);
-  // This is an oversized tee, so use a fixed generous garment ease instead of a user-selected fit mode.
-  const targetGarmentChestCm=bodyChestCm+25.4; // +10 inches ease
+  // This range is already oversized. Use a fixed garment ease instead of
+  // asking the customer to choose Regular / Loose / Boxy.
+  const targetGarmentChestCm=bodyChestCm+25.4;
   const targetLengthIn=27 + Math.max(0,Math.min(4,(h-160)/20));
   const disabledOnly=chart.filter(row=>!fitFinderSizeIsDisabled(row.size));
   const scoringPool=disabledOnly.length?disabledOnly:chart;
 
   const scored=scoringPool.map(row=>{
-    const stock=fitFinderLiveStock(row.size);
     const chestDiff=Math.abs((row.chest*2.54)-targetGarmentChestCm);
     const lengthDiff=Math.abs(row.length-targetLengthIn);
-    return {...row,stock,disabled:fitFinderSizeIsDisabled(row.size),score:(chestDiff*10)+(lengthDiff*2)};
+    return {...row,stock:null,disabled:fitFinderSizeIsDisabled(row.size),score:(chestDiff*10)+(lengthDiff*2)};
   }).sort((a,b)=>a.score-b.score);
 
   const rec=scored[0];
@@ -10668,16 +10744,14 @@ function calculateFitFinder(){
   if(step)step.innerText='STEP 2 OF 2';
 
   document.getElementById('fit-finder-result-size').innerText=rec.size;
-  document.getElementById('fit-finder-result-title').innerText='Recommended oversized fit';
-  document.getElementById('fit-result-stock').innerText=rec.stock===null?'Stock checked at checkout':(rec.stock>0?`${rec.stock} left`:'OUT OF STOCK');
-  document.getElementById('fit-result-chest').innerText=`${rec.chest}" Chest`;
-  document.getElementById('fit-result-length').innerText=`${rec.length}" Length`;
-  document.getElementById('fit-finder-result-copy').innerText=`Based on your ${chestCm>0?'chest measurement':'height, weight and build'}, the closest match in our oversized chart is ${rec.size}.`;
-  document.getElementById('fit-finder-result-warning').innerText=rec.stock===null?'The recommendation uses the garment size chart. Stock is checked separately before checkout.':(rec.stock>0?'This size is currently in stock.':'This size is currently out of stock.');
+  document.getElementById('fit-finder-result-title').innerText='Recommended size';
+  document.getElementById('fit-result-chest').innerText=`${rec.chest}"`;
+  document.getElementById('fit-result-length').innerText=`${rec.length}"`;
+  document.getElementById('fit-finder-result-copy').innerText=`Based on your ${chestCm>0?'chest measurement':'height, weight and build'}, the closest match in this product’s size chart is ${rec.size}.`;
+  document.getElementById('fit-finder-result-warning').innerText='This recommendation uses the product measurement chart. Stock availability is not used to change the recommended size.';
   document.getElementById('fit-finder-chart-body').innerHTML=chart.map(r=>{
-    const stock=fitFinderLiveStock(r.size);
     const unavailable=fitFinderSizeIsDisabled(r.size);
-    return `<tr class="${r.size===rec.size?'recommended':''}"><td>${escapeHtml(r.size)}</td><td>${Number(r.chest)}"</td><td>${Number(r.length)}"</td><td>${unavailable?'Unavailable':(stock===null?'Check':(stock>0?stock+' left':'Out'))}</td></tr>`;
+    return `<tr class="${r.size===rec.size?'recommended':''}"><td>${escapeHtml(r.size)}</td><td>${Number(r.chest)}"</td><td>${Number(r.length)}"</td></tr>`;
   }).join('');
 }
 
