@@ -2116,16 +2116,29 @@ footer .footer-grid{gap:2.2rem;}
   </div>
 
   <!-- FAQ / SUPPORT MODAL -->
-  <div class="auth-modal" id="faq-modal">
+  <div class="auth-modal" id="faq-modal" onclick="if(event.target===this)closeFaqModal()">
     <div class="profile-modal-box" style="max-width: 650px; max-height: 85vh; overflow-y:auto;">
       <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeFaqModal()">×</button>
       <h3>FAQ / SUPPORT</h3>
       <div class="faq-list">
         <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">How do I choose my size?<span>＋</span></button><div class="faq-a">Open the Size Chart on the product page and compare the measurements with a T-shirt you already own.</div></div>
         <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">How can I track my order?<span>＋</span></button><div class="faq-a">Use Track My Order from your account/order area and enter your order details to view the latest status.</div></div>
-        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Can I cancel or exchange an order?<span>＋</span></button><div class="faq-a">Open the relevant order and use the available cancellation or return/exchange option, subject to the order status and policy.</div></div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">How do I place an order?<span>＋</span></button><div class="faq-a">Open the product you want, choose the available size and colour, select the quantity, add it to your bag, and continue to checkout to complete your order.</div></div>
         <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">What if my size is out of stock?<span>＋</span></button><div class="faq-a">Use Notify Me on the product page. We can use your request to alert you when that size becomes available.</div></div>
         <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Need more help?<span>＋</span></button><div class="faq-a">Use the Contact section in the footer for support. Please include your order number when asking about an existing order.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HELP & SIZE GUIDE MODAL -->
+  <div class="auth-modal" id="help-size-modal" onclick="if(event.target===this)closeHelpSizeModal()">
+    <div class="profile-modal-box" style="max-width: 650px; max-height: 85vh; overflow-y:auto;">
+      <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeHelpSizeModal()">×</button>
+      <h3>HELP &amp; SIZE GUIDE</h3>
+      <div class="faq-list">
+        <div class="faq-item open"><button class="faq-q" onclick="toggleHelpSizeItem(this)">How do I choose my size?<span>−</span></button><div class="faq-a">Open the Size Chart on the product page and compare the measurements with a T-shirt you already own. For the most accurate fit, compare chest width and length with a tee that fits you well.</div></div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleHelpSizeItem(this)">Where can I find the Size Chart?<span>＋</span></button><div class="faq-a">Open any product page and use the Size Chart option near the size selector to check the available measurements before ordering.</div></div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleHelpSizeItem(this)">Need help before ordering?<span>＋</span></button><div class="faq-a">Use the Contact section in the footer for support. If your question is about an existing order, include your order number so we can help faster.</div></div>
       </div>
     </div>
   </div>
@@ -2283,7 +2296,7 @@ footer .footer-grid{gap:2.2rem;}
     </div>
   </div>
 
-  <div class="auth-modal" id="auth-modal">
+  <div class="auth-modal" id="auth-modal" onclick="if(event.target===this)closeAuthModal()">
     <div class="auth-box">
       <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeAuthModal()">×</button>
       <div id="auth-login-view">
@@ -2924,8 +2937,7 @@ footer .footer-grid{gap:2.2rem;}
           <h5>Support</h5>
           <ul>
             <li><a onclick="openFaqModal()">Shipping / FAQ</a></li>
-            <li><a onclick="openFaqModal()">Returns / Exchange</a></li>
-            <li><a onclick="openFaqModal()">Help & Size Guide</a></li>
+            <li><a onclick="openHelpSizeModal()">Help & Size Guide</a></li>
           </ul>
         </div>
         <div>
@@ -5059,11 +5071,32 @@ function moveAllWishlistToCart() {
 
 function openFaqModal() {
   const modal = document.getElementById('faq-modal');
-  if (modal) modal.style.display = 'flex';
+  if (modal) {
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
 }
 function closeFaqModal() {
   const modal = document.getElementById('faq-modal');
   if (modal) modal.style.display = 'none';
+  if (!document.querySelector('.auth-modal[style*="display: flex"]:not(#faq-modal):not(#help-size-modal)')) document.body.style.overflow = '';
+}
+function openHelpSizeModal() {
+  const modal = document.getElementById('help-size-modal');
+  if (modal) {
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+}
+function closeHelpSizeModal() {
+  const modal = document.getElementById('help-size-modal');
+  if (modal) modal.style.display = 'none';
+  if (!document.querySelector('.auth-modal[style*="display: flex"]:not(#faq-modal):not(#help-size-modal)')) document.body.style.overflow = '';
+}
+function toggleHelpSizeItem(btn) {
+  const item = btn.closest('.faq-item');
+  document.querySelectorAll('#help-size-modal .faq-item').forEach(el => { if (el !== item) el.classList.remove('open'); });
+  item.classList.toggle('open');
 }
 function toggleFaq(btn) {
   const item = btn.closest('.faq-item');
@@ -9499,9 +9532,22 @@ function handleAuthClick(e) {
 }
 
 function closeAuthModal() { 
-  document.getElementById('auth-modal').style.display = 'none'; 
+  const modal = document.getElementById('auth-modal');
+  if (modal) modal.style.display = 'none';
   document.body.style.overflow = ''; 
 }
+
+// Close the customer login/sign-up popup when the user clicks outside the box or presses Escape.
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    const auth = document.getElementById('auth-modal');
+    const faq = document.getElementById('faq-modal');
+    const help = document.getElementById('help-size-modal');
+    if (auth && auth.style.display === 'flex') closeAuthModal();
+    if (faq && faq.style.display === 'flex') closeFaqModal();
+    if (help && help.style.display === 'flex') closeHelpSizeModal();
+  }
+});
 
 function switchAuthView(viewType) {
   const loginView = document.getElementById('auth-login-view');
