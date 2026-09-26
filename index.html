@@ -524,6 +524,20 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .admin-category-card h3:hover{text-decoration:underline}
 .drag-handle{background:var(--ink);color:var(--spray-yellow);padding:6px 12px;font-family:'Space Mono',monospace;font-size:0.75rem;font-weight:bold;border-radius:2px;cursor:grab;letter-spacing:0.05em;text-transform:uppercase}
 .drag-handle:active{cursor:grabbing}
+
+/* Launch / maintenance gate */
+#launch-mode-overlay{position:fixed;inset:0;z-index:99999;background:#090909;display:none;align-items:center;justify-content:center;padding:2rem;text-align:center;}
+#launch-mode-overlay .launch-mode-inner{max-width:760px;width:100%;}
+#launch-mode-overlay .launch-mode-label{font-family:'Space Mono',monospace;font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--grey);margin-bottom:1rem;}
+#launch-mode-overlay .launch-mode-message{font-family:'Anton',sans-serif;font-size:clamp(3rem,9vw,8rem);line-height:.9;text-transform:uppercase;color:var(--paper);margin:0;user-select:none;cursor:default;}
+#launch-mode-overlay .launch-mode-sub{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--grey);margin-top:1.25rem;}
+.launch-control{background:#111;border:1px solid rgba(242,240,234,.14);padding:1rem;margin-bottom:1.2rem;}
+.launch-control-grid{display:grid;grid-template-columns:minmax(220px,.75fr) minmax(260px,1.25fr) auto;gap:.8rem;align-items:end;}
+.launch-status-btn{min-height:42px;padding:.55rem .8rem;background:#d51f2b;border:1px solid #f03b47;color:#fff;font-family:'Space Mono',monospace;font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;gap:.5rem;white-space:nowrap;}
+.launch-status-light{width:10px;height:10px;border-radius:50%;background:#ef233c;box-shadow:0 0 10px rgba(239,35,60,.7);display:inline-block;}
+.launch-status-btn.is-live{background:#b91c1c;}
+.launch-status-btn.is-live .launch-status-light{background:#4ade80;box-shadow:0 0 10px rgba(74,222,128,.8);}
+@media(max-width:820px){.launch-control-grid{grid-template-columns:1fr}.launch-status-btn{width:100%}}
 .toast{position:fixed;bottom:20px;right:20px;background:var(--spray-yellow);color:var(--ink);padding:.8rem 1.2rem;border:2px solid var(--ink);box-shadow:none;font-family:'Space Mono',monospace;font-weight:700;font-size:.8rem;z-index:250;transform:translateY(150px);transition:transform .3s cubic-bezier(0.175,0.885,0.32,1.275)}
 .toast.show{transform:translateY(0)}
 .admin-icon-action.is-loading{opacity:.55;cursor:wait}
@@ -1767,6 +1781,13 @@ footer .footer-grid{gap:2.2rem;}
 </style>
 </head>
 <body>
+  <div id="launch-mode-overlay" aria-hidden="true">
+    <div class="launch-mode-inner">
+      <div class="launch-mode-label">REBEL STORE</div>
+      <div class="launch-mode-message" id="launch-mode-message">Launching Soon</div>
+      <div class="launch-mode-sub">We are getting things ready.</div>
+    </div>
+  </div>
   <div id="cursor" class="custom-cursor" aria-hidden="true"></div>
   <div id="cursor-dot" class="custom-cursor" aria-hidden="true"></div>
   <div class="lux-bg" aria-hidden="true">
@@ -2832,6 +2853,25 @@ footer .footer-grid{gap:2.2rem;}
         <h2>⚙️ T-Shirt Product Manager & Categories</h2>
         <button class="btn btn--ghost" style="padding:0.4rem 1rem; font-size:0.8rem;" onclick="closeAdminSubPages()">← Back to Dashboard</button>
       </div>
+      <div class="launch-control">
+        <div class="admin-panel-head" style="margin-bottom:.8rem;">
+          <div><span class="admin-mini-label">STORE ACCESS</span><h2 style="font-family:'Anton',sans-serif;font-size:1.35rem;text-transform:uppercase;margin:.15rem 0 0;">Launch Mode</h2></div>
+          <button type="button" id="launch-mode-status-btn" class="launch-status-btn" onclick="toggleLaunchModeFromStatusButton()"><span class="launch-status-light"></span><span id="launch-mode-status-text">LIVE</span></button>
+        </div>
+        <div class="launch-control-grid">
+          <label style="display:flex;align-items:center;gap:.55rem;min-height:42px;font-family:'Space Mono',monospace;font-size:.7rem;color:var(--paper);">
+            <input type="checkbox" id="launch-mode-enabled" onchange="syncLaunchModeControlUI()" style="accent-color:var(--spray-yellow);width:18px;height:18px;">
+            <span>Show Launch / Backend screen</span>
+          </label>
+          <div>
+            <label class="admin-field-label">Launch Screen Text</label>
+            <input type="text" id="launch-mode-text" class="admin-input-full" style="margin-bottom:0;" value="Launching Soon" placeholder="Launching Soon">
+          </div>
+          <button type="button" class="btn btn--solid" id="launch-mode-apply-btn" onclick="applyLaunchModeSettings()" style="min-height:42px;">Apply</button>
+        </div>
+        <div style="margin-top:.65rem;font-family:'Space Mono';font-size:.58rem;color:var(--grey);line-height:1.5;">ON = visitors see only the launch message. OFF = normal website is live. The launch message itself has no visible clickable hint.</div>
+      </div>
+
       <div style="background:#111; padding:1.2rem; border:1px solid rgba(242,240,234,.15); margin-bottom:1.5rem;">
         <label class="admin-field-label">+ Add New Store Category</label>
         <div style="display:flex; gap:.8rem;">
@@ -3748,6 +3788,127 @@ function openWeeklyDropProduct() {
   openProductByDetails(selected.cat.name, selected.prod.id);
 }
 
+
+let LAUNCH_MODE = {
+  enabled: false,
+  text: 'Launching Soon'
+};
+let launchModeLoaded = false;
+let launchTapCount = 0;
+let launchTapTimer = null;
+
+function isLaunchModeEnabled() {
+  return !!LAUNCH_MODE.enabled;
+}
+
+function hasLaunchBypass() {
+  try { return sessionStorage.getItem('rebel_launch_bypass') === '1'; } catch (_) { return false; }
+}
+
+function setLaunchBypass(enabled) {
+  try {
+    if (enabled) sessionStorage.setItem('rebel_launch_bypass', '1');
+    else sessionStorage.removeItem('rebel_launch_bypass');
+  } catch (_) {}
+}
+
+function updateLaunchModeOverlay() {
+  const overlay = document.getElementById('launch-mode-overlay');
+  const message = document.getElementById('launch-mode-message');
+  if (!overlay) return;
+  if (message) message.textContent = String(LAUNCH_MODE.text || 'Launching Soon');
+  const shouldShow = isLaunchModeEnabled() && !hasLaunchBypass();
+  overlay.style.display = shouldShow ? 'flex' : 'none';
+  overlay.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+  document.body.classList.toggle('launch-mode-active', shouldShow);
+}
+
+function handleLaunchModeSecretTap() {
+  // Deliberately no cursor, button, tooltip, or visible hint: only four quick taps work.
+  launchTapCount += 1;
+  clearTimeout(launchTapTimer);
+  launchTapTimer = setTimeout(() => { launchTapCount = 0; }, 1800);
+  if (launchTapCount >= 4) {
+    launchTapCount = 0;
+    clearTimeout(launchTapTimer);
+    setLaunchBypass(true);
+    updateLaunchModeOverlay();
+    showHomeView();
+  }
+}
+
+function bindLaunchModeSecretTap() {
+  const message = document.getElementById('launch-mode-message');
+  if (!message || message.dataset.secretBound === '1') return;
+  message.dataset.secretBound = '1';
+  message.addEventListener('click', handleLaunchModeSecretTap);
+  message.addEventListener('touchend', (e) => { e.preventDefault(); handleLaunchModeSecretTap(); }, { passive:false });
+}
+
+function syncLaunchModeControlUI() {
+  const checkbox = document.getElementById('launch-mode-enabled');
+  const textInput = document.getElementById('launch-mode-text');
+  const statusBtn = document.getElementById('launch-mode-status-btn');
+  const statusText = document.getElementById('launch-mode-status-text');
+  if (checkbox) checkbox.checked = !!LAUNCH_MODE.enabled;
+  if (textInput) textInput.value = String(LAUNCH_MODE.text || 'Launching Soon');
+  const enabled = !!LAUNCH_MODE.enabled;
+  if (statusBtn) statusBtn.classList.toggle('is-live', !enabled);
+  if (statusText) statusText.textContent = enabled ? 'LAUNCH MODE' : 'LIVE';
+}
+
+function toggleLaunchModeFromStatusButton() {
+  const checkbox = document.getElementById('launch-mode-enabled');
+  if (!checkbox) return;
+  checkbox.checked = !checkbox.checked;
+  syncLaunchModeControlUI();
+}
+
+async function applyLaunchModeSettings() {
+  const checkbox = document.getElementById('launch-mode-enabled');
+  const textInput = document.getElementById('launch-mode-text');
+  LAUNCH_MODE.enabled = !!checkbox?.checked;
+  LAUNCH_MODE.text = String(textInput?.value || '').trim() || 'Launching Soon';
+  try { localStorage.setItem('rebel_launch_mode', JSON.stringify(LAUNCH_MODE)); } catch (_) {}
+  syncLaunchModeControlUI();
+  updateLaunchModeOverlay();
+  if (supabaseClient) {
+    const { error } = await supabaseClient.from('store_settings').upsert({ key:'launch_mode', value:LAUNCH_MODE }, { onConflict:'key' });
+    if (error) {
+      console.error('Launch mode save failed:', error);
+      showToast('Launch mode cloud save failed.');
+      return;
+    }
+  }
+  showToast(LAUNCH_MODE.enabled ? `Launch mode enabled: ${LAUNCH_MODE.text}` : 'Website is live.');
+}
+
+async function loadLaunchModeFromCloud() {
+  try {
+    const local = JSON.parse(localStorage.getItem('rebel_launch_mode') || 'null');
+    if (local && typeof local === 'object') {
+      LAUNCH_MODE = { enabled: !!local.enabled, text: String(local.text || 'Launching Soon') };
+    }
+  } catch (_) {}
+  bindLaunchModeSecretTap();
+  updateLaunchModeOverlay();
+  syncLaunchModeControlUI();
+  if (!supabaseClient) { launchModeLoaded = true; return; }
+  try {
+    const { data, error } = await supabaseClient.from('store_settings').select('value').eq('key','launch_mode').maybeSingle();
+    if (!error && data?.value) {
+      LAUNCH_MODE = { enabled: !!data.value.enabled, text: String(data.value.text || 'Launching Soon') };
+      localStorage.setItem('rebel_launch_mode', JSON.stringify(LAUNCH_MODE));
+    }
+  } catch (err) {
+    console.warn('Launch mode load skipped:', err);
+  }
+  launchModeLoaded = true;
+  bindLaunchModeSecretTap();
+  updateLaunchModeOverlay();
+  syncLaunchModeControlUI();
+}
+
 function renderStorefront() {
   syncWeeklyDropProductFromCategory();
   populateShopFilterOptions();
@@ -3960,6 +4121,8 @@ function showHomeView() {
 
   const home = document.getElementById('home-view');
   if (home) home.style.display = 'block';
+  updateLaunchModeOverlay();
+  bindLaunchModeSecretTap();
   if (document.getElementById('shop-results-grid')) document.getElementById('shop-results-grid').style.display = 'none';
   if (document.getElementById('home-categories-container')) document.getElementById('home-categories-container').style.display = '';
 
@@ -9101,6 +9264,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadCustomTshirtCategoriesFromCloud();
   loadOfferSettingsFromCloud();
   loadSiteContentFromCloud();
+  loadLaunchModeFromCloud();
   if (loggedInUser) loadCustomerOrdersFromSupabase();
   syncOfferSettingsUI();
   window.addEventListener('hashchange', handleRouteFromHash);
@@ -9208,6 +9372,9 @@ function handleRouteFromHash() {
   } else if (hash === '#shipping') {
     goToShippingPage();
   } else if (hash === '#admin') {
+    // Launch mode blocks the public store, but must never block the owner admin portal.
+    const launchOverlay = document.getElementById('launch-mode-overlay');
+    if (launchOverlay) { launchOverlay.style.display = 'none'; launchOverlay.setAttribute('aria-hidden','true'); }
     if (currentRole === 'owner' && loggedInUser) {
       grantAdminAccess();
     } else if (supabaseClient) {
@@ -9337,6 +9504,8 @@ function grantAdminAccess() {
   document.getElementById('category-page').style.display = 'none';
   
   document.getElementById('admin-view').style.display = 'block';
+  const launchOverlay = document.getElementById('launch-mode-overlay');
+  if (launchOverlay) { launchOverlay.style.display = 'none'; launchOverlay.setAttribute('aria-hidden','true'); }
   setAdminHeaderMode(true);
   sessionStorage.removeItem('rebel_admin_reload');
   window.location.hash = '#admin';
