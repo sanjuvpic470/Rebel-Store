@@ -467,11 +467,19 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .admin-category-visibility{display:flex;align-items:center;gap:.3rem;font-family:'Space Mono',monospace;font-size:.55rem;color:#aaa;white-space:nowrap;cursor:pointer}
 .admin-category-add-btn{min-height:32px!important;padding:.3rem .55rem!important;font-size:.58rem!important;white-space:nowrap}
 .admin-category-accordion .drag-handle{padding:7px 9px;font-size:.6rem;border:1px solid rgba(250,204,21,.2);background:#0d0d0f;color:var(--spray-yellow);cursor:grab}
-.admin-category-accordion-body{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.65rem;padding:.75rem;border-top:1px solid rgba(242,240,234,.08);background:rgba(0,0,0,.12)}
-.admin-product-mini-card{position:relative;display:flex;align-items:center;gap:.65rem;text-align:left;width:100%;min-width:0;padding:.55rem;background:#111114;border:1px solid rgba(242,240,234,.12);border-radius:10px;color:var(--paper);cursor:pointer;transition:border-color .15s,transform .15s,background .15s}
+.admin-category-accordion-body{grid-template-columns:repeat(5,minmax(0,1fr));gap:.7rem;padding:.8rem;border-top:1px solid rgba(242,240,234,.08);background:rgba(0,0,0,.12);align-items:start}
+.admin-product-mini-card{position:relative;display:flex;flex-direction:column;align-items:stretch;gap:.55rem;text-align:left;width:100%;min-width:0;padding:.65rem;background:#111114;border:1px solid rgba(242,240,234,.12);border-radius:10px;color:var(--paper);cursor:pointer;transition:border-color .15s,transform .15s,background .15s,box-shadow .15s;box-sizing:border-box}
 .admin-product-mini-card:hover{border-color:rgba(250,204,21,.75);background:#17171a;transform:translateY(-1px)}
-.admin-product-mini-image{width:66px;height:78px;flex:0 0 66px;border:1px solid rgba(242,240,234,.12);background:#0a0a0c;border-radius:7px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.admin-product-mini-card.is-selected{border-color:var(--spray-yellow);background:linear-gradient(180deg,rgba(250,204,21,.11),#111114 42%);box-shadow:0 0 0 1px rgba(250,204,21,.22),0 8px 24px rgba(0,0,0,.2)}
+.admin-product-mini-image{width:100%;height:155px;flex:0 0 155px;border:1px solid rgba(242,240,234,.12);background:#0a0a0c;border-radius:7px;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .admin-product-mini-image img{width:100%;height:100%;object-fit:contain;display:block}
+.admin-inline-product-editor{grid-column:1/-1;width:100%;box-sizing:border-box;margin:.2rem 0 .25rem!important;scroll-margin-top:1rem}
+.admin-inline-product-editor .admin-product-row{margin-bottom:1rem}
+.admin-inline-product-editor .admin-product-editor-back{display:inline-flex}
+.admin-product-mini-copy{width:100%;}
+.admin-product-mini-copy strong{font-size:.8rem}
+.admin-product-mini-copy>span{font-size:.6rem}
+.admin-product-mini-arrow{align-self:flex-end;margin-top:-1.9rem}
 .admin-product-thumb-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;font-family:'Space Mono',monospace;font-size:.45rem;color:#666;padding:.3rem;box-sizing:border-box}
 .admin-product-mini-copy{min-width:0;flex:1;display:flex;flex-direction:column;gap:.18rem}
 .admin-product-mini-copy strong{font-family:'Archivo Black',sans-serif;font-size:.72rem;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -486,10 +494,20 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .admin-empty-products strong{color:var(--spray-yellow)}
 .admin-product-editor-back{margin-bottom:.4rem}
 #admin-category-detail-view .admin-product-row{max-width:none}
+@media(max-width:1180px){
+  .admin-category-accordion-body{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:900px){
+  .admin-category-accordion-body{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
 @media(max-width:760px){
   .admin-category-accordion-head{align-items:flex-start;flex-wrap:wrap}
   .admin-category-title-wrap{order:1;flex:1 1 calc(100% - 48px)}
   .admin-category-actions{order:3;width:100%;justify-content:flex-start;padding-left:40px}
+  .admin-category-accordion-body{grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem;padding:.6rem}
+  .admin-product-mini-image{height:135px;flex-basis:135px}
+}
+@media(max-width:460px){
   .admin-category-accordion-body{grid-template-columns:1fr}
 }
 
@@ -7759,8 +7777,10 @@ function openCustomTshirtManager() {
   const main = document.getElementById('admin-category-main-grid');
   const detail = document.getElementById('admin-category-detail-view');
   const panel = document.getElementById('admin-custom-garment-view');
+  const subpage = document.getElementById('subpage-products');
   if (main) main.style.display = 'none';
-  if (detail) detail.style.display = 'none';
+  if (detail && subpage && detail.parentElement !== subpage) subpage.appendChild(detail);
+  if (detail) { detail.style.display = 'none'; detail.classList.remove('admin-inline-product-editor'); }
   if (panel) panel.style.display = 'block';
   CUSTOM_TSHIRT_CATEGORIES.forEach(ensureCustomTshirtCategoryShape);
   renderCustomTshirtCategoriesAdmin();
@@ -8020,8 +8040,15 @@ function renderAdminCategoriesMainGrid() {
   if (!mainGrid) return;
   const customPanel = document.getElementById('admin-custom-garment-view');
   const detailPanel = document.getElementById('admin-category-detail-view');
+  const subpage = document.getElementById('subpage-products');
+  const preserveScrollY = window.scrollY;
+
   if (customPanel) customPanel.style.display = 'none';
-  if (detailPanel) detailPanel.style.display = 'none';
+  if (detailPanel) {
+    detailPanel.style.display = 'none';
+    detailPanel.classList.remove('admin-inline-product-editor');
+    if (subpage && detailPanel.parentElement !== subpage) subpage.appendChild(detailPanel);
+  }
   mainGrid.style.display = 'flex';
   mainGrid.innerHTML = '';
 
@@ -8031,13 +8058,15 @@ function renderAdminCategoriesMainGrid() {
     const code = String(prod?.code || 'NO-CODE').trim().toUpperCase();
     const active = prod?.active !== false;
     const weekly = !!prod?.isNextWeeklyDrop;
+    const selected = activeAdminEditingCategoryName === cat.name && Number(activeAdminEditingProductIndex) === Number(pIndex);
     const imageHtml = image
       ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(title)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"><div class="admin-product-thumb-placeholder" style="display:none;">NO IMAGE</div>`
       : `<div class="admin-product-thumb-placeholder">NO IMAGE</div>`;
     const card = document.createElement('button');
     card.type = 'button';
-    card.className = 'admin-product-mini-card';
+    card.className = `admin-product-mini-card${selected ? ' is-selected' : ''}`;
     card.dataset.productIndex = String(pIndex);
+    card.dataset.categoryName = cat.name;
     card.innerHTML = `
       <div class="admin-product-mini-image">${imageHtml}</div>
       <div class="admin-product-mini-copy">
@@ -8116,6 +8145,19 @@ function renderAdminCategoriesMainGrid() {
       } else {
         products.forEach((prod, pIndex) => body.appendChild(makeProductCard(cat, index, prod, pIndex)));
       }
+
+      // Keep the full product editor directly under the selected T-shirt.
+      if (activeAdminEditingCategoryName === cat.name && Number.isInteger(activeAdminEditingProductIndex) && products[activeAdminEditingProductIndex]) {
+        if (detailPanel) {
+          const selectedCard = body.querySelector(`.admin-product-mini-card[data-product-index="${activeAdminEditingProductIndex}"]`);
+          detailPanel.classList.add('admin-inline-product-editor');
+          detailPanel.style.display = 'block';
+          detailPanel.dataset.inlineCategory = cat.name;
+          detailPanel.dataset.inlineProductIndex = String(activeAdminEditingProductIndex);
+          if (selectedCard) selectedCard.after(detailPanel);
+          else body.appendChild(detailPanel);
+        }
+      }
     }
 
     card.addEventListener('dragstart', (e) => {
@@ -8158,6 +8200,9 @@ function renderAdminCategoriesMainGrid() {
       <span style="font-size:1.2rem;color:var(--spray-yellow);">→</span>
     </div>`;
   mainGrid.appendChild(customCard);
+
+  // Re-rendering the cards must never yank the user back to the top of the page.
+  requestAnimationFrame(() => window.scrollTo({ top: preserveScrollY, behavior: 'auto' }));
 }
 
 async function toggleCategoryVisibility(index, checked) {
@@ -8192,34 +8237,42 @@ function openAdminProductEditor(catName, pIndex) {
   collectCategoryFormValues();
   const catObj = CATEGORIES.find(c => String(c?.name || '') === String(catName || ''));
   if (!catObj || !catObj.products?.[pIndex]) return;
+
   activeAdminEditingCategoryName = catObj.name;
   activeAdminEditingProductIndex = Number(pIndex);
+  expandedAdminCategoryIds.add(String(catObj.id || catObj.name));
+
   const main = document.getElementById('admin-category-main-grid');
   const detail = document.getElementById('admin-category-detail-view');
   const custom = document.getElementById('admin-custom-garment-view');
-  if (main) main.style.display = 'none';
+  const subpage = document.getElementById('subpage-products');
+  const products = document.getElementById('admin-categories-container');
+  const stock = document.getElementById('admin-stock-management');
+  const save = document.getElementById('save-categories-btn');
+  const prod = catObj.products[pIndex];
+
+  if (main) main.style.display = 'flex';
   if (custom) custom.style.display = 'none';
-  if (detail) detail.style.display = 'block';
+  if (detail && subpage && detail.parentElement !== subpage && !detail.contains(products)) subpage.appendChild(detail);
 
   const title = document.getElementById('adm-cat-detail-title');
   const addBtn = detail?.querySelector('button[onclick="addProdToCurrentAdminCategory()"]');
   const secureInfo = detail?.querySelector('div[style*="SECURE PRODUCT DATABASE"]');
-  const products = document.getElementById('admin-categories-container');
-  const stock = document.getElementById('admin-stock-management');
-  const save = document.getElementById('save-categories-btn');
   const backBtn = detail?.querySelector('.admin-product-editor-back');
 
-  const prod = catObj.products[pIndex];
   if (title) title.innerText = `Edit Product · ${prod.title || prod.code || 'Untitled'}`;
   if (addBtn) addBtn.style.display = 'none';
   if (secureInfo) secureInfo.style.display = '';
   if (products) products.style.display = 'flex';
   if (stock) stock.style.display = 'block';
   if (save) save.style.display = 'flex';
-  if (backBtn) backBtn.innerHTML = `← Back to ${catObj.name}`;
+  if (backBtn) backBtn.innerHTML = `✕ Close Editor`;
+
+  // Render the category cards again so the editor is physically placed
+  // immediately below the T-shirt that was clicked.
+  renderAdminCategoriesMainGrid();
   renderAdminProductFormsForCategory(catObj.name, pIndex);
   setTimeout(() => loadAdminStockForCurrentCategory(), 0);
-  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function backToAdminCategoriesGrid() {
@@ -8227,12 +8280,20 @@ function backToAdminCategoriesGrid() {
   const detail = document.getElementById('admin-category-detail-view');
   const custom = document.getElementById('admin-custom-garment-view');
   const main = document.getElementById('admin-category-main-grid');
+  const subpage = document.getElementById('subpage-products');
   const addBtn = detail?.querySelector('button[onclick="addProdToCurrentAdminCategory()"]');
   const secureInfo = detail?.querySelector('div[style*="SECURE PRODUCT DATABASE"]');
   const products = document.getElementById('admin-categories-container');
   const stock = document.getElementById('admin-stock-management');
   const save = document.getElementById('save-categories-btn');
-  if (detail) detail.style.display = 'none';
+
+  if (detail && subpage && detail.parentElement !== subpage) subpage.appendChild(detail);
+  if (detail) {
+    detail.style.display = 'none';
+    detail.classList.remove('admin-inline-product-editor');
+    detail.removeAttribute('data-inline-category');
+    detail.removeAttribute('data-inline-product-index');
+  }
   if (custom) custom.style.display = 'none';
   if (main) main.style.display = 'flex';
   if (addBtn) addBtn.style.display = '';
@@ -8241,6 +8302,7 @@ function backToAdminCategoriesGrid() {
   if (stock) stock.style.display = 'block';
   if (save) save.style.display = 'flex';
   activeAdminEditingProductIndex = null;
+  activeAdminEditingCategoryName = '';
   renderAdminCategoriesMainGrid();
   renderCustomTshirtCategoriesAdmin();
 }
@@ -8458,7 +8520,10 @@ function deleteProductFromCategory(cIndex, pIndex) {
     return;
   }
   const nextIndex = Math.min(pIndex, cat.products.length - 1);
+  activeAdminEditingCategoryName = cat.name;
   activeAdminEditingProductIndex = nextIndex;
+  expandedAdminCategoryIds.add(String(cat.id || cat.name));
+  renderAdminCategoriesMainGrid();
   renderAdminProductFormsForCategory(cat.name, nextIndex);
   loadAdminStockForCurrentCategory();
 }
