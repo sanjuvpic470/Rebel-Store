@@ -1831,7 +1831,7 @@ footer .footer-grid{gap:2.2rem;}
 
             <div class="lux-hero-bottom">
               <div class="hero-drop-copy"><span class="hero-drop-label" id="hero-drop-label">NEXT WEEKLY DROP</span></div>
-              <button type="button" class="lux-round-go" onclick="handleNavShopClick()" aria-label="Shop the drops"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+              <button type="button" class="lux-round-go" onclick="openWeeklyDropProduct()" aria-label="Open Weekly Drop product"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
             </div>
           </div>
         </div>
@@ -3699,6 +3699,22 @@ function renderProductGalleryForColor(product, color, startIndex = 0) {
 function syncCurrentProductGalleryToColor() {
   if (!currentProduct) return;
   renderProductGalleryForColor(currentProduct, selectedColor, 0);
+}
+
+function openWeeklyDropProduct() {
+  // The hero CTA must open the Weekly Drop product directly.
+  // Do not route through the collection/category section.
+  const product = syncWeeklyDropProductFromCategory();
+  const weeklyCat = CATEGORIES.find(
+    c => String(c?.name || '').trim().toLowerCase() === 'weekly drop'
+  );
+
+  if (!weeklyCat || !product) {
+    showToast('Weekly Drop product is not available yet.');
+    return;
+  }
+
+  openProductByDetails(weeklyCat.name, product.id);
 }
 
 function syncWeeklyDropProductFromCategory() {
