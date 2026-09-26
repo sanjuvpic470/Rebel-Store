@@ -8071,8 +8071,20 @@ function renderAdminCategoriesMainGrid() {
           </label>
         </div>
       </div>
-      <span class="admin-product-mini-arrow">${selected ? '↓' : '→'}</span>
+      <button type="button" class="admin-product-mini-arrow" aria-label="${selected ? 'Hide product details' : 'Show product details'}">${selected ? '↓' : '→'}</button>
     `;
+    const arrowBtn = card.querySelector('.admin-product-mini-arrow');
+    if (arrowBtn) {
+      arrowBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (selected) {
+          backToAdminCategoriesGrid();
+        } else {
+          openAdminProductEditor(cat.name, pIndex);
+        }
+      });
+    }
     const openFromCard = (e) => {
       if (e.target.closest('.admin-inline-product-editor, input, button, select, textarea, label, a')) return;
       e.preventDefault();
