@@ -467,13 +467,13 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .admin-category-visibility{display:flex;align-items:center;gap:.3rem;font-family:'Space Mono',monospace;font-size:.55rem;color:#aaa;white-space:nowrap;cursor:pointer}
 .admin-category-add-btn{min-height:32px!important;padding:.3rem .55rem!important;font-size:.58rem!important;white-space:nowrap}
 .admin-category-accordion .drag-handle{padding:7px 9px;font-size:.6rem;border:1px solid rgba(250,204,21,.2);background:#0d0d0f;color:var(--spray-yellow);cursor:grab}
-.admin-category-accordion-body{grid-template-columns:repeat(5,minmax(0,1fr));gap:.7rem;padding:.8rem;border-top:1px solid rgba(242,240,234,.08);background:rgba(0,0,0,.12);align-items:start}
+.admin-category-accordion-body{grid-template-columns:repeat(4,minmax(0,1fr));gap:.8rem;padding:.8rem;border-top:1px solid rgba(242,240,234,.08);background:rgba(0,0,0,.12);align-items:start}
 .admin-product-mini-card{position:relative;display:flex;flex-direction:column;align-items:stretch;gap:.55rem;text-align:left;width:100%;min-width:0;padding:.65rem;background:#111114;border:1px solid rgba(242,240,234,.12);border-radius:10px;color:var(--paper);cursor:pointer;transition:border-color .15s,transform .15s,background .15s,box-shadow .15s;box-sizing:border-box}
 .admin-product-mini-card:hover{border-color:rgba(250,204,21,.75);background:#17171a;transform:translateY(-1px)}
 .admin-product-mini-card.is-selected{border-color:var(--spray-yellow);background:linear-gradient(180deg,rgba(250,204,21,.11),#111114 42%);box-shadow:0 0 0 1px rgba(250,204,21,.22),0 8px 24px rgba(0,0,0,.2)}
-.admin-product-mini-image{width:100%;height:155px;flex:0 0 155px;border:1px solid rgba(242,240,234,.12);background:#0a0a0c;border-radius:7px;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.admin-product-mini-image img{width:100%;height:100%;object-fit:contain;display:block}
-.admin-inline-product-editor{grid-column:1/-1;width:100%;box-sizing:border-box;margin:.2rem 0 .25rem!important;scroll-margin-top:1rem}
+.admin-product-mini-image{width:100%;height:220px;flex:0 0 220px;border:1px solid rgba(242,240,234,.12);background:#0a0a0c;border-radius:7px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.admin-product-mini-image img{width:100%;height:100%;object-fit:contain;display:block;transform:scale(1.32);transform-origin:center}
+.admin-inline-product-editor{display:block!important;width:100%;box-sizing:border-box;margin:.85rem 0 .1rem!important;padding-top:.85rem;border-top:1px solid rgba(250,204,21,.2);scroll-margin-top:1rem}
 .admin-inline-product-editor .admin-product-row{margin-bottom:1rem}
 .admin-inline-product-editor .admin-product-editor-back{display:inline-flex}
 .admin-product-mini-copy{width:100%;}
@@ -486,6 +486,7 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .admin-product-mini-copy>span{font-family:'Space Mono',monospace;font-size:.55rem;color:#999;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .admin-product-mini-meta{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.15rem}
 .admin-product-status,.admin-product-weekly-badge{font-family:'Space Mono',monospace;font-size:.43rem;padding:.16rem .3rem;border-radius:999px;white-space:nowrap}
+.admin-product-weekly-toggle{display:inline-flex;align-items:center;gap:.22rem;font-family:'Space Mono',monospace;font-size:.43rem;color:var(--spray-yellow);padding:.16rem .3rem;border:1px solid rgba(250,204,21,.35);background:rgba(250,204,21,.07);border-radius:999px;white-space:nowrap;cursor:pointer}
 .admin-product-status.is-active{background:rgba(34,197,94,.14);color:#65e48a;border:1px solid rgba(34,197,94,.35)}
 .admin-product-status.is-hidden{background:rgba(255,80,80,.1);color:#ff8585;border:1px solid rgba(255,80,80,.35)}
 .admin-product-weekly-badge{background:rgba(250,204,21,.12);color:var(--spray-yellow);border:1px solid rgba(250,204,21,.35)}
@@ -495,17 +496,17 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .admin-product-editor-back{margin-bottom:.4rem}
 #admin-category-detail-view .admin-product-row{max-width:none}
 @media(max-width:1180px){
-  .admin-category-accordion-body{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .admin-category-accordion-body{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 @media(max-width:900px){
-  .admin-category-accordion-body{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .admin-category-accordion-body{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:760px){
   .admin-category-accordion-head{align-items:flex-start;flex-wrap:wrap}
   .admin-category-title-wrap{order:1;flex:1 1 calc(100% - 48px)}
   .admin-category-actions{order:3;width:100%;justify-content:flex-start;padding-left:40px}
   .admin-category-accordion-body{grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem;padding:.6rem}
-  .admin-product-mini-image{height:135px;flex-basis:135px}
+  .admin-product-mini-image{height:175px;flex-basis:175px}
 }
 @media(max-width:460px){
   .admin-category-accordion-body{grid-template-columns:1fr}
@@ -3235,6 +3236,7 @@ function enforceSingleNextWeeklyDrop(preferredCode = '') {
 }
 
 function setNextWeeklyDropProduct(cIndex, pIndex, enabled) {
+  collectCategoryFormValues();
   const target = CATEGORIES?.[cIndex]?.products?.[pIndex];
   if (!target) return;
   if (enabled) {
@@ -3249,7 +3251,7 @@ function setNextWeeklyDropProduct(cIndex, pIndex, enabled) {
     localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
     const localSiteContent = { ...SITE_CONTENT }; delete localSiteContent.dropPreviewImage;
     localStorage.setItem('rebel_site_content', JSON.stringify(localSiteContent));
-    renderAdminProductFormsForCategory(CATEGORIES[cIndex].name, activeAdminEditingProductIndex);
+    renderAdminCategoriesMainGrid();
     applySiteContentToDOM();
     renderStorefront();
     saveAllCategoriesAndProducts();
@@ -3258,6 +3260,7 @@ function setNextWeeklyDropProduct(cIndex, pIndex, enabled) {
     target.isNextWeeklyDrop = false;
     localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
     SITE_CONTENT.dropPreviewImage = '';
+    renderAdminCategoriesMainGrid();
     applySiteContentToDOM();
     renderStorefront();
     saveAllCategoriesAndProducts();
@@ -8062,11 +8065,12 @@ function renderAdminCategoriesMainGrid() {
     const imageHtml = image
       ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(title)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"><div class="admin-product-thumb-placeholder" style="display:none;">NO IMAGE</div>`
       : `<div class="admin-product-thumb-placeholder">NO IMAGE</div>`;
-    const card = document.createElement('button');
-    card.type = 'button';
+    const card = document.createElement('div');
     card.className = `admin-product-mini-card${selected ? ' is-selected' : ''}`;
     card.dataset.productIndex = String(pIndex);
     card.dataset.categoryName = cat.name;
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
     card.innerHTML = `
       <div class="admin-product-mini-image">${imageHtml}</div>
       <div class="admin-product-mini-copy">
@@ -8074,15 +8078,23 @@ function renderAdminCategoriesMainGrid() {
         <span>${escapeHtml(code)}</span>
         <div class="admin-product-mini-meta">
           <span class="admin-product-status ${active ? 'is-active' : 'is-hidden'}">${active ? 'Active' : 'Hidden'}</span>
-          ${weekly ? '<span class="admin-product-weekly-badge">NEXT WEEKLY DROP</span>' : ''}
+          <label class="admin-product-weekly-toggle" title="Use this product for Next Weekly Drop" onclick="event.stopPropagation()">
+            <input type="checkbox" ${weekly ? 'checked' : ''} aria-label="Use ${escapeHtml(title)} for Next Weekly Drop" onchange="setNextWeeklyDropProduct(${catIndex},${pIndex},this.checked); event.stopPropagation();" style="accent-color:var(--spray-yellow);width:14px;height:14px;">
+            <span>Next Weekly Drop</span>
+          </label>
         </div>
       </div>
-      <span class="admin-product-mini-arrow">→</span>
+      <span class="admin-product-mini-arrow">${selected ? '↓' : '→'}</span>
     `;
-    card.addEventListener('click', (e) => {
+    const openFromCard = (e) => {
+      if (e.target.closest('.admin-inline-product-editor, input, button, select, textarea, label, a')) return;
       e.preventDefault();
       e.stopPropagation();
       openAdminProductEditor(cat.name, pIndex);
+    };
+    card.addEventListener('click', openFromCard);
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') openFromCard(e);
     });
     card.addEventListener('dragstart', e => e.stopPropagation());
     return card;
@@ -8154,7 +8166,7 @@ function renderAdminCategoriesMainGrid() {
           detailPanel.style.display = 'block';
           detailPanel.dataset.inlineCategory = cat.name;
           detailPanel.dataset.inlineProductIndex = String(activeAdminEditingProductIndex);
-          if (selectedCard) selectedCard.after(detailPanel);
+          if (selectedCard) selectedCard.appendChild(detailPanel);
           else body.appendChild(detailPanel);
         }
       }
@@ -8356,13 +8368,7 @@ function renderAdminProductFormsForCategory(catName, productIndex = null) {
         <div><label class="admin-field-label">MRP</label><input type="number" id="prod-mrp-${cIndex}-${pIndex}" class="admin-input-small" value="${prod.mrp}"></div>
         <div><label class="admin-field-label">Price</label><input type="number" id="prod-price-${cIndex}-${pIndex}" class="admin-input-small" value="${prod.price}"></div>
       </div>
-      <div style="margin-bottom:.7rem;">
-        <label style="display:flex;align-items:center;gap:.55rem;background:#111113;border:1px solid rgba(255,213,0,.28);padding:.65rem .75rem;font-family:'Space Mono';font-size:.62rem;color:var(--paper);cursor:pointer;">
-          <input type="checkbox" id="prod-weekly-drop-${cIndex}-${pIndex}" ${prod.isNextWeeklyDrop ? 'checked' : ''} onchange="setNextWeeklyDropProduct(${cIndex},${pIndex},this.checked)" style="accent-color:var(--spray-yellow);width:17px;height:17px;">
-          <span>Use this product for <strong style="color:var(--spray-yellow);">Next Weekly Drop</strong></span>
-        </label>
-        <div style="font-family:'Space Mono';font-size:.56rem;color:#888;margin-top:.25rem;line-height:1.4;">Only one product can be selected. The homepage Weekly Drop image automatically uses this product's first image URL.</div>
-      </div>
+      <div style="margin-bottom:.7rem;font-family:'Space Mono';font-size:.56rem;color:#888;line-height:1.4;">Next Weekly Drop is controlled from the product card above. Only one product can be selected at a time.</div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:.8rem; margin-bottom:.5rem;">
         <div>
           <label class="admin-field-label">T-Shirt Lab</label>
@@ -8702,10 +8708,8 @@ function collectCategoryFormValues() {
     const sizesInput = document.getElementById(`prod-sizes-${cIndex}-${pIndex}`);
     const disabledSizesInput = document.getElementById(`prod-disabled-sizes-${cIndex}-${pIndex}`);
     const customizeInput = document.getElementById(`prod-customize-${cIndex}-${pIndex}`);
-    const weeklyDropInput = document.getElementById(`prod-weekly-drop-${cIndex}-${pIndex}`);
 
     if (customizeInput) prod.customizeEnabled = !!customizeInput.checked;
-    if (weeklyDropInput) prod.isNextWeeklyDrop = !!weeklyDropInput.checked;
     if (codeInput) prod.code = codeInput.value.trim().toUpperCase();
     if (titleInput) prod.title = titleInput.value.trim();
     if (mrpInput) prod.mrp = parseInt(mrpInput.value) || 1070;
