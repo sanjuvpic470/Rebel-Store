@@ -3812,12 +3812,19 @@ function setLaunchBypass(enabled) {
   } catch (_) {}
 }
 
+function isAdminPortalActive() {
+  const adminView = document.getElementById('admin-view');
+  return !!(adminView && adminView.style.display !== 'none' && currentRole === 'owner');
+}
+
 function updateLaunchModeOverlay() {
   const overlay = document.getElementById('launch-mode-overlay');
   const message = document.getElementById('launch-mode-message');
   if (!overlay) return;
   if (message) message.textContent = String(LAUNCH_MODE.text || 'Launching Soon');
-  const shouldShow = isLaunchModeEnabled() && !hasLaunchBypass();
+  // Launch Mode applies only to the public storefront. Never cover the owner
+  // admin portal, including immediately after Apply is pressed while #admin is open.
+  const shouldShow = isLaunchModeEnabled() && !hasLaunchBypass() && !isAdminPortalActive();
   overlay.style.display = shouldShow ? 'flex' : 'none';
   overlay.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
   document.body.classList.toggle('launch-mode-active', shouldShow);
