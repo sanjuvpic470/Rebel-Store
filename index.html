@@ -473,7 +473,7 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .admin-product-mini-card.is-selected{border-color:var(--spray-yellow);background:linear-gradient(180deg,rgba(250,204,21,.11),#111114 42%);box-shadow:0 0 0 1px rgba(250,204,21,.22),0 8px 24px rgba(0,0,0,.2)}
 .admin-product-mini-image{width:100%;height:220px;flex:0 0 220px;border:1px solid rgba(242,240,234,.12);background:#0a0a0c;border-radius:7px;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .admin-product-mini-image img{width:100%;height:100%;object-fit:contain;display:block;transform:scale(1.32);transform-origin:center}
-.admin-inline-product-editor{display:block!important;width:100%;box-sizing:border-box;margin:.85rem 0 .1rem!important;padding-top:.85rem;border-top:1px solid rgba(250,204,21,.2);scroll-margin-top:1rem}
+.admin-inline-product-editor{display:block!important;grid-column:1/-1!important;width:100%!important;max-width:none!important;box-sizing:border-box;margin:.85rem 0 .1rem!important;padding-top:.85rem;border-top:1px solid rgba(250,204,21,.2);scroll-margin-top:1rem}
 .admin-inline-product-editor .admin-product-row{margin-bottom:1rem}
 .admin-inline-product-editor .admin-product-editor-back{display:inline-flex}
 .admin-product-mini-copy{width:100%;}
@@ -8166,8 +8166,10 @@ function renderAdminCategoriesMainGrid() {
           detailPanel.style.display = 'block';
           detailPanel.dataset.inlineCategory = cat.name;
           detailPanel.dataset.inlineProductIndex = String(activeAdminEditingProductIndex);
-          if (selectedCard) selectedCard.appendChild(detailPanel);
-          else body.appendChild(detailPanel);
+          // Keep the selected card in the 4-column row. The full editor belongs
+          // to the row itself, so it uses the complete width underneath the cards
+          // instead of becoming a tall narrow left-side column.
+          body.appendChild(detailPanel);
         }
       }
     }
