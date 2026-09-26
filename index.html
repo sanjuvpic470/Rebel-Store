@@ -2544,6 +2544,25 @@ footer .footer-grid{gap:2.2rem;}
       </section>
     </div>
 
+    <div class="launch-control" style="margin-top:1.25rem; margin-bottom:1.35rem;">
+      <div class="admin-panel-head" style="margin-bottom:.8rem;">
+        <div><span class="admin-mini-label">WEBSITE STATUS</span><h2 style="font-family:'Anton',sans-serif;font-size:1.35rem;text-transform:uppercase;margin:.15rem 0 0;">Launch Mode</h2></div>
+        <button type="button" id="launch-mode-status-btn" class="launch-status-btn" onclick="toggleLaunchModeFromStatusButton()"><span class="launch-status-light"></span><span id="launch-mode-status-text">LIVE</span></button>
+      </div>
+      <div class="launch-control-grid">
+        <label style="display:flex;align-items:center;gap:.55rem;min-height:42px;font-family:'Space Mono',monospace;font-size:.7rem;color:var(--paper);">
+          <input type="checkbox" id="launch-mode-enabled" onchange="syncLaunchModeControlUI()" style="accent-color:var(--spray-yellow);width:18px;height:18px;">
+          <span>Show Launch / Backend screen</span>
+        </label>
+        <div>
+          <label class="admin-field-label">Launch Screen Text</label>
+          <input type="text" id="launch-mode-text" class="admin-input-full" style="margin-bottom:0;" value="Launching Soon" placeholder="Launching Soon">
+        </div>
+        <button type="button" class="btn btn--solid" id="launch-mode-apply-btn" onclick="applyLaunchModeSettings()" style="min-height:42px;">Apply</button>
+      </div>
+      <div style="margin-top:.65rem;font-family:'Space Mono';font-size:.58rem;color:var(--grey);line-height:1.5;">ON = visitors see only the launch message. OFF = normal website is live. The launch message itself has no visible clickable hint.</div>
+    </div>
+
     <div class="admin-section-title"><span>MANAGE</span><small>Only the tools you already use</small></div>
     <div class="admin-nav-grid admin-nav-grid-new" id="admin-nav-grid">
       <button class="admin-nav-card admin-nav-primary" onclick="openAdminSubPage('subpage-orders')"><span class="admin-nav-icon">🛍️</span><span><b>Orders</b><small>Open, update & ship</small></span><em>→</em></button>
@@ -2853,25 +2872,6 @@ footer .footer-grid{gap:2.2rem;}
         <h2>⚙️ T-Shirt Product Manager & Categories</h2>
         <button class="btn btn--ghost" style="padding:0.4rem 1rem; font-size:0.8rem;" onclick="closeAdminSubPages()">← Back to Dashboard</button>
       </div>
-      <div class="launch-control">
-        <div class="admin-panel-head" style="margin-bottom:.8rem;">
-          <div><span class="admin-mini-label">STORE ACCESS</span><h2 style="font-family:'Anton',sans-serif;font-size:1.35rem;text-transform:uppercase;margin:.15rem 0 0;">Launch Mode</h2></div>
-          <button type="button" id="launch-mode-status-btn" class="launch-status-btn" onclick="toggleLaunchModeFromStatusButton()"><span class="launch-status-light"></span><span id="launch-mode-status-text">LIVE</span></button>
-        </div>
-        <div class="launch-control-grid">
-          <label style="display:flex;align-items:center;gap:.55rem;min-height:42px;font-family:'Space Mono',monospace;font-size:.7rem;color:var(--paper);">
-            <input type="checkbox" id="launch-mode-enabled" onchange="syncLaunchModeControlUI()" style="accent-color:var(--spray-yellow);width:18px;height:18px;">
-            <span>Show Launch / Backend screen</span>
-          </label>
-          <div>
-            <label class="admin-field-label">Launch Screen Text</label>
-            <input type="text" id="launch-mode-text" class="admin-input-full" style="margin-bottom:0;" value="Launching Soon" placeholder="Launching Soon">
-          </div>
-          <button type="button" class="btn btn--solid" id="launch-mode-apply-btn" onclick="applyLaunchModeSettings()" style="min-height:42px;">Apply</button>
-        </div>
-        <div style="margin-top:.65rem;font-family:'Space Mono';font-size:.58rem;color:var(--grey);line-height:1.5;">ON = visitors see only the launch message. OFF = normal website is live. The launch message itself has no visible clickable hint.</div>
-      </div>
-
       <div style="background:#111; padding:1.2rem; border:1px solid rgba(242,240,234,.15); margin-bottom:1.5rem;">
         <label class="admin-field-label">+ Add New Store Category</label>
         <div style="display:flex; gap:.8rem;">
