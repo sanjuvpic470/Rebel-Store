@@ -3343,7 +3343,10 @@ let DEFAULT_SITE_CONTENT = {
 let CATEGORIES = JSON.parse(localStorage.getItem('rebel_categories')) || DEFAULT_CATEGORIES;
 CATEGORIES = Array.isArray(CATEGORIES) ? CATEGORIES : DEFAULT_CATEGORIES;
 CATEGORIES = Array.isArray(CATEGORIES) ? CATEGORIES : [];
-CATEGORIES.forEach(cat => { if (cat && typeof cat.active !== 'boolean') cat.active = true; });
+CATEGORIES.forEach(cat => {
+  if (cat && typeof cat.active !== 'boolean') cat.active = true;
+  if (cat && typeof cat.showInTshirtLab !== 'boolean') cat.showInTshirtLab = false;
+});
 
 function getNextWeeklyDropProduct() {
   if (!Array.isArray(CATEGORIES)) return null;
@@ -4131,17 +4134,52 @@ function renderStorefront() {
 }
 
 function getTShirtLabProducts() {
-  return CUSTOM_TSHIRT_CATEGORIES
+  const regularProducts = [];
+  CATEGORIES.forEach((cat, categoryIndex) => {
+    if (!cat || cat.active === false || cat.showInTshirtLab !== true) return;
+    if (String(cat.name || '').trim().toLowerCase() === 'weekly drop') return;
+    (Array.isArray(cat.products) ? cat.products : []).forEach((prod, productIndex) => {
+      if (!prod || prod.active === false) return;
+      regularProducts.push({
+        cat,
+        prod,
+        categoryIndex,
+        productIndex,
+        value: `store::${categoryIndex}::${productIndex}`,
+        source: 'store'
+      });
+    });
+  });
+
+  const customProducts = CUSTOM_TSHIRT_CATEGORIES
     .filter(item => item && item.active !== false)
-    .map(item => ({ cat:{ name:'Custom T-shirt Orders' }, prod:ensureCustomTshirtCategoryShape(item) }));
+    .map(item => ({
+      cat: { name: 'Custom T-shirt Orders' },
+      prod: ensureCustomTshirtCategoryShape(item),
+      value: `custom::${item.id}`,
+      source: 'custom'
+    }));
+
+  return regularProducts.concat(customProducts);
 }
 
 function findTShirtLabSelection(value) {
   const raw = String(value || '');
-  if (!raw.startsWith('custom::')) return null;
-  const productId = raw.slice('custom::'.length);
-  const prod = getCustomTshirtCategoryById(productId);
-  return prod ? { cat:{ name:'Custom T-shirt Orders' }, prod:ensureCustomTshirtCategoryShape(prod) } : null;
+  if (raw.startsWith('custom::')) {
+    const productId = raw.slice('custom::'.length);
+    const prod = getCustomTshirtCategoryById(productId);
+    return prod ? { cat:{ name:'Custom T-shirt Orders' }, prod:ensureCustomTshirtCategoryShape(prod), source:'custom' } : null;
+  }
+  if (raw.startsWith('store::')) {
+    const parts = raw.split('::');
+    const categoryIndex = Number(parts[1]);
+    const productIndex = Number(parts[2]);
+    const cat = CATEGORIES?.[categoryIndex];
+    const prod = cat?.products?.[productIndex];
+    if (!cat || !prod || cat.showInTshirtLab !== true || prod.active === false) return null;
+    return { cat, prod, categoryIndex, productIndex, source:'store' };
+  }
+  return null;
 }
 
 function getProductColorHex(prod, color) {
@@ -4382,7 +4420,7 @@ async function addCustomOrderToCart() {
   if (customOrderSubmitInProgress) { showToast('Custom order is already being added. Please wait...'); return; }
   if (custQty < 2) { showToast('Minimum quantity for T-Shirt Lab is 2!'); return; }
   const selection = findTShirtLabSelection(document.getElementById('cust-garment')?.value || '');
-  const garment = selection?.prod?.name || '';
+  const garment = selection?.prod?.name || selection?.prod?.title || selection?.prod?.code || '';
   const garmentCategory = selection?.cat?.name || '';
   if (selection?.prod) { custUnitPrice = Number(selection.prod.price || custUnitPrice || 699); custColor = custColor || selection.prod.colors?.[0] || 'Black'; custSize = custSize || selection.prod.sizes?.[0] || 'M'; }
   if (!garment) { showToast('Please select a T-Shirt for T-Shirt Lab.'); return; }
@@ -8476,16 +8514,29 @@ function updateCustomTshirtLabDropdownOnly(preferredValue = '') {
   const select = document.getElementById('cust-garment');
   if (!select) return;
   const current = preferredValue || select.value;
-  const active = CUSTOM_TSHIRT_CATEGORIES.filter(item => item && item.active !== false).map(ensureCustomTshirtCategoryShape);
+  const labProducts = getTShirtLabProducts();
   select.innerHTML = '';
-  active.forEach(item => {
+
+  if (!labProducts.length) {
     const opt = document.createElement('option');
-    opt.value = `custom::${item.id}`;
-    opt.textContent = item.name;
+    opt.value = '';
+    opt.textContent = 'No T-Shirt Lab products enabled';
+    select.appendChild(opt);
+    return;
+  }
+
+  labProducts.forEach(item => {
+    const opt = document.createElement('option');
+    opt.value = item.value;
+    const label = item.source === 'store'
+      ? `${item.cat.name} · ${item.prod.title || item.prod.name || item.prod.code || 'Product'}`
+      : `${item.prod.name || 'Custom Garment'}`;
+    opt.textContent = label;
     if (opt.value === current) opt.selected = true;
     select.appendChild(opt);
   });
-  if (!select.value && active[0]) select.value = `custom::${active[0].id}`;
+
+  if (!select.value) select.value = labProducts[0].value;
 }
 
 function renderAdminCategoriesMainGrid() {
@@ -8591,6 +8642,10 @@ function renderAdminCategoriesMainGrid() {
             <input type="checkbox" ${isVisible ? 'checked' : ''} onchange="toggleCategoryVisibility(${index}, this.checked)" style="accent-color:var(--spray-yellow);width:17px;height:17px;">
             <span>Show on Website</span>
           </label>
+          <label class="admin-category-visibility" onclick="event.stopPropagation()" title="Show this category's products in T-Shirt Lab">
+            <input type="checkbox" ${cat.showInTshirtLab === true ? 'checked' : ''} onchange="toggleCategoryTshirtLab(${index}, this.checked)" style="accent-color:var(--spray-yellow);width:17px;height:17px;">
+            <span>T-Shirt Lab</span>
+          </label>
           <button type="button" class="btn btn--solid admin-category-add-btn" onclick="event.stopPropagation();addProductToCategoryAndOpen('${escapeHtml(cat.name)}')">+ Add Product</button>
           <span class="drag-handle" title="Drag to reorder category">☰</span>
         </div>
@@ -8623,18 +8678,21 @@ function renderAdminCategoriesMainGrid() {
         products.forEach((prod, pIndex) => body.appendChild(makeProductCard(cat, index, prod, pIndex)));
       }
 
-      // Keep the full product editor directly under the selected T-shirt.
+      // Keep the full product editor immediately below the visual row that
+      // contains the selected T-shirt. On desktop the grid has four columns,
+      // while on smaller screens we calculate the actual rendered column count.
       if (activeAdminEditingCategoryName === cat.name && Number.isInteger(activeAdminEditingProductIndex) && products[activeAdminEditingProductIndex]) {
         if (detailPanel) {
-          const selectedCard = body.querySelector(`.admin-product-mini-card[data-product-index="${activeAdminEditingProductIndex}"]`);
+          const selectedIndex = Number(activeAdminEditingProductIndex);
+          const gridColumns = Math.max(1, (getComputedStyle(body).gridTemplateColumns || '').split(/\s+/).filter(Boolean).length || 4);
+          const rowEndIndex = Math.min(products.length - 1, Math.floor(selectedIndex / gridColumns) * gridColumns + gridColumns - 1);
+          const rowEndCard = body.querySelector(`.admin-product-mini-card[data-product-index="${rowEndIndex}"]`);
           detailPanel.classList.add('admin-inline-product-editor');
           detailPanel.style.display = 'block';
           detailPanel.dataset.inlineCategory = cat.name;
-          detailPanel.dataset.inlineProductIndex = String(activeAdminEditingProductIndex);
-          // Keep the selected card in the 4-column row. The full editor belongs
-          // to the row itself, so it uses the complete width underneath the cards
-          // instead of becoming a tall narrow left-side column.
-          body.appendChild(detailPanel);
+          detailPanel.dataset.inlineProductIndex = String(selectedIndex);
+          if (rowEndCard) rowEndCard.insertAdjacentElement('afterend', detailPanel);
+          else body.appendChild(detailPanel);
         }
       }
     }
@@ -8697,6 +8755,25 @@ async function toggleCategoryVisibility(index, checked) {
     if (error) { console.error('Category visibility cloud save failed:', error); showToast('Saved locally; cloud save failed.'); return; }
   }
   showToast(`${cat.name}: ${cat.active ? 'visible on website' : 'hidden from website'}`);
+}
+
+async function toggleCategoryTshirtLab(index, checked) {
+  const cat = CATEGORIES[index];
+  if (!cat) return;
+  cat.showInTshirtLab = !!checked;
+  try { localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES)); } catch (_) {}
+  renderAdminCategoriesMainGrid();
+  updateCustomOrderGarmentDropdown();
+  renderTShirtLabOptions();
+  if (supabaseClient) {
+    const { error } = await supabaseClient.from('store_settings').upsert({ key:'store_categories', value:CATEGORIES }, { onConflict:'key' });
+    if (error) {
+      console.error('T-Shirt Lab category cloud save failed:', error);
+      showToast('Saved locally; cloud save failed.');
+      return;
+    }
+  }
+  showToast(`${cat.name}: ${cat.showInTshirtLab ? 'added to T-Shirt Lab' : 'removed from T-Shirt Lab'}`);
 }
 
 function openAdminCategoryProducts(catName) {
@@ -8992,6 +9069,7 @@ function addNewCategory() {
   CATEGORIES.push({
     id: 'cat-' + Date.now(),
     name: name,
+    showInTshirtLab: false,
     products: [
       { id: 'p' + Date.now(), code: 'NEW1', title: `New ${name} 01`, desc: 'Heavyweight cotton drop.', description: 'Heavyweight cotton drop.', material:'100% Cotton', fabric:'Premium 240 GSM Cotton', careInstructions:[...REBEL_DEFAULT_CARE], productDetails:{fit:'',fabric:'Premium 240 GSM Cotton',fabricWeight:'240 GSM',sleeve:'Half Sleeve',neck:'Round Neck',countryOfOrigin:'India'}, colorMaterialImages:{yellow:'',white:''}, mrp: 1200, price: 800, images: [''], colors: ['Yellow', 'White'], colorImages: {yellow:[], white:[]}, sizes: ['S', 'M', 'L', 'XL'], sizeChart: [], customizeEnabled: true, isNextWeeklyDrop: false, active: true }
     ]
