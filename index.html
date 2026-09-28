@@ -8925,7 +8925,7 @@ function renderAdminProductFormsForCategory(catName, productIndex = null) {
       <div style="margin-bottom:.7rem;padding:.7rem;border:1px solid rgba(255,213,0,.16);background:rgba(255,213,0,.025);">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap;">
           <label class="admin-field-label" style="margin:0;">Find My Size — Product Size Measurements (inches)</label>
-          <button type="button" class="btn btn--ghost" style="padding:.35rem .7rem;min-height:auto;font-size:.6rem;white-space:nowrap;" onclick="applyAdminProductSizeChart(${cIndex},${pIndex})">Apply</button>
+          <button type="button" class="btn btn--ghost" style="padding:.35rem .7rem;min-height:auto;font-size:.6rem;white-space:nowrap;" onclick="applyAdminProductSizeChartToCategory(${cIndex},${pIndex})">Apply on all ${escapeHtml(catObj.name)}</button>
         </div>
         <div style="font-family:'Space Mono';font-size:.58rem;color:#888;margin:.25rem 0 .55rem;line-height:1.45;">Enter this product's own garment measurements. Click Apply to save these measurements for this product only.</div>
         <div id="prod-size-chart-wrap-${cIndex}-${pIndex}" style="display:grid;gap:.4rem;">
@@ -9204,28 +9204,80 @@ function updateAdminProductColorHex(cIndex, pIndex, colorIndex, value) {
   });
 }
 
+async function readAdminProductSizeChart(cIndex, pIndex) {
+  const cat = CATEGORIES?.[cIndex];
+  const prod = cat?.products?.[pIndex];
+  if (!prod) return [];
+
+  ensureProductSizeChartForAdmin(prod);
+  const existingBySize = new Map((Array.isArray(prod.sizeChart) ? prod.sizeChart : []).map(row => [String(row?.size || '').trim().toLowerCase(), row]));
+  return (prod.sizes || []).map((size, sizeIndex) => {
+    const key = String(size || '').trim().toLowerCase();
+    const fallback = existingBySize.get(key) || {};
+    const readNum = (suffix, fallbackValue) => {
+      const el = document.getElementById(`prod-chart-${cIndex}-${pIndex}-${sizeIndex}-${suffix}`);
+      const value = Number(el?.value || 0);
+      return Number.isFinite(value) && value > 0 ? value : Number(fallbackValue || 0);
+    };
+    return {
+      size: String(size || '').trim(),
+      chest: readNum('chest', fallback.chest),
+      length: readNum('length', fallback.length),
+      shoulder: readNum('shoulder', fallback.shoulder),
+      sleeve: readNum('sleeve', fallback.sleeve)
+    };
+  }).filter(row => row.size);
+}
+
+async function applyAdminProductSizeChartToCategory(cIndex, pIndex) {
+  const cat = CATEGORIES?.[cIndex];
+  const source = cat?.products?.[pIndex];
+  if (!cat || !source) return;
+
+  // Capture the measurements from the product currently being edited.
+  // The same size list + measurements are then applied to every product
+  // inside this category only. Other categories are never touched.
+  const sourceChart = await readAdminProductSizeChart(cIndex, pIndex);
+  if (!sourceChart.length) {
+    showToast('Add at least one size measurement first.');
+    return;
+  }
+
+  const sourceBySize = new Map(sourceChart.map(row => [String(row.size).trim().toLowerCase(), row]));
+  const sharedSizes = sourceChart.map(row => String(row.size).trim()).filter(Boolean);
+
+  (cat.products || []).forEach((prod) => {
+    if (!prod) return;
+    const oldDisabled = Array.isArray(prod.disabledSizes) ? prod.disabledSizes.slice() : [];
+    prod.sizes = [...sharedSizes];
+    // Keep each product's own availability/out-of-stock choices.
+    prod.disabledSizes = oldDisabled.filter(size => sharedSizes.some(shared => String(shared).toLowerCase() === String(size).toLowerCase()));
+    prod.sizeChart = sharedSizes.map(size => {
+      const row = sourceBySize.get(size.toLowerCase()) || {};
+      return {
+        size,
+        chest: Number(row.chest || 0),
+        length: Number(row.length || 0),
+        shoulder: Number(row.shoulder || 0),
+        sleeve: Number(row.sleeve || 0)
+      };
+    });
+    prod._categoryName = cat.name;
+  });
+
+  try { localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES)); } catch (_) {}
+  renderAdminProductFormsForCategory(cat.name, pIndex);
+  renderStorefront();
+  await saveAllCategoriesAndProducts({silent:true});
+  showToast(`Size chart applied to all ${cat.name} products.`);
+}
+
+// Backward-compatible single-product helper retained for any existing calls.
 async function applyAdminProductSizeChart(cIndex, pIndex) {
   const cat = CATEGORIES?.[cIndex];
   const prod = cat?.products?.[pIndex];
   if (!prod) return;
-
-  ensureProductSizeChartForAdmin(prod);
-  const chart = (prod.sizes || []).map((size, sizeIndex) => {
-    const readNum = (suffix, fallback) => {
-      const el = document.getElementById(`prod-chart-${cIndex}-${pIndex}-${sizeIndex}-${suffix}`);
-      const value = Number(el?.value || 0);
-      return Number.isFinite(value) && value > 0 ? value : Number(fallback || 0);
-    };
-    const prev = Array.isArray(prod.sizeChart) ? (prod.sizeChart[sizeIndex] || {}) : {};
-    return {
-      size: String(size || '').trim(),
-      chest: readNum('chest', prev.chest),
-      length: readNum('length', prev.length),
-      shoulder: readNum('shoulder', prev.shoulder),
-      sleeve: readNum('sleeve', prev.sleeve)
-    };
-  }).filter(row => row.size);
-
+  const chart = await readAdminProductSizeChart(cIndex, pIndex);
   prod.sizeChart = chart;
   try { localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES)); } catch (_) {}
   await saveAllCategoriesAndProducts({silent:true});
