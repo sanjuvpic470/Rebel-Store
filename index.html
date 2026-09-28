@@ -2212,11 +2212,10 @@ footer .footer-grid{gap:2.2rem;}
       </details>
 
       <details class="pdp-info-card">
-        <summary>Sold By &amp; Customer Support</summary>
+        <summary>Customer Support</summary>
         <div class="pdp-info-card-body">
           <div class="pdp-seller-grid">
-            <div class="pdp-seller-block"><strong>Sold By</strong><p id="pdp-seller-address">REBEL STORE\n1/24-1 V, Kumaran Colony, Annaiyambalam, Thirupur, 64165-2\nThirupur, Tamil Nadu, India.</p></div>
-            <div class="pdp-seller-block"><strong>Customer Support</strong><p>Phone: <a id="pdp-support-phone-link" href="#"><span id="pdp-support-phone">+91 8754 5450 66 66</span></a>\nEmail: <a id="pdp-support-email-link" href="#"><span id="pdp-support-email">info@RebelStore.com</span></a></p></div>
+            <div class="pdp-seller-block" style="grid-column:1 / -1;"><strong>Customer Support</strong><p>Phone: <a id="pdp-support-phone-link" href="#"><span id="pdp-support-phone">+91 8754546633</span></a><br>Email: <a id="pdp-support-email-link" href="#"><span id="pdp-support-email">info@rebelstore.co.in</span></a></p></div>
           </div>
         </div>
       </details>
@@ -2299,6 +2298,24 @@ footer .footer-grid{gap:2.2rem;}
         <div class="fit-finder-result-copy fit-finder-warning" id="fit-finder-result-warning"></div>
         <table class="fit-finder-chart"><thead><tr><th>Size</th><th>Chest</th><th>Length</th></tr></thead><tbody id="fit-finder-chart-body"></tbody></table>
         <div class="fit-finder-actions"><button type="button" class="fit-finder-secondary" onclick="resetFitFinder()">TRY AGAIN</button><button type="button" class="fit-finder-primary" onclick="useFitFinderSize()">USE THIS SIZE →</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CUSTOMER SUPPORT MODAL -->
+  <div class="auth-modal" id="customer-support-modal" onclick="if(event.target===this)closeCustomerSupportModal()">
+    <div class="profile-modal-box" style="max-width: 520px;">
+      <button class="cart-close-btn" style="position:absolute; top:10px; right:15px;" onclick="closeCustomerSupportModal()">×</button>
+      <h3>CUSTOMER SUPPORT</h3>
+      <div style="display:grid; gap:12px; margin-top:18px;">
+        <a href="tel:+918754546633" style="display:block; padding:14px 16px; border:1px solid rgba(255,255,255,.12); border-radius:8px; color:inherit; text-decoration:none;">
+          <div style="font-size:.68rem; opacity:.65; margin-bottom:5px; font-family:'Space Mono',monospace;">PHONE</div>
+          <div style="font-size:1rem; font-weight:700;">+91 8754546633</div>
+        </a>
+        <a href="mailto:info@rebelstore.co.in" style="display:block; padding:14px 16px; border:1px solid rgba(255,255,255,.12); border-radius:8px; color:inherit; text-decoration:none;">
+          <div style="font-size:.68rem; opacity:.65; margin-bottom:5px; font-family:'Space Mono',monospace;">EMAIL</div>
+          <div style="font-size:1rem; font-weight:700;">info@rebelstore.co.in</div>
+        </a>
       </div>
     </div>
   </div>
@@ -3063,6 +3080,7 @@ footer .footer-grid{gap:2.2rem;}
             <li><a onclick="openFaqModal()">Shipping / FAQ</a></li>
             <li><a onclick="openFaqModal()">Returns / Exchange</a></li>
             <li><a onclick="openFaqModal()">Help & Size Guide</a></li>
+            <li><a onclick="openCustomerSupportModal()">Customer Support</a></li>
           </ul>
         </div>
         <div>
@@ -4520,11 +4538,9 @@ function closeSizeChart() {
 }
 
 
-const REBEL_PRODUCT_SELLER = {
-  name: 'REBEL STORE',
-  address: '1/24-1 V, Kumaran Colony, Annaiyambalam, Thirupur, 64165-2\nThirupur, Tamil Nadu, India.',
-  phone: '+91 8754 5450 66 66',
-  email: 'info@RebelStore.com'
+const REBEL_CUSTOMER_SUPPORT = {
+  phone: '+91 8754546633',
+  email: 'info@rebelstore.co.in'
 };
 
 const REBEL_DEFAULT_CARE = [
@@ -4596,13 +4612,12 @@ function renderPdpProductInformation(product) {
   setTextIfPresent('pdp-detail-neck', d.neck || '—');
   setTextIfPresent('pdp-detail-origin', d.countryOfOrigin || 'India');
 
-  setTextIfPresent('pdp-seller-address', `${REBEL_PRODUCT_SELLER.name}\n${REBEL_PRODUCT_SELLER.address}`);
-  setTextIfPresent('pdp-support-phone', REBEL_PRODUCT_SELLER.phone);
-  setTextIfPresent('pdp-support-email', REBEL_PRODUCT_SELLER.email);
+  setTextIfPresent('pdp-support-phone', REBEL_CUSTOMER_SUPPORT.phone);
+  setTextIfPresent('pdp-support-email', REBEL_CUSTOMER_SUPPORT.email);
   const phoneLink = document.getElementById('pdp-support-phone-link');
   const emailLink = document.getElementById('pdp-support-email-link');
-  if (phoneLink) phoneLink.href = `tel:${REBEL_PRODUCT_SELLER.phone.replace(/[^\d+]/g,'')}`;
-  if (emailLink) emailLink.href = `mailto:${REBEL_PRODUCT_SELLER.email}`;
+  if (phoneLink) phoneLink.href = `tel:${REBEL_CUSTOMER_SUPPORT.phone.replace(/[^\d+]/g,'')}`;
+  if (emailLink) emailLink.href = `mailto:${REBEL_CUSTOMER_SUPPORT.email}`;
 }
 
 CATEGORIES.forEach(cat => (cat.products || []).forEach(prod => { prod._categoryName = cat.name; ensureProductInfoShape(prod); }));
@@ -5515,6 +5530,19 @@ function moveAllWishlistToCart() {
   updateCartBadge();
   renderCart();
   showToast(added ? `${added} wishlist item${added > 1 ? 's' : ''} added to bag` : 'No available wishlist items');
+}
+
+function openCustomerSupportModal() {
+  const modal = document.getElementById('customer-support-modal');
+  if (modal) {
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+}
+function closeCustomerSupportModal() {
+  const modal = document.getElementById('customer-support-modal');
+  if (modal) modal.style.display = 'none';
+  if (!document.querySelector('.auth-modal[style*="display: flex"]:not(#customer-support-modal):not(#faq-modal):not(#help-size-modal)')) document.body.style.overflow = '';
 }
 
 function openFaqModal() {
