@@ -3,30 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-
-<!-- Mobile browser "Request Desktop Site" support.
-     When a phone/tablet sends a desktop UA, switch the layout viewport to a
-     desktop width so the existing desktop CSS/JS layout is used instead of
-     the mobile breakpoints. Normal mobile mode remains unchanged. -->
-<script id="rebel-request-desktop-support">
-(function(){
-  try {
-    var ua = navigator.userAgent || '';
-    var touchCapable = (navigator.maxTouchPoints || 0) > 0 || 'ontouchstart' in window;
-    var smallTouchDevice = touchCapable && Math.min(screen.width || 9999, screen.height || 9999) <= 1024;
-    var mobileUa = /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
-    var desktopUaOnTouchDevice = smallTouchDevice && !mobileUa;
-
-    if (desktopUaOnTouchDevice) {
-      var viewport = document.querySelector('meta[name="viewport"]');
-      if (viewport) {
-        viewport.setAttribute('content', 'width=1200, initial-scale=1.0, maximum-scale=5.0');
-      }
-      document.documentElement.classList.add('rebel-desktop-requested');
-    }
-  } catch (_) {}
-})();
-</script>
 <title>REBEL STORE — Wear the Uprising</title>
 
 <meta name="google-site-verification" content="820c37cc797b4dc9" />
@@ -265,6 +241,48 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .add-to-cart-btn{width:100%;padding:1.1rem;font-size:1rem;justify-content:center;background:var(--spray-yellow);color:var(--ink);box-shadow:none;margin-bottom:.8rem}
 .wishlist-pdp-btn{width:100%;padding:1rem;font-size:.95rem;justify-content:center;background:transparent;color:var(--spray-yellow);border:1.5px solid var(--spray-yellow);box-shadow:none;cursor:pointer;font-family:'Space Mono',monospace;font-weight:700;text-transform:uppercase}
 .wishlist-pdp-btn:hover{background:var(--spray-yellow);color:var(--ink)}
+
+
+/* ---------- PRODUCT INFORMATION ACCORDIONS / TRUST STRIP ---------- */
+.pdp-trust-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;margin:2rem 0 1rem}
+.pdp-trust-item{display:flex;align-items:center;gap:.65rem;padding:1rem 1.1rem;background:var(--glass-bg);border:1px solid var(--glass-line);border-radius:1rem}
+.pdp-trust-icon{width:36px;height:36px;display:grid;place-items:center;border:1px solid rgba(250,204,21,.35);border-radius:50%;color:#FACC15;font-size:1rem;flex:0 0 auto}
+.pdp-trust-copy strong{display:block;color:#fff;font-size:.85rem;font-weight:700}
+.pdp-trust-copy span{display:block;color:#9ca3af;font-size:.68rem;margin-top:.12rem;line-height:1.35}
+.pdp-info-stack{display:flex;flex-direction:column;gap:.8rem;margin-top:1.3rem}
+.pdp-info-card{background:var(--glass-bg);border:1px solid var(--glass-line);border-radius:1.15rem;overflow:hidden}
+.pdp-info-card summary{list-style:none;cursor:pointer;padding:1.05rem 1.15rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;color:#fff;font-weight:700;font-size:1rem}
+.pdp-info-card summary::-webkit-details-marker{display:none}
+.pdp-info-card summary::after{content:'⌄';color:#FACC15;font-size:1.15rem;line-height:1;transition:transform .2s ease;transform:rotate(-90deg)}
+.pdp-info-card[open] summary::after{transform:rotate(0deg)}
+.pdp-info-card summary:hover{color:#FACC15}
+.pdp-info-card-body{padding:0 1.15rem 1.2rem;color:#d1d5db;line-height:1.7;font-size:.92rem;border-top:1px solid var(--lux-border)}
+.pdp-description-text{white-space:pre-line;padding-top:1rem}
+.pdp-material-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:1.15rem;align-items:start;padding-top:1rem}
+.pdp-material-image{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:.9rem;border:1px solid var(--lux-border);background:#0e0e10;display:block}
+.pdp-material-placeholder{min-height:280px;border-radius:.9rem;border:1px dashed rgba(250,204,21,.25);display:flex;align-items:center;justify-content:center;text-align:center;color:#777;padding:1rem;font-size:.76rem}
+.pdp-material-copy{display:flex;flex-direction:column;gap:.95rem}
+.pdp-material-row strong{display:block;color:#fff;font-size:.78rem;margin-bottom:.15rem}
+.pdp-material-row span,.pdp-material-row ul{color:#c9cdd3;font-size:.84rem;line-height:1.55}
+.pdp-material-row ul{margin:.3rem 0 0 1.1rem;padding:0}
+.pdp-details-table{width:100%;border-collapse:collapse;margin-top:1rem;font-size:.84rem}
+.pdp-details-table tr{border-bottom:1px solid rgba(255,255,255,.08)}
+.pdp-details-table tr:last-child{border-bottom:0}
+.pdp-details-table td{padding:.72rem .15rem;vertical-align:top}
+.pdp-details-table td:first-child{color:#9ca3af;width:42%}
+.pdp-details-table td:last-child{color:#fff;font-weight:600}
+.pdp-seller-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;padding-top:1rem}
+.pdp-seller-block{padding:1rem;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.08);border-radius:.9rem}
+.pdp-seller-block strong{display:block;color:#fff;margin-bottom:.4rem;font-size:.88rem}
+.pdp-seller-block p{margin:0;color:#c9cdd3;font-size:.82rem;line-height:1.6;white-space:pre-line}
+.pdp-seller-block a{color:#FACC15;text-decoration:none}
+.pdp-seller-block a:hover{text-decoration:underline}
+@media(max-width:700px){
+  .pdp-trust-strip{grid-template-columns:1fr;gap:.6rem}
+  .pdp-material-grid,.pdp-seller-grid{grid-template-columns:1fr}
+  .pdp-info-card summary{padding:.9rem 1rem;font-size:.93rem}
+  .pdp-info-card-body{padding:0 1rem 1rem}
+}
 
 .cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(4px);z-index:150;opacity:0;pointer-events:none;transition:opacity .25s ease}
 .cart-overlay.open{opacity:1;pointer-events:auto}
@@ -739,6 +757,18 @@ footer a:hover{color:var(--paper)}
 .admin-order-item-preview{min-height:46px!important}
 .admin-order-expand-hint{font-size:.46rem!important}
 @media(max-width:650px){.admin-orders-table{min-width:760px!important}.admin-order-action-buttons{grid-template-columns:minmax(105px,1fr) 38px 38px 34px!important}}
+
+
+/* ---------- PRODUCT CONTENT ADMIN ACCORDIONS ---------- */
+.admin-product-content-accordion{background:#111114;border:1px solid rgba(255,255,255,.1);border-radius:10px;overflow:hidden}
+.admin-product-content-accordion summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.75rem .85rem;color:#fff;font-family:'Space Mono';font-size:.65rem;font-weight:700}
+.admin-product-content-accordion summary::-webkit-details-marker{display:none}
+.admin-product-content-accordion summary span{color:var(--spray-yellow);font-size:.9rem;transition:transform .18s ease}
+.admin-product-content-accordion[open] summary span{transform:rotate(180deg)}
+.admin-product-content-accordion summary:hover{color:var(--spray-yellow)}
+.admin-product-content-accordion-body{border-top:1px solid rgba(255,255,255,.08);padding:.85rem}
+.admin-product-content-accordion-body textarea{resize:vertical;min-height:110px;line-height:1.5}
+@media(max-width:700px){.admin-product-content-accordion-body>div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}}
 
 /* ---------- T-SHIRT LAB ADMIN SETTINGS + MOBILE POLISH ---------- */
 .admin-custom-garment-add-box{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.75rem;background:#0f0f11;border:1px solid rgba(242,240,234,.1);padding:.8rem;margin:.8rem 0}
@@ -1325,6 +1355,7 @@ h1.hero__title .stroke{-webkit-text-stroke:0;color:#fff}
 .pdp-original-price{color:#6b7280}
 .pdp-discount{background:#FACC15;color:#080808;border-radius:9999px;padding:.2rem .7rem;font-weight:700}
 .pdp-desc{color:#9ca3af;line-height:1.7;margin-bottom:1.25rem;font-size:.95rem}
+#pdp-desc-text{display:none}
 .option-label{color:#9ca3af;font-size:.75rem;font-weight:500;letter-spacing:.05em}
 .pdp-info>div[style*="dashed"]{border-radius:1rem!important;background:rgba(250,204,21,.08)!important;border:1px dashed rgba(250,204,21,.4)!important;padding:.75rem 1rem!important;font-size:.8rem!important}
 #pdp-color-selector .color-swatch-btn{border:2px solid rgba(255,255,255,.25)}
@@ -2136,6 +2167,59 @@ footer .footer-grid{gap:2.2rem;}
         <button class="btn btn--solid add-to-cart-btn" id="add-btn" onclick="addToCart()">Add to Cart — ரூ 713</button>
         <button class="wishlist-pdp-btn" onclick="addToWishlist()">Add to Wishlist ❤️</button>
       </div>
+    </div>
+
+
+    <div class="pdp-trust-strip" aria-label="Store benefits">
+      <div class="pdp-trust-item"><div class="pdp-trust-icon">▣</div><div class="pdp-trust-copy"><strong>Free Shipping</strong><span>Delivered to your doorstep.</span></div></div>
+      <div class="pdp-trust-item"><div class="pdp-trust-icon">✓</div><div class="pdp-trust-copy"><strong>Secure Payments</strong><span>Protected checkout experience.</span></div></div>
+      <div class="pdp-trust-item"><div class="pdp-trust-icon">☎</div><div class="pdp-trust-copy"><strong>Customer Support</strong><span>We're here when you need us.</span></div></div>
+    </div>
+
+    <div class="pdp-info-stack" id="pdp-product-info-stack">
+      <details class="pdp-info-card">
+        <summary>Product Description</summary>
+        <div class="pdp-info-card-body"><div id="pdp-product-description" class="pdp-description-text"></div></div>
+      </details>
+
+      <details class="pdp-info-card">
+        <summary>Material &amp; Care</summary>
+        <div class="pdp-info-card-body">
+          <div class="pdp-material-grid">
+            <div id="pdp-material-image-wrap"></div>
+            <div class="pdp-material-copy">
+              <div class="pdp-material-row"><strong>Material</strong><span id="pdp-material-text">100% Cotton</span></div>
+              <div class="pdp-material-row"><strong>Fabric</strong><span id="pdp-fabric-text">Premium 240 GSM Cotton</span></div>
+              <div class="pdp-material-row"><strong>Selected Color</strong><span id="pdp-material-color">—</span></div>
+              <div class="pdp-material-row"><strong>Care Instructions</strong><ul id="pdp-care-list"></ul></div>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <details class="pdp-info-card">
+        <summary>Product Details</summary>
+        <div class="pdp-info-card-body">
+          <table class="pdp-details-table"><tbody>
+            <tr><td>Fit</td><td id="pdp-detail-fit">—</td></tr>
+            <tr><td>Fabric</td><td id="pdp-detail-fabric">—</td></tr>
+            <tr><td>Fabric Weight</td><td id="pdp-detail-weight">—</td></tr>
+            <tr><td>Sleeve</td><td id="pdp-detail-sleeve">—</td></tr>
+            <tr><td>Neck</td><td id="pdp-detail-neck">—</td></tr>
+            <tr><td>Country of Origin</td><td id="pdp-detail-origin">India</td></tr>
+          </tbody></table>
+        </div>
+      </details>
+
+      <details class="pdp-info-card">
+        <summary>Sold By &amp; Customer Support</summary>
+        <div class="pdp-info-card-body">
+          <div class="pdp-seller-grid">
+            <div class="pdp-seller-block"><strong>Sold By</strong><p id="pdp-seller-address">REBEL STORE\n1/24-1 V, Kumaran Colony, Annaiyambalam, Thirupur, 64165-2\nThirupur, Tamil Nadu, India.</p></div>
+            <div class="pdp-seller-block"><strong>Customer Support</strong><p>Phone: <a id="pdp-support-phone-link" href="#"><span id="pdp-support-phone">+91 8754 5450 66 66</span></a>\nEmail: <a id="pdp-support-email-link" href="#"><span id="pdp-support-email">info@RebelStore.com</span></a></p></div>
+          </div>
+        </div>
+      </details>
     </div>
 
     <div class="review-section" id="product-reviews-section" aria-hidden="true">
@@ -3239,6 +3323,7 @@ let DEFAULT_SITE_CONTENT = {
 };
 
 let CATEGORIES = JSON.parse(localStorage.getItem('rebel_categories')) || DEFAULT_CATEGORIES;
+CATEGORIES = Array.isArray(CATEGORIES) ? CATEGORIES : DEFAULT_CATEGORIES;
 CATEGORIES = Array.isArray(CATEGORIES) ? CATEGORIES : [];
 CATEGORIES.forEach(cat => { if (cat && typeof cat.active !== 'boolean') cat.active = true; });
 
@@ -4434,6 +4519,94 @@ function closeSizeChart() {
   document.body.style.overflow = '';
 }
 
+
+const REBEL_PRODUCT_SELLER = {
+  name: 'REBEL STORE',
+  address: '1/24-1 V, Kumaran Colony, Annaiyambalam, Thirupur, 64165-2\nThirupur, Tamil Nadu, India.',
+  phone: '+91 8754 5450 66 66',
+  email: 'info@RebelStore.com'
+};
+
+const REBEL_DEFAULT_CARE = [
+  'Machine wash cold, inside out',
+  'Use mild detergent',
+  'Do not bleach',
+  'Tumble dry low',
+  'Iron inside out on low heat',
+  'Do not dry clean'
+];
+
+function ensureProductInfoShape(prod) {
+  if (!prod) return prod;
+  const desc = String(prod.description ?? prod.desc ?? '').trim();
+  prod.description = desc;
+  prod.desc = desc;
+  if (!String(prod.material || '').trim()) prod.material = '100% Cotton';
+  if (!String(prod.fabric || '').trim()) prod.fabric = 'Premium 240 GSM Cotton';
+  if (!Array.isArray(prod.careInstructions) || !prod.careInstructions.length) prod.careInstructions = [...REBEL_DEFAULT_CARE];
+  if (!prod.productDetails || typeof prod.productDetails !== 'object' || Array.isArray(prod.productDetails)) prod.productDetails = {};
+  if (!String(prod.productDetails.fit || '').trim()) {
+    const cat = String(prod._categoryName || prod.categoryName || '').toLowerCase();
+    prod.productDetails.fit = /oversized/.test(cat) || /oversized/.test(String(prod.title || '').toLowerCase()) ? 'Oversized Fit' : '';
+  }
+  if (!String(prod.productDetails.fabric || '').trim()) prod.productDetails.fabric = prod.fabric;
+  if (!String(prod.productDetails.fabricWeight || '').trim()) prod.productDetails.fabricWeight = '240 GSM';
+  if (!String(prod.productDetails.sleeve || '').trim()) prod.productDetails.sleeve = 'Half Sleeve';
+  if (!String(prod.productDetails.neck || '').trim()) prod.productDetails.neck = 'Round Neck';
+  if (!String(prod.productDetails.countryOfOrigin || '').trim()) prod.productDetails.countryOfOrigin = 'India';
+  if (!prod.colorMaterialImages || typeof prod.colorMaterialImages !== 'object' || Array.isArray(prod.colorMaterialImages)) prod.colorMaterialImages = {};
+  if (!Array.isArray(prod.colors)) prod.colors = [];
+  prod.colors.forEach(color => {
+    const key = String(color || '').trim().toLowerCase();
+    if (key && typeof prod.colorMaterialImages[key] !== 'string') prod.colorMaterialImages[key] = '';
+  });
+  return prod;
+}
+
+function setTextIfPresent(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = String(value ?? '');
+}
+
+function renderPdpProductInformation(product) {
+  ensureProductInfoShape(product);
+  const color = String(selectedColor || product?.colors?.[0] || 'Default').trim();
+  setTextIfPresent('pdp-product-description', product.description || product.desc || '');
+  setTextIfPresent('pdp-material-text', product.material || '100% Cotton');
+  setTextIfPresent('pdp-fabric-text', product.fabric || 'Premium 240 GSM Cotton');
+  setTextIfPresent('pdp-material-color', color || 'Default');
+
+  const materialWrap = document.getElementById('pdp-material-image-wrap');
+  if (materialWrap) {
+    const key = color.toLowerCase();
+    const url = String(product.colorMaterialImages?.[key] || '').trim();
+    materialWrap.innerHTML = url
+      ? `<img class="pdp-material-image" src="${escapeHtml(url)}" alt="${escapeHtml(color)} color fabric material">`
+      : `<div class="pdp-material-placeholder">Material / fabric image for <strong style="margin-left:.25rem;color:#fff">${escapeHtml(color || 'this color')}</strong> will appear here when its admin image link is added.</div>`;
+  }
+
+  const careList = document.getElementById('pdp-care-list');
+  if (careList) careList.innerHTML = (Array.isArray(product.careInstructions) ? product.careInstructions : []).filter(Boolean).map(x => `<li>${escapeHtml(x)}</li>`).join('');
+
+  const d = product.productDetails || {};
+  setTextIfPresent('pdp-detail-fit', d.fit || '—');
+  setTextIfPresent('pdp-detail-fabric', d.fabric || product.fabric || '—');
+  setTextIfPresent('pdp-detail-weight', d.fabricWeight || '—');
+  setTextIfPresent('pdp-detail-sleeve', d.sleeve || '—');
+  setTextIfPresent('pdp-detail-neck', d.neck || '—');
+  setTextIfPresent('pdp-detail-origin', d.countryOfOrigin || 'India');
+
+  setTextIfPresent('pdp-seller-address', `${REBEL_PRODUCT_SELLER.name}\n${REBEL_PRODUCT_SELLER.address}`);
+  setTextIfPresent('pdp-support-phone', REBEL_PRODUCT_SELLER.phone);
+  setTextIfPresent('pdp-support-email', REBEL_PRODUCT_SELLER.email);
+  const phoneLink = document.getElementById('pdp-support-phone-link');
+  const emailLink = document.getElementById('pdp-support-email-link');
+  if (phoneLink) phoneLink.href = `tel:${REBEL_PRODUCT_SELLER.phone.replace(/[^\d+]/g,'')}`;
+  if (emailLink) emailLink.href = `mailto:${REBEL_PRODUCT_SELLER.email}`;
+}
+
+CATEGORIES.forEach(cat => (cat.products || []).forEach(prod => { prod._categoryName = cat.name; ensureProductInfoShape(prod); }));
+
 function openProductByDetails(catName, productId) {
   let foundCat = CATEGORIES.find(c => c.name === catName);
   let foundProd = null;
@@ -4450,6 +4623,7 @@ function openProductByDetails(catName, productId) {
   lastViewedProductId = foundProd.id;
   currentProduct = foundProd;
   foundProd._categoryName = foundCat?.name || '';
+  ensureProductInfoShape(foundProd);
   if(isOversizedTeeProduct(foundProd)){
     const existingChart = Array.isArray(foundProd.sizeChart) ? foundProd.sizeChart : [];
     const bySize = new Map(existingChart.map(row=>[String(row?.size||'').trim().toLowerCase(), row]));
@@ -4469,7 +4643,7 @@ function openProductByDetails(catName, productId) {
 
   document.getElementById('pdp-title').innerText = foundProd.title;
   document.getElementById('pdp-tag-text').innerText = `${foundCat.name} // ` + foundProd.code;
-  document.getElementById('pdp-desc-text').innerText = foundProd.desc;
+  document.getElementById('pdp-desc-text').innerText = foundProd.description || foundProd.desc || '';
   document.getElementById('pdp-mrp').innerText = 'ரூ ' + foundProd.mrp;
   document.getElementById('pdp-store-price').innerText = 'ரூ ' + foundProd.price;
   if(document.getElementById('add-btn')) {
@@ -4512,6 +4686,7 @@ function openProductByDetails(catName, productId) {
       cBtn.classList.add('selected');
       syncCurrentProductGalleryToColor();
       updatePdpSelectionStatus();
+      renderPdpProductInformation(foundProd);
     };
     colorContainer.appendChild(cBtn);
   });
@@ -4534,6 +4709,7 @@ function openProductByDetails(catName, productId) {
     sizeContainer.appendChild(sBtn);
   });
   updatePdpSelectionStatus();
+  renderPdpProductInformation(foundProd);
   // Load authoritative live stock from Supabase after rendering the PDP.
   // The legacy catalogue only knows which sizes/colors exist; it does not know stock.
   loadPdpStockForCurrentProduct(foundProd);
@@ -8591,6 +8767,7 @@ function renderAdminProductFormsForCategory(catName, productIndex = null) {
     if(!prod.colorMeta || typeof prod.colorMeta !== 'object' || Array.isArray(prod.colorMeta)) prod.colorMeta = {};
     ensureProductColorImages(prod);
     prod._categoryName = catObj.name;
+    ensureProductInfoShape(prod);
     ensureProductSizeChartForAdmin(prod);
     prod.colors.forEach(color => {
       const key = String(color || '').trim();
@@ -8676,12 +8853,47 @@ function renderAdminProductFormsForCategory(catName, productIndex = null) {
                 </div>
                 <button type="button" class="btn btn--ghost admin-color-images-add" onclick="addProdColorImageUrlInput(${cIndex},${pIndex},${colorIndex})">+ Add Image URL / Slide</button>
               </div>
+              <div class="admin-color-images-box" style="margin-top:.5rem;">
+                <div class="admin-color-images-title">${escapeHtml(colorName)} · Material / Fabric Image</div>
+                <input type="text" class="admin-input-small prod-color-material-image-url-${cIndex}-${pIndex}-${colorIndex}" data-color-index="${colorIndex}" value="${escapeHtml(String(prod.colorMaterialImages[colorKey] || ''))}" placeholder="Paste material / fabric image URL for ${escapeHtml(colorName)}" style="margin:.35rem 0 0;">
+              </div>
             </div>`;
           }).join('')}
         </div>
         <input type="hidden" id="prod-disabled-colors-${cIndex}-${pIndex}" value="${escapeHtml(prod.disabledColors.join(', '))}">
         <div style="font-family:'Space Mono';font-size:.62rem;color:#888;margin-top:.3rem;line-height:1.45;">Pick the real color with the palette. Disabled colors stay visible on the website but are crossed out and cannot be selected or ordered.</div>
       </div>
+      <details class="admin-product-content-accordion" style="margin-bottom:.75rem;">
+        <summary>Product Description <span>↕</span></summary>
+        <div class="admin-product-content-accordion-body">
+          <label class="admin-field-label">Description shown on the product page</label>
+          <textarea id="prod-description-${cIndex}-${pIndex}" class="admin-input-full" rows="5" placeholder="Write a unique description for this product.">${escapeHtml(prod.description || prod.desc || '')}</textarea>
+        </div>
+      </details>
+      <details class="admin-product-content-accordion" style="margin-bottom:.75rem;">
+        <summary>Material &amp; Care <span>↕</span></summary>
+        <div class="admin-product-content-accordion-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
+            <div><label class="admin-field-label">Material</label><input type="text" id="prod-material-${cIndex}-${pIndex}" class="admin-input-small" value="${escapeHtml(prod.material || '100% Cotton')}" placeholder="100% Cotton"></div>
+            <div><label class="admin-field-label">Fabric</label><input type="text" id="prod-fabric-${cIndex}-${pIndex}" class="admin-input-small" value="${escapeHtml(prod.fabric || 'Premium 240 GSM Cotton')}" placeholder="Premium 240 GSM Cotton"></div>
+          </div>
+          <label class="admin-field-label" style="margin-top:.7rem;">Care Instructions (one line per instruction)</label>
+          <textarea id="prod-care-${cIndex}-${pIndex}" class="admin-input-full" rows="6" placeholder="Machine wash cold, inside out\nUse mild detergent\nDo not bleach\nTumble dry low\nIron inside out on low heat\nDo not dry clean">${escapeHtml((prod.careInstructions || REBEL_DEFAULT_CARE).join('\n'))}</textarea>
+        </div>
+      </details>
+      <details class="admin-product-content-accordion" style="margin-bottom:.75rem;">
+        <summary>Product Details <span>↕</span></summary>
+        <div class="admin-product-content-accordion-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
+            <div><label class="admin-field-label">Fit</label><input type="text" id="prod-detail-fit-${cIndex}-${pIndex}" class="admin-input-small" value="${escapeHtml(prod.productDetails?.fit || '')}" placeholder="Oversized Fit"></div>
+            <div><label class="admin-field-label">Fabric</label><input type="text" id="prod-detail-fabric-${cIndex}-${pIndex}" class="admin-input-small" value="${escapeHtml(prod.productDetails?.fabric || prod.fabric || '')}" placeholder="100% Cotton"></div>
+            <div><label class="admin-field-label">Fabric Weight</label><input type="text" id="prod-detail-weight-${cIndex}-${pIndex}" class="admin-input-small" value="${escapeHtml(prod.productDetails?.fabricWeight || '240 GSM')}" placeholder="240 GSM"></div>
+            <div><label class="admin-field-label">Sleeve</label><input type="text" id="prod-detail-sleeve-${cIndex}-${pIndex}" class="admin-input-small" value="${escapeHtml(prod.productDetails?.sleeve || 'Half Sleeve')}" placeholder="Half Sleeve"></div>
+            <div><label class="admin-field-label">Neck</label><input type="text" id="prod-detail-neck-${cIndex}-${pIndex}" class="admin-input-small" value="${escapeHtml(prod.productDetails?.neck || 'Round Neck')}" placeholder="Round Neck"></div>
+            <div><label class="admin-field-label">Country of Origin</label><input type="text" id="prod-detail-origin-${cIndex}-${pIndex}" class="admin-input-small" value="${escapeHtml(prod.productDetails?.countryOfOrigin || 'India')}" placeholder="India"></div>
+          </div>
+        </div>
+      </details>
       <div style="margin-bottom:.7rem;padding:.7rem;border:1px solid rgba(255,213,0,.16);background:rgba(255,213,0,.025);">
         <label class="admin-field-label">Find My Size — Product Size Measurements (inches)</label>
         <div style="font-family:'Space Mono';font-size:.58rem;color:#888;margin:.25rem 0 .55rem;line-height:1.45;">Enter this product's own garment measurements. For a future Hoodie, just add its sizes above and enter the Hoodie measurements here. Find My Size will use these values for that product.</div>
@@ -8750,7 +8962,7 @@ function addNewCategory() {
     id: 'cat-' + Date.now(),
     name: name,
     products: [
-      { id: 'p' + Date.now(), code: 'NEW1', title: `New ${name} 01`, desc: 'Heavyweight cotton drop.', mrp: 1200, price: 800, images: [''], colors: ['Yellow', 'White'], colorImages: {yellow:[], white:[]}, sizes: ['S', 'M', 'L', 'XL'], sizeChart: [], customizeEnabled: true, isNextWeeklyDrop: false, active: true }
+      { id: 'p' + Date.now(), code: 'NEW1', title: `New ${name} 01`, desc: 'Heavyweight cotton drop.', description: 'Heavyweight cotton drop.', material:'100% Cotton', fabric:'Premium 240 GSM Cotton', careInstructions:[...REBEL_DEFAULT_CARE], productDetails:{fit:'',fabric:'Premium 240 GSM Cotton',fabricWeight:'240 GSM',sleeve:'Half Sleeve',neck:'Round Neck',countryOfOrigin:'India'}, colorMaterialImages:{yellow:'',white:''}, mrp: 1200, price: 800, images: [''], colors: ['Yellow', 'White'], colorImages: {yellow:[], white:[]}, sizes: ['S', 'M', 'L', 'XL'], sizeChart: [], customizeEnabled: true, isNextWeeklyDrop: false, active: true }
     ]
   });
   document.getElementById('new-category-input').value = '';
@@ -8769,6 +8981,12 @@ function addProdToCurrentAdminCategory() {
       code: 'NEW',
       title: 'New Product',
       desc: '240 GSM premium cotton.',
+      description: '240 GSM premium cotton.',
+      material:'100% Cotton',
+      fabric:'Premium 240 GSM Cotton',
+      careInstructions:[...REBEL_DEFAULT_CARE],
+      productDetails:{fit:'',fabric:'Premium 240 GSM Cotton',fabricWeight:'240 GSM',sleeve:'Half Sleeve',neck:'Round Neck',countryOfOrigin:'India'},
+      colorMaterialImages:{yellow:'',white:''},
       mrp: 1070,
       price: 713,
       images: [''],
@@ -8870,6 +9088,7 @@ function getAdminDefaultColorHex(colorName) {
 }
 
 function syncAdminProductColorRows(cIndex, pIndex) {
+  collectCategoryFormValues();
   const cat = CATEGORIES[cIndex];
   const prod = cat?.products?.[pIndex];
   const input = document.getElementById(`prod-colors-${cIndex}-${pIndex}`);
@@ -8990,6 +9209,16 @@ function collectCategoryFormValues() {
     const sizesInput = document.getElementById(`prod-sizes-${cIndex}-${pIndex}`);
     const disabledSizesInput = document.getElementById(`prod-disabled-sizes-${cIndex}-${pIndex}`);
     const customizeInput = document.getElementById(`prod-customize-${cIndex}-${pIndex}`);
+    const descriptionInput = document.getElementById(`prod-description-${cIndex}-${pIndex}`);
+    const materialInput = document.getElementById(`prod-material-${cIndex}-${pIndex}`);
+    const fabricInput = document.getElementById(`prod-fabric-${cIndex}-${pIndex}`);
+    const careInput = document.getElementById(`prod-care-${cIndex}-${pIndex}`);
+    const detailFitInput = document.getElementById(`prod-detail-fit-${cIndex}-${pIndex}`);
+    const detailFabricInput = document.getElementById(`prod-detail-fabric-${cIndex}-${pIndex}`);
+    const detailWeightInput = document.getElementById(`prod-detail-weight-${cIndex}-${pIndex}`);
+    const detailSleeveInput = document.getElementById(`prod-detail-sleeve-${cIndex}-${pIndex}`);
+    const detailNeckInput = document.getElementById(`prod-detail-neck-${cIndex}-${pIndex}`);
+    const detailOriginInput = document.getElementById(`prod-detail-origin-${cIndex}-${pIndex}`);
 
     ensureProductSizeChartForAdmin(prod);
     prod.sizeChart = (prod.sizes || []).map((size, sizeIndex) => {
@@ -9013,6 +9242,17 @@ function collectCategoryFormValues() {
     if (titleInput) prod.title = titleInput.value.trim();
     if (mrpInput) prod.mrp = parseInt(mrpInput.value) || 1070;
     if (priceInput) prod.price = parseInt(priceInput.value) || 713;
+    if (descriptionInput) { prod.description = descriptionInput.value.trim(); prod.desc = prod.description; }
+    if (materialInput) prod.material = materialInput.value.trim();
+    if (fabricInput) prod.fabric = fabricInput.value.trim();
+    if (careInput) prod.careInstructions = careInput.value.split('\n').map(v => v.trim()).filter(Boolean);
+    if (!prod.productDetails || typeof prod.productDetails !== 'object' || Array.isArray(prod.productDetails)) prod.productDetails = {};
+    if (detailFitInput) prod.productDetails.fit = detailFitInput.value.trim();
+    if (detailFabricInput) prod.productDetails.fabric = detailFabricInput.value.trim();
+    if (detailWeightInput) prod.productDetails.fabricWeight = detailWeightInput.value.trim();
+    if (detailSleeveInput) prod.productDetails.sleeve = detailSleeveInput.value.trim();
+    if (detailNeckInput) prod.productDetails.neck = detailNeckInput.value.trim();
+    if (detailOriginInput) prod.productDetails.countryOfOrigin = detailOriginInput.value.trim();
     if (colorsInput) prod.colors = [...new Set(colorsInput.value.split(',').map(s => s.trim()).filter(Boolean))];
     if (!Array.isArray(prod.colorMeta)) {
       if (!prod.colorMeta || typeof prod.colorMeta !== 'object') prod.colorMeta = {};
@@ -9060,6 +9300,14 @@ function collectCategoryFormValues() {
       } else if (!Array.isArray(prod.colorImages[colorKey])) {
         prod.colorImages[colorKey] = [];
       }
+    });
+
+    if (!prod.colorMaterialImages || typeof prod.colorMaterialImages !== 'object' || Array.isArray(prod.colorMaterialImages)) prod.colorMaterialImages = {};
+    (prod.colors || []).forEach((color, colorIndex) => {
+      const colorKey = String(color || '').trim().toLowerCase();
+      const materialInputEl = document.querySelector(`.prod-color-material-image-url-${cIndex}-${pIndex}-${colorIndex}`);
+      if (materialInputEl) prod.colorMaterialImages[colorKey] = String(materialInputEl.value || '').trim();
+      else if (typeof prod.colorMaterialImages[colorKey] !== 'string') prod.colorMaterialImages[colorKey] = '';
     });
 
     const urlInputs = document.querySelectorAll(`.prod-url-${cIndex}-${pIndex}`);
@@ -9207,6 +9455,7 @@ async function loadCategoriesFromCloud() {
       CATEGORIES = Array.isArray(data.value) ? data.value : [];
       CATEGORIES.forEach(cat => { if (cat && typeof cat.active !== 'boolean') cat.active = true; });
       CATEGORIES = CATEGORIES.filter(cat => String(cat?.name || '').trim().toLowerCase() !== 'weekly drop');
+      CATEGORIES.forEach(cat => (cat.products || []).forEach(prod => { prod._categoryName = cat.name; ensureProductInfoShape(prod); }));
       enforceSingleNextWeeklyDrop();
       localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
       await supabaseClient.from('store_settings').upsert({ key:'store_categories', value:CATEGORIES }, { onConflict:'key' });
