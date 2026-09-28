@@ -4139,9 +4139,12 @@ function getTShirtLabProducts() {
   // category are never exposed as separate lab choices.
   const labCategories = [];
   CATEGORIES.forEach((cat, categoryIndex) => {
-    if (!cat || cat.active === false || cat.showInTshirtLab !== true) return;
+    // T-Shirt Lab visibility is controlled independently from storefront
+    // visibility. A category checked for T-Shirt Lab must appear here even
+    // when "Show on Website" is OFF. The dropdown is category-only.
+    if (!cat || cat.showInTshirtLab !== true) return;
     if (String(cat.name || '').trim().toLowerCase() === 'weekly drop') return;
-    const products = (Array.isArray(cat.products) ? cat.products : []).filter(prod => prod && prod.active !== false);
+    const products = Array.isArray(cat.products) ? cat.products.filter(prod => prod) : [];
     if (!products.length) return;
     const colors = [];
     const sizes = [];
@@ -4176,8 +4179,10 @@ function findTShirtLabSelection(value) {
   if (raw.startsWith('category::')) {
     const categoryIndex = Number(raw.slice('category::'.length));
     const cat = CATEGORIES?.[categoryIndex];
-    if (!cat || cat.active === false || cat.showInTshirtLab !== true) return null;
-    const products = (Array.isArray(cat.products) ? cat.products : []).filter(prod => prod && prod.active !== false);
+    // A T-Shirt Lab-enabled category remains selectable even if its normal
+    // storefront visibility is OFF.
+    if (!cat || cat.showInTshirtLab !== true) return null;
+    const products = Array.isArray(cat.products) ? cat.products.filter(prod => prod) : [];
     if (!products.length) return null;
     const representative = products[0];
     const colors = [];
