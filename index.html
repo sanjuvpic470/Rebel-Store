@@ -2114,7 +2114,7 @@ footer .footer-grid{gap:2.2rem;}
         </div>
       </div>
       <div class="price-box" style="margin-top:1.5rem;">
-        <span class="price-cut">ரூ 999</span>
+        <span class="price-cut" id="cust-mrp-display">ரூ 999</span>
         <span class="price-curr" id="cust-total-price-display">ரூ 1398</span>
         <span class="badge-off">MIN QTY 2 RATE</span>
       </div>
@@ -2878,8 +2878,9 @@ footer .footer-grid{gap:2.2rem;}
             <div class="custom-lab-edit-grid">
               <div class="custom-lab-field">
                 <label>Colors (comma separated)</label>
-                <input type="text" id="custom-lab-colors-input" placeholder="Black, White, Red">
-                <div class="custom-lab-help">These become the selectable color swatches in T-Shirt Lab.</div>
+                <input type="text" id="custom-lab-colors-input" placeholder="Black, White, Red" onchange="previewCustomLabColors()" oninput="previewCustomLabColors()">
+                <div class="custom-lab-help">These become the selectable color swatches in T-Shirt Lab. Use the palette below to choose the exact color and edit its hex code.</div>
+                <div id="custom-lab-color-palette" style="display:flex;flex-direction:column;gap:.45rem;margin-top:.55rem;"></div>
               </div>
               <div class="custom-lab-field">
                 <label>Sizes (comma separated)</label>
@@ -4242,6 +4243,18 @@ function getProductColorHex(prod, color) {
   return typeof getAdminDefaultColorHex === 'function' ? getAdminDefaultColorHex(color) : '#808080';
 }
 
+function customLabPackageTotal(packagePrice, quantity) {
+  const basePackage = Number(packagePrice || 0);
+  const qty = Math.max(2, Number(quantity || 2));
+  return Math.round((basePackage * qty) / 2);
+}
+
+function customLabMrpTotal(packageMrp, quantity) {
+  const baseMrp = Number(packageMrp || 0);
+  const qty = Math.max(2, Number(quantity || 2));
+  return Math.round((baseMrp * qty) / 2);
+}
+
 function renderTShirtLabOptions() {
   const select = document.getElementById('cust-garment');
   const colorWrap = document.getElementById('cust-color-selector');
@@ -4258,12 +4271,18 @@ function renderTShirtLabOptions() {
 
   const { prod, config } = selected;
   const labConfig = config || prod || {};
+  ensureCustomTshirtCategoryShape(labConfig);
   const colors = Array.isArray(labConfig.colors) && labConfig.colors.length ? labConfig.colors : ['Black','White'];
+  colors.forEach(color => {
+    const key = String(color).trim().toLowerCase();
+    if (!/^#[0-9a-f]{6}$/i.test(String(labConfig.colorMeta?.[key] || ''))) labConfig.colorMeta[key] = getAdminDefaultColorHex(color);
+  });
   const disabledColors = Array.isArray(labConfig.disabledColors) ? labConfig.disabledColors : [];
   const sizes = Array.isArray(labConfig.sizes) && labConfig.sizes.length ? labConfig.sizes : ['S','M','L','XL'];
   const disabledSizes = Array.isArray(labConfig.disabledSizes) ? labConfig.disabledSizes : [];
 
   custUnitPrice = Number(labConfig.price || 699);
+  const custPackageMrp = Number(labConfig.mrp || 999);
   let activeColor = colors.find(c => String(c).toLowerCase() === String(custColor || '').toLowerCase() && !disabledColors.some(d => String(d).toLowerCase() === String(c).toLowerCase())) || colors.find(c => !disabledColors.some(d => String(d).toLowerCase() === String(c).toLowerCase())) || colors[0];
   custColor = activeColor || colors[0] || 'Black';
   let activeSize = sizes.find(sz => String(sz).toLowerCase() === String(custSize || '').toLowerCase() && !disabledSizes.some(d => String(d).toLowerCase() === String(sz).toLowerCase())) || sizes.find(sz => !disabledSizes.some(d => String(d).toLowerCase() === String(sz).toLowerCase())) || sizes[0];
@@ -4283,7 +4302,9 @@ function renderTShirtLabOptions() {
   }).join('');
 
   const priceEl = document.getElementById('cust-total-price-display');
-  if (priceEl) priceEl.innerText = 'ரூ ' + (custUnitPrice * custQty);
+  if (priceEl) priceEl.innerText = 'ரூ ' + customLabPackageTotal(custUnitPrice, custQty).toLocaleString('en-IN');
+  const mrpEl = document.getElementById('cust-mrp-display');
+  if (mrpEl) mrpEl.innerText = 'ரூ ' + customLabMrpTotal(custPackageMrp, custQty).toLocaleString('en-IN');
   const labTitle = document.querySelector('#custom-order-page .custom-form-box h2');
   if (labTitle) labTitle.textContent = `⚡ T-Shirt Lab (ரூ ${custUnitPrice.toLocaleString('en-IN')} | Min Qty: 2)`;
 }
@@ -4422,7 +4443,7 @@ function openCustomOrderPage() {
   const qtyEl = document.getElementById('cust-qty-val');
   const priceEl = document.getElementById('cust-total-price-display');
   if (qtyEl) qtyEl.innerText = '2';
-  if (priceEl) priceEl.innerText = 'ரூ ' + (custUnitPrice * 2);
+  if (priceEl) priceEl.innerText = 'ரூ ' + customLabPackageTotal(custUnitPrice, 2).toLocaleString('en-IN');
   updateCustomOrderGarmentDropdown();
   renderTShirtLabOptions();
 
@@ -4446,7 +4467,11 @@ function changeCustQty(amount) {
   custQty += amount;
   if (custQty < 2) custQty = 2;
   document.getElementById('cust-qty-val').innerText = custQty;
-  document.getElementById('cust-total-price-display').innerText = 'ரூ ' + (custUnitPrice * custQty);
+  document.getElementById('cust-total-price-display').innerText = 'ரூ ' + customLabPackageTotal(custUnitPrice, custQty).toLocaleString('en-IN');
+  const selection = findTShirtLabSelection(document.getElementById('cust-garment')?.value || '');
+  const mrp = Number(selection?.config?.mrp || 999);
+  const mrpEl = document.getElementById('cust-mrp-display');
+  if (mrpEl) mrpEl.innerText = 'ரூ ' + customLabMrpTotal(mrp, custQty).toLocaleString('en-IN');
 }
 
 async function uploadFileToSupabaseStorage(fileInputId, bucketName = 'custom-prints') {
@@ -4504,7 +4529,9 @@ async function addCustomOrderToCart() {
 
     const newCustomItem = {
       isCustom: true, title: `T-Shirt Lab — ${selection?.config?.title || garment} (${custColor})`, garment, garmentCategory, productId: selection?.prod?.id || '', customTypeId: selection?.config?.id || selection?.prod?.id || '', size: custSize, color: custColor,
-      price: custUnitPrice, qty: custQty, prints: { front: frontPrint, back: backPrint }, image: '',
+      // Admin T-Shirt Lab Price is the minimum-quantity (2 pcs) package rate.
+      // Store an effective per-piece rate in the cart so qty math remains correct.
+      price: custUnitPrice / 2, qty: custQty, prints: { front: frontPrint, back: backPrint }, image: '',
       stockStatus: { available: true, notes: '' }
     };
 
@@ -7168,6 +7195,67 @@ function renderCustomLabAdminSettings(preferredValue = '') {
   loadCustomLabProductSettings(select.value);
 }
 
+function getCurrentCustomLabAdminProduct() {
+  const select = document.getElementById('custom-lab-product-select');
+  const raw = String(select?.value || '');
+  const productId = raw.startsWith('custom::') ? raw.slice('custom::'.length) : '';
+  return getCustomTshirtCategoryById(productId);
+}
+
+function renderCustomLabColorPalette(colors, colorMeta = {}) {
+  const wrap = document.getElementById('custom-lab-color-palette');
+  if (!wrap) return;
+  const list = Array.isArray(colors) ? colors : [];
+  if (!list.length) {
+    wrap.innerHTML = '<div style="font-family:\'Space Mono\';font-size:.58rem;color:#777;">Add color names above to build the palette.</div>';
+    return;
+  }
+  wrap.innerHTML = list.map((color, idx) => {
+    const name = String(color || '').trim();
+    const key = name.toLowerCase();
+    const rawHex = colorMeta && typeof colorMeta === 'object' ? colorMeta[key] : '';
+    const hex = /^#[0-9a-f]{6}$/i.test(String(rawHex || '')) ? String(rawHex).toLowerCase() : getAdminDefaultColorHex(name);
+    return `<div style="display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;padding:.45rem .55rem;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.025);border-radius:6px;">
+      <span style="min-width:90px;font-family:'Space Mono';font-size:.6rem;color:#fff;">${escapeHtml(name)}</span>
+      <input type="color" value="${hex}" aria-label="Pick ${escapeHtml(name)} color" title="Pick ${escapeHtml(name)} color" onchange="updateCustomLabColorHexByIndex(${idx}, this.value)" style="width:42px;height:30px;padding:0;border:1px solid rgba(255,255,255,.2);background:transparent;cursor:pointer;">
+      <input type="text" value="${hex}" maxlength="7" placeholder="#000000" aria-label="${escapeHtml(name)} hex code" onchange="updateCustomLabColorHexByIndex(${idx}, this.value)" style="width:92px;margin:0;padding:.35rem;background:#111;border:1px solid rgba(255,255,255,.16);color:var(--paper);font-family:'Space Mono';font-size:.58rem;">
+      <span style="font-family:'Space Mono';font-size:.55rem;color:#777;">Choose exact swatch color</span>
+    </div>`;
+  }).join('');
+}
+
+function previewCustomLabColors() {
+  const input = document.getElementById('custom-lab-colors-input');
+  const prod = getCurrentCustomLabAdminProduct();
+  const colors = [...new Set(String(input?.value || '').split(',').map(v => v.trim()).filter(Boolean))];
+  const meta = (prod && prod.colorMeta && typeof prod.colorMeta === 'object' && !Array.isArray(prod.colorMeta)) ? prod.colorMeta : {};
+  renderCustomLabColorPalette(colors, meta);
+}
+
+function updateCustomLabColorHexByIndex(colorIndex, value) {
+  const prod = getCurrentCustomLabAdminProduct();
+  if (!prod || !Array.isArray(prod.colors)) return;
+  const name = String(prod.colors[Number(colorIndex)] || '').trim();
+  if (!name) return;
+  updateCustomLabColorHex(name, value);
+}
+
+function updateCustomLabColorHex(colorName, value) {
+  const prod = getCurrentCustomLabAdminProduct();
+  if (!prod) return;
+  ensureCustomTshirtCategoryShape(prod);
+  let hex = String(value || '').trim();
+  if (!hex.startsWith('#')) hex = '#' + hex;
+  if (!/^#[0-9a-f]{6}$/i.test(hex)) {
+    showToast('Enter a valid 6-digit color code');
+    renderCustomLabColorPalette(prod.colors, prod.colorMeta);
+    return;
+  }
+  const key = String(colorName || '').trim().toLowerCase();
+  prod.colorMeta[key] = hex.toLowerCase();
+  renderCustomLabColorPalette(prod.colors, prod.colorMeta);
+}
+
 function loadCustomLabProductSettings(value) {
   const raw = String(value || '');
   const productId = raw.startsWith('custom::') ? raw.slice('custom::'.length) : '';
@@ -7191,6 +7279,7 @@ function loadCustomLabProductSettings(value) {
   const sizesInput = document.getElementById('custom-lab-sizes-input');
   if (colorsInput) colorsInput.value = (Array.isArray(prod.colors) ? prod.colors : []).join(', ');
   if (sizesInput) sizesInput.value = (Array.isArray(prod.sizes) ? prod.sizes : []).join(', ');
+  renderCustomLabColorPalette(prod.colors || [], prod.colorMeta || {});
   const summary = document.getElementById('custom-lab-summary');
   if (summary) {
     const colorChips = (prod.colors || []).map(c => `<span class="custom-lab-chip"><strong>Color</strong> ${escapeHtml(String(c))}</span>`);
@@ -7236,6 +7325,7 @@ async function saveCustomLabProductSettings() {
     const key = String(color).trim().toLowerCase();
     if (!/^#[0-9a-f]{6}$/i.test(String(prod.colorMeta[key] || ''))) prod.colorMeta[key] = getAdminDefaultColorHex(color);
   });
+  prod.colorMeta = Object.fromEntries(Object.entries(prod.colorMeta || {}).filter(([key]) => nextColors.some(c => c.toLowerCase() === key.toLowerCase())));
   try {
     const payload = JSON.parse(JSON.stringify(CUSTOM_TSHIRT_CATEGORIES));
     localStorage.setItem('rebel_custom_tshirt_categories', JSON.stringify(payload));
@@ -9286,7 +9376,8 @@ function getAdminDefaultColorHex(colorName) {
     black: '#000000', white: '#ffffff', red: '#ff0000', blue: '#0000ff', green: '#008000', yellow: '#ffd500',
     orange: '#ff8c00', purple: '#800080', pink: '#ff69b4', brown: '#8b4513', grey: '#808080', gray: '#808080',
     silver: '#c0c0c0', gold: '#d4af37', maroon: '#800000', navy: '#000080', beige: '#f5f5dc', cream: '#fffdd0',
-    olive: '#808000', teal: '#008080', cyan: '#00ffff', magenta: '#ff00ff', lime: '#00ff00'
+    olive: '#808000', teal: '#008080', cyan: '#00ffff', magenta: '#ff00ff', lime: '#00ff00',
+    lavender: '#b57edc', charcoal: '#36454f', khaki: '#c3b091', skyblue: '#87ceeb', 'sky blue': '#87ceeb'
   };
   return map[key] || '#808080';
 }
