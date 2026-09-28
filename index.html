@@ -3,6 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+
+<!-- Mobile browser "Request Desktop Site" support.
+     When a phone/tablet sends a desktop UA, switch the layout viewport to a
+     desktop width so the existing desktop CSS/JS layout is used instead of
+     the mobile breakpoints. Normal mobile mode remains unchanged. -->
+<script id="rebel-request-desktop-support">
+(function(){
+  try {
+    var ua = navigator.userAgent || '';
+    var touchCapable = (navigator.maxTouchPoints || 0) > 0 || 'ontouchstart' in window;
+    var smallTouchDevice = touchCapable && Math.min(screen.width || 9999, screen.height || 9999) <= 1024;
+    var mobileUa = /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
+    var desktopUaOnTouchDevice = smallTouchDevice && !mobileUa;
+
+    if (desktopUaOnTouchDevice) {
+      var viewport = document.querySelector('meta[name="viewport"]');
+      if (viewport) {
+        viewport.setAttribute('content', 'width=1200, initial-scale=1.0, maximum-scale=5.0');
+      }
+      document.documentElement.classList.add('rebel-desktop-requested');
+    }
+  } catch (_) {}
+})();
+</script>
 <title>REBEL STORE — Wear the Uprising</title>
 
 <meta name="google-site-verification" content="820c37cc797b4dc9" />
@@ -4159,6 +4183,9 @@ function showHomeView() {
 
   const home = document.getElementById('home-view');
   if (home) home.style.display = 'block';
+  // Public storefront visits count for guests, customers, and the owner.
+  // Admin portal views remain excluded inside trackVisitorAnalytics().
+  trackVisitorAnalytics(false);
   updateLaunchModeOverlay();
   bindLaunchModeSecretTap();
   if (document.getElementById('shop-results-grid')) document.getElementById('shop-results-grid').style.display = 'none';
@@ -9294,6 +9321,8 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionStorage.removeItem('rebel_user_session');
         updateUserBadgeDisplay();
         updateCartBadge();
+        currentRole = 'customer';
+        // After logout, the same public-store browser/device is now a guest.
         trackVisitorAnalytics(true);
       }
     });
@@ -9347,6 +9376,9 @@ function isVisitorAnalyticsAdminView() {
 }
 
 async function trackVisitorAnalytics(force = false) {
+  // Count public storefront usage for every visitor, including the owner
+  // when the owner is logged in and viewing the storefront. Direct admin
+  // views are still excluded so opening the admin portal does not count.
   if (!VISITOR_ANALYTICS_ENABLED || !supabaseClient || isVisitorAnalyticsAdminView()) return;
 
   const visitorKey = getVisitorAnalyticsId();
@@ -9461,7 +9493,8 @@ async function hydrateLoggedInUserFromSupabase(authUser, closeModal = false) {
   loggedInUser = merged;
   currentRole = dbProf?.role === 'owner' ? 'owner' : 'customer';
   sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
-  // Track only public-store visits; direct owner admin visits are ignored.
+  // Count the authenticated public-store visit. Direct admin views are
+  // excluded by trackVisitorAnalytics() itself.
   trackVisitorAnalytics(true);
   updateUserBadgeDisplay();
   await loadWishlistFromSupabase(authUser.id);
