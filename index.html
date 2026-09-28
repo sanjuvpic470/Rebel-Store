@@ -3112,7 +3112,7 @@ if(localStorage.getItem('rebel_site_content')) {
 
 const SUPABASE_PROJECT_URL = 'https://rdqzslvgqtajhiwxwauo.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkcXpzbHZncXRhamhpd3h3YXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyMjYyMTYsImV4cCI6MjEwMjgwMjIxNn0.lSrbO0h57wBBqgu_z4D9fhffN8VawX-HcaDANOUOKok';
-const RAZORPAY_TEST_KEY_ID = 'rzp_test_TZPUNAP5rWwiSt';
+const RAZORPAY_TEST_KEY_ID = 'rzp_live_ThR4tGHaPyuuk8';
 const EDGE_FUNCTION_VERIFY_PAYMENT_URL = SUPABASE_PROJECT_URL + '/functions/v1/verify-razorpay-payment';
 const EDGE_FUNCTION_CUSTOM_ORDER_ADMIN_URL = SUPABASE_PROJECT_URL + '/functions/v1/admin-custom-order';
 const EDGE_FUNCTION_CUSTOM_ORDER_ADMIN_VERSION = 'v4';
@@ -6259,7 +6259,7 @@ async function proceedToPayment() {
     localStorage.setItem('rebel_pending_order', JSON.stringify(pendingOrder));
 
     const options = {
-      key: RAZORPAY_TEST_KEY_ID,
+      key: RAZORPAY_LIVE_KEY_ID,
       amount: data.amount,
       currency: data.currency || 'INR',
       order_id: data.order_id,
