@@ -782,6 +782,11 @@ footer a:hover{color:var(--paper)}
   .lux-card-media{aspect-ratio:4/5!important}
   #header-logo-container{width:120px!important}
 }
+/* Visitor analytics: two additional dashboard KPI cards at the left. */
+.admin-kpi-grid{grid-template-columns:repeat(6,minmax(0,1fr)) !important;}
+.admin-kpi-card.kpi-visitor{border-left:3px solid var(--spray-yellow);}
+@media(max-width:1200px){.admin-kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr)) !important;}}
+@media(max-width:650px){.admin-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}}
 </style>
 
 <style>
@@ -2510,6 +2515,12 @@ footer .footer-grid{gap:2.2rem;}
     </div>
 
     <div class="admin-kpi-grid">
+      <div class="admin-kpi-card kpi-visitor">
+        <div class="admin-kpi-icon">👤</div><div><span>Signed-in Visitors</span><strong id="adm-logged-in-visitors">—</strong><small>today · unique visitors</small></div>
+      </div>
+      <div class="admin-kpi-card kpi-visitor">
+        <div class="admin-kpi-icon">👥</div><div><span>Guest Visitors</span><strong id="adm-guest-visitors">—</strong><small>today · unique visitors</small></div>
+      </div>
       <div class="admin-kpi-card kpi-orders">
         <div class="admin-kpi-icon">🛍️</div><div><span>Orders</span><strong id="adm-orders-count">0</strong><small>paid orders</small></div>
       </div>
@@ -3339,6 +3350,15 @@ let selectedQty = 1;
 let currentSlideIndex = 0;
 let currentProduct = null;
 let loggedInUser = null;
+
+// Visitor analytics: today's unique browser/device visitors, split by the
+// visitor's latest authentication state. No IP address or email is stored.
+const VISITOR_ANALYTICS_ENABLED = true;
+const VISITOR_ANALYTICS_ID_KEY = 'rebel_visitor_analytics_id';
+const VISITOR_ANALYTICS_TRACKED_KEY = 'rebel_visitor_analytics_last_track';
+let visitorAnalyticsCountsLastLoadedAt = 0;
+let visitorAnalyticsCountsLoadPromise = null;
+
 const STORE_START_DATE = new Date(2026, 7, 1);
 const calendarToday = new Date();
 let calCurrentYear = calendarToday.getFullYear();
@@ -7659,6 +7679,7 @@ function renderAdminPanels(filterDate = '') {
   setText('adm-orders-count', paidOrders.length);
   setText('adm-pending-count', actionCount);
   setText('adm-delivered-count', deliveredCount);
+  loadAdminVisitorCounts();
 
   const queue = {
     new: regularOrdersHistory.filter(o => getAdminOrderStage(o.orderStatus) === 'New').length,
@@ -9233,7 +9254,11 @@ document.addEventListener('DOMContentLoaded', () => {
         showPasswordRecoveryView();
         return;
       }
-      if (session?.user) hydrateLoggedInUserFromSupabase(session.user, false);
+      if (session?.user) {
+        hydrateLoggedInUserFromSupabase(session.user, false);
+      } else {
+        trackVisitorAnalytics(true);
+      }
     });
 
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
@@ -9269,6 +9294,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionStorage.removeItem('rebel_user_session');
         updateUserBadgeDisplay();
         updateCartBadge();
+        trackVisitorAnalytics(true);
       }
     });
   }
@@ -9299,6 +9325,86 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(showPasswordRecoveryView, 300);
   }
 });
+
+function getVisitorAnalyticsId() {
+  if (!VISITOR_ANALYTICS_ENABLED) return '';
+  try {
+    let visitorId = localStorage.getItem(VISITOR_ANALYTICS_ID_KEY);
+    if (!visitorId) {
+      visitorId = (window.crypto && typeof window.crypto.randomUUID === 'function')
+        ? window.crypto.randomUUID()
+        : `rv-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+      localStorage.setItem(VISITOR_ANALYTICS_ID_KEY, visitorId);
+    }
+    return visitorId;
+  } catch (_) {
+    return `rv-fallback-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+  }
+}
+
+function isVisitorAnalyticsAdminView() {
+  return window.location.hash === '#admin' || document.body.classList.contains('admin-mode');
+}
+
+async function trackVisitorAnalytics(force = false) {
+  if (!VISITOR_ANALYTICS_ENABLED || !supabaseClient || isVisitorAnalyticsAdminView()) return;
+
+  const visitorKey = getVisitorAnalyticsId();
+  if (!visitorKey) return;
+
+  const visitorKind = loggedInUser?.id ? 'logged_in' : 'guest';
+  const signature = `${visitorKey}|${visitorKind}`;
+  const now = Date.now();
+  try {
+    const previous = JSON.parse(sessionStorage.getItem(VISITOR_ANALYTICS_TRACKED_KEY) || 'null');
+    if (!force && previous?.signature === signature && now - Number(previous.at || 0) < 15 * 60 * 1000) return;
+  } catch (_) {}
+
+  try {
+    const { error } = await supabaseClient.rpc('track_visitor', {
+      p_visitor_key: visitorKey,
+      p_visitor_kind: visitorKind
+    });
+    if (error) {
+      console.warn('Visitor analytics tracking skipped:', error.message);
+      return;
+    }
+    try {
+      sessionStorage.setItem(VISITOR_ANALYTICS_TRACKED_KEY, JSON.stringify({ signature, at: now }));
+    } catch (_) {}
+  } catch (err) {
+    console.warn('Visitor analytics tracking skipped:', err?.message || err);
+  }
+}
+
+async function loadAdminVisitorCounts(force = false) {
+  if (!VISITOR_ANALYTICS_ENABLED || !supabaseClient || currentRole !== 'owner') return;
+  const now = Date.now();
+  if (!force && visitorAnalyticsCountsLoadPromise) return visitorAnalyticsCountsLoadPromise;
+  if (!force && now - visitorAnalyticsCountsLastLoadedAt < 15 * 1000) return;
+
+  visitorAnalyticsCountsLoadPromise = (async () => {
+    const { data, error } = await supabaseClient.rpc('get_today_visitor_counts');
+    if (error) {
+      console.warn('Visitor analytics counts unavailable:', error.message);
+      return;
+    }
+    const row = Array.isArray(data) ? (data[0] || {}) : (data || {});
+    const loggedInCount = Number(row.logged_in_visitors ?? row.logged_in ?? 0);
+    const guestCount = Number(row.guest_visitors ?? row.guest ?? 0);
+    const loggedEl = document.getElementById('adm-logged-in-visitors');
+    const guestEl = document.getElementById('adm-guest-visitors');
+    if (loggedEl) loggedEl.innerText = Number.isFinite(loggedInCount) ? loggedInCount : 0;
+    if (guestEl) guestEl.innerText = Number.isFinite(guestCount) ? guestCount : 0;
+    visitorAnalyticsCountsLastLoadedAt = Date.now();
+  })().catch(err => {
+    console.warn('Visitor analytics counts skipped:', err?.message || err);
+  }).finally(() => {
+    visitorAnalyticsCountsLoadPromise = null;
+  });
+
+  return visitorAnalyticsCountsLoadPromise;
+}
 
 async function hydrateLoggedInUserFromSupabase(authUser, closeModal = false) {
   if (!supabaseClient || !authUser) return;
@@ -9355,6 +9461,8 @@ async function hydrateLoggedInUserFromSupabase(authUser, closeModal = false) {
   loggedInUser = merged;
   currentRole = dbProf?.role === 'owner' ? 'owner' : 'customer';
   sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
+  // Track only public-store visits; direct owner admin visits are ignored.
+  trackVisitorAnalytics(true);
   updateUserBadgeDisplay();
   await loadWishlistFromSupabase(authUser.id);
   await loadCartFromSupabase(authUser.id);
