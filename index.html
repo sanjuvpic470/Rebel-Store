@@ -3112,7 +3112,7 @@ if(localStorage.getItem('rebel_site_content')) {
 
 const SUPABASE_PROJECT_URL = 'https://rdqzslvgqtajhiwxwauo.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkcXpzbHZncXRhamhpd3h3YXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyMjYyMTYsImV4cCI6MjEwMjgwMjIxNn0.lSrbO0h57wBBqgu_z4D9fhffN8VawX-HcaDANOUOKok';
-const RAZORPAY_LIVE_KEY_ID = 'rzp_live_ThR4tGHaPyuuk8';
+const RAZORPAY_TEST_KEY_ID = 'rzp_live_ThR4tGHaPyuuk8';
 const EDGE_FUNCTION_VERIFY_PAYMENT_URL = SUPABASE_PROJECT_URL + '/functions/v1/verify-razorpay-payment';
 const EDGE_FUNCTION_CUSTOM_ORDER_ADMIN_URL = SUPABASE_PROJECT_URL + '/functions/v1/admin-custom-order';
 const EDGE_FUNCTION_CUSTOM_ORDER_ADMIN_VERSION = 'v4';
@@ -6301,7 +6301,11 @@ async function proceedToPayment() {
     const rzp1 = new Razorpay(options);
     rzp1.on('payment.failed', function (response) {
       console.error('Razorpay payment failed:', response?.error || response);
-      window.rebelPaymentCheckoutActive = false;
+      // A failed attempt does not mean the checkout session is over.
+      // Razorpay can let the customer retry inside the same checkout modal.
+      // Keep the active-checkout guard enabled so a later successful payment
+      // can reach the server-side verification + order/Zoho flow.
+      window.rebelPaymentCheckoutActive = true;
       payBtn.disabled = false;
       payBtn.innerText = 'Proceed to Payment →';
       alert('Payment failed. Please try again.');
