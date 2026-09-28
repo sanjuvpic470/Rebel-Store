@@ -789,6 +789,8 @@ footer a:hover{color:var(--paper)}
 </style>
 
 <style id="phase3-reviews-css">
+/* Review feature switch: keep the full review code/data in place, but keep the customer-facing UI disabled for now. */
+.review-section.review-feature-disabled{display:none!important}
 .review-section{margin-top:2.5rem;padding:1.5rem;border:1px solid rgba(242,240,234,.12);background:rgba(255,255,255,.02)}
 .review-head{display:flex;justify-content:space-between;gap:1rem;align-items:center;flex-wrap:wrap}.review-head h3{margin:0;font-size:1.15rem}.review-summary{display:flex;align-items:center;gap:.6rem;font-family:'Space Mono',monospace;font-size:.78rem}.review-stars{letter-spacing:2px;color:var(--spray-yellow)}
 .review-form{display:none;margin-top:1rem;padding:1rem;background:rgba(255,213,0,.05);border:1px dashed rgba(255,213,0,.35)}
@@ -2107,7 +2109,7 @@ footer .footer-grid{gap:2.2rem;}
       </div>
     </div>
 
-    <div class="review-section" id="product-reviews-section">
+    <div class="review-section" id="product-reviews-section" aria-hidden="true">
       <div class="review-head">
         <h3>Customer Reviews</h3>
         <div class="review-summary"><span class="review-stars" id="review-summary-stars">☆☆☆☆☆</span><span id="review-summary-text">No reviews yet</span></div>
@@ -11004,14 +11006,25 @@ window.addEventListener('keydown',e=>{if(e.key==='Escape'){const m=document.getE
 
 <script>document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSizeChart();});
 // PHASE 3 — CUSTOMER REVIEWS / RATINGS
+// Keep the complete Reviews & Ratings implementation for future use.
+// Set REVIEWS_ENABLED to true later to re-enable the customer-facing review UI.
+const REVIEWS_ENABLED = false;
 let selectedReviewRating = 0;
+function applyReviewsFeatureState(){
+  const section=document.getElementById('product-reviews-section');
+  if(!section) return;
+  const disabled=!REVIEWS_ENABLED;
+  section.classList.toggle('review-feature-disabled',disabled);
+  section.setAttribute('aria-hidden',disabled ? 'true' : 'false');
+}
 function getProductReviewKey(product){ return String(product?.code || product?.id || '').trim().toLowerCase(); }
 function getProductReviews(product){
   try { const all=JSON.parse(localStorage.getItem('rebel_product_reviews')||'{}'); return Array.isArray(all[getProductReviewKey(product)]) ? all[getProductReviewKey(product)] : []; } catch(e){ return []; }
 }
 function renderReviewStars(rating){ const n=Math.max(0,Math.min(5,Number(rating)||0)); return '★★★★★'.slice(0,n)+'☆☆☆☆☆'.slice(0,5-n); }
 function renderProductReviews(){
-  if(!currentProduct) return;
+  applyReviewsFeatureState();
+  if(!REVIEWS_ENABLED || !currentProduct) return;
   const list=document.getElementById('review-list'), text=document.getElementById('review-summary-text'), stars=document.getElementById('review-summary-stars');
   if(!list) return;
   const reviews=getProductReviews(currentProduct);
@@ -11021,16 +11034,18 @@ function renderProductReviews(){
   list.innerHTML=reviews.slice().reverse().map(r=>`<div class="review-item"><div class="review-meta"><strong>${escapeHtml(r.name||'Customer')}</strong><span>${renderReviewStars(r.rating)} · ${new Date(r.createdAt).toLocaleDateString()}</span></div><p>${escapeHtml(r.text||'')}</p></div>`).join('');
 }
 function buildReviewRatingButtons(){
+  if(!REVIEWS_ENABLED) return;
   const box=document.getElementById('review-rating-buttons'); if(!box) return;
   box.innerHTML='<span style="font-size:.75rem;margin-right:.5rem">Your rating:</span>'+[1,2,3,4,5].map(n=>`<button type="button" aria-label="${n} star" class="${n<=selectedReviewRating?'active':''}" onclick="setReviewRating(${n})">★</button>`).join('');
 }
-function setReviewRating(n){ selectedReviewRating=n; buildReviewRatingButtons(); }
+function setReviewRating(n){ if(!REVIEWS_ENABLED) return; selectedReviewRating=n; buildReviewRatingButtons(); }
 function toggleReviewForm(){
+  if(!REVIEWS_ENABLED) return;
   const form=document.getElementById('review-form'); if(!form) return;
   form.classList.toggle('show'); if(form.classList.contains('show')){ selectedReviewRating=0; buildReviewRatingButtons(); document.getElementById('review-text')?.focus(); }
 }
 function submitProductReview(){
-  if(!currentProduct) return;
+  if(!REVIEWS_ENABLED || !currentProduct) return;
   if(typeof loggedInUser==='undefined' || !loggedInUser){ showToast('Please login to write a review.'); if(typeof openAuthModal==='function') openAuthModal(); return; }
   if(!selectedReviewRating){ showToast('Please select a rating.'); return; }
   const input=document.getElementById('review-text'); const reviewText=(input?.value||'').trim();
@@ -11042,6 +11057,8 @@ function submitProductReview(){
     input.value=''; selectedReviewRating=0; document.getElementById('review-form')?.classList.remove('show'); renderProductReviews(); showToast('Review submitted successfully.');
   } catch(e){ showToast('Could not save your review.'); }
 }
+
+applyReviewsFeatureState();
 
 </script>
 
