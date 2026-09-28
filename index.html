@@ -4134,50 +4134,73 @@ function renderStorefront() {
 }
 
 function getTShirtLabProducts() {
-  const regularProducts = [];
+  // T-Shirt Lab selects GARMENT CATEGORIES, not individual storefront products.
+  // A checked category appears once in the dropdown; the products inside that
+  // category are never exposed as separate lab choices.
+  const labCategories = [];
   CATEGORIES.forEach((cat, categoryIndex) => {
     if (!cat || cat.active === false || cat.showInTshirtLab !== true) return;
     if (String(cat.name || '').trim().toLowerCase() === 'weekly drop') return;
-    (Array.isArray(cat.products) ? cat.products : []).forEach((prod, productIndex) => {
-      if (!prod || prod.active === false) return;
-      regularProducts.push({
-        cat,
-        prod,
-        categoryIndex,
-        productIndex,
-        value: `store::${categoryIndex}::${productIndex}`,
-        source: 'store'
+    const products = (Array.isArray(cat.products) ? cat.products : []).filter(prod => prod && prod.active !== false);
+    if (!products.length) return;
+    const colors = [];
+    const sizes = [];
+    products.forEach(prod => {
+      (Array.isArray(prod.colors) ? prod.colors : []).forEach(color => {
+        const value = String(color || '').trim();
+        if (value && !colors.some(x => x.toLowerCase() === value.toLowerCase())) colors.push(value);
       });
+      (Array.isArray(prod.sizes) ? prod.sizes : []).forEach(size => {
+        const value = String(size || '').trim();
+        if (value && !sizes.some(x => x.toLowerCase() === value.toLowerCase())) sizes.push(value);
+      });
+    });
+    const representative = products[0];
+    labCategories.push({
+      cat,
+      prod: representative,
+      categoryIndex,
+      productIndex: cat.products.indexOf(representative),
+      colors,
+      sizes,
+      value: `category::${categoryIndex}`,
+      source: 'category'
     });
   });
 
-  const customProducts = CUSTOM_TSHIRT_CATEGORIES
-    .filter(item => item && item.active !== false)
-    .map(item => ({
-      cat: { name: 'Custom T-shirt Orders' },
-      prod: ensureCustomTshirtCategoryShape(item),
-      value: `custom::${item.id}`,
-      source: 'custom'
-    }));
-
-  return regularProducts.concat(customProducts);
+  return labCategories;
 }
 
 function findTShirtLabSelection(value) {
   const raw = String(value || '');
-  if (raw.startsWith('custom::')) {
-    const productId = raw.slice('custom::'.length);
-    const prod = getCustomTshirtCategoryById(productId);
-    return prod ? { cat:{ name:'Custom T-shirt Orders' }, prod:ensureCustomTshirtCategoryShape(prod), source:'custom' } : null;
-  }
-  if (raw.startsWith('store::')) {
-    const parts = raw.split('::');
-    const categoryIndex = Number(parts[1]);
-    const productIndex = Number(parts[2]);
+  if (raw.startsWith('category::')) {
+    const categoryIndex = Number(raw.slice('category::'.length));
     const cat = CATEGORIES?.[categoryIndex];
-    const prod = cat?.products?.[productIndex];
-    if (!cat || !prod || cat.showInTshirtLab !== true || prod.active === false) return null;
-    return { cat, prod, categoryIndex, productIndex, source:'store' };
+    if (!cat || cat.active === false || cat.showInTshirtLab !== true) return null;
+    const products = (Array.isArray(cat.products) ? cat.products : []).filter(prod => prod && prod.active !== false);
+    if (!products.length) return null;
+    const representative = products[0];
+    const colors = [];
+    const sizes = [];
+    products.forEach(prod => {
+      (Array.isArray(prod.colors) ? prod.colors : []).forEach(color => {
+        const value = String(color || '').trim();
+        if (value && !colors.some(x => x.toLowerCase() === value.toLowerCase())) colors.push(value);
+      });
+      (Array.isArray(prod.sizes) ? prod.sizes : []).forEach(size => {
+        const value = String(size || '').trim();
+        if (value && !sizes.some(x => x.toLowerCase() === value.toLowerCase())) sizes.push(value);
+      });
+    });
+    return {
+      cat,
+      prod: representative,
+      categoryIndex,
+      productIndex: cat.products.indexOf(representative),
+      colors,
+      sizes,
+      source:'category'
+    };
   }
   return null;
 }
@@ -4204,10 +4227,14 @@ function renderTShirtLabOptions() {
   }
 
   const { prod } = selected;
-  const colors = Array.isArray(prod.colors) && prod.colors.length ? prod.colors : ['Black','White'];
-  const disabledColors = Array.isArray(prod.disabledColors) ? prod.disabledColors : [];
-  const sizes = Array.isArray(prod.sizes) && prod.sizes.length ? prod.sizes : ['S','M','L','XL'];
-  const disabledSizes = Array.isArray(prod.disabledSizes) ? prod.disabledSizes : [];
+  const colors = Array.isArray(selected.colors) && selected.colors.length
+    ? selected.colors
+    : (Array.isArray(prod?.colors) && prod.colors.length ? prod.colors : ['Black','White']);
+  const disabledColors = Array.isArray(prod?.disabledColors) ? prod.disabledColors : [];
+  const sizes = Array.isArray(selected.sizes) && selected.sizes.length
+    ? selected.sizes
+    : (Array.isArray(prod?.sizes) && prod.sizes.length ? prod.sizes : ['S','M','L','XL']);
+  const disabledSizes = Array.isArray(prod?.disabledSizes) ? prod.disabledSizes : [];
 
   custUnitPrice = Number(prod.price || 699);
   let activeColor = colors.find(c => String(c).toLowerCase() === String(custColor || '').toLowerCase() && !disabledColors.some(d => String(d).toLowerCase() === String(c).toLowerCase())) || colors.find(c => !disabledColors.some(d => String(d).toLowerCase() === String(c).toLowerCase())) || colors[0];
@@ -4243,7 +4270,9 @@ function onCustProductChange(value) {
   custColor = '';
   custSize = '';
   const selected = findTShirtLabSelection(value);
-  if (selected?.prod) custUnitPrice = Number(selected.prod.price || 699);
+  // T-Shirt Lab is a garment-category selector. Keep the existing lab price
+  // unless a representative category product explicitly provides one.
+  if (selected?.prod && Number(selected.prod.price) > 0) custUnitPrice = Number(selected.prod.price);
   renderTShirtLabOptions();
 }
 
@@ -4420,10 +4449,19 @@ async function addCustomOrderToCart() {
   if (customOrderSubmitInProgress) { showToast('Custom order is already being added. Please wait...'); return; }
   if (custQty < 2) { showToast('Minimum quantity for T-Shirt Lab is 2!'); return; }
   const selection = findTShirtLabSelection(document.getElementById('cust-garment')?.value || '');
-  const garment = selection?.prod?.name || selection?.prod?.title || selection?.prod?.code || '';
-  const garmentCategory = selection?.cat?.name || '';
-  if (selection?.prod) { custUnitPrice = Number(selection.prod.price || custUnitPrice || 699); custColor = custColor || selection.prod.colors?.[0] || 'Black'; custSize = custSize || selection.prod.sizes?.[0] || 'M'; }
-  if (!garment) { showToast('Please select a T-Shirt for T-Shirt Lab.'); return; }
+  const garment = selection?.source === 'category'
+    ? String(selection?.cat?.name || '')
+    : String(selection?.prod?.name || selection?.prod?.title || selection?.prod?.code || '');
+  const garmentCategory = selection?.cat?.name || garment;
+  if (selection?.source === 'category') {
+    custColor = custColor || selection.colors?.[0] || selection.prod?.colors?.[0] || 'Black';
+    custSize = custSize || selection.sizes?.[0] || selection.prod?.sizes?.[0] || 'M';
+  } else if (selection?.prod) {
+    custUnitPrice = Number(selection.prod.price || custUnitPrice || 699);
+    custColor = custColor || selection.prod.colors?.[0] || 'Black';
+    custSize = custSize || selection.prod.sizes?.[0] || 'M';
+  }
+  if (!garment) { showToast('Please select a garment type for T-Shirt Lab.'); return; }
 
   customOrderSubmitInProgress = true;
   const addCustomBtn = document.querySelector('button[onclick="addCustomOrderToCart()"]');
@@ -8514,29 +8552,26 @@ function updateCustomTshirtLabDropdownOnly(preferredValue = '') {
   const select = document.getElementById('cust-garment');
   if (!select) return;
   const current = preferredValue || select.value;
-  const labProducts = getTShirtLabProducts();
+  const labCategories = getTShirtLabProducts();
   select.innerHTML = '';
 
-  if (!labProducts.length) {
+  if (!labCategories.length) {
     const opt = document.createElement('option');
     opt.value = '';
-    opt.textContent = 'No T-Shirt Lab products enabled';
+    opt.textContent = 'No T-Shirt Lab categories enabled';
     select.appendChild(opt);
     return;
   }
 
-  labProducts.forEach(item => {
+  labCategories.forEach(item => {
     const opt = document.createElement('option');
     opt.value = item.value;
-    const label = item.source === 'store'
-      ? `${item.cat.name} · ${item.prod.title || item.prod.name || item.prod.code || 'Product'}`
-      : `${item.prod.name || 'Custom Garment'}`;
-    opt.textContent = label;
+    opt.textContent = item.cat.name;
     if (opt.value === current) opt.selected = true;
     select.appendChild(opt);
   });
 
-  if (!select.value) select.value = labProducts[0].value;
+  if (!select.value) select.value = labCategories[0].value;
 }
 
 function renderAdminCategoriesMainGrid() {
