@@ -8777,22 +8777,11 @@ function backToAdminCategoriesGrid() {
   renderCustomTshirtCategoriesAdmin();
 }
 
-function ensureCategorySharedSizes(cat) {
-  if (!cat || !Array.isArray(cat.products)) return [];
-  if (!Array.isArray(cat.sharedSizes) || !cat.sharedSizes.length) {
-    const first = cat.products.find(p => Array.isArray(p?.sizes) && p.sizes.length);
-    cat.sharedSizes = first ? [...first.sizes] : ['S','M','L','XL'];
-  }
-  cat.sharedSizes = [...new Set(cat.sharedSizes.map(v => String(v).trim()).filter(Boolean))];
-  return cat.sharedSizes;
-}
-
 function renderAdminProductFormsForCategory(catName, productIndex = null) {
   const container = document.getElementById('admin-categories-container');
   if (container) container.innerHTML = '';
   const catObj = CATEGORIES.find(c => c.name === catName);
   if (!catObj) return;
-  ensureCategorySharedSizes(catObj);
   const cIndex = CATEGORIES.indexOf(catObj);
   const productIndexes = Number.isInteger(productIndex) ? [productIndex] : catObj.products.map((_, i) => i);
   productIndexes.forEach((pIndex) => {
@@ -8862,9 +8851,9 @@ function renderAdminProductFormsForCategory(catName, productIndex = null) {
           <label class="admin-field-label">Sizes (Comma separated)</label>
           <div style="display:flex;gap:.4rem;align-items:center;">
             <input type="text" id="prod-sizes-${cIndex}-${pIndex}" class="admin-input-small" value="${escapeHtml(prod.sizes.join(', '))}" placeholder="S, M, L, XL, XXL, XXXL" style="margin-bottom:0;flex:1;" onchange="syncAdminProductSizeRows(${cIndex},${pIndex})">
-            <button type="button" class="btn btn--ghost" style="padding:.35rem .55rem;min-height:auto;font-size:.6rem;white-space:nowrap;" onclick="syncAdminProductSizeRows(${cIndex},${pIndex})">Apply to all ${escapeHtml(catObj.name)}</button>
+            <button type="button" class="btn btn--ghost" style="padding:.35rem .55rem;min-height:auto;font-size:.6rem;white-space:nowrap;" onclick="syncAdminProductSizeRows(${cIndex},${pIndex})">Apply</button>
           </div>
-          <div style="font-family:'Space Mono';font-size:.58rem;color:#888;margin-top:.25rem;line-height:1.4;">Enter the size list once and apply it. The same sizes will be used by every product in this category.</div>
+          <div style="font-family:'Space Mono';font-size:.58rem;color:#888;margin-top:.25rem;line-height:1.4;">Add names separated by commas. Apply to immediately show them under Available / Disabled Sizes.</div>
         </div>
       </div>
       <div style="margin-bottom:.7rem;">
@@ -8934,8 +8923,11 @@ function renderAdminProductFormsForCategory(catName, productIndex = null) {
         </div>
       </details>
       <div style="margin-bottom:.7rem;padding:.7rem;border:1px solid rgba(255,213,0,.16);background:rgba(255,213,0,.025);">
-        <label class="admin-field-label">Find My Size — Product Size Measurements (inches)</label>
-        <div style="font-family:'Space Mono';font-size:.58rem;color:#888;margin:.25rem 0 .55rem;line-height:1.45;">Enter this product's own garment measurements. For a future Hoodie, just add its sizes above and enter the Hoodie measurements here. Find My Size will use these values for that product.</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap;">
+          <label class="admin-field-label" style="margin:0;">Find My Size — Product Size Measurements (inches)</label>
+          <button type="button" class="btn btn--ghost" style="padding:.35rem .7rem;min-height:auto;font-size:.6rem;white-space:nowrap;" onclick="applyAdminProductSizeChart(${cIndex},${pIndex})">Apply</button>
+        </div>
+        <div style="font-family:'Space Mono';font-size:.58rem;color:#888;margin:.25rem 0 .55rem;line-height:1.45;">Enter this product's own garment measurements. Click Apply to save these measurements for this product only.</div>
         <div id="prod-size-chart-wrap-${cIndex}-${pIndex}" style="display:grid;gap:.4rem;">
           ${prod.sizeChart.map((row, sizeIndex) => `
             <div style="display:grid;grid-template-columns:72px repeat(4,minmax(90px,1fr));gap:.4rem;align-items:center;">
@@ -9000,7 +8992,6 @@ function addNewCategory() {
   CATEGORIES.push({
     id: 'cat-' + Date.now(),
     name: name,
-    sharedSizes: ['S', 'M', 'L', 'XL'],
     products: [
       { id: 'p' + Date.now(), code: 'NEW1', title: `New ${name} 01`, desc: 'Heavyweight cotton drop.', description: 'Heavyweight cotton drop.', material:'100% Cotton', fabric:'Premium 240 GSM Cotton', careInstructions:[...REBEL_DEFAULT_CARE], productDetails:{fit:'',fabric:'Premium 240 GSM Cotton',fabricWeight:'240 GSM',sleeve:'Half Sleeve',neck:'Round Neck',countryOfOrigin:'India'}, colorMaterialImages:{yellow:'',white:''}, mrp: 1200, price: 800, images: [''], colors: ['Yellow', 'White'], colorImages: {yellow:[], white:[]}, sizes: ['S', 'M', 'L', 'XL'], sizeChart: [], customizeEnabled: true, isNextWeeklyDrop: false, active: true }
     ]
@@ -9032,7 +9023,7 @@ function addProdToCurrentAdminCategory() {
       images: [''],
       colors: ['Yellow', 'White'],
       colorImages: {yellow:[], white:[]},
-      sizes: [...((Array.isArray(catObj.sharedSizes) && catObj.sharedSizes.length) ? catObj.sharedSizes : (Array.isArray(catObj.products?.[0]?.sizes) && catObj.products[0].sizes.length ? catObj.products[0].sizes : ['S', 'M', 'L', 'XL']))],
+      sizes: ['S', 'M', 'L', 'XL'],
       sizeChart: [],
       disabledSizes: [],
       disabledColors: [],
@@ -9152,7 +9143,7 @@ function syncAdminProductSizeRows(cIndex, pIndex) {
   const cat = CATEGORIES[cIndex];
   const prod = cat?.products?.[pIndex];
   const input = document.getElementById(`prod-sizes-${cIndex}-${pIndex}`);
-  if (!cat || !prod || !input || !Array.isArray(cat.products)) return;
+  if (!prod || !input) return;
 
   const nextSizes = [...new Set(
     input.value
@@ -9161,36 +9152,14 @@ function syncAdminProductSizeRows(cIndex, pIndex) {
       .filter(Boolean)
   )];
 
-  if (!nextSizes.length) {
-    showToast('Enter at least one size.');
-    return;
-  }
+  const previousDisabled = Array.isArray(prod.disabledSizes) ? prod.disabledSizes : [];
+  const previousDisabledKeys = new Set(previousDisabled.map(s => String(s).trim().toLowerCase()).filter(Boolean));
 
-  // One size list per product category: Oversized Tee, Hoodie, etc.
-  // Applying sizes from any product in the category updates every product
-  // in that same category, while preserving each product's own availability
-  // toggles and existing measurement values where the size already exists.
-  const nextKeySet = new Set(nextSizes.map(size => String(size).trim().toLowerCase()));
-  cat.products.forEach((target) => {
-    if (!target) return;
-    const previousDisabled = Array.isArray(target.disabledSizes) ? target.disabledSizes : [];
-    const previousDisabledKeys = new Set(previousDisabled.map(size => String(size).trim().toLowerCase()).filter(Boolean));
-    target.sizes = [...nextSizes];
-    target.disabledSizes = nextSizes.filter(size => previousDisabledKeys.has(String(size).trim().toLowerCase()));
-    ensureProductSizeChartForAdmin(target);
-    // Keep existing measurement data for matching sizes and only add rows for new sizes.
-    if (Array.isArray(target.sizeChart)) {
-      target.sizeChart = target.sizeChart.filter(row => nextKeySet.has(String(row?.size || '').trim().toLowerCase()));
-      ensureProductSizeChartForAdmin(target);
-    }
-  });
-
-  // New products added later to this category should inherit the same shared list.
-  cat.sharedSizes = [...nextSizes];
+  prod.sizes = nextSizes;
+  prod.disabledSizes = nextSizes.filter(size => previousDisabledKeys.has(String(size).trim().toLowerCase()));
 
   renderAdminProductFormsForCategory(activeAdminEditingCategoryName, activeAdminEditingProductIndex);
-  saveAllCategoriesAndProducts({silent:true});
-  showToast(`${cat.name}: sizes applied to all ${cat.products.length} products — ${nextSizes.join(', ')}`);
+  showToast(nextSizes.length ? `Sizes updated: ${nextSizes.join(', ')}` : 'No sizes entered.');
 }
 
 function toggleAdminProductColor(cIndex, pIndex, colorIndex, isAvailable) {
@@ -9233,6 +9202,33 @@ function updateAdminProductColorHex(cIndex, pIndex, colorIndex, value) {
   document.querySelectorAll(`.prod-color-picker-${cIndex}-${pIndex}[data-color-index="${colorIndex}"], .prod-color-hex-${cIndex}-${pIndex}[data-color-index="${colorIndex}"]`).forEach(el => {
     el.value = hex;
   });
+}
+
+async function applyAdminProductSizeChart(cIndex, pIndex) {
+  const cat = CATEGORIES?.[cIndex];
+  const prod = cat?.products?.[pIndex];
+  if (!prod) return;
+
+  ensureProductSizeChartForAdmin(prod);
+  const chart = (prod.sizes || []).map((size, sizeIndex) => {
+    const readNum = (suffix, fallback) => {
+      const el = document.getElementById(`prod-chart-${cIndex}-${pIndex}-${sizeIndex}-${suffix}`);
+      const value = Number(el?.value || 0);
+      return Number.isFinite(value) && value > 0 ? value : Number(fallback || 0);
+    };
+    const prev = Array.isArray(prod.sizeChart) ? (prod.sizeChart[sizeIndex] || {}) : {};
+    return {
+      size: String(size || '').trim(),
+      chest: readNum('chest', prev.chest),
+      length: readNum('length', prev.length),
+      shoulder: readNum('shoulder', prev.shoulder),
+      sleeve: readNum('sleeve', prev.sleeve)
+    };
+  }).filter(row => row.size);
+
+  prod.sizeChart = chart;
+  try { localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES)); } catch (_) {}
+  await saveAllCategoriesAndProducts({silent:true});
 }
 
 function toggleAdminProductSize(cIndex, pIndex, sizeIndex, isAvailable) {
@@ -9517,7 +9513,6 @@ async function loadCategoriesFromCloud() {
       CATEGORIES = Array.isArray(data.value) ? data.value : [];
       CATEGORIES.forEach(cat => { if (cat && typeof cat.active !== 'boolean') cat.active = true; });
       CATEGORIES = CATEGORIES.filter(cat => String(cat?.name || '').trim().toLowerCase() !== 'weekly drop');
-      CATEGORIES.forEach(ensureCategorySharedSizes);
       CATEGORIES.forEach(cat => (cat.products || []).forEach(prod => { prod._categoryName = cat.name; ensureProductInfoShape(prod); }));
       enforceSingleNextWeeklyDrop();
       localStorage.setItem('rebel_categories', JSON.stringify(CATEGORIES));
