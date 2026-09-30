@@ -895,64 +895,6 @@ footer a:hover{color:var(--paper)}
 .admin-kpi-card.kpi-visitor{border-left:3px solid var(--spray-yellow);}
 @media(max-width:1200px){.admin-kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr)) !important;}}
 @media(max-width:650px){.admin-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}}
-
-/* =========================================================
-   PLAY A GAME — FRONT-END PROMO + SPIN WHEEL
-   ========================================================= */
-.game-promo-btn{display:flex;align-items:center;justify-content:space-between;gap:.65rem;width:100%;margin-top:.75rem;padding:.7rem .85rem;border:1px solid rgba(255,213,0,.45);border-radius:10px;background:linear-gradient(135deg,rgba(255,213,0,.13),rgba(255,213,0,.035));color:var(--paper);font-family:'Space Mono',monospace;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;transition:.2s}
-.game-promo-btn:hover{border-color:var(--spray-yellow);transform:translateY(-1px);box-shadow:0 8px 22px rgba(255,213,0,.08)}
-.game-promo-btn span:last-child{color:var(--spray-yellow);font-size:1rem}
-#game-page{display:none;max-width:1100px;margin:0 auto;padding:2rem var(--gap) 5rem}
-.game-page-wrap{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(360px,.95fr);gap:1.4rem;align-items:start}
-.game-hero-card,.game-wheel-card,.game-admin-card{background:var(--glass-bg);border:1px solid var(--glass-line);border-radius:18px;box-shadow:none}
-.game-hero-card{padding:1.5rem}
-.game-hero-kicker{font-family:'Space Mono',monospace;font-size:.62rem;color:var(--spray-yellow);letter-spacing:.12em;text-transform:uppercase}
-.game-hero-title{font-family:'Anton',sans-serif;font-size:clamp(2rem,6vw,4rem);line-height:.94;text-transform:uppercase;margin:.35rem 0 .8rem}
-.game-hero-title span{color:var(--spray-yellow)}
-.game-hero-copy{font-family:'Space Mono',monospace;color:var(--grey);font-size:.7rem;line-height:1.7;max-width:58ch}
-.game-rule-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;margin-top:1.1rem}
-.game-rule{border:1px solid rgba(255,213,0,.16);background:rgba(255,213,0,.03);padding:.75rem;border-radius:10px}
-.game-rule strong{display:block;color:var(--spray-yellow);font-family:'Anton',sans-serif;font-size:1.25rem}
-.game-rule span{display:block;margin-top:.12rem;color:var(--grey);font-family:'Space Mono',monospace;font-size:.52rem;line-height:1.4}
-.game-wheel-card{padding:1.2rem;position:sticky;top:1rem}
-.game-wheel-top{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-bottom:.8rem}
-.game-wheel-top h3{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:1.25rem;margin:0}
-.game-spin-count{font-family:'Space Mono',monospace;font-size:.54rem;color:var(--grey);text-align:right}
-.game-wheel-stage{display:flex;justify-content:center;align-items:center;padding:.6rem 0 1rem}
-.game-wheel{width:min(340px,82vw);aspect-ratio:1;border-radius:50%;position:relative;border:10px solid #0b0b0c;box-shadow:0 0 0 2px rgba(255,213,0,.35),0 22px 55px rgba(0,0,0,.45);transform:rotate(0deg);transition:transform 4.2s cubic-bezier(.15,.76,.18,1);overflow:hidden;background:conic-gradient(from -30deg,#ffd500 0deg 60deg,#18181b 60deg 120deg,#ffd500 120deg 180deg,#18181b 180deg 240deg,#ffd500 240deg 300deg,#18181b 300deg 360deg)}
-.game-wheel-slice{position:absolute;left:50%;top:50%;width:42%;height:42%;transform-origin:0 0;display:flex;align-items:center;justify-content:center;text-align:center;pointer-events:none}
-.game-wheel-slice span{display:block;width:105px;font-family:'Space Mono',monospace;font-size:.48rem;line-height:1.18;font-weight:800;text-transform:uppercase;color:#0b0b0c;transform:rotate(30deg)}
-.game-wheel-slice.dark span{color:#f2f0ea}
-.game-wheel-slice:nth-child(1){transform:rotate(-30deg) skewY(-30deg)}
-.game-wheel-slice:nth-child(2){transform:rotate(30deg) skewY(-30deg)}
-.game-wheel-slice:nth-child(3){transform:rotate(90deg) skewY(-30deg)}
-.game-wheel-slice:nth-child(4){transform:rotate(150deg) skewY(-30deg)}
-.game-wheel-slice:nth-child(5){transform:rotate(210deg) skewY(-30deg)}
-.game-wheel-slice:nth-child(6){transform:rotate(270deg) skewY(-30deg)}
-.game-wheel-slice span{transform:skewY(30deg) rotate(0deg)}
-.game-wheel-center{position:absolute;left:50%;top:50%;width:62px;height:62px;margin:-31px;border-radius:50%;background:#0b0b0c;border:3px solid var(--spray-yellow);display:grid;place-items:center;color:var(--spray-yellow);font-family:'Anton',sans-serif;font-size:.72rem;text-transform:uppercase;z-index:5;box-shadow:0 7px 18px rgba(0,0,0,.4)}
-.game-wheel-pointer{width:0;height:0;border-left:13px solid transparent;border-right:13px solid transparent;border-top:28px solid var(--spray-yellow);filter:drop-shadow(0 4px 5px rgba(0,0,0,.45));margin:0 auto -6px;position:relative;z-index:6}
-.game-spin-btn{width:100%;min-height:48px;border:none;border-radius:12px;background:var(--spray-yellow);color:#080808;font-family:'Anton',sans-serif;font-size:1.2rem;text-transform:uppercase;cursor:pointer;box-shadow:0 12px 26px rgba(255,213,0,.16)}
-.game-spin-btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
-.game-login-note{margin:.65rem 0 0;text-align:center;color:var(--grey);font-family:'Space Mono',monospace;font-size:.53rem;line-height:1.55}
-.game-result{display:none;margin-top:.9rem;border:1px solid rgba(255,213,0,.38);border-radius:12px;background:rgba(255,213,0,.05);padding:1rem;text-align:center}
-.game-result.show{display:block;animation:adminPageIn .18s ease-out}
-.game-result-kicker{font-family:'Space Mono',monospace;font-size:.52rem;color:var(--grey);text-transform:uppercase}
-.game-result-title{font-family:'Anton',sans-serif;font-size:2rem;color:var(--spray-yellow);text-transform:uppercase;margin:.25rem 0}
-.game-result-code{display:inline-block;margin:.4rem auto .65rem;padding:.55rem .8rem;border:1px dashed var(--spray-yellow);border-radius:8px;font-family:'Space Mono',monospace;font-weight:800;letter-spacing:.08em;background:#0c0c0e}
-.game-copy-btn{border:1px solid rgba(255,213,0,.4);border-radius:8px;background:#101013;color:var(--paper);padding:.55rem .8rem;font-family:'Space Mono',monospace;font-size:.54rem;cursor:pointer}
-.game-admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.9rem}
-.game-admin-six-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}
-.game-admin-slot{border:1px solid rgba(255,213,0,.14);background:rgba(255,213,0,.025);border-radius:12px;padding:.75rem}
-.game-admin-slot h4{font-family:'Anton',sans-serif;font-size:.9rem;text-transform:uppercase;margin:0 0 .4rem;color:var(--spray-yellow)}
-.game-admin-field-label{display:block;font-family:'Space Mono',monospace;font-size:.5rem;color:var(--grey);margin:0 0 .3rem;text-transform:uppercase}
-.game-admin-input{width:100%;min-height:40px;border:1px solid rgba(242,240,234,.16);background:#0f0f12;color:var(--paper);border-radius:8px;padding:.55rem .65rem;font-family:'Space Mono',monospace;font-size:.57rem;outline:none}
-.game-admin-input:focus{border-color:var(--spray-yellow)}
-.game-admin-checkbox-row{display:flex;align-items:center;gap:.55rem;padding:.8rem;border:1px solid rgba(255,213,0,.16);background:rgba(255,213,0,.03);border-radius:10px;margin-bottom:.85rem}
-.game-admin-checkbox-row input{width:18px;height:18px;accent-color:var(--spray-yellow)}
-.game-admin-checkbox-row span{font-family:'Space Mono',monospace;font-size:.62rem}
-.game-admin-save-status{font-family:'Space Mono',monospace;font-size:.55rem;color:var(--grey);text-align:right;margin-top:.55rem}
-@media(max-width:860px){.game-page-wrap{grid-template-columns:1fr}.game-wheel-card{position:static}.game-rule-grid{grid-template-columns:1fr}.game-admin-grid,.game-admin-six-grid{grid-template-columns:1fr}}
 </style>
 
 <style>
@@ -2192,55 +2134,6 @@ footer .footer-grid{gap:2.2rem;}
     <div class="cat-prod-grid" id="category-page-grid"></div>
   </section>
 
-  <!-- PLAY A GAME PAGE -->
-  <section id="game-page">
-    <button class="back-btn" type="button" onclick="closeRebelGamePage()">← Back to Store</button>
-    <div class="game-page-wrap">
-      <div class="game-hero-card">
-        <div class="game-hero-kicker">REBEL STORE • PLAYER ZONE</div>
-        <h1 class="game-hero-title" id="game-page-title">Play a Game, <span>Win a Coupon</span></h1>
-        <p class="game-hero-copy" id="game-page-subtitle">Spin the wheel and unlock a limited Rebel Store offer.</p>
-        <div class="game-rule-grid">
-          <div class="game-rule"><strong>2×</strong><span>Daily spins</span></div>
-          <div class="game-rule"><strong>5%–16%</strong><span>Reward range</span></div>
-          <div class="game-rule"><strong>16%</strong><span>Rare reward</span></div>
-        </div>
-        <div style="margin-top:1.1rem;padding:1rem;border-left:2px solid var(--spray-yellow);background:rgba(255,213,0,.03);">
-          <div style="font-family:'Anton',sans-serif;font-size:1.05rem;text-transform:uppercase;">How it works</div>
-          <p style="margin:.35rem 0 0;color:var(--grey);font-family:'Space Mono';font-size:.58rem;line-height:1.6;">Login, spin within your daily limit, and see where the wheel lands. The 16% reward is intentionally rare and becomes eligible only after a randomized 40–50 total-spin threshold.</p>
-        </div>
-      </div>
-
-      <div class="game-wheel-card">
-        <div class="game-wheel-top">
-          <h3>Spin the Wheel</h3>
-          <div class="game-spin-count" id="game-spin-count">0 / 2 spins today</div>
-        </div>
-        <div class="game-wheel-pointer"></div>
-        <div class="game-wheel-stage">
-          <div class="game-wheel" id="rebel-game-wheel" aria-label="Six section coupon wheel">
-            <div class="game-wheel-slice"><span>Better Luck Next Time</span></div>
-            <div class="game-wheel-slice dark"><span>5% OFF</span></div>
-            <div class="game-wheel-slice"><span>Again Spin</span></div>
-            <div class="game-wheel-slice dark"><span>12% OFF</span></div>
-            <div class="game-wheel-slice"><span>Better Luck Next Time</span></div>
-            <div class="game-wheel-slice dark"><span>16% OFF</span></div>
-            <div class="game-wheel-center">REBEL</div>
-          </div>
-        </div>
-        <button type="button" class="game-spin-btn" id="game-spin-btn" onclick="spinRebelGameWheel()">Login to Spin</button>
-        <div class="game-login-note" id="game-login-note">Login is required to spin the wheel.</div>
-        <div class="game-result" id="game-result">
-          <div class="game-result-kicker">YOUR RESULT</div>
-          <div class="game-result-title" id="game-result-title">—</div>
-          <div class="game-result-code" id="game-result-code" style="display:none;">—</div>
-          <div class="game-result-message" id="game-result-message" style="font-family:'Space Mono';font-size:.56rem;color:var(--grey);line-height:1.5;margin-bottom:.55rem;">—</div>
-          <button type="button" class="game-copy-btn" onclick="copyRebelGameCoupon()">Copy Coupon Code</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <section id="custom-order-page">
     <button class="back-btn" onclick="showHomeView()">← Back to Store</button>
     <div class="custom-form-box">
@@ -2874,45 +2767,9 @@ footer .footer-grid{gap:2.2rem;}
       <button class="admin-nav-card owner-only-card" onclick="openAdminSubPage('subpage-customers')"><span class="admin-nav-icon">👥</span><span><b>Customers</b><small>Accounts & contact info</small></span><em>→</em></button>
       <button class="admin-nav-card owner-only-card" onclick="openAdminSubPage('subpage-offers')"><span class="admin-nav-icon">🏷️</span><span><b>Offers</b><small>Coupon code & discount</small></span><em>→</em></button>
       <button class="admin-nav-card owner-only-card" onclick="openAdminSubPage('subpage-content-cms')"><span class="admin-nav-icon">✍️</span><span><b>Content</b><small>Hero, banners & text</small></span><em>→</em></button>
-      <button class="admin-nav-card owner-only-card" onclick="openAdminSubPage('subpage-game')"><span class="admin-nav-icon">🎮</span><span><b>Game</b><small>Play & win coupon</small></span><em>→</em></button>
       <button class="admin-nav-card" onclick="openAdminSubPage('subpage-wishlist')"><span class="admin-nav-icon">❤️</span><span><b>Wishlist</b><small>Customer saved items</small></span><em>→</em></button>
       <button class="admin-nav-card owner-only-card" onclick="openAdminSubPage('subpage-staff')"><span class="admin-nav-icon">🔐</span><span><b>Staff</b><small>Admin access</small></span><em>→</em></button>
       <button class="admin-nav-card owner-only-card" onclick="openAdminSubPage('subpage-trash-bin')"><span class="admin-nav-icon">🗑️</span><span><b>Trash</b><small>Deleted orders</small></span><em>→</em></button>
-    </div>
-
-    <!-- PLAY A GAME SUBPAGE -->
-    <div class="admin-sub-page" id="subpage-game">
-      <div class="sub-page-header">
-        <div><span class="admin-mini-label">ENGAGEMENT</span><h2>🎮 Play a Game</h2><p>Control the homepage game promo and spin-the-wheel rewards.</p></div>
-        <button class="btn btn--ghost" style="padding:.4rem 1rem;font-size:.8rem;" onclick="closeAdminSubPages()">← Back to Dashboard</button>
-      </div>
-
-      <div class="game-admin-card" style="padding:1rem;margin-bottom:1rem;">
-        <label class="game-admin-checkbox-row">
-          <input type="checkbox" id="game-enabled" onchange="scheduleGameSettingsSave()">
-          <span><strong>Show game promo on homepage</strong><br><small style="color:var(--grey);font-size:.52rem;">ON = the first Curated Drop card shows “Play a Game, Win a Coupon”. OFF = normal product card only.</small></span>
-        </label>
-
-        <div class="game-admin-grid">
-          <div><label class="game-admin-field-label">Homepage Game Title</label><input class="game-admin-input" id="game-title-input" oninput="scheduleGameSettingsSave()" maxlength="100"></div>
-          <div><label class="game-admin-field-label">Homepage Game Subtitle</label><input class="game-admin-input" id="game-subtitle-input" oninput="scheduleGameSettingsSave()" maxlength="180"></div>
-          <div><label class="game-admin-field-label">Daily Spins (1–3)</label><input class="game-admin-input" id="game-daily-limit-input" type="number" min="1" max="3" oninput="scheduleGameSettingsSave()"></div>
-          <div><label class="game-admin-field-label">16% Rare Trigger Range (40–50)</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;"><input class="game-admin-input" id="game-rare-min-input" type="number" min="40" max="50" oninput="scheduleGameSettingsSave()"><input class="game-admin-input" id="game-rare-max-input" type="number" min="40" max="50" oninput="scheduleGameSettingsSave()"></div></div>
-        </div>
-      </div>
-
-      <div class="game-admin-card" style="padding:1rem;">
-        <div class="admin-panel-head"><div><span class="admin-mini-label">6 WHEEL SECTIONS</span><h2>Wheel Content</h2></div><span style="font-family:'Space Mono';font-size:.52rem;color:var(--grey);">16% is the maximum.</span></div>
-        <div class="game-admin-six-grid">
-          <div class="game-admin-slot"><h4>Section 1</h4><label class="game-admin-field-label">Label</label><input class="game-admin-input" id="game-slot-0-label" oninput="scheduleGameSettingsSave()"><label class="game-admin-field-label" style="margin-top:.45rem;">Reward %</label><input class="game-admin-input" id="game-slot-0-percent" type="number" min="0" max="16" oninput="scheduleGameSettingsSave()"></div>
-          <div class="game-admin-slot"><h4>Section 2</h4><label class="game-admin-field-label">Label</label><input class="game-admin-input" id="game-slot-1-label" oninput="scheduleGameSettingsSave()"><label class="game-admin-field-label" style="margin-top:.45rem;">Reward %</label><input class="game-admin-input" id="game-slot-1-percent" type="number" min="0" max="16" oninput="scheduleGameSettingsSave()"></div>
-          <div class="game-admin-slot"><h4>Section 3</h4><label class="game-admin-field-label">Label</label><input class="game-admin-input" id="game-slot-2-label" oninput="scheduleGameSettingsSave()"><label class="game-admin-field-label" style="margin-top:.45rem;">Reward %</label><input class="game-admin-input" id="game-slot-2-percent" type="number" min="0" max="16" oninput="scheduleGameSettingsSave()"></div>
-          <div class="game-admin-slot"><h4>Section 4</h4><label class="game-admin-field-label">Label</label><input class="game-admin-input" id="game-slot-3-label" oninput="scheduleGameSettingsSave()"><label class="game-admin-field-label" style="margin-top:.45rem;">Reward %</label><input class="game-admin-input" id="game-slot-3-percent" type="number" min="0" max="16" oninput="scheduleGameSettingsSave()"></div>
-          <div class="game-admin-slot"><h4>Section 5</h4><label class="game-admin-field-label">Label</label><input class="game-admin-input" id="game-slot-4-label" oninput="scheduleGameSettingsSave()"><label class="game-admin-field-label" style="margin-top:.45rem;">Reward %</label><input class="game-admin-input" id="game-slot-4-percent" type="number" min="0" max="16" oninput="scheduleGameSettingsSave()"></div>
-          <div class="game-admin-slot"><h4>Section 6</h4><label class="game-admin-field-label">Label</label><input class="game-admin-input" id="game-slot-5-label" oninput="scheduleGameSettingsSave()"><label class="game-admin-field-label" style="margin-top:.45rem;">Reward %</label><input class="game-admin-input" id="game-slot-5-percent" type="number" min="0" max="16" oninput="scheduleGameSettingsSave()"></div>
-        </div>
-        <div id="game-admin-save-status" class="game-admin-save-status">Auto-save ready.</div>
-      </div>
     </div>
 
     <!-- Customer Wishlists Subpage -->
@@ -3733,264 +3590,6 @@ let visitorAnalyticsUsersLastLoadedAt = 0;
 let visitorAnalyticsDetailLoadPromise = null;
 let currentVisitorAnalyticsKind = 'logged_in';
 let currentVisitorDetail = { userId:'', visitorKey:'', kind:'logged_in' };
-
-
-// Front-end Game: Spin the Wheel / Win a Coupon.
-// Settings are local to the admin browser for now; backend sync can be added later.
-const REBEL_GAME_SETTINGS_KEY = 'rebel_game_settings';
-const DEFAULT_REBEL_GAME_SETTINGS = {
-  enabled: false,
-  dailySpinLimit: 2,
-  rareTriggerMin: 40,
-  rareTriggerMax: 50,
-  title: 'Play a Game, Win a Coupon',
-  subtitle: 'Spin the wheel and unlock a limited Rebel Store offer.',
-  sections: [
-    { label: 'Better Luck Next Time', type: 'loss', percent: 0 },
-    { label: '5% OFF', type: 'coupon', percent: 5 },
-    { label: 'Again Spin', type: 'again', percent: 0 },
-    { label: '12% OFF', type: 'coupon', percent: 12 },
-    { label: 'Better Luck Next Time', type: 'loss', percent: 0 },
-    { label: '16% OFF', type: 'coupon', percent: 16 }
-  ]
-};
-let REBEL_GAME_SETTINGS = (() => {
-  try {
-    const saved = JSON.parse(localStorage.getItem(REBEL_GAME_SETTINGS_KEY) || 'null');
-    if (!saved || typeof saved !== 'object') return structuredClone(DEFAULT_REBEL_GAME_SETTINGS);
-    const merged = { ...structuredClone(DEFAULT_REBEL_GAME_SETTINGS), ...saved };
-    merged.sections = Array.from({length:6}, (_, i) => ({
-      ...DEFAULT_REBEL_GAME_SETTINGS.sections[i],
-      ...((Array.isArray(saved.sections) && saved.sections[i]) || {})
-    }));
-    return merged;
-  } catch (_) {
-    return structuredClone(DEFAULT_REBEL_GAME_SETTINGS);
-  }
-})();
-let rebelGameSpinTimer = null;
-let rebelGameCurrentRotation = 0;
-
-function saveRebelGameSettingsLocal() {
-  try { localStorage.setItem(REBEL_GAME_SETTINGS_KEY, JSON.stringify(REBEL_GAME_SETTINGS)); } catch (_) {}
-}
-
-function getRebelGameIdentityKey() {
-  return String(loggedInUser?.id || loggedInUser?.email || '').trim() || 'guest';
-}
-
-function getRebelGameDateKey() {
-  try {
-    return new Intl.DateTimeFormat('en-CA', { timeZone:'Asia/Kolkata', year:'numeric', month:'2-digit', day:'2-digit' }).format(new Date());
-  } catch (_) { return new Date().toISOString().slice(0,10); }
-}
-
-function getRebelGamePlayerState() {
-  const key = `rebel_game_player_${getRebelGameIdentityKey()}`;
-  try {
-    const raw = JSON.parse(localStorage.getItem(key) || 'null');
-    const state = raw && typeof raw === 'object' ? raw : {};
-    if (state.dateKey !== getRebelGameDateKey()) state.dailySpins = 0;
-    if (!Number.isInteger(state.totalSpins) || state.totalSpins < 0) state.totalSpins = 0;
-    if (!Number.isInteger(state.dailySpins) || state.dailySpins < 0) state.dailySpins = 0;
-    if (!Number.isInteger(state.rareThreshold) || state.rareThreshold < REBEL_GAME_SETTINGS.rareTriggerMin || state.rareThreshold > REBEL_GAME_SETTINGS.rareTriggerMax) {
-      state.rareThreshold = Math.floor(Math.random() * (REBEL_GAME_SETTINGS.rareTriggerMax - REBEL_GAME_SETTINGS.rareTriggerMin + 1)) + REBEL_GAME_SETTINGS.rareTriggerMin;
-    }
-    state.dateKey = getRebelGameDateKey();
-    localStorage.setItem(key, JSON.stringify(state));
-    return state;
-  } catch (_) {
-    return { dateKey:getRebelGameDateKey(), dailySpins:0, totalSpins:0, rareThreshold:Math.floor(Math.random()*11)+40 };
-  }
-}
-
-function setRebelGamePlayerState(state) {
-  const key = `rebel_game_player_${getRebelGameIdentityKey()}`;
-  try { localStorage.setItem(key, JSON.stringify(state)); } catch (_) {}
-}
-
-function getRebelGameEligibleIndices() {
-  const sections = Array.isArray(REBEL_GAME_SETTINGS.sections) ? REBEL_GAME_SETTINGS.sections : DEFAULT_REBEL_GAME_SETTINGS.sections;
-  return sections.map((s,i) => ({s,i})).filter(({s}) => Number(s?.percent || 0) <= 16).map(({i}) => i);
-}
-
-function chooseRebelGameOutcome(state) {
-  const sections = REBEL_GAME_SETTINGS.sections || DEFAULT_REBEL_GAME_SETTINGS.sections;
-  const nextSpinNumber = state.totalSpins + 1;
-  const rareUnlocked = nextSpinNumber >= state.rareThreshold;
-  const rareChance = rareUnlocked ? 0.08 : 0;
-  if (rareUnlocked && Math.random() < rareChance) {
-    const idx16 = sections.findIndex(s => Number(s?.percent || 0) === 16);
-    if (idx16 >= 0) return idx16;
-  }
-  const normal = sections.map((s,i) => ({s,i})).filter(({s}) => Number(s?.percent || 0) < 16);
-  const candidates = normal.length ? normal : sections.map((_,i)=>({i}));
-  return candidates[Math.floor(Math.random()*candidates.length)].i;
-}
-
-function issueRebelGameCoupon(percent) {
-  const p = Number(percent || 0);
-  if (!p) return '';
-  const code = `REBEL${p}-${Math.random().toString(36).slice(2,8).toUpperCase()}`;
-  try { localStorage.setItem('rebel_game_last_coupon', JSON.stringify({ code, percent:p, createdAt:new Date().toISOString() })); } catch (_) {}
-  return code;
-}
-
-function renderRebelGamePlayerUI() {
-  const limit = Math.max(1, Math.min(3, Number(REBEL_GAME_SETTINGS.dailySpinLimit) || 2));
-  const state = getRebelGamePlayerState();
-  const countEl = document.getElementById('game-spin-count');
-  const btn = document.getElementById('game-spin-btn');
-  const note = document.getElementById('game-login-note');
-  if (countEl) countEl.textContent = `${Math.min(state.dailySpins, limit)} / ${limit} spins today · ${state.totalSpins} total spins`;
-  if (btn) {
-    const logged = !!loggedInUser?.id;
-    btn.disabled = !logged || state.dailySpins >= limit || !!rebelGameSpinTimer;
-    btn.textContent = !logged ? 'Login to Spin' : (state.dailySpins >= limit ? 'Daily Limit Reached' : 'Spin the Wheel');
-  }
-  if (note) note.textContent = loggedInUser?.id ? `You get up to ${limit} spins per day. The 16% reward is reserved for a rare later spin.` : 'Login is required to spin the wheel. Your game progress stays with your account on this device for now.';
-}
-
-function renderRebelGameWheel() {
-  const wheel = document.getElementById('rebel-game-wheel');
-  const sections = REBEL_GAME_SETTINGS.sections || DEFAULT_REBEL_GAME_SETTINGS.sections;
-  if (!wheel) return;
-  const labels = wheel.querySelectorAll('.game-wheel-slice span');
-  sections.slice(0,6).forEach((s,i)=>{ if(labels[i]) labels[i].textContent = String(s?.label || '').trim().slice(0,36) || `Prize ${i+1}`; });
-}
-
-function showRebelGameResult(section, couponCode) {
-  const box = document.getElementById('game-result');
-  const title = document.getElementById('game-result-title');
-  const code = document.getElementById('game-result-code');
-  const msg = document.getElementById('game-result-message');
-  if (!box || !title || !code || !msg) return;
-  box.classList.add('show');
-  const pct = Number(section?.percent || 0);
-  if (pct > 0) {
-    title.textContent = `${pct}% OFF`;
-    code.textContent = couponCode;
-    code.style.display = 'inline-block';
-    msg.textContent = 'Coupon generated. Use this code at checkout.';
-  } else {
-    title.textContent = section?.label || 'Better Luck Next Time';
-    code.style.display = 'none';
-    msg.textContent = section?.type === 'again' ? 'You landed on another spin. Try again with your next available chance.' : 'No coupon on this spin. Keep playing on your next available chance.';
-  }
-}
-
-function copyRebelGameCoupon() {
-  const text = document.getElementById('game-result-code')?.textContent?.trim() || '';
-  if (!text) return;
-  navigator.clipboard?.writeText(text).then(()=>showToast('Coupon copied.')).catch(()=>showToast('Coupon: '+text));
-}
-
-function openRebelGamePage() {
-  ['profile-modal','orders-modal','saved-address-modal','saved-addresses-modal','address-editor-modal'].forEach(id => { const el=document.getElementById(id); if(el) el.style.display='none'; });
-  ['home-view','product-page','custom-order-page','shipping-billing-page','new-address-checkout-page','category-page','admin-view'].forEach(id => { const el=document.getElementById(id); if(el) el.style.display='none'; });
-  const page = document.getElementById('game-page');
-  if (!page) return;
-  page.style.display='block';
-  document.body.style.overflow='';
-  renderRebelGameWheel();
-  const gameTitle = document.getElementById('game-page-title');
-  const gameSubtitle = document.getElementById('game-page-subtitle');
-  if (gameTitle) { const parts=String(REBEL_GAME_SETTINGS.title||DEFAULT_REBEL_GAME_SETTINGS.title).split(/,\s*/,2); gameTitle.innerHTML = `${escapeHtml(parts[0]||'Play a Game')}${parts[1] ? `, <span>${escapeHtml(parts[1])}</span>` : ''}`; }
-  if (gameSubtitle) gameSubtitle.textContent = REBEL_GAME_SETTINGS.subtitle || DEFAULT_REBEL_GAME_SETTINGS.subtitle;
-  renderRebelGamePlayerUI();
-  const result = document.getElementById('game-result');
-  if (result) result.classList.remove('show');
-  try { window.location.hash='#game'; } catch (_) {}
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-function closeRebelGamePage() {
-  if (rebelGameSpinTimer) return;
-  showHomeView();
-}
-
-function requireGameLogin() {
-  if (loggedInUser?.id) return true;
-  showToast('Please login to spin the wheel.');
-  if (typeof handleAuthClick === 'function') handleAuthClick();
-  return false;
-}
-
-function spinRebelGameWheel() {
-  if (rebelGameSpinTimer) return;
-  if (!requireGameLogin()) return;
-  const state = getRebelGamePlayerState();
-  const limit = Math.max(1, Math.min(3, Number(REBEL_GAME_SETTINGS.dailySpinLimit) || 2));
-  if (state.dailySpins >= limit) { renderRebelGamePlayerUI(); showToast('Your spins for today are finished.'); return; }
-  const index = chooseRebelGameOutcome(state);
-  const section = REBEL_GAME_SETTINGS.sections[index] || DEFAULT_REBEL_GAME_SETTINGS.sections[index];
-  const sliceCenter = 30 + (index * 60);
-  rebelGameCurrentRotation += 1440 + (360 - sliceCenter) + (Math.random() * 18 - 9);
-  const wheel = document.getElementById('rebel-game-wheel');
-  if (!wheel) return;
-  wheel.style.transform = `rotate(${rebelGameCurrentRotation}deg)`;
-  state.dailySpins += 1;
-  state.totalSpins += 1;
-  setRebelGamePlayerState(state);
-  renderRebelGamePlayerUI();
-  rebelGameSpinTimer = setTimeout(() => {
-    rebelGameSpinTimer = null;
-    const code = issueRebelGameCoupon(section?.percent || 0);
-    showRebelGameResult(section, code);
-    renderRebelGamePlayerUI();
-  }, 4350);
-}
-
-function renderGameAdminSettings() {
-  const enabled = document.getElementById('game-enabled');
-  const title = document.getElementById('game-title-input');
-  const subtitle = document.getElementById('game-subtitle-input');
-  const limit = document.getElementById('game-daily-limit-input');
-  const min = document.getElementById('game-rare-min-input');
-  const max = document.getElementById('game-rare-max-input');
-  if (enabled) enabled.checked = !!REBEL_GAME_SETTINGS.enabled;
-  if (title) title.value = REBEL_GAME_SETTINGS.title || DEFAULT_REBEL_GAME_SETTINGS.title;
-  if (subtitle) subtitle.value = REBEL_GAME_SETTINGS.subtitle || DEFAULT_REBEL_GAME_SETTINGS.subtitle;
-  if (limit) limit.value = Math.max(1, Math.min(3, Number(REBEL_GAME_SETTINGS.dailySpinLimit)||2));
-  if (min) min.value = Math.max(40, Math.min(50, Number(REBEL_GAME_SETTINGS.rareTriggerMin)||40));
-  if (max) max.value = Math.max(40, Math.min(50, Number(REBEL_GAME_SETTINGS.rareTriggerMax)||50));
-  const slots = REBEL_GAME_SETTINGS.sections || DEFAULT_REBEL_GAME_SETTINGS.sections;
-  slots.forEach((slot,i)=>{
-    const label = document.getElementById(`game-slot-${i}-label`);
-    const percent = document.getElementById(`game-slot-${i}-percent`);
-    if (label) label.value = slot?.label || '';
-    if (percent) percent.value = Number(slot?.percent || 0);
-  });
-  const status = document.getElementById('game-admin-save-status');
-  if (status) status.textContent = `Auto-saved locally · Game is ${REBEL_GAME_SETTINGS.enabled ? 'ON' : 'OFF'}`;
-}
-
-function scheduleGameSettingsSave() {
-  clearTimeout(window.rebelGameAdminSaveTimer);
-  window.rebelGameAdminSaveTimer = setTimeout(saveGameSettingsFromAdmin, 220);
-}
-
-function saveGameSettingsFromAdmin() {
-  const clamp = (n,min,max,fallback)=>Math.max(min,Math.min(max,Number.isFinite(Number(n))?Number(n):fallback));
-  REBEL_GAME_SETTINGS.enabled = !!document.getElementById('game-enabled')?.checked;
-  REBEL_GAME_SETTINGS.title = String(document.getElementById('game-title-input')?.value || DEFAULT_REBEL_GAME_SETTINGS.title).trim().slice(0,100) || DEFAULT_REBEL_GAME_SETTINGS.title;
-  REBEL_GAME_SETTINGS.subtitle = String(document.getElementById('game-subtitle-input')?.value || DEFAULT_REBEL_GAME_SETTINGS.subtitle).trim().slice(0,180) || DEFAULT_REBEL_GAME_SETTINGS.subtitle;
-  REBEL_GAME_SETTINGS.dailySpinLimit = clamp(document.getElementById('game-daily-limit-input')?.value,1,3,2);
-  REBEL_GAME_SETTINGS.rareTriggerMin = clamp(document.getElementById('game-rare-min-input')?.value,40,50,40);
-  REBEL_GAME_SETTINGS.rareTriggerMax = clamp(document.getElementById('game-rare-max-input')?.value,40,50,50);
-  if (REBEL_GAME_SETTINGS.rareTriggerMax < REBEL_GAME_SETTINGS.rareTriggerMin) REBEL_GAME_SETTINGS.rareTriggerMax = REBEL_GAME_SETTINGS.rareTriggerMin;
-  REBEL_GAME_SETTINGS.sections = Array.from({length:6},(_,i)=>({
-    label: String(document.getElementById(`game-slot-${i}-label`)?.value || DEFAULT_REBEL_GAME_SETTINGS.sections[i].label).trim().slice(0,40) || DEFAULT_REBEL_GAME_SETTINGS.sections[i].label,
-    type: DEFAULT_REBEL_GAME_SETTINGS.sections[i].type,
-    percent: clamp(document.getElementById(`game-slot-${i}-percent`)?.value,0,16,DEFAULT_REBEL_GAME_SETTINGS.sections[i].percent)
-  }));
-  saveRebelGameSettingsLocal();
-  renderRebelGameWheel();
-  renderRebelGamePlayerUI();
-  const status = document.getElementById('game-admin-save-status');
-  if (status) status.textContent = `Auto-saved locally · Game is ${REBEL_GAME_SETTINGS.enabled ? 'ON' : 'OFF'}`;
-  renderCuratedSection();
-}
 
 const STORE_START_DATE = new Date(2026, 7, 1);
 const calendarToday = new Date();
@@ -4832,7 +4431,7 @@ function onCustProductChange(value) {
   renderTShirtLabOptions();
 }
 
-function createProductCard(catName, prod, index, showGamePromo = false) {
+function createProductCard(catName, prod, index) {
   const rawImages = (prod.images && prod.images.length > 0) ? prod.images.filter(img => img && img.trim() !== '') : [];
   const firstImg = safeMediaUrl(rawImages[0] || '');
   const swatchStyle = firstImg ? `background-image: url('${escapeHtml(firstImg)}');` : '';
@@ -4858,7 +4457,6 @@ function createProductCard(catName, prod, index, showGamePromo = false) {
         </div>
       </div>
       <p>${escapeHtml(prod.desc)}</p>
-      ${showGamePromo && REBEL_GAME_SETTINGS.enabled ? `<button type="button" class="game-promo-btn" onclick="event.stopPropagation();openRebelGamePage()"><span>🎮 Play a Game, Win a Coupon</span><span>→</span></button>` : ''}
       <div class="lux-card-foot">
         <span class="lux-mono">Sizes: ${sizeList.map(s => escapeHtml(s)).join(', ')}</span>
         <span class="lux-card-btn">View Product ${LUX_ARROW_ICON}</span>
@@ -4903,7 +4501,7 @@ function showHomeView() {
   });
   document.body.style.overflow = '';
 
-  ['product-page','custom-order-page','shipping-billing-page','new-address-checkout-page','category-page','game-page','admin-view'].forEach(id => {
+  ['product-page','custom-order-page','shipping-billing-page','category-page','admin-view'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
@@ -7472,9 +7070,6 @@ function openAdminSubPage(subPageId) {
     if (subPageId === 'subpage-visitor-analytics') {
       loadVisitorAnalyticsHistory(true);
       loadVisitorAnalyticsUsers(true);
-    }
-    if (subPageId === 'subpage-game') {
-      renderGameAdminSettings();
     }
     if (subPageId === 'subpage-visitor-detail') {
       loadVisitorAnalyticsDetail();
@@ -11110,12 +10705,6 @@ function handleRouteFromHash() {
     openProfileModal('wishlist', false);
   } else if (hash === '#custom-order') {
     openCustomOrderPage();
-  } else if (hash === '#game') {
-    if (!REBEL_GAME_SETTINGS.enabled) {
-      showHomeView();
-      return;
-    }
-    openRebelGamePage();
   } else if (hash === '#shipping') {
     goToShippingPage();
   } else if (hash === '#admin') {
@@ -11249,7 +10838,6 @@ function grantAdminAccess() {
   document.getElementById('custom-order-page').style.display = 'none';
   document.getElementById('shipping-billing-page').style.display = 'none';
   document.getElementById('category-page').style.display = 'none';
-  document.getElementById('game-page').style.display = 'none';
   
   document.getElementById('admin-view').style.display = 'block';
   const launchOverlay = document.getElementById('launch-mode-overlay');
@@ -12826,8 +12414,7 @@ function renderCuratedSection() {
     if (!cat || cat.active === false || (curatedFilter !== 'all' && cat.name !== curatedFilter)) return;
     (cat.products || []).forEach(prod => {
       if (!prod || prod.active === false) return;
-      const cardIndex = count++;
-      grid.appendChild(createProductCard(cat.name, prod, cardIndex, cardIndex === 0));
+      grid.appendChild(createProductCard(cat.name, prod, count++));
     });
   });
   if (!count) grid.innerHTML = '<div class="lux-empty">No drops in this category yet.</div>';
