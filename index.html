@@ -376,6 +376,40 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .visitor-analytics-table th{color:var(--spray-yellow);text-transform:uppercase;font-size:.52rem}
 .visitor-analytics-table td:last-child,.visitor-analytics-table th:last-child{text-align:right}
 .visitor-analytics-table-wrap{background:#111114;border:1px solid rgba(242,240,234,.12);border-radius:10px;padding:.2rem;max-height:520px;overflow:auto}
+.visitor-user-list{display:grid;gap:.65rem;margin-top:1rem}
+.visitor-user-card{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.75rem;align-items:center;background:#111114;border:1px solid rgba(242,240,234,.12);border-radius:10px;padding:.75rem;cursor:pointer;text-align:left;color:var(--paper);width:100%}
+.visitor-user-card:hover{border-color:var(--spray-yellow);background:#17171a}
+.visitor-user-avatar{width:42px;height:42px;border-radius:50%;object-fit:cover;border:1px solid rgba(250,204,21,.35);background:#0b0b0d;display:grid;place-items:center;overflow:hidden}
+.visitor-user-avatar img{width:100%;height:100%;object-fit:cover}
+.visitor-user-card-main{min-width:0}
+.visitor-user-card-main strong{display:block;color:#fff;font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.visitor-user-card-main span{display:block;color:#9ca3af;font-family:'Space Mono',monospace;font-size:.55rem;margin-top:.18rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.visitor-user-card-meta{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.32rem}
+.visitor-user-chip{border:1px solid rgba(242,240,234,.12);background:#0f0f12;color:#c9cdd3;border-radius:999px;padding:.22rem .4rem;font-family:'Space Mono',monospace;font-size:.48rem}
+.visitor-user-card-arrow{color:var(--spray-yellow);font-size:1rem}
+.visitor-detail-profile{display:grid;grid-template-columns:auto minmax(0,1fr);gap:1rem;align-items:center;background:#111114;border:1px solid rgba(242,240,234,.12);border-radius:10px;padding:1rem;margin-bottom:1rem}
+.visitor-detail-avatar{width:74px;height:74px;border-radius:50%;object-fit:cover;border:2px solid var(--spray-yellow);background:#0b0b0d;display:grid;place-items:center;overflow:hidden}
+.visitor-detail-profile h3{margin:0;color:#fff;font-size:1.2rem}
+.visitor-detail-profile p{margin:.2rem 0 0;color:#9ca3af;font-family:'Space Mono',monospace;font-size:.58rem;line-height:1.6}
+.visitor-detail-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.6rem;margin-bottom:1rem}
+.visitor-detail-stat{background:#111114;border:1px solid rgba(242,240,234,.12);border-radius:9px;padding:.75rem}
+.visitor-detail-stat span{display:block;color:#9ca3af;font-family:'Space Mono',monospace;font-size:.5rem;text-transform:uppercase}
+.visitor-detail-stat strong{display:block;color:var(--spray-yellow);font-family:'Anton',sans-serif;font-size:1.25rem;margin-top:.25rem}
+.visitor-event-list{display:grid;gap:.55rem}
+.visitor-event{background:#111114;border:1px solid rgba(242,240,234,.1);border-radius:8px;padding:.7rem}
+.visitor-event-head{display:flex;justify-content:space-between;gap:.6rem;align-items:flex-start}
+.visitor-event-head strong{font-size:.68rem;color:#fff}
+.visitor-event-head time{color:#85858b;font-family:'Space Mono',monospace;font-size:.48rem;white-space:nowrap}
+.visitor-event p{margin:.3rem 0 0;color:#b7bbc2;font-size:.58rem;line-height:1.5;white-space:pre-wrap}
+.visitor-order-list{display:grid;gap:.5rem}
+.visitor-order-card{background:#111114;border:1px solid rgba(242,240,234,.1);border-radius:8px;padding:.65rem}
+.visitor-order-card strong{color:#fff;font-size:.65rem}
+.visitor-order-card span{display:block;color:#9ca3af;font-family:'Space Mono',monospace;font-size:.5rem;margin-top:.15rem}
+.admin-visitor-kpi{cursor:pointer;text-align:left;color:var(--paper);border:1px solid rgba(242,240,234,.13);width:100%;font:inherit}
+.admin-visitor-kpi:hover{border-color:var(--spray-yellow);background:#1b1b1f;transform:translateY(-2px)}
+@media(max-width:850px){.visitor-detail-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.visitor-user-card{grid-template-columns:auto minmax(0,1fr);}.visitor-user-card-arrow{display:none}.visitor-detail-profile{grid-template-columns:1fr;text-align:center}.visitor-detail-avatar{margin:0 auto}}
+
 @media(max-width:600px){.visitor-analytics-summary{grid-template-columns:1fr}.visitor-analytics-bars{height:210px}.visitor-analytics-bar-label{font-size:.42rem}}
 
 .admin-status-grid button:hover{border-color:var(--spray-yellow)}.admin-status-grid span{grid-row:1/3;font-size:1rem}.admin-status-grid b{font-family:'Anton',sans-serif;font-size:1.15rem;line-height:1}.admin-status-grid small{font-family:'Space Mono',monospace;color:var(--grey);font-size:.52rem;text-transform:uppercase}
@@ -2968,10 +3002,10 @@ footer .footer-grid{gap:2.2rem;}
       </div>
     </div>
 
-    <!-- DATE-WISE VISITOR ANALYTICS -->
+    <!-- VISITOR ANALYTICS -->
     <div class="admin-sub-page" id="subpage-visitor-analytics">
       <div class="sub-page-header admin-sub-header-new">
-        <div><span class="admin-mini-label">VISITOR ANALYTICS</span><h2 id="visitor-analytics-title">👤 Signed-in Visitors</h2><p>Date-wise unique visitor history and total unique visitors.</p></div>
+        <div><span class="admin-mini-label">VISITOR ANALYTICS</span><h2 id="visitor-analytics-title">👤 Signed-in Visitors</h2><p id="visitor-analytics-subtitle">Profiles, date-wise visits and customer activity.</p></div>
         <button class="btn btn--ghost" style="padding:.4rem 1rem;font-size:.8rem;" onclick="closeAdminSubPages()">← Dashboard</button>
       </div>
       <div class="visitor-analytics-summary">
@@ -2979,14 +3013,37 @@ footer .footer-grid{gap:2.2rem;}
         <div class="visitor-analytics-summary-card"><span>Recorded Days</span><strong id="visitor-analytics-days">—</strong></div>
       </div>
       <div class="visitor-analytics-chart-wrap">
-        <div class="admin-panel-head"><div><span class="admin-mini-label">DATE-WISE</span><h2 id="visitor-analytics-chart-heading">Last 30 Days</h2></div><button type="button" class="admin-small-btn" onclick="loadVisitorAnalyticsHistory(true)">↻ Refresh</button></div>
+        <div class="admin-panel-head">
+          <div><span class="admin-mini-label">DATE-WISE</span><h2 id="visitor-analytics-chart-heading">Last 30 Days</h2></div>
+          <button type="button" class="admin-small-btn" onclick="loadVisitorAnalyticsHistory(true);loadVisitorAnalyticsUsers(true)">↻ Refresh</button>
+        </div>
         <div class="visitor-analytics-bars" id="visitor-analytics-bars"></div>
+      </div>
+      <div class="admin-inner-card">
+        <div class="admin-panel-head">
+          <div><span class="admin-mini-label" id="visitor-list-label">CUSTOMERS</span><h2 id="visitor-list-heading">Signed-in Profiles</h2></div>
+          <button type="button" class="admin-small-btn" onclick="loadVisitorAnalyticsUsers(true)">↻ Refresh</button>
+        </div>
+        <div class="visitor-user-list" id="visitor-user-list">
+          <div style="padding:1.5rem;text-align:center;color:var(--grey);font-family:'Space Mono';font-size:.6rem;">Loading visitor profiles…</div>
+        </div>
       </div>
       <div class="visitor-analytics-table-wrap">
         <table class="visitor-analytics-table">
           <thead><tr><th>Date</th><th>Visitors</th></tr></thead>
           <tbody id="visitor-analytics-table-body"><tr><td colspan="2" style="text-align:center;color:var(--grey);padding:2rem;">Loading visitor history…</td></tr></tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- VISITOR PROFILE / ACTIVITY DETAIL -->
+    <div class="admin-sub-page" id="subpage-visitor-detail">
+      <div class="sub-page-header admin-sub-header-new">
+        <div><span class="admin-mini-label">VISITOR DETAIL</span><h2 id="visitor-detail-title">Visitor Details</h2><p>Profile, checkout activity, payment attempts and order outcome.</p></div>
+        <button class="btn btn--ghost" style="padding:.4rem 1rem;font-size:.8rem;" onclick="closeVisitorDetail()">← Visitors</button>
+      </div>
+      <div id="visitor-detail-content">
+        <div style="padding:2rem;text-align:center;color:var(--grey);font-family:'Space Mono';font-size:.6rem;">Loading visitor details…</div>
       </div>
     </div>
 
@@ -3527,7 +3584,12 @@ let visitorAnalyticsCountsLoadPromise = null;
 let visitorAnalyticsHistoryCache = null;
 let visitorAnalyticsHistoryLoadPromise = null;
 let visitorAnalyticsHistoryLastLoadedAt = 0;
+let visitorAnalyticsUsersCache = null;
+let visitorAnalyticsUsersLoadPromise = null;
+let visitorAnalyticsUsersLastLoadedAt = 0;
+let visitorAnalyticsDetailLoadPromise = null;
 let currentVisitorAnalyticsKind = 'logged_in';
+let currentVisitorDetail = { userId:'', visitorKey:'', kind:'logged_in' };
 
 const STORE_START_DATE = new Date(2026, 7, 1);
 const calendarToday = new Date();
@@ -4604,7 +4666,16 @@ async function addCustomOrderToCart() {
     } else {
       cart.push(newCustomItem);
     }
-    localStorage.setItem('rebel_cart', JSON.stringify(cart));
+    trackVisitorEvent('custom_add_to_cart', {
+      garment: String(newCustomItem.garment || ''),
+      garment_category: String(newCustomItem.garmentCategory || ''),
+      color: String(newCustomItem.color || ''),
+      size: String(newCustomItem.size || ''),
+      quantity: Number(newCustomItem.qty || 0),
+      price: Number(newCustomItem.price || 0),
+      has_print_front: !!newCustomItem.prints?.front,
+      has_print_back: !!newCustomItem.prints?.back
+    });
     updateCartBadge();
     renderCartDrawer();
     showToast('T-Shirt Lab order added to cart successfully!');
@@ -4919,6 +4990,14 @@ function openProductByDetails(catName, productId) {
   const catSlug = foundCat.name.toLowerCase().replace(/\s+/g, '-');
   const prodSlug = foundProd.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   window.location.hash = `#shop/${catSlug}/${prodSlug}`;
+  trackVisitorEvent('product_view', {
+    product_id: String(foundProd.id || ''),
+    product_title: String(foundProd.title || ''),
+    product_code: String(foundProd.code || ''),
+    category: String(foundCat?.name || ''),
+    color: String(selectedColor || ''),
+    size: String(selectedSize || '')
+  });
   renderProductReviews();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -5277,6 +5356,16 @@ function addToCart() {
     syncCartToSupabase().catch(error => console.error('Cloud cart sync error:', error));
   }
 
+  trackVisitorEvent('add_to_cart', {
+    product_id: String(currentProduct.id || ''),
+    product_title: String(currentProduct.title || ''),
+    product_code: String(currentProduct.code || ''),
+    color: String(selectedColor || ''),
+    size: String(selectedSize || ''),
+    quantity: Number(selectedQty || 0),
+    qty: Number(selectedQty || 0),
+    price: Number(currentProduct.price || 0)
+  });
   updateCartBadge();
   renderCartDrawer();
   showToast(`Added to cart successfully!`);
@@ -5750,12 +5839,14 @@ function applyCoupon() {
     isCouponApplied = true;
     msgEl.innerText = `Code ${activeOfferCode} applied! Extra ${activeDiscountPercent}% discount.`;
     msgEl.style.color = 'var(--spray-yellow)';
+    trackVisitorEvent('coupon_applied', { coupon_code: activeOfferCode, discount_percent: Number(activeDiscountPercent || 0) });
   } else if (code === '') {
     isCouponApplied = false; msgEl.innerText = '';
   } else {
     isCouponApplied = false;
     msgEl.innerText = 'Invalid coupon code';
     msgEl.style.color = 'var(--rebel-red)';
+    trackVisitorEvent('coupon_rejected', { coupon_code: code });
   }
   renderCartDrawer();
 }
@@ -5812,6 +5903,10 @@ function toggleCartDrawer(open) {
   const drawer = document.getElementById('cart-drawer');
   const overlay = document.getElementById('cart-overlay');
   if (open) {
+    trackVisitorEvent('cart_viewed', {
+      items_count: Array.isArray(cart) ? cart.length : 0,
+      total_quantity: Array.isArray(cart) ? cart.reduce((s, i) => s + Number(i?.qty || 0), 0) : 0
+    });
     renderCartDrawer();
     drawer.classList.add('open');
     overlay.classList.add('open');
@@ -5827,6 +5922,11 @@ let selectedBillingAddressData = null;
 function goToShippingPage() {
   if (cart.length === 0) { showToast("Your bag is empty!"); return; }
   toggleCartDrawer(false);
+  trackVisitorEvent('shipping_page_opened', {
+    items_count: Array.isArray(cart) ? cart.length : 0,
+    total_quantity: Array.isArray(cart) ? cart.reduce((s, i) => s + Number(i?.qty || 0), 0) : 0,
+    authenticated: !!loggedInUser?.id
+  });
   if (!loggedInUser) {
     window.pendingActionAfterLogin = 'shipping';
     handleAuthClick();
@@ -5968,6 +6068,13 @@ async function selectSavedBillingAddress(id, rerender = true) {
 
   selectedBillingAddressId = String(data.id);
   selectedBillingAddressData = data;
+  trackVisitorEvent('billing_address_selected', {
+    address_label: String(data.label || ''),
+    state: String(data.state || ''),
+    district: String(data.district || ''),
+    pincode: String(data.pincode || '').slice(0, 6),
+    source: 'saved_address'
+  });
   if (rerender) await renderBillingSavedAddresses(selectedBillingAddressId);
   if (rerender) showToast('Delivery address selected.');
 }
@@ -5991,6 +6098,7 @@ function startNewBillingAddress() {
   document.getElementById('new-b-state').value = '';
   document.getElementById('new-b-district').innerHTML = '<option value="">Select District</option>';
   document.getElementById('new-b-pincode-status').textContent = '';
+  trackVisitorEvent('new_billing_address_opened', { source: 'checkout' });
 
   window.location.hash = '#new-address';
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -6115,6 +6223,11 @@ async function saveNewCheckoutAddress() {
 
     selectedBillingAddressId = String(savedAddress.id);
     selectedBillingAddressData = savedAddress;
+    trackVisitorEvent('billing_address_saved', {
+      state: String(savedAddress.state || ''),
+      district: String(savedAddress.district || ''),
+      pincode: String(savedAddress.pincode || '').slice(0, 6)
+    });
     delete document.getElementById('save-new-address-btn').dataset.editId;
 
     document.getElementById('new-address-checkout-page').style.display = 'none';
@@ -6225,6 +6338,12 @@ async function proceedToPayment() {
   payBtn.disabled = true;
   payBtn.innerText = 'Initializing Secure Payment...';
 
+  trackVisitorEvent('payment_init_started', {
+    items_count: Array.isArray(cart) ? cart.length : 0,
+    total_quantity: Array.isArray(cart) ? cart.reduce((s, i) => s + Number(i?.qty || 0), 0) : 0,
+    coupon_code: isCouponApplied ? String(activeOfferCode || '').trim().toUpperCase() : ''
+  });
+
   try {
     // Checkout is account-only. Never create a Razorpay order without a real
     // Supabase Auth access token.
@@ -6306,6 +6425,12 @@ async function proceedToPayment() {
 
     pendingOrder.totalAmount = Number(data.total_amount ?? data.amount / 100);
     localStorage.setItem('rebel_pending_order', JSON.stringify(pendingOrder));
+    trackVisitorEvent('razorpay_order_created', {
+      razorpay_order_id: String(data.order_id || ''),
+      amount: Number(data.total_amount ?? data.amount / 100),
+      currency: String(data.currency || 'INR'),
+      coupon_code: couponCode
+    });
 
     const options = {
       key: RAZORPAY_LIVE_KEY_ID,
@@ -6322,6 +6447,11 @@ async function proceedToPayment() {
       },
       theme: { color: '#ffd500' },
       handler: async function (paymentResponse) {
+        trackVisitorEvent('payment_success_callback', {
+          razorpay_payment_id: String(paymentResponse?.razorpay_payment_id || ''),
+          razorpay_order_id: String(paymentResponse?.razorpay_order_id || ''),
+          status: 'callback_received'
+        });
         try {
           await handleOrderSuccessDirect({
             razorpay_payment_id: paymentResponse.razorpay_payment_id,
@@ -6350,6 +6480,16 @@ async function proceedToPayment() {
     const rzp1 = new Razorpay(options);
     rzp1.on('payment.failed', function (response) {
       console.error('Razorpay payment failed:', response?.error || response);
+      const payError = response?.error || {};
+      trackVisitorEvent('payment_failed', {
+        razorpay_order_id: String(payError.order_id || data.order_id || ''),
+        error_code: String(payError.code || ''),
+        error_description: String(payError.description || ''),
+        error_reason: String(payError.reason || ''),
+        error_source: String(payError.source || ''),
+        step: String(payError.step || ''),
+        amount: Number(data.total_amount ?? data.amount / 100)
+      });
       // A failed attempt does not mean the checkout session is over.
       // Razorpay can let the customer retry inside the same checkout modal.
       // Keep the active-checkout guard enabled so a later successful payment
@@ -6359,8 +6499,17 @@ async function proceedToPayment() {
       payBtn.innerText = 'Proceed to Payment →';
       alert('Payment failed. Please try again.');
     });
+    trackVisitorEvent('payment_checkout_opened', {
+      razorpay_order_id: String(data.order_id || ''),
+      amount: Number(data.total_amount ?? data.amount / 100),
+      gateway: 'Razorpay'
+    });
     rzp1.open();
   } catch (err) {
+    trackVisitorEvent('payment_init_failed', {
+      error_message: String(err?.message || err || '').slice(0, 300),
+      step: 'payment_initialization'
+    });
     console.error('Payment Initialization Error:', err);
     payBtn.disabled = false;
     payBtn.innerText = 'Proceed to Payment →';
@@ -6643,6 +6792,12 @@ async function handleOrderSuccessDirect(paymentData) {
   const razorpayOrderId = String(paymentData?.razorpay_order_id || '').trim();
   const razorpaySignature = String(paymentData?.razorpay_signature || '').trim();
 
+  trackVisitorEvent('payment_success_callback', {
+    razorpay_payment_id: razorpayPaymentId,
+    razorpay_order_id: razorpayOrderId,
+    status: 'received_by_rebel'
+  });
+
   if (!razorpayPaymentId || !razorpayOrderId || !razorpaySignature) {
     console.error('Incomplete Razorpay success response.');
     showToast('Payment received, but verification details were incomplete. Please contact support.');
@@ -6729,6 +6884,12 @@ async function handleOrderSuccessDirect(paymentData) {
     try { verifyData = await verifyResponse.json(); } catch (_) {}
 
     if (!verifyResponse.ok || !verifyData?.success || verifyData?.verified !== true) {
+      trackVisitorEvent('payment_verification_failed', {
+        razorpay_payment_id: razorpayPaymentId,
+        razorpay_order_id: razorpayOrderId,
+        error_message: String(verifyData?.error || 'Verification failed').slice(0, 300),
+        status: String(verifyResponse.status || '')
+      });
       console.error('Razorpay verification failed:', verifyData);
       hidePaymentProcessing();
       showToast(
@@ -6794,9 +6955,23 @@ async function handleOrderSuccessDirect(paymentData) {
     updateCartBadge();
 
     hidePaymentProcessing();
+    trackVisitorEvent('order_confirmed', {
+      order_id: finalOrderId,
+      razorpay_payment_id: razorpayPaymentId,
+      razorpay_order_id: razorpayOrderId,
+      status: 'paid',
+      zoho_invoice_id: String(verifyData?.zoho?.invoice_id || ''),
+      zoho_invoice_number: String(verifyData?.zoho?.invoice_number || ''),
+      items_count: Array.isArray(savedOrder.items) ? savedOrder.items.length : 0
+    });
     showOrderSuccessCelebration(finalOrderId, razorpayPaymentId);
     return true;
   } catch (error) {
+    trackVisitorEvent('order_confirmation_failed', {
+      razorpay_payment_id: razorpayPaymentId,
+      razorpay_order_id: razorpayOrderId,
+      error_message: String(error?.message || error || '').slice(0, 300)
+    });
     hidePaymentProcessing();
     console.error('Secure payment verification error:', error);
     showToast(
@@ -6894,6 +7069,10 @@ function openAdminSubPage(subPageId) {
     }
     if (subPageId === 'subpage-visitor-analytics') {
       loadVisitorAnalyticsHistory(true);
+      loadVisitorAnalyticsUsers(true);
+    }
+    if (subPageId === 'subpage-visitor-detail') {
+      loadVisitorAnalyticsDetail();
     }
     if (subPageId === 'subpage-date-chart') {
       renderInteractiveCalendar(currentSelectedDateFilter);
@@ -9989,6 +10168,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (event === 'SIGNED_IN') closeAuthModal();
       }
       if (event === 'SIGNED_OUT') {
+        if (currentRole !== 'owner' && loggedInUser?.id) {
+          trackVisitorEvent('logout', { user_id: String(loggedInUser.id || '') });
+        }
         cartCloudLoadPromise = null;
         cartCloudLoadUserId = '';
         userHydrationPromise = null;
@@ -10059,7 +10241,7 @@ async function trackVisitorAnalytics(force = false) {
   // Count public storefront usage for every visitor, including the owner
   // when the owner is logged in and viewing the storefront. Direct admin
   // views are still excluded so opening the admin portal does not count.
-  if (!VISITOR_ANALYTICS_ENABLED || !supabaseClient || isVisitorAnalyticsAdminView()) return;
+  if (!VISITOR_ANALYTICS_ENABLED || !supabaseClient || isVisitorAnalyticsAdminView() || currentRole === 'owner') return;
 
   const visitorKey = getVisitorAnalyticsId();
   if (!visitorKey) return;
@@ -10084,6 +10266,7 @@ async function trackVisitorAnalytics(force = false) {
     try {
       sessionStorage.setItem(VISITOR_ANALYTICS_TRACKED_KEY, JSON.stringify({ signature, at: now }));
     } catch (_) {}
+    trackVisitorEvent('store_visit', { visitor_kind: visitorKind, source: 'public_store' });
   } catch (err) {
     console.warn('Visitor analytics tracking skipped:', err?.message || err);
   }
@@ -10093,6 +10276,248 @@ async function loadAdminVisitorCounts(force = false) {
   if (!VISITOR_ANALYTICS_ENABLED || !supabaseClient || currentRole !== 'owner') return;
   await loadVisitorAnalyticsHistory(force);
 }
+function trackVisitorEvent(eventType, eventData = {}) {
+  // Fire-and-forget analytics. Never block checkout or page navigation.
+  if (!VISITOR_ANALYTICS_ENABLED || !supabaseClient || isVisitorAnalyticsAdminView() || currentRole === 'owner') return;
+  const visitorKey = getVisitorAnalyticsId();
+  if (!visitorKey) return;
+  const payload = (eventData && typeof eventData === 'object') ? eventData : {};
+  try {
+    supabaseClient.rpc('track_visitor_event', {
+      p_visitor_key: visitorKey,
+      p_event_type: String(eventType || 'unknown').slice(0, 80),
+      p_event_data: payload
+    }).then(({ error }) => {
+      if (error) console.warn('Visitor event skipped:', error.message);
+    }).catch(err => console.warn('Visitor event skipped:', err?.message || err));
+  } catch (err) {
+    console.warn('Visitor event skipped:', err?.message || err);
+  }
+}
+
+async function loadVisitorAnalyticsUsers(force = false) {
+  if (!VISITOR_ANALYTICS_ENABLED || !supabaseClient || currentRole !== 'owner') return;
+  const now = Date.now();
+  if (!force && visitorAnalyticsUsersLoadPromise) return visitorAnalyticsUsersLoadPromise;
+  if (!force && visitorAnalyticsUsersCache && now - visitorAnalyticsUsersLastLoadedAt < 15000) {
+    renderVisitorUserList();
+    return;
+  }
+  visitorAnalyticsUsersLoadPromise = (async () => {
+    const { data, error } = await supabaseClient.rpc('get_visitor_analytics_users', {
+      p_kind: currentVisitorAnalyticsKind === 'guest' ? 'guest' : 'logged_in'
+    });
+    if (error) {
+      console.warn('Visitor analytics users unavailable:', error.message);
+      visitorAnalyticsUsersCache = { kind: currentVisitorAnalyticsKind, users: [] };
+      renderVisitorUserList();
+      return;
+    }
+    visitorAnalyticsUsersCache = data && typeof data === 'object'
+      ? data
+      : { kind: currentVisitorAnalyticsKind, users: [] };
+    visitorAnalyticsUsersLastLoadedAt = Date.now();
+    renderVisitorUserList();
+  })().catch(err => {
+    console.warn('Visitor analytics users skipped:', err?.message || err);
+  }).finally(() => {
+    visitorAnalyticsUsersLoadPromise = null;
+  });
+  return visitorAnalyticsUsersLoadPromise;
+}
+
+function renderVisitorUserList() {
+  const list = document.getElementById('visitor-user-list');
+  const heading = document.getElementById('visitor-list-heading');
+  const label = document.getElementById('visitor-list-label');
+  if (!list) return;
+
+  const kind = currentVisitorAnalyticsKind === 'guest' ? 'guest' : 'logged_in';
+  if (heading) heading.innerText = kind === 'guest' ? 'Guest Visitors' : 'Signed-in Profiles';
+  if (label) label.innerText = kind === 'guest' ? 'ANONYMOUS VISITORS' : 'CUSTOMERS';
+
+  const users = Array.isArray(visitorAnalyticsUsersCache?.users) ? visitorAnalyticsUsersCache.users : [];
+  if (!users.length) {
+    list.innerHTML = `<div style="padding:1.5rem;text-align:center;color:var(--grey);font-family:'Space Mono';font-size:.6rem;">No ${kind === 'guest' ? 'guest visitors' : 'signed-in customers'} recorded yet.</div>`;
+    return;
+  }
+
+  list.innerHTML = users.map((u, index) => {
+    const isGuest = kind === 'guest';
+    const key = String(u?.visitor_key || '');
+    const userId = String(u?.user_id || '');
+    const name = isGuest ? `Guest Visitor ${index + 1}` : String(u?.name || u?.username || u?.email || 'Customer');
+    const sub = isGuest ? `Visitor ID: ${key.slice(0, 12)}…` : String(u?.email || '');
+    const avatar = !isGuest && u?.avatar_url
+      ? `<img src="${escapeHtml(safeMediaUrl(u.avatar_url))}" alt="Profile">`
+      : `<span style="font-size:.9rem;">${isGuest ? '👥' : '👤'}</span>`;
+    const chips = [
+      `${Number(u?.visit_days || 0)} day${Number(u?.visit_days || 0) === 1 ? '' : 's'}`,
+      `${Number(u?.event_count || 0)} events`,
+      `${Number(u?.order_count || 0)} orders`,
+      `${Number(u?.payment_attempts || 0)} payment attempt${Number(u?.payment_attempts || 0) === 1 ? '' : 's'}`
+    ].map(v => `<span class="visitor-user-chip">${escapeHtml(v)}</span>`).join('');
+    return `<button type="button" class="visitor-user-card" onclick="openVisitorDetail('${escapeHtml(userId)}','${escapeHtml(key)}','${kind}')">
+      <div class="visitor-user-avatar">${avatar}</div>
+      <div class="visitor-user-card-main">
+        <strong>${escapeHtml(name)}</strong>
+        <span>${escapeHtml(sub)}</span>
+        <div class="visitor-user-card-meta">${chips}</div>
+      </div>
+      <div class="visitor-user-card-arrow">→</div>
+    </button>`;
+  }).join('');
+}
+
+function openVisitorDetail(userId = '', visitorKey = '', kind = 'logged_in') {
+  currentVisitorDetail = {
+    userId: String(userId || ''),
+    visitorKey: String(visitorKey || ''),
+    kind: kind === 'guest' ? 'guest' : 'logged_in'
+  };
+  openAdminSubPage('subpage-visitor-detail');
+}
+
+function closeVisitorDetail() {
+  openVisitorAnalyticsPage(currentVisitorAnalyticsKind);
+}
+
+async function loadVisitorAnalyticsDetail() {
+  if (!VISITOR_ANALYTICS_ENABLED || !supabaseClient || currentRole !== 'owner') return;
+  const box = document.getElementById('visitor-detail-content');
+  if (!box) return;
+  box.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--grey);font-family:\'Space Mono\';font-size:.6rem;">Loading visitor details…</div>';
+  if (visitorAnalyticsDetailLoadPromise) return visitorAnalyticsDetailLoadPromise;
+
+  visitorAnalyticsDetailLoadPromise = (async () => {
+    const { data, error } = await supabaseClient.rpc('get_visitor_analytics_detail', {
+      p_user_id: currentVisitorDetail.userId || null,
+      p_visitor_key: currentVisitorDetail.visitorKey || null
+    });
+    if (error) {
+      console.warn('Visitor detail unavailable:', error.message);
+      box.innerHTML = `<div style="padding:2rem;text-align:center;color:var(--rebel-red);font-family:'Space Mono';font-size:.6rem;">Visitor detail could not be loaded.</div>`;
+      return;
+    }
+    renderVisitorAnalyticsDetail(data && typeof data === 'object' ? data : {});
+  })().catch(err => {
+    console.warn('Visitor detail skipped:', err?.message || err);
+  }).finally(() => {
+    visitorAnalyticsDetailLoadPromise = null;
+  });
+  return visitorAnalyticsDetailLoadPromise;
+}
+
+function humanizeVisitorEventType(type) {
+  const map = {
+    store_visit:'Store Visit',
+    product_view:'Product Viewed',
+    cart_viewed:'Cart Viewed',
+    add_to_cart:'Added to Cart',
+    custom_add_to_cart:'Custom Order Added to Cart',
+    shipping_page_opened:'Shipping / Billing Opened',
+    billing_address_selected:'Billing Address Selected',
+    new_billing_address_opened:'New Address Form Opened',
+    billing_address_saved:'Billing Address Saved',
+    coupon_applied:'Coupon Applied',
+    coupon_rejected:'Coupon Rejected',
+    payment_init_started:'Payment Started',
+    razorpay_order_created:'Razorpay Order Created',
+    payment_checkout_opened:'Razorpay Checkout Opened',
+    payment_init_failed:'Payment Initialization Failed',
+    payment_failed:'Payment Failed',
+    payment_success_callback:'Payment Success Callback',
+    payment_verification_failed:'Payment Verification Failed',
+    order_confirmed:'Order Confirmed',
+    order_confirmation_failed:'Order Confirmation Failed',
+    login:'Customer Signed In',
+    logout:'Customer Signed Out'
+  };
+  return map[String(type || '')] || String(type || 'Visitor Activity').replace(/_/g,' ');
+}
+
+function prettyVisitorEventData(data) {
+  if (!data || typeof data !== 'object') return '';
+  const pieces = [];
+  const push = (label, value) => {
+    if (value === undefined || value === null || value === '') return;
+    pieces.push(`${label}: ${String(value).slice(0, 300)}`);
+  };
+  push('Product', data.product_title || data.product || data.title);
+  push('Code', data.product_code);
+  push('Category', data.category);
+  push('Garment', data.garment);
+  push('Color', data.color);
+  push('Size', data.size);
+  push('Qty', data.quantity ?? data.qty);
+  push('Price', data.price !== undefined ? `₹ ${data.price}` : '');
+  push('Coupon', data.coupon_code);
+  push('Discount', data.discount_percent !== undefined ? `${data.discount_percent}%` : '');
+  push('Step', data.step);
+  push('Razorpay Order', data.razorpay_order_id);
+  push('Payment', data.razorpay_payment_id);
+  push('Status', data.status);
+  push('Error Code', data.error_code);
+  push('Error', data.error_description || data.error_message);
+  push('Reason', data.error_reason);
+  push('Source', data.error_source);
+  push('Order ID', data.order_id);
+  push('Zoho Invoice', data.zoho_invoice_number || data.zoho_invoice_id);
+  push('Items', data.items_count);
+  if (data.authenticated !== undefined) push('Logged In', data.authenticated ? 'Yes' : 'No');
+  if (data.address_selected !== undefined) push('Address Selected', data.address_selected ? 'Yes' : 'No');
+  if (data.has_print_front !== undefined) push('Front Print', data.has_print_front ? 'Uploaded' : 'No');
+  if (data.has_print_back !== undefined) push('Back Print', data.has_print_back ? 'Uploaded' : 'No');
+  return pieces.join(' · ');
+}
+
+function renderVisitorAnalyticsDetail(payload) {
+  const box = document.getElementById('visitor-detail-content');
+  const title = document.getElementById('visitor-detail-title');
+  if (!box) return;
+
+  const profile = payload?.profile || null;
+  const summary = payload?.summary || {};
+  const events = Array.isArray(payload?.events) ? payload.events : [];
+  const orders = Array.isArray(payload?.orders) ? payload.orders : [];
+  const isGuest = currentVisitorDetail.kind === 'guest';
+
+  const displayName = isGuest ? 'Guest Visitor' : String(profile?.name || profile?.username || profile?.email || 'Customer');
+  if (title) title.innerText = displayName;
+
+  const avatar = !isGuest && profile?.avatar_url
+    ? `<img src="${escapeHtml(safeMediaUrl(profile.avatar_url))}" alt="Profile photo">`
+    : `<span style="font-size:1.2rem;">${isGuest ? '👥' : '👤'}</span>`;
+
+  const profileHtml = isGuest
+    ? `<div class="visitor-detail-profile"><div class="visitor-detail-avatar">${avatar}</div><div><h3>Guest Visitor</h3><p>Anonymous browser visitor<br>Visitor ID: ${escapeHtml(String(payload?.visitor_key || currentVisitorDetail.visitorKey || ''))}</p></div></div>`
+    : `<div class="visitor-detail-profile"><div class="visitor-detail-avatar">${avatar}</div><div><h3>${escapeHtml(displayName)}</h3><p>${escapeHtml(profile?.email || '')}${profile?.phone ? '<br>' + escapeHtml(profile.phone) : ''}${profile?.username ? '<br>@' + escapeHtml(profile.username) : ''}</p></div></div>`;
+
+  const stats = [
+    ['Visit Days', Number(summary?.visit_days || 0)],
+    ['Activity Events', Number(summary?.event_count || 0)],
+    ['Orders', Number(summary?.order_count || 0)],
+    ['Payment Attempts', Number(summary?.payment_attempts || 0)]
+  ];
+  const statsHtml = `<div class="visitor-detail-summary">${stats.map(([label,value]) => `<div class="visitor-detail-stat"><span>${escapeHtml(label)}</span><strong>${Number(value || 0).toLocaleString('en-IN')}</strong></div>`).join('')}</div>`;
+
+  const eventsHtml = events.length
+    ? `<div class="visitor-event-list">${events.map(ev => {
+        const when = ev?.occurred_at ? new Date(ev.occurred_at).toLocaleString('en-IN') : '';
+        const details = prettyVisitorEventData(ev?.event_data || {});
+        return `<div class="visitor-event"><div class="visitor-event-head"><strong>${escapeHtml(humanizeVisitorEventType(ev?.event_type))}</strong><time>${escapeHtml(when)}</time></div>${details ? `<p>${escapeHtml(details)}</p>` : ''}</div>`;
+      }).join('')}</div>`
+    : `<div style="padding:1.3rem;color:var(--grey);font-family:'Space Mono';font-size:.58rem;">No detailed activity has been recorded for this visitor yet.</div>`;
+
+  const ordersHtml = orders.length
+    ? `<div class="visitor-order-list">${orders.map(ord => `<div class="visitor-order-card"><strong>${escapeHtml(ord?.order_id || 'Order')}</strong><span>${escapeHtml(ord?.created_at ? new Date(ord.created_at).toLocaleString('en-IN') : '')} · ₹ ${Number(ord?.total_amount || 0).toLocaleString('en-IN')} · ${escapeHtml(ord?.payment_status || '—')} · ${escapeHtml(ord?.order_status || '—')}</span>${ord?.razorpay_payment_id ? `<span>Payment: ${escapeHtml(ord.razorpay_payment_id)}</span>` : ''}</div>`).join('')}</div>`
+    : `<div style="padding:1.3rem;color:var(--grey);font-family:'Space Mono';font-size:.58rem;">No order record found for this visitor.</div>`;
+
+  box.innerHTML = `${profileHtml}${statsHtml}
+    <div class="admin-inner-card"><div class="admin-panel-head"><div><span class="admin-mini-label">CHECKOUT / PAYMENT TIMELINE</span><h2>Activity</h2></div></div>${eventsHtml}</div>
+    <div class="admin-inner-card"><div class="admin-panel-head"><div><span class="admin-mini-label">ORDERS</span><h2>Placed Orders</h2></div></div>${ordersHtml}</div>`;
+}
+
 
 function openVisitorAnalyticsPage(kind='logged_in') {
   currentVisitorAnalyticsKind = kind === 'guest' ? 'guest' : 'logged_in';
@@ -10238,6 +10663,13 @@ async function hydrateLoggedInUserFromSupabase(authUser, closeModal = false) {
   loggedInUser = merged;
   currentRole = dbProf?.role === 'owner' ? 'owner' : 'customer';
   sessionStorage.setItem('rebel_user_session', JSON.stringify(loggedInUser));
+  if (currentRole !== 'owner') {
+    trackVisitorEvent('login', {
+      user_id: String(authUser.id || ''),
+      email: String(authUser.email || ''),
+      name: String(merged.name || merged.username || '').slice(0, 120)
+    });
+  }
   // Count the authenticated public-store visit. Direct admin views are
   // excluded by trackVisitorAnalytics() itself.
   trackVisitorAnalytics(true);
