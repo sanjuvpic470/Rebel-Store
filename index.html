@@ -357,7 +357,27 @@ h1.hero__title .fill-yellow{color:var(--spray-yellow)}
 .admin-mini-graph .graph-bar-col{min-width:0}.admin-mini-graph .graph-bar{max-width:48px;margin:auto}.admin-mini-graph .graph-label{font-size:.55rem}
 .admin-graph-foot{display:flex;justify-content:space-between;gap:.5rem;font-family:'Space Mono',monospace;color:var(--grey);font-size:.58rem;margin-top:.55rem}
 .admin-status-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
-.admin-status-grid button{background:#101013;border:1px solid rgba(242,240,234,.12);color:var(--paper);padding:.65rem .45rem;text-align:left;cursor:pointer;display:grid;grid-template-columns:auto 1fr;column-gap:.45rem;align-items:center}
+.admin-status-grid button{background:#101013;border:1px solid rgba(242,240,234,.12);color:var(--paper);padding:.65rem .45rem;text-align:left;cursor:pointer;display:grid;grid-template-columns:auto 1fr;column-gap:.45rem;align-items:center} .admin-kpi-card.admin-visitor-kpi{appearance:none;-webkit-appearance:none;width:100%;text-align:left;color:var(--paper);font:inherit;cursor:pointer;transition:border-color .2s ease,transform .2s ease,background .2s ease;position:relative}
+.admin-kpi-card.admin-visitor-kpi:hover{border-color:var(--spray-yellow);background:#1a1a16;transform:translateY(-2px)}
+.admin-kpi-card.admin-visitor-kpi:focus-visible{outline:2px solid var(--spray-yellow);outline-offset:2px}
+.admin-kpi-card.admin-visitor-kpi::after{content:'↗';position:absolute;right:.75rem;top:.7rem;color:var(--spray-yellow);font-size:.8rem;font-weight:700}
+.visitor-analytics-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem;margin-bottom:1rem}
+.visitor-analytics-summary-card{background:#111114;border:1px solid rgba(242,240,234,.12);border-radius:9px;padding:1rem}
+.visitor-analytics-summary-card span{display:block;font-family:'Space Mono',monospace;color:var(--grey);font-size:.56rem;text-transform:uppercase;letter-spacing:.06em}
+.visitor-analytics-summary-card strong{display:block;font-family:'Anton',sans-serif;color:var(--spray-yellow);font-size:1.7rem;line-height:1.1;margin-top:.3rem}
+.visitor-analytics-chart-wrap{background:#111114;border:1px solid rgba(242,240,234,.12);border-radius:10px;padding:1rem;margin-bottom:1rem}
+.visitor-analytics-bars{display:flex;align-items:flex-end;gap:.35rem;height:250px;overflow-x:auto;overflow-y:hidden;border-bottom:1px solid rgba(242,240,234,.14);padding:0 .15rem .25rem}
+.visitor-analytics-bar-col{min-width:32px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:.3rem}
+.visitor-analytics-bar-value{font-family:'Space Mono',monospace;font-size:.48rem;color:var(--paper);min-height:.7rem}
+.visitor-analytics-bar{width:100%;max-width:42px;background:var(--spray-yellow);border-radius:4px 4px 0 0;min-height:2px;transition:height .25s ease}
+.visitor-analytics-bar-label{font-family:'Space Mono',monospace;font-size:.48rem;color:var(--grey);white-space:nowrap;transform:rotate(-42deg);transform-origin:center top;margin-top:.5rem;height:32px}
+.visitor-analytics-table{width:100%;border-collapse:collapse}
+.visitor-analytics-table th,.visitor-analytics-table td{padding:.65rem .6rem;border-bottom:1px solid rgba(242,240,234,.08);font-family:'Space Mono',monospace;font-size:.6rem;text-align:left}
+.visitor-analytics-table th{color:var(--spray-yellow);text-transform:uppercase;font-size:.52rem}
+.visitor-analytics-table td:last-child,.visitor-analytics-table th:last-child{text-align:right}
+.visitor-analytics-table-wrap{background:#111114;border:1px solid rgba(242,240,234,.12);border-radius:10px;padding:.2rem;max-height:520px;overflow:auto}
+@media(max-width:600px){.visitor-analytics-summary{grid-template-columns:1fr}.visitor-analytics-bars{height:210px}.visitor-analytics-bar-label{font-size:.42rem}}
+
 .admin-status-grid button:hover{border-color:var(--spray-yellow)}.admin-status-grid span{grid-row:1/3;font-size:1rem}.admin-status-grid b{font-family:'Anton',sans-serif;font-size:1.15rem;line-height:1}.admin-status-grid small{font-family:'Space Mono',monospace;color:var(--grey);font-size:.52rem;text-transform:uppercase}
 .admin-section-title{display:flex;justify-content:space-between;align-items:end;margin:1.1rem 0 .55rem}.admin-section-title span{font-family:'Anton',sans-serif;font-size:1rem;color:var(--spray-yellow)}.admin-section-title small{font-family:'Space Mono',monospace;color:var(--grey);font-size:.56rem}
 .admin-nav-grid-new{grid-template-columns:repeat(5,minmax(0,1fr));gap:.55rem;margin-bottom:1.5rem}
@@ -890,6 +910,9 @@ footer a:hover{color:var(--paper)}
 
 <style id="rebel-fit-finder-css">
 .fit-finder-btn{margin-top:.7rem;border:1px solid var(--spray-yellow);background:transparent;color:#fff;padding:.75rem 1rem;font-family:'Space Mono',monospace;font-size:.72rem;font-weight:700;cursor:pointer;box-shadow:none;text-transform:uppercase}
+.fit-finder-btn{display:inline-flex;align-items:center;justify-content:center;gap:.55rem}
+.size-match-icon{width:21px;height:21px;display:block;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+
 .fit-finder-btn:hover{background:var(--spray-yellow);color:#111}
 .fit-finder-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:10020;align-items:center;justify-content:center;padding:18px}
 .fit-finder-box{width:min(760px,96vw);max-height:92vh;overflow:auto;background:#17171a;border:1px solid #555;box-shadow:none;padding:24px;color:#fff}
@@ -2152,7 +2175,7 @@ footer .footer-grid{gap:2.2rem;}
         <div class="pdp-size-guide">
           <div class="pdp-size-guide-text"><strong>Not sure about your size?</strong>Check the measurements before ordering.</div>
           <button type="button" class="size-chart-btn" onclick="openSizeChart()">Size Chart ↗</button>
-          <button type="button" id="fit-finder-open-btn" class="fit-finder-btn">👕 Find My T-Shirt Size</button>
+          <button type="button" id="fit-finder-open-btn" class="fit-finder-btn"><svg class="size-match-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M12 6.2c-4 0-7 3.1-7 6.9s3 6.9 7 6.9h11.5l4-3.1c1.3-1 1.3-3.1 0-4.1L23.5 9.7H12Z"/><circle cx="12" cy="13.1" r="3.1"/><path d="M12 10.2v5.8m3-5.3v4.6m3-3.8v3.1"/></svg><span>Size Match</span></button>
         </div>
         
         <div class="size-selector" id="pdp-color-selector"></div>
@@ -2260,7 +2283,7 @@ footer .footer-grid{gap:2.2rem;}
   <div class="fit-finder-modal" id="fit-finder-modal" onclick="if(event.target===this) closeFitFinder()">
     <div class="fit-finder-box" role="dialog" aria-modal="true" aria-labelledby="fit-finder-title">
       <div class="fit-finder-head">
-        <div><h3 id="fit-finder-title">FIND MY T-SHIRT SIZE</h3><div class="fit-finder-step" id="fit-finder-step">STEP 1 OF 2</div></div>
+        <div><h3 id="fit-finder-title">SIZE MATCH</h3><div class="fit-finder-step" id="fit-finder-step">STEP 1 OF 2</div></div>
         <button type="button" class="fit-finder-close" onclick="closeFitFinder()" aria-label="Close">×</button>
       </div>
       <div id="fit-finder-form">
@@ -2284,7 +2307,7 @@ footer .footer-grid{gap:2.2rem;}
             <select id="fit-build"><option value="" selected>Select your build</option><option value="slim">Slim</option><option value="average">Average</option><option value="broad">Broad / Athletic</option><option value="plus">Larger build</option></select>
           </div>
         </div>
-        <div class="fit-finder-actions"><button type="button" class="fit-finder-secondary" onclick="closeFitFinder()">CANCEL</button><button type="button" class="fit-finder-primary" onclick="calculateFitFinder()">FIND MY SIZE →</button></div>
+        <div class="fit-finder-actions"><button type="button" class="fit-finder-secondary" onclick="closeFitFinder()">CANCEL</button><button type="button" class="fit-finder-primary" onclick="calculateFitFinder()">SIZE MATCH →</button></div>
       </div>
       <div class="fit-finder-result" id="fit-finder-result">
         <div class="fit-finder-result-kicker">OUR RECOMMENDATION FOR THIS PRODUCT</div>
@@ -2640,12 +2663,12 @@ footer .footer-grid{gap:2.2rem;}
     </div>
 
     <div class="admin-kpi-grid">
-      <div class="admin-kpi-card kpi-visitor">
-        <div class="admin-kpi-icon">👤</div><div><span>Signed-in Visitors</span><strong id="adm-logged-in-visitors">—</strong><small>today · unique visitors</small></div>
-      </div>
-      <div class="admin-kpi-card kpi-visitor">
-        <div class="admin-kpi-icon">👥</div><div><span>Guest Visitors</span><strong id="adm-guest-visitors">—</strong><small>today · unique visitors</small></div>
-      </div>
+      <button type="button" class="admin-kpi-card kpi-visitor admin-visitor-kpi" onclick="openVisitorAnalyticsPage('logged_in')" aria-label="Open signed-in visitor analytics">
+        <div class="admin-kpi-icon">👤</div><div><span>Signed-in Visitors</span><strong id="adm-logged-in-visitors">—</strong><small>all-time · unique visitors</small></div>
+      </button>
+      <button type="button" class="admin-kpi-card kpi-visitor admin-visitor-kpi" onclick="openVisitorAnalyticsPage('guest')" aria-label="Open guest visitor analytics">
+        <div class="admin-kpi-icon">👥</div><div><span>Guest Visitors</span><strong id="adm-guest-visitors">—</strong><small>all-time · unique visitors</small></div>
+      </button>
       <div class="admin-kpi-card kpi-orders">
         <div class="admin-kpi-icon">🛍️</div><div><span>Orders</span><strong id="adm-orders-count">0</strong><small>paid orders</small></div>
       </div>
@@ -2941,6 +2964,28 @@ footer .footer-grid{gap:2.2rem;}
         <table class="date-chart-table admin-orders-table">
           <thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Manage</th></tr></thead>
           <tbody id="date-chart-tbody"><tr><td colspan="5" style="text-align:center;color:var(--grey);">No orders placed yet.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- DATE-WISE VISITOR ANALYTICS -->
+    <div class="admin-sub-page" id="subpage-visitor-analytics">
+      <div class="sub-page-header admin-sub-header-new">
+        <div><span class="admin-mini-label">VISITOR ANALYTICS</span><h2 id="visitor-analytics-title">👤 Signed-in Visitors</h2><p>Date-wise unique visitor history and total unique visitors.</p></div>
+        <button class="btn btn--ghost" style="padding:.4rem 1rem;font-size:.8rem;" onclick="closeAdminSubPages()">← Dashboard</button>
+      </div>
+      <div class="visitor-analytics-summary">
+        <div class="visitor-analytics-summary-card"><span>Total Unique Visitors</span><strong id="visitor-analytics-total">—</strong></div>
+        <div class="visitor-analytics-summary-card"><span>Recorded Days</span><strong id="visitor-analytics-days">—</strong></div>
+      </div>
+      <div class="visitor-analytics-chart-wrap">
+        <div class="admin-panel-head"><div><span class="admin-mini-label">DATE-WISE</span><h2 id="visitor-analytics-chart-heading">Last 30 Days</h2></div><button type="button" class="admin-small-btn" onclick="loadVisitorAnalyticsHistory(true)">↻ Refresh</button></div>
+        <div class="visitor-analytics-bars" id="visitor-analytics-bars"></div>
+      </div>
+      <div class="visitor-analytics-table-wrap">
+        <table class="visitor-analytics-table">
+          <thead><tr><th>Date</th><th>Visitors</th></tr></thead>
+          <tbody id="visitor-analytics-table-body"><tr><td colspan="2" style="text-align:center;color:var(--grey);padding:2rem;">Loading visitor history…</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -3479,6 +3524,10 @@ const VISITOR_ANALYTICS_ID_KEY = 'rebel_visitor_analytics_id';
 const VISITOR_ANALYTICS_TRACKED_KEY = 'rebel_visitor_analytics_last_track';
 let visitorAnalyticsCountsLastLoadedAt = 0;
 let visitorAnalyticsCountsLoadPromise = null;
+let visitorAnalyticsHistoryCache = null;
+let visitorAnalyticsHistoryLoadPromise = null;
+let visitorAnalyticsHistoryLastLoadedAt = 0;
+let currentVisitorAnalyticsKind = 'logged_in';
 
 const STORE_START_DATE = new Date(2026, 7, 1);
 const calendarToday = new Date();
@@ -6843,6 +6892,9 @@ function openAdminSubPage(subPageId) {
     if (subPageId === 'subpage-orders') {
       renderAdminPanels(currentSelectedDateFilter);
     }
+    if (subPageId === 'subpage-visitor-analytics') {
+      loadVisitorAnalyticsHistory(true);
+    }
     if (subPageId === 'subpage-date-chart') {
       renderInteractiveCalendar(currentSelectedDateFilter);
       renderGraphChart();
@@ -9190,7 +9242,7 @@ function renderAdminProductFormsForCategory(catName, productIndex = null) {
       </details>
       <div style="margin-bottom:.7rem;padding:.7rem;border:1px solid rgba(255,213,0,.16);background:rgba(255,213,0,.025);">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap;">
-          <label class="admin-field-label" style="margin:0;">Find My Size — Product Size Measurements (inches)</label>
+          <label class="admin-field-label" style="margin:0;">Size Match — Product Size Measurements (inches)</label>
           <button type="button" class="btn btn--ghost" style="padding:.35rem .7rem;min-height:auto;font-size:.6rem;white-space:nowrap;" onclick="applyAdminProductSizeChartToCategory(${cIndex},${pIndex})">Apply on all ${escapeHtml(catObj.name)}</button>
         </div>
         <div style="font-family:'Space Mono';font-size:.58rem;color:#888;margin:.25rem 0 .55rem;line-height:1.45;">Enter this product's own garment measurements. Click Apply to save these measurements for this product only.</div>
@@ -10039,31 +10091,96 @@ async function trackVisitorAnalytics(force = false) {
 
 async function loadAdminVisitorCounts(force = false) {
   if (!VISITOR_ANALYTICS_ENABLED || !supabaseClient || currentRole !== 'owner') return;
-  const now = Date.now();
-  if (!force && visitorAnalyticsCountsLoadPromise) return visitorAnalyticsCountsLoadPromise;
-  if (!force && now - visitorAnalyticsCountsLastLoadedAt < 15 * 1000) return;
+  await loadVisitorAnalyticsHistory(force);
+}
 
-  visitorAnalyticsCountsLoadPromise = (async () => {
-    const { data, error } = await supabaseClient.rpc('get_today_visitor_counts');
+function openVisitorAnalyticsPage(kind='logged_in') {
+  currentVisitorAnalyticsKind = kind === 'guest' ? 'guest' : 'logged_in';
+  openAdminSubPage('subpage-visitor-analytics');
+}
+
+function getVisitorAnalyticsDailyRows(kind) {
+  const days = Array.isArray(visitorAnalyticsHistoryCache?.days) ? visitorAnalyticsHistoryCache.days : [];
+  return days.map(row => ({
+    date: String(row?.date || ''),
+    visitors: Number(kind === 'guest' ? (row?.guest ?? 0) : (row?.logged_in ?? 0)) || 0
+  })).filter(row => row.date);
+}
+
+function formatVisitorDateLabel(value) {
+  const d = new Date(`${value}T00:00:00+05:30`);
+  if (Number.isNaN(d.getTime())) return value;
+  return d.toLocaleDateString('en-IN', { day:'2-digit', month:'2-digit' });
+}
+
+function renderVisitorAnalyticsPage() {
+  const kind = currentVisitorAnalyticsKind === 'guest' ? 'guest' : 'logged_in';
+  const rows = getVisitorAnalyticsDailyRows(kind);
+  const titleEl = document.getElementById('visitor-analytics-title');
+  const totalEl = document.getElementById('visitor-analytics-total');
+  const daysEl = document.getElementById('visitor-analytics-days');
+  const barsEl = document.getElementById('visitor-analytics-bars');
+  const tableBody = document.getElementById('visitor-analytics-table-body');
+  const chartHeading = document.getElementById('visitor-analytics-chart-heading');
+  if (!titleEl || !totalEl || !daysEl || !barsEl || !tableBody) return;
+
+  const total = Number(kind === 'guest'
+    ? (visitorAnalyticsHistoryCache?.total_guest ?? 0)
+    : (visitorAnalyticsHistoryCache?.total_logged_in ?? 0));
+  titleEl.innerText = kind === 'guest' ? '👥 Guest Visitors' : '👤 Signed-in Visitors';
+  totalEl.innerText = Number.isFinite(total) ? total.toLocaleString('en-IN') : '0';
+  daysEl.innerText = rows.length.toLocaleString('en-IN');
+  if (chartHeading) chartHeading.innerText = rows.length ? `Last ${Math.min(30, rows.length)} Recorded Days` : 'Date-wise History';
+
+  const recentRows = rows.slice(-30);
+  const max = Math.max(1, ...recentRows.map(r => r.visitors));
+  barsEl.innerHTML = recentRows.length ? recentRows.map(row => {
+    const pct = Math.max(row.visitors ? 4 : 1, Math.round((row.visitors / max) * 100));
+    return `<div class="visitor-analytics-bar-col" title="${escapeHtml(row.date)} · ${row.visitors} visitor${row.visitors === 1 ? '' : 's'}">
+      <span class="visitor-analytics-bar-value">${row.visitors}</span>
+      <div class="visitor-analytics-bar" style="height:${pct}%"></div>
+      <span class="visitor-analytics-bar-label">${escapeHtml(formatVisitorDateLabel(row.date))}</span>
+    </div>`;
+  }).join('') : `<div style="width:100%;display:flex;align-items:center;justify-content:center;color:var(--grey);font-family:'Space Mono';font-size:.65rem;">No visitor history recorded yet.</div>`;
+
+  const reversed = rows.slice().reverse();
+  tableBody.innerHTML = reversed.length ? reversed.map(row => `<tr><td>${escapeHtml(row.date)}</td><td>${row.visitors.toLocaleString('en-IN')}</td></tr>`).join('') : `<tr><td colspan="2" style="text-align:center;color:var(--grey);padding:2rem;">No visitor history recorded yet.</td></tr>`;
+}
+
+async function loadVisitorAnalyticsHistory(force=false) {
+  if (!VISITOR_ANALYTICS_ENABLED || !supabaseClient || currentRole !== 'owner') return;
+  const now = Date.now();
+  if (!force && visitorAnalyticsHistoryLoadPromise) return visitorAnalyticsHistoryLoadPromise;
+  if (!force && visitorAnalyticsHistoryCache && now - visitorAnalyticsHistoryLastLoadedAt < 15000) {
+    renderVisitorAnalyticsPage();
+    return;
+  }
+
+  visitorAnalyticsHistoryLoadPromise = (async () => {
+    const { data, error } = await supabaseClient.rpc('get_visitor_analytics_history', { p_days: 3650 });
     if (error) {
-      console.warn('Visitor analytics counts unavailable:', error.message);
+      console.warn('Visitor analytics history unavailable:', error.message);
+      const tableBody = document.getElementById('visitor-analytics-table-body');
+      const barsEl = document.getElementById('visitor-analytics-bars');
+      if (tableBody) tableBody.innerHTML = `<tr><td colspan="2" style="text-align:center;color:var(--rebel-red);padding:2rem;">Visitor history needs the analytics history function in Supabase.</td></tr>`;
+      if (barsEl) barsEl.innerHTML = `<div style="width:100%;display:flex;align-items:center;justify-content:center;color:var(--grey);font-family:'Space Mono';font-size:.65rem;">Run the supplied visitor analytics SQL once, then refresh.</div>`;
       return;
     }
-    const row = Array.isArray(data) ? (data[0] || {}) : (data || {});
-    const loggedInCount = Number(row.logged_in_visitors ?? row.logged_in ?? 0);
-    const guestCount = Number(row.guest_visitors ?? row.guest ?? 0);
+    visitorAnalyticsHistoryCache = data && typeof data === 'object' ? data : { total_logged_in:0, total_guest:0, days:[] };
+    visitorAnalyticsHistoryLastLoadedAt = Date.now();
+    renderVisitorAnalyticsPage();
+    // Keep the dashboard cards on the same all-time totals.
     const loggedEl = document.getElementById('adm-logged-in-visitors');
     const guestEl = document.getElementById('adm-guest-visitors');
-    if (loggedEl) loggedEl.innerText = Number.isFinite(loggedInCount) ? loggedInCount : 0;
-    if (guestEl) guestEl.innerText = Number.isFinite(guestCount) ? guestCount : 0;
-    visitorAnalyticsCountsLastLoadedAt = Date.now();
+    if (loggedEl) loggedEl.innerText = Number(visitorAnalyticsHistoryCache.total_logged_in || 0).toLocaleString('en-IN');
+    if (guestEl) guestEl.innerText = Number(visitorAnalyticsHistoryCache.total_guest || 0).toLocaleString('en-IN');
   })().catch(err => {
-    console.warn('Visitor analytics counts skipped:', err?.message || err);
+    console.warn('Visitor analytics history skipped:', err?.message || err);
   }).finally(() => {
-    visitorAnalyticsCountsLoadPromise = null;
+    visitorAnalyticsHistoryLoadPromise = null;
   });
 
-  return visitorAnalyticsCountsLoadPromise;
+  return visitorAnalyticsHistoryLoadPromise;
 }
 
 async function hydrateLoggedInUserFromSupabase(authUser, closeModal = false) {
