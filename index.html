@@ -10891,6 +10891,13 @@ function refreshCouponVisibility() {
   const enabled = !!code && discount > 0;
   const pdpBanner = document.getElementById('pdp-coupon-banner');
   if (pdpBanner) pdpBanner.style.display = enabled ? '' : 'none';
+
+  // Hide coupon ticker messages whenever no active coupon is configured.
+  ['ticker-coupon-text', 'ticker-coupon-text-2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = enabled ? '' : 'none';
+  });
+
   const salesStrip = document.getElementById('sales-offer-strip');
   if (salesStrip) salesStrip.style.display = enabled ? 'block' : 'none';
   const heroSub = document.getElementById('hero-sub-text');
