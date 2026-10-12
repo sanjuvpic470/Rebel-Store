@@ -2199,7 +2199,7 @@ footer .footer-grid{gap:2.2rem;}
           <span class="pdp-discount">33% OFF</span>
         </div>
         
-        <div style="font-family:'Space Mono', monospace; font-size:0.75rem; background:rgba(255,213,0,0.15); border:1px dashed var(--spray-yellow); padding:0.5rem 0.8rem; margin-bottom:1.2rem; border-radius:2px; color:var(--spray-yellow);">
+        <div id="pdp-coupon-banner" style="font-family:'Space Mono', monospace; font-size:0.75rem; background:rgba(255,213,0,0.15); border:1px dashed var(--spray-yellow); padding:0.5rem 0.8rem; margin-bottom:1.2rem; border-radius:2px; color:var(--spray-yellow);">
           🔥 Use code <strong id="pdp-active-coupon-code" style="color:#fff;">REBELS20</strong> in bag for extra <strong id="pdp-active-coupon-disc" style="color:#fff;">20%</strong> off!
         </div>
 
@@ -3080,11 +3080,11 @@ footer .footer-grid{gap:2.2rem;}
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
         <div>
           <label class="admin-field-label">Offer Code</label>
-          <input type="text" id="adm-offer-code-input" class="admin-input-full" style="margin-bottom:0;" value="REBELS20">
+          <input type="text" id="adm-offer-code-input" class="admin-input-full" style="margin-bottom:0;" value="">
         </div>
         <div>
           <label class="admin-field-label">Discount Percentage</label>
-          <input type="number" id="adm-offer-disc-input" class="admin-input-full" style="margin-bottom:0;" value="20">
+          <input type="number" id="adm-offer-disc-input" class="admin-input-full" style="margin-bottom:0;" value="0">
         </div>
       </div>
       <button class="btn btn--solid" style="min-height:38px; padding:0 1rem; font-size:0.8rem;" onclick="saveOfferSettings()">Update Offer Code 💾</button>
@@ -3557,8 +3557,8 @@ let lastViewedProductId = null;
 let activeAdminEditingCategoryName = 'Oversized Tee';
 let activeAdminEditingProductIndex = null;
 let expandedAdminCategoryIds = new Set();
-let activeOfferCode = 'REBELS20';
-let activeDiscountPercent = 20;
+let activeOfferCode = '';
+let activeDiscountPercent = 0;
 let isCouponApplied = false;
 let custSize = 'M';
 let custColor = 'Black';
@@ -3675,7 +3675,7 @@ function applySiteContentToDOM() {
     document.getElementById('hero-title-box').innerHTML = `${escapeHtml(SITE_CONTENT.heroT1)}<br><span class="fill-yellow">${escapeHtml(SITE_CONTENT.heroT2)}</span><br><span class="stroke">${escapeHtml(SITE_CONTENT.heroT3.split(' ')[0] || '')}</span> ${escapeHtml(SITE_CONTENT.heroT3.split(' ').slice(1).join(' '))}`;
   }
   if (document.getElementById('hero-sub-text')) {
-    document.getElementById('hero-sub-text').innerHTML = `${escapeHtml(SITE_CONTENT.heroSub)} Use code <strong id="hero-coupon-display">${escapeHtml(activeOfferCode)}</strong> in bag for extra <strong id="hero-discount-display">${Number(activeDiscountPercent)}%</strong> off.`;
+    document.getElementById('hero-sub-text').innerHTML = `${escapeHtml(SITE_CONTENT.heroSub)}${activeOfferCode ? ` Use code <strong id="hero-coupon-display">${escapeHtml(activeOfferCode)}</strong> in bag for extra <strong id="hero-discount-display">${Number(activeDiscountPercent)}%</strong> off.` : ''}`;
   }
   if (document.getElementById('hero-stamp-text')) document.getElementById('hero-stamp-text').innerText = SITE_CONTENT.heroStamp;
   const dropLabelEl = document.getElementById('hero-drop-label');
@@ -3718,8 +3718,9 @@ function applySiteContentToDOM() {
   if (document.getElementById('cms-f2-desc')) document.getElementById('cms-f2-desc').value = SITE_CONTENT.feat2Desc;
   if (document.getElementById('cms-footer-tagline')) document.getElementById('cms-footer-tagline').value = SITE_CONTENT.footerTagline;
 
-  if (document.getElementById('pdp-active-coupon-code')) document.getElementById('pdp-active-coupon-code').innerText = activeOfferCode;
-  if (document.getElementById('pdp-active-coupon-disc')) document.getElementById('pdp-active-coupon-disc').innerText = activeDiscountPercent + '%';
+  if (document.getElementById('pdp-active-coupon-code')) document.getElementById('pdp-active-coupon-code').innerText = activeOfferCode || '';
+  if (document.getElementById('pdp-active-coupon-disc')) document.getElementById('pdp-active-coupon-disc').innerText = Number(activeDiscountPercent || 0) + '%';
+  refreshCouponVisibility();
   
   updateUserBadgeDisplay();
 }
@@ -10876,20 +10877,50 @@ function renderStaffListDisplay() {
 function syncOfferSettingsUI() {
   const codeInput = document.getElementById('adm-offer-code-input');
   const discInput = document.getElementById('adm-offer-disc-input');
-  if (codeInput) codeInput.value = activeOfferCode || 'REBELS20';
-  if (discInput) discInput.value = Number.isFinite(Number(activeDiscountPercent)) ? Number(activeDiscountPercent) : 20;
-  window.storeOfferSettings = { code: activeOfferCode || 'REBELS20', discount: Number(activeDiscountPercent || 20) };
+  const code = String(activeOfferCode || '').trim().toUpperCase();
+  const discount = code ? Number(activeDiscountPercent || 0) : 0;
+  if (codeInput) codeInput.value = code;
+  if (discInput) discInput.value = discount;
+  window.storeOfferSettings = { code, discount };
+  refreshCouponVisibility();
+}
+
+function refreshCouponVisibility() {
+  const code = String(activeOfferCode || '').trim().toUpperCase();
+  const discount = Number(activeDiscountPercent || 0);
+  const enabled = !!code && discount > 0;
+  const pdpBanner = document.getElementById('pdp-coupon-banner');
+  if (pdpBanner) pdpBanner.style.display = enabled ? '' : 'none';
+  const salesStrip = document.getElementById('sales-offer-strip');
+  if (salesStrip) salesStrip.style.display = enabled ? 'block' : 'none';
+  const heroSub = document.getElementById('hero-sub-text');
+  if (heroSub) {
+    const existingCoupon = heroSub.querySelector('#hero-coupon-display');
+    if (existingCoupon) {
+      const couponText = existingCoupon.closest('strong');
+      const discountStrong = document.getElementById('hero-discount-display')?.closest('strong');
+      const couponSentence = couponText?.parentElement;
+      if (couponSentence && couponSentence === heroSub) {
+        couponText.style.display = enabled ? '' : 'none';
+        if (discountStrong) discountStrong.style.display = enabled ? '' : 'none';
+      }
+    }
+  }
+  if (typeof refreshSalesOfferStrip === 'function') refreshSalesOfferStrip();
 }
 
 async function saveOfferSettings() {
-  const codeInput = document.getElementById('adm-offer-code-input').value.trim().toUpperCase();
-  const discInput = parseInt(document.getElementById('adm-offer-disc-input').value, 10);
-  if (!codeInput) { showToast('Enter valid offer code'); return; }
-  if (!Number.isInteger(discInput) || discInput < 0 || discInput > 90) { showToast('Discount must be between 0% and 90%.'); return; }
+  const codeInput = String(document.getElementById('adm-offer-code-input')?.value || '').trim().toUpperCase();
+  const rawDiscount = String(document.getElementById('adm-offer-disc-input')?.value || '').trim();
+  const discInput = codeInput ? Number(rawDiscount) : 0;
+  if (codeInput && (!Number.isInteger(discInput) || discInput < 0 || discInput > 90)) {
+    showToast('Discount must be between 0% and 90%.'); return;
+  }
   if (currentRole !== 'owner') { showToast('Only the store owner can change offers.'); return; }
 
+  // An empty coupon code disables the offer globally for every product.
   activeOfferCode = codeInput;
-  activeDiscountPercent = discInput;
+  activeDiscountPercent = codeInput ? discInput : 0;
   syncOfferSettingsUI();
   renderStorefront();
 
@@ -10903,7 +10934,7 @@ async function saveOfferSettings() {
     showToast('Offer could not be saved securely.');
     return;
   }
-  showToast(`Offer updated: '${activeOfferCode}' (${activeDiscountPercent}%)`);
+  showToast(activeOfferCode ? `Offer updated: '${activeOfferCode}' (${activeDiscountPercent}%)` : 'Coupon offer disabled for all products.');
 }
 
 async function loadOfferSettingsFromCloud() {
@@ -10916,10 +10947,10 @@ async function loadOfferSettingsFromCloud() {
       .maybeSingle();
     if (error || !data?.value) return;
     const code = String(data.value?.code || '').trim().toUpperCase();
-    const discount = Number(data.value?.discount_percent);
-    if (code && Number.isInteger(discount) && discount >= 0 && discount <= 90) {
+    const discount = Number(data.value?.discount_percent ?? 0);
+    if (Number.isInteger(discount) && discount >= 0 && discount <= 90) {
       activeOfferCode = code;
-      activeDiscountPercent = discount;
+      activeDiscountPercent = code ? discount : 0;
       syncOfferSettingsUI();
       renderStorefront();
     }
@@ -12059,7 +12090,7 @@ function showToast(msg) {
 </div>
 
 <script>
-function openOffersPanel(){const m=document.getElementById('offers-panel');if(!m)return;const o=window.storeOfferSettings||{};const code=String(o.code||activeOfferCode||'REBELS20');const pct=Number(o.discount ?? activeDiscountPercent ?? 20);document.getElementById('offers-panel-content').innerHTML='<div style="padding:18px;border:1px dashed rgba(250,204,21,.5);border-radius:16px;background:rgba(250,204,21,.06)"><div style="font-size:13px;font-family:Space Mono,monospace">CURRENT OFFER</div><div style="font-size:28px;font-weight:900;margin:8px 0">'+pct+'% OFF</div><div>Use coupon <strong style="font-family:Space Mono,monospace">'+code+'</strong> at checkout.</div></div><p style="font-size:13px;opacity:.7;margin-bottom:0">Coupon validity and discount are validated securely during checkout.</p>';m.style.display='flex'}
+function openOffersPanel(){const m=document.getElementById('offers-panel');if(!m)return;const o=window.storeOfferSettings||{};const code=String(o.code||activeOfferCode||'').trim();const pct=Number(o.discount ?? activeDiscountPercent ?? 0);const content=document.getElementById('offers-panel-content');if(!code||pct<=0){if(content)content.innerHTML='<p style="padding:18px;margin:0">No active coupon offer right now.</p>';m.style.display='flex';return}if(content)content.innerHTML='<div style="padding:18px;border:1px dashed rgba(250,204,21,.5);border-radius:16px;background:rgba(250,204,21,.06)"><div style="font-size:13px;font-family:Space Mono,monospace">CURRENT OFFER</div><div style="font-size:28px;font-weight:900;margin:8px 0">'+pct+'% OFF</div><div>Use coupon <strong style="font-family:Space Mono,monospace">'+code+'</strong> at checkout.</div></div><p style="font-size:13px;opacity:.7;margin-bottom:0">Coupon validity and discount are validated securely during checkout.</p>';m.style.display='flex'}
 function closeOffersPanel(){const m=document.getElementById('offers-panel');if(m)m.style.display='none'}
 function refreshSalesOfferStrip(){const el=document.getElementById('sales-offer-strip'),tx=document.getElementById('sales-offer-strip-text');if(!el||!tx)return;const o=window.storeOfferSettings||{};const pct=Number(o.discount||0);const code=String(o.code||'').trim();if(pct>0&&code){tx.textContent=pct+'% OFF · Use code '+code;el.style.display='block'}else el.style.display='none'}
 if(typeof window!=='undefined'){window.openOffersPanel=openOffersPanel;window.closeOffersPanel=closeOffersPanel;window.refreshSalesOfferStrip=refreshSalesOfferStrip}
